@@ -31,7 +31,7 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            networkController.Configure(systemGameManager);
+            networkController?.Configure(systemGameManager);
         }
 
         public override void SetGameManagerReferences() {

@@ -50,10 +50,10 @@ namespace AnyRPG.EditorTools {
                 return;
             }
 
-            if (PrefabUtility.IsDisconnectedFromPrefabAsset(g)) {
-                Debug.LogError($"{prefabName} has missing prefab {g.name}");
-                return;
-            }
+            //if (PrefabUtility.IsDisconnectedFromPrefabAsset(g)) {
+            //    Debug.LogError($"{prefabName} has missing prefab {g.name}");
+            //    return;
+            //}
 
             if (!isRoot) {
                 if (PrefabUtility.IsAnyPrefabInstanceRoot(g)) {

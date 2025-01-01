@@ -209,6 +209,7 @@ namespace AnyRPG {
         // this code only needs to be run if baseCharacters are persistent between scene loads
         // if the character is unloaded and then re-spawned on level load, this should not be necessary
         // because the status effects would be re-applied, and likely fail to apply due to scene restrictions
+        /*
         public void ProcessLevelLoad() {
             // remove scene specific status effects that are not valid in this scene
             List<StatusEffectNode> removeNodes = new List<StatusEffectNode>();
@@ -229,6 +230,7 @@ namespace AnyRPG {
                 statusEffectNode.CancelStatusEffect();
             }
         }
+        */
 
         public void UpdatePowerResourceList() {
 

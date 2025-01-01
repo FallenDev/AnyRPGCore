@@ -17,7 +17,7 @@ namespace AnyRPG {
 
         private void FindGameManager() {
             // call character manager with spawnRequestId to complete configuration
-            systemGameManager = GameObject.FindObjectOfType<SystemGameManager>();
+            systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             networkAnimator = GetComponent<NetworkAnimator>();
             unitController = GetComponentInParent<UnitController>();
             animator = GetComponent<Animator>();
@@ -48,7 +48,7 @@ namespace AnyRPG {
             characterRequestData.spawnRequestId = clientSpawnRequestId;
             systemGameManager.CharacterManager.CompleteModelRequest(characterRequestData, unitController, isOwner);
             */
-            systemGameManager.CharacterManager.CompleteNetworkModelRequest(clientSpawnRequestId, unitController, gameObject, isOwner);
+            systemGameManager.CharacterManager.CompleteNetworkModelRequest(clientSpawnRequestId.Value, unitController, gameObject, isOwner);
         }
 
         public override void OnStartClient() {

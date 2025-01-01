@@ -83,9 +83,9 @@ namespace AnyRPG {
             allResources.AddRange(Resources.LoadAll<T>(folder));
 
             // find the system game manager to load specific resource subfolders for the current game (based on the open scene)
-            SystemConfigurationManager systemConfigurationManager = GameObject.FindObjectOfType<SystemConfigurationManager>();
+            SystemConfigurationManager systemConfigurationManager = GameObject.FindAnyObjectByType<SystemConfigurationManager>();
             if (systemConfigurationManager == null) {
-                SceneConfig sceneConfig = GameObject.FindObjectOfType<SceneConfig>();
+                SceneConfig sceneConfig = GameObject.FindAnyObjectByType<SceneConfig>();
                 if (sceneConfig != null) {
                     systemConfigurationManager = sceneConfig.systemConfigurationManager;
                 }

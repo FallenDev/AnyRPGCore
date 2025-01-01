@@ -53,6 +53,7 @@ namespace AnyRPG {
         // game manager references
         private SystemDataFactory systemDataFactory = null;
         private WeatherManager weatherManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public BoxCollider Collider { get => myCollider; set => myCollider = value; }
         public float SurfaceHeight { get => surfaceHeight; set => surfaceHeight = value; }
@@ -74,10 +75,21 @@ namespace AnyRPG {
 
             systemDataFactory = systemGameManager.SystemDataFactory;
             weatherManager = systemGameManager.WeatherManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+
         }
 
         private void OnTriggerEnter(Collider other) {
             //Debug.Log($"{gameObject.name}.Water.OnTriggerEnter(" + other.gameObject.name + ")");
+
+            if (configureCount == 0) {
+                return;
+            }
+
+            if (networkManagerServer.ServerModeActive == true) {
+                // controller is client authoritative so this code should never be run on the server
+                return;
+            }
 
             // configure camera
             if (useFog == true
@@ -99,6 +111,15 @@ namespace AnyRPG {
 
         private void OnTriggerExit(Collider other) {
             //Debug.Log($"{gameObject.name}.Water.OnTriggerExit(" + other.gameObject.name + ")");
+
+            if (configureCount == 0) {
+                return;
+            }
+
+            if (networkManagerServer.ServerModeActive == true) {
+                // controller is client authoritative so this code should never be run on the server
+                return;
+            }
 
             // configure camera
             if (useFog == true

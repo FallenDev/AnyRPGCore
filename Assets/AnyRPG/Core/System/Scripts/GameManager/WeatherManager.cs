@@ -34,6 +34,7 @@ namespace AnyRPG {
         protected PlayerManager playerManager = null;
         protected CameraManager cameraManager = null;
         protected TimeOfDayManager timeOfDayManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public AudioClip CurrentAmbientSound { get => currentAmbientSound; set => currentAmbientSound = value; }
 
@@ -55,6 +56,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             cameraManager = systemGameManager.CameraManager;
             timeOfDayManager = systemGameManager.TimeOfDayManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
@@ -71,6 +73,10 @@ namespace AnyRPG {
 
         public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
             //Debug.Log("WeatherManager.HandleLevelLoad()");
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == true) {
+                return;
+            }
 
             GetSceneFogSettings();
             GetSceneShadowSettings();

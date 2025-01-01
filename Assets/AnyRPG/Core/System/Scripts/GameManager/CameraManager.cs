@@ -133,7 +133,8 @@ namespace AnyRPG {
 
         public void CheckForCutsceneCamera() {
             //currentCutsceneCameraController = null;
-            currentCutsceneCameraController = FindObjectOfType<CutsceneCameraController>();
+            currentCutsceneCameraController = GameObject.FindAnyObjectByType<CutsceneCameraController>();
+            DisableCutsceneCamera();
         }
 
         private void CheckConfiguration() {

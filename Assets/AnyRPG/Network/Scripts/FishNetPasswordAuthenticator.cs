@@ -46,7 +46,7 @@ namespace AnyRPG
             //Debug.Log("FishNetPasswordAuthenticator.InitializeOnce()");
 
             // get reference to system game manager
-            systemGameManager = GameObject.FindObjectOfType<SystemGameManager>();
+            systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
 
             //Listen for authentication result
             systemGameManager.NetworkManagerServer.OnAuthenticationResult += HandleAuthenticationResult;
@@ -97,14 +97,14 @@ namespace AnyRPG
         /// </summary>
         /// <param name="conn">Connection sending broadcast.</param>
         /// <param name="pb"></param>
-        private void OnPasswordBroadcast(NetworkConnection conn, PasswordBroadcast pb)
+        private void OnPasswordBroadcast(NetworkConnection conn, PasswordBroadcast pb, Channel channel)
         {
             Debug.Log("FishNetPasswordAuthenticator.OnPasswordBroadcst()");
 
             /* If client is already authenticated this could be an attack. Connections
              * are removed when a client disconnects so there is no reason they should
              * already be considered authenticated. */
-            if (conn.Authenticated)
+            if (conn.IsAuthenticated)
             {
                 NetworkManager.Log($"Client with ID {conn.ClientId} is already authenticated.  Disconnecting");
                 conn.Disconnect(true);
@@ -138,7 +138,7 @@ namespace AnyRPG
         /// Received on client after server sends an authentication response.
         /// </summary>
         /// <param name="rb"></param>
-        private void OnResponseBroadcast(ResponseBroadcast rb)
+        private void OnResponseBroadcast(ResponseBroadcast rb, Channel channel)
         {
             Debug.Log("FishNetPasswordAuthenticator.OnResponseBroadcast()");
 

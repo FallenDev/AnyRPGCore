@@ -108,20 +108,7 @@ namespace AnyRPG {
             Debug.Log($"FishNetNetworkController.Login() Result of disconnection attempt: {connectionResult}");
         }
 
-        private void HandleUnloadEnd(SceneUnloadEndEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleUnloadEnd()");
-            //foreach (Scene scene in obj.UnloadedScenes) {
-            //    Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.name}");
-            //}
-        }
-
-        private void HandleUnloadStart(SceneUnloadStartEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleUnloadStart()");
-
-            //foreach (SceneLookupData sceneLookupData in obj.QueueData.SceneUnloadData.SceneLookupDatas) {
-            //    Debug.Log($"FishNetNetworkController.HandleUnloadStart() {sceneLookupData.Name}");
-            //}
-        }
+        
 
         private void HandleRemoteConnectionState(NetworkConnection networkConnection, RemoteConnectionStateArgs args) {
             Debug.Log($"FishNetNetworkController.HandleRemoteConnectionState({args.ConnectionState.ToString()})");
@@ -161,24 +148,27 @@ namespace AnyRPG {
         }
 
         private void HandleLoadPercentChange(SceneLoadPercentEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
+            Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
+
         }
 
         private void HandleLoadStart(SceneLoadStartEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadStart() name: {obj.QueueData.SceneLoadData.SceneLookupDatas[0].Name} AsServer: {obj.QueueData.AsServer}");
+            Debug.Log($"FishNetNetworkController.HandleLoadStart() name: {obj.QueueData.SceneLoadData.SceneLookupDatas[0].Name} AsServer: {obj.QueueData.AsServer}");
         }
 
         private void HandleLoadEnd(SceneLoadEndEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
+            Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
             //foreach (Scene scene in obj.LoadedScenes) {
             //    Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
             //}
             //Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
 
             // the level loading code should only be processed on the client
+            /*
             if (obj.QueueData.AsServer == true) {
                 return;
             }
+            */
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 levelManager.ProcessLevelLoad();
@@ -187,10 +177,26 @@ namespace AnyRPG {
         }
 
         private void HandleActiveSceneSet(bool userInitiated) {
-            //Debug.Log($"FishNetNetworkController.HandleActiveSceneSet({userInitiated}) current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            Debug.Log($"FishNetNetworkController.HandleActiveSceneSet({userInitiated}) current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
 
             //if (systemGameManager.GameMode == GameMode.Network) {
             //    levelManager.ProcessLevelLoad();
+            //}
+        }
+
+        private void HandleUnloadEnd(SceneUnloadEndEventArgs obj) {
+            Debug.Log($"FishNetNetworkController.HandleUnloadEnd({obj.QueueData.SceneUnloadData.SceneLookupDatas[0].Name})");
+
+            //foreach (Scene scene in obj.UnloadedScenes) {
+            //    Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.name}");
+            //}
+        }
+
+        private void HandleUnloadStart(SceneUnloadStartEventArgs obj) {
+            Debug.Log($"FishNetNetworkController.HandleUnloadStart({obj.QueueData.SceneUnloadData.SceneLookupDatas[0].Name})");
+
+            //foreach (SceneLookupData sceneLookupData in obj.QueueData.SceneUnloadData.SceneLookupDatas) {
+            //    Debug.Log($"FishNetNetworkController.HandleUnloadStart() {sceneLookupData.Name}");
             //}
         }
 
@@ -218,7 +224,7 @@ namespace AnyRPG {
         */
 
         public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform) {
-            //Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             networkConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform);
             //return null;
@@ -239,7 +245,7 @@ namespace AnyRPG {
 
         public override bool CanSpawnCharacterOverNetwork() {
             //Debug.Log($"FishNetNetworkController.CanSpawnCharacterOverNetwork() isClient: {networkManager.IsClient}");
-            return networkManager.IsClient;
+            return networkManager.IsClientStarted;
         }
 
         public override bool OwnPlayer(UnitController unitController) {

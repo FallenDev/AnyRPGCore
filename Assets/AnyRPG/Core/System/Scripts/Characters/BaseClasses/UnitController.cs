@@ -482,13 +482,13 @@ namespace AnyRPG {
         public override void ProcessCreateEventSubscriptions() {
             base.ProcessCreateEventSubscriptions();
             SystemEventManager.StartListening("OnReputationChange", HandleReputationChange);
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            //SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
         }
 
         public override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
             SystemEventManager.StopListening("OnReputationChange", HandleReputationChange);
-            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            //SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
         }
 
         public override void ProcessInit() {
@@ -625,9 +625,11 @@ namespace AnyRPG {
             characterUnit.CallMiniMapStatusUpdateHandler();
         }
 
+        /*
         public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
             characterStats.ProcessLevelLoad();
         }
+        */
 
         public void SetMountedState(UnitController mountUnitController, UnitProfile mountUnitProfile) {
             characterPetManager.DespawnAllPets();
@@ -917,7 +919,7 @@ namespace AnyRPG {
         }
 
         private void DespawnImmediate() {
-            //Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
+            Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
 
             despawning = true;
             unitEventController.NotifyOnDespawn(this);
@@ -953,7 +955,7 @@ namespace AnyRPG {
         /// reset all variables to default values for object pooling
         /// </summary>
         public override void ResetSettings() {
-            //Debug.Log($"{gameObject.name}.UnitController.ResetSettings()");
+            Debug.Log($"{gameObject.name}.UnitController.ResetSettings()");
 
             // agents should be disabled so when pool and re-activated they don't throw errors if they are a preview unit
             DisableAgent();
@@ -1313,8 +1315,15 @@ namespace AnyRPG {
             currentState.Enter(this);
         }
 
-        protected override void Update() {
-            base.Update();
+        protected /*override*/ void Update() {
+            //base.Update();
+
+            /*
+            if (initialized == false) {
+                return;
+            }
+            */
+
             if (characterStats.IsAlive == false) {
                 // can't handle movement when dead
                 return;
@@ -1801,17 +1810,6 @@ namespace AnyRPG {
             }
 
             base.ProcessLevelUnload();
-            // moved all this code into Despawn() to avoid a situation where player would have despawn called without processLevelUnload called 
-            /*
-            ClearTarget();
-            CancelMountEffects();
-            // this was subject to event ordering and the baseCharacter could catch the event and despawn the unit
-            // before the unit could cancel the mounted state - re-enabling
-            // moved to baseCharacter
-            //Despawn();
-            // this could be a mount which has no base character - check for nulls
-            characterUnit?.BaseCharacter?.ProcessLevelUnload();
-            */
             Despawn(0f, false, true);
         }
 

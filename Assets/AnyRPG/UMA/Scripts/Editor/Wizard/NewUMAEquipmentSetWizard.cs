@@ -89,7 +89,7 @@ namespace AnyRPG {
 
         [MenuItem("Tools/AnyRPG/Wizard/UMA/New Equipment Set Wizard")]
         public static void CreateWizard() {
-            ScriptableWizard.DisplayWizard<NewEquipmentSetWizard>("New Equipment Set Wizard", "Create");
+            ScriptableWizard.DisplayWizard<NewUMAEquipmentSetWizard>("New UMA Equipment Set Wizard", "Create");
         }
 
         protected override void PopulateEquipmentSetWizardSettings() {

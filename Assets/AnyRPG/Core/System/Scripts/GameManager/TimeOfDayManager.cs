@@ -49,6 +49,7 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected AudioManager audioManager = null;
         protected WeatherManager weatherManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public DateTime InGameTime { get => inGameTime; }
 
@@ -68,6 +69,7 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             audioManager = systemGameManager.AudioManager;
             weatherManager = systemGameManager.WeatherManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         private void Update() {
@@ -114,6 +116,10 @@ namespace AnyRPG {
 
         public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
             //Debug.Log("TimeOfDayManager.HandleLevelLoad()");
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == true) {
+                return;
+            }
 
             levelLoaded = true;
             activeSceneNode = levelManager.GetActiveSceneNode();

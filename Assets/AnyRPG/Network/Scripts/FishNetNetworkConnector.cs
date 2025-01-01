@@ -91,11 +91,11 @@ namespace AnyRPG {
             // update syncvars
             NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
             if (networkCharacterUnit != null) {
-                networkCharacterUnit.unitProfileName = playerCharacterSaveData.SaveData.unitProfileName;
-                networkCharacterUnit.unitControllerMode = unitControllerMode;
-                networkCharacterUnit.unitLevel = playerCharacterSaveData.SaveData.PlayerLevel;
-                networkCharacterUnit.serverRequestId = serverSpawnRequestId;
-                networkCharacterUnit.characterAppearanceData = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
+                networkCharacterUnit.unitProfileName.Value = playerCharacterSaveData.SaveData.unitProfileName;
+                networkCharacterUnit.unitControllerMode.Value = unitControllerMode;
+                networkCharacterUnit.unitLevel.Value = playerCharacterSaveData.SaveData.PlayerLevel;
+                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
+                networkCharacterUnit.characterAppearanceData.Value = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
             }
 
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
@@ -132,10 +132,10 @@ namespace AnyRPG {
             // update syncvars
             NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
             if (networkCharacterUnit != null) {
-                networkCharacterUnit.unitProfileName = unitProfileName;
-                networkCharacterUnit.unitControllerMode = unitControllerMode;
-                networkCharacterUnit.unitLevel = unitLevel;
-                networkCharacterUnit.serverRequestId = serverSpawnRequestId;
+                networkCharacterUnit.unitProfileName.Value = unitProfileName;
+                networkCharacterUnit.unitControllerMode.Value = unitControllerMode;
+                networkCharacterUnit.unitLevel.Value = unitLevel;
+                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
             }
 
             SpawnPrefab(nob, networkConnection);
@@ -170,8 +170,8 @@ namespace AnyRPG {
             SpawnedNetworkObject spawnedNetworkObject = nob.gameObject.GetComponent<SpawnedNetworkObject>();
             if (spawnedNetworkObject != null) {
                 Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}) setting spawnRequestId on gameobject");
-                spawnedNetworkObject.clientSpawnRequestId = clientSpawnRequestId;
-                spawnedNetworkObject.serverRequestId = serverSpawnRequestId;
+                spawnedNetworkObject.clientSpawnRequestId.Value = clientSpawnRequestId;
+                spawnedNetworkObject.serverRequestId.Value = serverSpawnRequestId;
             }
 
             return nob;
@@ -188,8 +188,8 @@ namespace AnyRPG {
 
             SceneLoadData sceneLoadData = new SceneLoadData(sceneName);
             sceneLoadData.ReplaceScenes = ReplaceOption.All;
-            sceneLoadData.PreferredActiveScene = sceneLoadData.SceneLookupDatas[0];
-
+            //sceneLoadData.PreferredActiveScene = sceneLoadData.SceneLookupDatas[0];
+            sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(sceneName));
             networkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
         }
 
@@ -247,7 +247,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void LoadCharacterList(NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetNetworkConnector.LoadCharacterList()");
+            //Debug.Log($"FishNetNetworkConnector.LoadCharacterList()");
 
             systemGameManager.NetworkManagerServer.LoadCharacterList(networkConnection.ClientId);
             //List<PlayerCharacterSaveData> playerCharacterSaveDataList = systemGameManager.NetworkManagerServer.LoadCharacterList(networkConnection.ClientId);
@@ -257,7 +257,7 @@ namespace AnyRPG {
         }
 
         public void HandleLoadCharacterList(int clientId, List<PlayerCharacterSaveData> playerCharacterSaveDataList) {
-            Debug.Log($"FishNetNetworkConnector.LoadCharacterList()");
+            //Debug.Log($"FishNetNetworkConnector.HandleLoadCharacterList({clientId})");
 
             if (networkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
                 foreach (int client in networkManager.ServerManager.Clients.Keys) {
@@ -289,7 +289,7 @@ namespace AnyRPG {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
 
-            FishNetNetworkController fishNetNetworkController = GameObject.FindObjectOfType<FishNetNetworkController>();
+            FishNetNetworkController fishNetNetworkController = GameObject.FindAnyObjectByType<FishNetNetworkController>();
             fishNetNetworkController.RegisterConnector(this);
         }
 
@@ -300,6 +300,7 @@ namespace AnyRPG {
             // on server gameMode should always bet set to network
             //Debug.Log($"FishNetNetworkConnector.OnStartServer(): setting gameMode to network");
             systemGameManager.SetGameMode(GameMode.Network);
+            networkManagerServer.ActivateServerMode();
         }
     }
 }

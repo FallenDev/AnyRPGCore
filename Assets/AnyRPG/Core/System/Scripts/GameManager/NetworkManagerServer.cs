@@ -25,9 +25,12 @@ namespace AnyRPG {
 
         private GameServerClient gameServerClient = null;
         private Coroutine monitorPlayerCharactersCoroutine = null;
+        private bool serverModeActive = false;
 
         // game manager references
         private SaveManager saveManager = null;
+
+        public bool ServerModeActive { get => serverModeActive; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -35,7 +38,7 @@ namespace AnyRPG {
         }
 
         public void SetClientToken(int clientId, string token) {
-            Debug.Log($"NetworkManagerServer.SetClientToken({clientId}, {token})");
+            //Debug.Log($"NetworkManagerServer.SetClientToken({clientId}, {token})");
 
             if (clientTokens.ContainsKey(clientId)) {
                 Debug.Log($"NetworkManagerServer.SetClientToken({clientId}, {token}) Client tokens contained key");
@@ -88,7 +91,8 @@ namespace AnyRPG {
         }
 
         public void GetLoginToken(int clientId, string username, string password) {
-            Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
+            //Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
+
             //(bool correctPassword, string token) = gameServerClient.Login(clientId, username, password);
             gameServerClient.Login(clientId, username, password);
             //if (correctPassword == true) {
@@ -99,7 +103,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginResponse(int clientId, bool correctPassword, string token) {
-            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
+            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
 
             if (correctPassword == true) {
                 SetClientToken(clientId, token);
@@ -202,7 +206,7 @@ namespace AnyRPG {
         }
 
         public void StopMonitoringPlayerUnit(int playerCharacterId) {
-            Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({playerCharacterId})");
+            //Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({playerCharacterId})");
 
             if (activePlayerCharacters.ContainsKey(playerCharacterId)) {
                 activePlayerCharacters[playerCharacterId].StopMonitoring();
@@ -213,7 +217,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoadCharacterListResponse(int clientId, List<PlayerCharacterData> playerCharacters) {
-            Debug.Log($"NetworkManagerServer.ProcessLoadCharacterListResponse({clientId})");
+            //Debug.Log($"NetworkManagerServer.ProcessLoadCharacterListResponse({clientId})");
 
             List<PlayerCharacterSaveData> playerCharacterSaveDataList = new List<PlayerCharacterSaveData>();
             foreach (PlayerCharacterData playerCharacterData in playerCharacters) {
@@ -262,6 +266,9 @@ namespace AnyRPG {
             }
         }
 
+        public void ActivateServerMode() {
+            serverModeActive = true;
+        }
     }
 
 }

@@ -46,7 +46,8 @@ namespace AnyRPG {
         private CameraManager cameraManager = null;
         private PlayerManager playerManager = null;
         private MapManager mapManager = null;
-        private NetworkManagerClient networkManager = null;
+        private NetworkManagerClient networkManagerClient = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public bool NavMeshAvailable { get => navMeshAvailable; set => navMeshAvailable = value; }
         //public Vector3 SpawnRotationOverride { get => spawnRotationOverride; set => spawnRotationOverride = value; }
@@ -70,7 +71,8 @@ namespace AnyRPG {
             audioManager = systemGameManager.AudioManager;
             cameraManager = systemGameManager.CameraManager;
             playerManager = systemGameManager.PlayerManager;
-            networkManager = systemGameManager.NetworkManagerClient;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void PerformSetupActivities() {
@@ -85,7 +87,7 @@ namespace AnyRPG {
             }
             //DontDestroyOnLoad(this.gameObject);
             //Debug.Log("LevelManager.InitializeLevelManager(): setting scenemanager onloadlevel");
-            SceneManager.sceneLoaded += OnLoadLevel;
+            SceneManager.sceneLoaded += HandleLoadLevel;
             SceneManager.sceneUnloaded += HandleSceneUnloaded;
             SceneManager.activeSceneChanged += HandleActiveSceneChanged;
             terrainDetector = new TerrainDetector();
@@ -106,8 +108,8 @@ namespace AnyRPG {
             Bounds sceneBounds = new Bounds();
 
             // only grab mesh renderers because skinned mesh renderers get strange angles when their bones are rotated
-            renderers = GameObject.FindObjectsOfType<MeshRenderer>();
-            terrainColliders = GameObject.FindObjectsOfType<TerrainCollider>();
+            renderers = GameObject.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
+            terrainColliders = GameObject.FindObjectsByType<TerrainCollider>(FindObjectsSortMode.None);
 
             // add bounds of renderers in case there are structures higher or lower than terrain bounds
             if (renderers.Length != 0) {
@@ -227,8 +229,8 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="newScene"></param>
         /// <param name="loadSceneMode"></param>
-        public void OnLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
-            Debug.Log($"Levelmanager.OnLoadLevel({newScene.name}): Finding Scene Settings. SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+        public void HandleLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
+            Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             if (!levelManagerInitialized) {
                 //Debug.Log("Levelmanager.OnLoadLevel(): Start has not run yet, returning!");
@@ -287,15 +289,11 @@ namespace AnyRPG {
         }
 
         public void PerformLevelLoadActivities() {
-            //Debug.Log($"Levelmanager.PerformLevelLoadActivities(): Finding Scene Settings. SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+
             loadingLevel = false;
             SetActiveSceneNode();
-            if (activeSceneNode != null) {
-                activeSceneNode.Visit();
-            }
-            terrainDetector.LoadSceneSettings();
             systemGameManager.AutoConfigureMonoBehaviours();
-            cameraManager.CheckForCutsceneCamera();
 
             // determine if this is the game manager loading scene
             if (IsInitializationScene()) {
@@ -303,44 +301,30 @@ namespace AnyRPG {
                 return;
             }
 
-            // determine if this is the main menu
-            uIManager.ActivateInGameUI();
-            uIManager.DeactivatePlayerUI();
-            uIManager.ActivateSystemMenuUI();
-            if (IsMainMenu()) {
-                //Debug.Log("Levelmanager.OnLoadLevel(): This is the main menu scene.  Activating Main Menu");
-                uIManager.mainMenuWindow.OpenWindow();
-            } else {
-                // just in case
-                uIManager.mainMenuWindow.CloseWindow();
-                sceneBounds = GetSceneBounds();
-                mapManager.ProcessLevelLoad();
-            }
-
-            // get level boundaries
-            // testing - move this to not main menu or initialization scene
-            //sceneBounds = GetSceneBounds();
+            uIManager.ProcessLevelLoad();
 
             // determine if a navmesh is available
             DetectNavMesh();
+            cameraManager.CheckForCutsceneCamera();
 
-            // bug fix for unity making shadows too dark on realtime lighting with no lightmaps baked and using skybox as environment lightning source
-            // doesn't work too well :(
-            //DynamicGI.UpdateEnvironment();
-
-            // do things that can only be done if we have information about this scene in the scene nodes database
-            PlayLevelSounds();
-
-            // send messages to subscribers
-            // testing moving this to after activating scene camera
-            /*
-            EventParamProperties eventParamProperties = new EventParamProperties();
-            eventParamProperties.simpleParams.StringParam = (activeSceneNode == null ? activeSceneName : activeSceneNode.DisplayName);
-            SystemEventManager.TriggerEvent("OnLevelLoad", eventParamProperties);
-            */
-
-            // activate the correct camera
-            ActivateSceneCamera();
+            if (networkManagerServer.ServerModeActive == false) {
+                // client only
+                // client only for now
+                if (activeSceneNode != null) {
+                    activeSceneNode.PreloadFootStepAudio();
+                    activeSceneNode.Visit();
+                }
+                terrainDetector.LoadSceneSettings();
+                if (IsMainMenu() == false) {
+                    sceneBounds = GetSceneBounds();
+                    mapManager.ProcessLevelLoad();
+                }
+                PlayLevelSounds();
+                // activate the correct camera
+                ActivateSceneCamera();
+            } else {
+                cameraManager.ActivateMainCamera();
+            }
 
             // send messages to subscribers
             EventParamProperties eventParamProperties = new EventParamProperties();
@@ -358,22 +342,24 @@ namespace AnyRPG {
 
         public void PlayLevelSounds() {
             //Debug.Log("Levelmanager.PlayLevelSounds()");
-            if (activeSceneNode != null) {
-                /*
-                if (activeSceneNode.AmbientMusicProfile != null && activeSceneNode.AmbientMusicProfile.AudioClip != null) {
-                    audioManager.PlayAmbient(activeSceneNode.AmbientMusicProfile.AudioClip);
-                } else {
-                    audioManager.StopAmbient();
-                }
-                */
-                if (activeSceneNode.BackgroundMusicAudio != null) {
-                    //Debug.Log("Levelmanager.PlayLevelSounds(): PLAYING MUSIC");
-                    audioManager.PlayMusic(activeSceneNode.BackgroundMusicAudio);
-                } else {
-                    //Debug.Log("Levelmanager.PlayLevelSounds(): STOPPING MUSIC");
-                    audioManager.StopMusic();
-                }
+            if (activeSceneNode == null) {
+                return;
             }
+            /*
+            if (activeSceneNode.AmbientMusicProfile != null && activeSceneNode.AmbientMusicProfile.AudioClip != null) {
+                audioManager.PlayAmbient(activeSceneNode.AmbientMusicProfile.AudioClip);
+            } else {
+                audioManager.StopAmbient();
+            }
+            */
+            if (activeSceneNode.BackgroundMusicAudio != null) {
+                //Debug.Log("Levelmanager.PlayLevelSounds(): PLAYING MUSIC");
+                audioManager.PlayMusic(activeSceneNode.BackgroundMusicAudio);
+            } else {
+                //Debug.Log("Levelmanager.PlayLevelSounds(): STOPPING MUSIC");
+                audioManager.StopMusic();
+            }
+
         }
 
         private void ActivateSceneCamera() {
@@ -493,7 +479,7 @@ namespace AnyRPG {
             }
 
             // network load
-            networkManager.LoadScene(sceneName);
+            networkManagerClient.LoadScene(sceneName);
         }
 
         public void LoadDefaultStartingZone() {

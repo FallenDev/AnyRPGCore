@@ -11,20 +11,15 @@ namespace AnyRPG {
 
         public event System.Action OnCompleteCharacterRequest = delegate { };
 
-        [SyncVar]
-        public string unitProfileName = string.Empty;
+        public readonly SyncVar<string> unitProfileName = new SyncVar<string>();
 
-        [SyncVar]
-        public int unitLevel;
+        public readonly SyncVar<int> unitLevel = new SyncVar<int>();
 
-        [SyncVar]
-        public UnitControllerMode unitControllerMode = UnitControllerMode.Preview;
+        public readonly SyncVar<UnitControllerMode> unitControllerMode = new SyncVar<UnitControllerMode>();
 
-        [SyncVar]
-        public CharacterAppearanceData characterAppearanceData = null;
+        public readonly SyncVar<CharacterAppearanceData> characterAppearanceData = new SyncVar<CharacterAppearanceData>();
 
-        [SyncVar(OnChange = nameof(HandleNameSync), ReadPermissions = ReadPermission.ExcludeOwner)]
-        public string characterName = string.Empty;
+        public readonly SyncVar<string> characterName = new SyncVar<string>(new SyncTypeSettings(ReadPermission.ExcludeOwner));
 
         
         private UnitProfile unitProfile = null;
@@ -33,9 +28,14 @@ namespace AnyRPG {
         // game manager references
         SystemGameManager systemGameManager = null;
 
+        private void Awake() {
+            characterName.OnChange += HandleNameSync;
+            unitControllerMode.Value = UnitControllerMode.Preview;
+        }
+
         private void Configure() {
             // call character manager with spawnRequestId to complete configuration
-            systemGameManager = GameObject.FindObjectOfType<SystemGameManager>();
+            systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             unitController = GetComponent<UnitController>();
             //if (base.IsOwner && unitController != null) {
             //    unitController.UnitEventController.OnNameChange += HandleUnitNameChange;
@@ -52,7 +52,7 @@ namespace AnyRPG {
         private void HandleUnitNameChangeServer(string characterName) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChangeServer({characterName})");
 
-            this.characterName = characterName;
+            this.characterName.Value = characterName;
         }
 
         private void HandleNameSync(string oldValue, string newValue, bool asServer) {
@@ -64,18 +64,18 @@ namespace AnyRPG {
         private void CompleteCharacterRequest(bool isOwner) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
 
-            unitProfile = systemGameManager.SystemDataFactory.GetResource<UnitProfile>(unitProfileName);
+            unitProfile = systemGameManager.SystemDataFactory.GetResource<UnitProfile>(unitProfileName.Value);
             CharacterConfigurationRequest characterConfigurationRequest;
-            if (isOwner && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId)) {
-                systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId, isOwner);
+            if (isOwner && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value)) {
+                systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
             } else {
                 characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-                characterConfigurationRequest.characterName = characterName;
-                characterConfigurationRequest.unitLevel = unitLevel;
-                characterConfigurationRequest.unitControllerMode = unitControllerMode;
-                characterConfigurationRequest.characterAppearanceData = characterAppearanceData;
+                characterConfigurationRequest.characterName = characterName.Value;
+                characterConfigurationRequest.unitLevel = unitLevel.Value;
+                characterConfigurationRequest.unitControllerMode = unitControllerMode.Value;
+                characterConfigurationRequest.characterAppearanceData = characterAppearanceData.Value;
                 CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
-                characterRequestData.spawnRequestId = clientSpawnRequestId;
+                characterRequestData.spawnRequestId = clientSpawnRequestId.Value;
                 systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, characterRequestData, isOwner);
             }
 

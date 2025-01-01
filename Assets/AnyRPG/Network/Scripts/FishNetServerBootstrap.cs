@@ -49,7 +49,7 @@ namespace AnyRPG {
         public override void OnStartServer() {
             base.OnStartServer();
             //Debug.Log($"{gameObject.name}.FishNetNetworkConnector.OnStartServer()");
-            networkManager = GameObject.FindObjectOfType<FishNet.Managing.NetworkManager>();
+            networkManager = GameObject.FindAnyObjectByType<FishNet.Managing.NetworkManager>();
             SpawnPrefab();
         }
 

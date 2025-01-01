@@ -162,6 +162,7 @@ namespace AnyRPG {
 
             playerManager = systemGameManager.PlayerManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
+            characterManager = systemGameManager.CharacterManager;
         }
 
         protected virtual void Start() {
@@ -361,6 +362,9 @@ namespace AnyRPG {
                 GameMode.Local, 
                 characterConfigurationRequest
                 );
+            if (characterManager == null) {
+                Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn() characterManager is null");
+            }
             UnitController unitController = characterManager.SpawnUnitPrefab(characterRequestData, null, transform.position, transform.forward);
             //spawnRequests.Add(characterRequestData.spawnRequestId, new UnitSpawnNodeSpawnRequestData(toughness));
         }

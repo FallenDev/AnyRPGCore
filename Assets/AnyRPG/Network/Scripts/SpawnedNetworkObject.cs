@@ -7,12 +7,10 @@ using UnityEngine;
 
 namespace AnyRPG {
     public class SpawnedNetworkObject : NetworkBehaviour {
+        
+        public readonly SyncVar<int> clientSpawnRequestId = new SyncVar<int>();
 
-        [SyncVar]
-        public int clientSpawnRequestId;
-
-        [SyncVar]
-        public int serverRequestId;
+        public readonly SyncVar<int> serverRequestId = new SyncVar<int>();
 
         public override void OnStartClient() {
             base.OnStartClient();

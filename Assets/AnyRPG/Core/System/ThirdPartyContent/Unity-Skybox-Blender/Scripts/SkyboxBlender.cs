@@ -154,7 +154,7 @@ namespace AnyRPG {
 
             //Set the render reflection mode to Custom
             RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
-            RenderSettings.customReflection = blendedCubemap;
+            RenderSettings.customReflectionTexture = blendedCubemap;
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace AnyRPG {
                             //Debug.Log("Copying");
                         }
 
-                        RenderSettings.customReflection = blendedCubemap;
+                        RenderSettings.customReflectionTexture = blendedCubemap;
                     }
 
                     renderId = probeComponent.RenderProbe();

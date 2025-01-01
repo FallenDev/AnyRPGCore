@@ -12,6 +12,7 @@ namespace AnyRPG {
         // state tracking
         protected bool outlineQueued = false;
         protected bool isOutlined = false;
+        protected Coroutine outlineQueueCoroutine = null;
 
         // game manager references
         protected CameraManager cameraManager = null;
@@ -25,18 +26,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             cameraManager = systemGameManager.CameraManager;
-        }
-
-        public void Update() {
-            if (outlineQueued == false) {
-                return;
-            }
-
-            if (interactable.IsBuilding() == true) {
-                return;
-            }
-
-            interactable.StartCoroutine(OutlineNextFrameDelay());
         }
 
         public IEnumerator OutlineNextFrameDelay() {
@@ -83,8 +72,19 @@ namespace AnyRPG {
             if (interactable.IsBuilding() == false) {
                 ActivateOutline();
             } else {
-                outlineQueued = true;
+                if (outlineQueued == false) {
+                    outlineQueued = true;
+                    outlineQueueCoroutine = interactable.StartCoroutine(OutlineQueue());
+                }
             }
+        }
+
+        public IEnumerator OutlineQueue () {
+            while (interactable.IsBuilding() == true) {
+                yield return null;
+            }
+            outlineQueueCoroutine = null;
+            interactable.StartCoroutine(OutlineNextFrameDelay());
         }
 
         public void TurnOffOutline() {

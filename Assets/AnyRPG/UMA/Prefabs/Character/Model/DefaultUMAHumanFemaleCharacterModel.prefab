@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2692339740015506113}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6973582095505325909
 MonoBehaviour:
@@ -77,6 +77,8 @@ MonoBehaviour:
   DelayUnload: 2
   BundleCheck: 1
   KeepAnimatorController: 0
+  RecreateAnimatorOnRaceChange: 1
+  userInformation: 
   RecipeUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -86,21 +88,43 @@ MonoBehaviour:
   WardrobeRemoved:
     m_PersistentCalls:
       m_Calls: []
+  CharacterStart:
+    m_PersistentCalls:
+      m_Calls: []
+  BuildCharacterBegun:
+    m_PersistentCalls:
+      m_Calls: []
+  SlotsHidden:
+    m_PersistentCalls:
+      m_Calls: []
+  WardrobeSuppressed:
+    m_PersistentCalls:
+      m_Calls: []
   hide: 0
+  markNotReadable: 1
+  markDynamic: 1
   loadBlendShapes: 0
+  loadOnlyUsedBlendshapes: 1
+  loadBlendshapeNormals: 1
+  loadBlendshapeTangents: 1
+  loadAllFrames: 1
+  forceKeepBlendshapes: []
   keepAvatar: 0
+  rawAvatar: 0
+  keepPredefinedDNA: 0
   activeRace:
     name: HumanFemale
   defaultChangeRaceOptions: 8
   cacheCurrentState: 1
   rebuildSkeleton: 0
   alwaysRebuildSkeleton: 0
+  forceRebindAnimator: 0
   preloadWardrobeRecipes:
     loadDefaultRecipes: 1
     recipes:
-    - _recipeName: FemaleUndies2
+    - _recipeName: FemaleDefaultUnderwear
+      _enabledInDefaultWardrobe: 1
       _compatibleRaces:
-      - HumanFemaleDCS
       - HumanFemale
   raceAnimationControllers:
     defaultAnimationController: {fileID: 9100000, guid: 547e6a8928ecb2d49b24c599db6d49c9,
@@ -121,8 +145,13 @@ MonoBehaviour:
       - {r: 0, g: 0, b: 0, a: 0}
       PropertyBlock:
         alwaysUpdate: 0
+        alwaysUpdateParms: 0
         serializedProperties: []
       foldout: 0
+      showAdvanced: 0
+      isBaseColor: 1
+      deleteThis: 0
+      displayColor: {r: 1, g: 1, b: 1, a: 1}
       _name: 
       _color: {r: 1, g: 1, b: 1, a: 1}
       _metallicGloss: {r: 0, g: 0, b: 0, a: 0}
@@ -139,8 +168,13 @@ MonoBehaviour:
       - {r: 0, g: 0, b: 0, a: 0}
       PropertyBlock:
         alwaysUpdate: 0
+        alwaysUpdateParms: 0
         serializedProperties: []
       foldout: 0
+      showAdvanced: 0
+      isBaseColor: 1
+      deleteThis: 0
+      displayColor: {r: 1, g: 1, b: 1, a: 1}
       _name: 
       _color: {r: 1, g: 1, b: 1, a: 1}
       _metallicGloss: {r: 0, g: 0, b: 0, a: 0}
@@ -157,8 +191,13 @@ MonoBehaviour:
       - {r: 0, g: 0, b: 0, a: 0}
       PropertyBlock:
         alwaysUpdate: 0
+        alwaysUpdateParms: 0
         serializedProperties: []
       foldout: 0
+      showAdvanced: 0
+      isBaseColor: 1
+      deleteThis: 0
+      displayColor: {r: 1, g: 1, b: 1, a: 1}
       _name: 
       _color: {r: 1, g: 1, b: 1, a: 1}
       _metallicGloss: {r: 0, g: 0, b: 0, a: 0}
@@ -175,8 +214,13 @@ MonoBehaviour:
       - {r: 0, g: 0, b: 0, a: 0}
       PropertyBlock:
         alwaysUpdate: 0
+        alwaysUpdateParms: 0
         serializedProperties: []
       foldout: 0
+      showAdvanced: 0
+      isBaseColor: 0
+      deleteThis: 0
+      displayColor: {r: 1, g: 1, b: 1, a: 1}
       _name: 
       _color: {r: 1, g: 1, b: 1, a: 1}
       _metallicGloss: {r: 0, g: 0, b: 0, a: 0}
@@ -189,7 +233,7 @@ MonoBehaviour:
   loadFilename: 
   loadString: 
   loadFileOnStart: 0
-  ForceSlotMaterials: 0
+  forceSlotMaterials: 0
   AtlasResolutionScale: 1
   defaultLoadOptions: 31
   savePathType: 0
@@ -206,9 +250,10 @@ MonoBehaviour:
   customRotation: {x: 0, y: 0, z: 0}
   previewColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _buildCharacterEnabled: 1
+  debugVertexes: 1
 --- !u!95 &3309121852376907503
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -222,7 +267,9 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

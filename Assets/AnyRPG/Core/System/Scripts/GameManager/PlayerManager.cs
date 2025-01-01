@@ -89,6 +89,7 @@ namespace AnyRPG {
         protected NetworkManagerClient networkManager = null;
         protected CharacterManager characterManager = null;
         protected SystemDataFactory systemDataFactory = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public GameObject PlayerConnectionObject { get => playerConnectionObject; set => playerConnectionObject = value; }
         public float MaxMovementSpeed { get => maxMovementSpeed; set => maxMovementSpeed = value; }
@@ -126,6 +127,12 @@ namespace AnyRPG {
 
             PerformRequiredPropertyChecks();
             CreateEventSubscriptions();
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void PerformRequiredPropertyChecks() {
@@ -249,7 +256,7 @@ namespace AnyRPG {
                 }
             }
 
-            if (systemGameManager.GameMode == GameMode.Network  && CanSpawnPlayerOverNetwork() == false) {
+            if (systemGameManager.GameMode == GameMode.Network  && networkManagerServer.ServerModeActive == true) {
                 return;
             }
 
@@ -257,10 +264,6 @@ namespace AnyRPG {
             Vector3 spawnLocation = SpawnPlayerUnit();
             //cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, activeUnitController.transform.forward);
             cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, spawnRotation);
-        }
-
-        private bool CanSpawnPlayerOverNetwork() {
-            return networkManager.CanSpawnPlayerOverNetwork();
         }
 
         public void PlayLevelUpEffects(int newLevel) {

@@ -35,7 +35,7 @@ namespace AnyRPG {
         }
 
         public void Login(int clientId, string username, string password) {
-            Debug.Log($"GameServerClient.Login({username}, {password})");
+            //Debug.Log($"GameServerClient.Login({clientId}, {username}, {password})");
             LoginRequest loginRequest = new LoginRequest(username, password);
 
             networkManagerServer.StartCoroutine(GetLoginTokenEnumerator(clientId, loginRequest));
@@ -78,7 +78,7 @@ namespace AnyRPG {
         */
 
         public IEnumerator GetLoginTokenEnumerator(int clientId, LoginRequest loginRequest) {
-            Debug.Log($"GameServerClient.GetLoginTokenEnumerator({clientId})");
+            //Debug.Log($"GameServerClient.GetLoginTokenEnumerator({clientId})");
 
             string requestURL = $"{serverAddress}/{loginPath}";
             var payload = JsonUtility.ToJson(loginRequest);
@@ -90,7 +90,7 @@ namespace AnyRPG {
                 webRequest.SetRequestHeader("Accept", "application/json");
                 webRequest.uploadHandler.contentType = "application/json";
                 yield return webRequest.SendWebRequest();
-                Debug.Log($"GameServerClient.GetLoginTokenEnumerator() status code: {webRequest.responseCode} body: {webRequest.downloadHandler.text}");
+                //Debug.Log($"GameServerClient.GetLoginTokenEnumerator() status code: {webRequest.responseCode} body: {webRequest.downloadHandler.text}");
                 if (webRequest.responseCode != (long)HttpStatusCode.OK) {
                     networkManagerServer.ProcessLoginResponse(clientId, false, string.Empty);
                 } else {

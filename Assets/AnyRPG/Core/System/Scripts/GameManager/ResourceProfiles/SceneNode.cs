@@ -306,11 +306,10 @@ namespace AnyRPG {
             if (Visited == false) {
                 Visited = true;
             }
-            PreloadFootStepAudio();
             OnVisitZone();
         }
 
-        private void PreloadFootStepAudio() {
+        public void PreloadFootStepAudio() {
             foreach (AudioProfile audioProfile in footStepProfileReferences) {
                 if (audioProfile != null) {
                     audioProfile.PreloadAudioClips();

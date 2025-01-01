@@ -317,37 +317,10 @@ namespace AnyRPG {
         }
 
         
-
+        /*
         protected virtual void Update() {
-            // if the item is highlighted, we will continue a pulsing glow
-            //return;
-
-            outlineController.Update();
-            
-
-            /*
-            if (isFlashing) {
-                //Debug.Log("Interactable.Update(): isflashing == true");
-                float emission = glowMinIntensity + Mathf.PingPong(Time.time * glowFlashSpeed, glowMaxIntensity - glowMinIntensity);
-                //Debug.Log("Interactable.Update(): emission: " + emission);
-                foreach (Renderer renderer in meshRenderers) {
-                    //Debug.Log("Interactable.Update(): renderer: " + renderer.name);
-                    if (renderer != null) {
-                        // added this condition because of infestor effect adding extra renderers as child objects under the character unit
-                        foreach (Material flashingMaterial in renderer.materials) {
-                            //Debug.Log("Interactable.Update(): flashingmaterial: " + flashingMaterial.name + "; color: " + (glowColor * emission) + "; enabled? " + flashingMaterial.IsKeywordEnabled("_EMISSION"));
-                            Color usedColor = glowColor;
-                            if (lightEmission) {
-                                usedColor = glowColor * emission;
-                                flashingMaterial.SetColor("_EmissionColor", usedColor);
-                            }
-                            flashingMaterial.SetColor("_Color", usedColor);
-                        }
-                    }
-                }
-            }
-            */
         }
+        */
 
         public override bool CanSpawn() {
             //Debug.Log($"{gameObject.name}.Interactable.CanSpawn()");

@@ -277,6 +277,7 @@ namespace AnyRPG {
         private SystemEventManager systemEventManager = null;
         private ControlsManager controlsManager = null;
         private WindowManager windowManager = null;
+        private LevelManager levelManager = null;
 
         public CloseableWindow StatusEffectWindow { get => statusEffectWindow; }
         public UnitFrameController FocusUnitFrameController { get => focusUnitFrameController; }
@@ -434,6 +435,7 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
             controlsManager = systemGameManager.ControlsManager;
             windowManager = systemGameManager.WindowManager;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public void PerformSetupActivities() {
@@ -881,9 +883,11 @@ namespace AnyRPG {
             inGameUI.SetActive(true);
             //Debug.Break();
             //return;
+            /*
             if (cameraManager != null) {
                 cameraManager.DisableCutsceneCamera();
             }
+            */
             /*
             if (!playerManager.PlayerUnitSpawned) {
                 SystemEventManager.StartListening("OnPlayerUnitSpawn", HandleMainCamera);
@@ -1562,6 +1566,18 @@ namespace AnyRPG {
             networkLoginWindow.CloseWindow();
             loginInProgressWindow.CloseWindow();
             loadGameWindow.OpenWindow();
+        }
+
+        public void ProcessLevelLoad() {
+            ActivateInGameUI();
+            DeactivatePlayerUI();
+            ActivateSystemMenuUI();
+            if (levelManager.IsMainMenu()) {
+                mainMenuWindow.OpenWindow();
+            } else {
+                // just in case
+                mainMenuWindow.CloseWindow();
+            }
         }
 
     }

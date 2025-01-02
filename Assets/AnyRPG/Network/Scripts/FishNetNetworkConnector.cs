@@ -302,5 +302,13 @@ namespace AnyRPG {
             systemGameManager.SetGameMode(GameMode.Network);
             networkManagerServer.ActivateServerMode();
         }
+
+        public override void OnStopServer() {
+            base.OnStopServer();
+            Debug.Log($"FishNetNetworkConnector.OnStopServer()");
+
+            systemGameManager.SetGameMode(GameMode.Local);
+            networkManagerServer.DeactivateServerMode();
+        }
     }
 }

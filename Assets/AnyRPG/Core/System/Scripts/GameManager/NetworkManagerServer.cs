@@ -13,6 +13,8 @@ namespace AnyRPG {
         public event Action<int, List<PlayerCharacterSaveData>> OnLoadCharacterList = delegate { };
         public event Action<int> OnDeletePlayerCharacter = delegate { };
         public event Action<int> OnCreatePlayerCharacter = delegate { };
+        public event Action OnStartServer = delegate { };
+        public event Action OnStopServer = delegate { };
 
         // jwt for each client so the server can make API calls to the api server on their behalf
         private Dictionary<int, string> clientTokens = new Dictionary<int, string>();
@@ -30,11 +32,17 @@ namespace AnyRPG {
         // game manager references
         private SaveManager saveManager = null;
 
+        [SerializeField]
+        private NetworkController networkController = null;
+
         public bool ServerModeActive { get => serverModeActive; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             saveManager = systemGameManager.SaveManager;
+
+            networkController?.Configure(systemGameManager);
+
         }
 
         public void SetClientToken(int clientId, string token) {
@@ -267,7 +275,38 @@ namespace AnyRPG {
         }
 
         public void ActivateServerMode() {
+            Debug.Log($"NetworkManagerServer.ActivateServerMode()");
+
             serverModeActive = true;
+            OnStartServer();
+        }
+
+        public void DeactivateServerMode() {
+            Debug.Log($"NetworkManagerServer.DeactivateServerMode()");
+
+            serverModeActive = false;
+            OnStopServer();
+        }
+
+
+        public void StartServer() {
+            Debug.Log($"NetworkManagerServer.StartServer()");
+
+            if (serverModeActive == true) {
+                return;
+            }
+
+            networkController?.StartServer();
+        }
+
+        public void StopServer() {
+            Debug.Log($"NetworkManagerServer.StartServer()");
+
+            if (serverModeActive == false) {
+                return;
+            }
+
+            networkController?.StopServer();
         }
     }
 

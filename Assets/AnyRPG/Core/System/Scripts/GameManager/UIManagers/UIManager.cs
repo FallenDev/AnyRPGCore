@@ -184,11 +184,13 @@ namespace AnyRPG {
         public CloseableWindow unitSpawnWindow;
         public CloseableWindow petSpawnWindow;
         public CloseableWindow playMenuWindow;
+        public CloseableWindow playOnlineMenuWindow;
         public CloseableWindow settingsMenuWindow;
         public CloseableWindow helpMenuWindow;
         public CloseableWindow gamepadHintWindow;
         public CloseableWindow keyboardHintWindow;
         public CloseableWindow creditsWindow;
+        public CloseableWindow hostServerWindow;
         public CloseableWindow exitMenuWindow;
         public CloseableWindow disconnectedWindow;
         public CloseableWindow loginFailedWindow;
@@ -385,7 +387,9 @@ namespace AnyRPG {
             unitSpawnWindow.Configure(systemGameManager);
             petSpawnWindow.Configure(systemGameManager);
             playMenuWindow.Configure(systemGameManager);
+            playOnlineMenuWindow.Configure(systemGameManager);
             creditsWindow.Configure(systemGameManager);
+            hostServerWindow.Configure(systemGameManager);
             exitMenuWindow.Configure(systemGameManager);
             disconnectedWindow.Configure(systemGameManager);
             loginFailedWindow.Configure(systemGameManager);
@@ -848,6 +852,7 @@ namespace AnyRPG {
             confirmSellItemMenuWindow.CloseWindow();
             copyGameMenuWindow.CloseWindow();
             creditsWindow.CloseWindow();
+            hostServerWindow.CloseWindow();
             deleteGameMenuWindow.CloseWindow();
             networkLoginWindow.CloseWindow();
             disconnectedWindow.CloseWindow();
@@ -863,6 +868,7 @@ namespace AnyRPG {
             keyboardHintWindow.CloseWindow();
             petSpawnWindow.CloseWindow();
             playMenuWindow.CloseWindow();
+            playOnlineMenuWindow.CloseWindow();
             settingsMenuWindow.CloseWindow();
         }
 
@@ -1436,6 +1442,7 @@ namespace AnyRPG {
             gamepadMainMenuWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
             keyBindConfirmWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
             playMenuWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
+            playOnlineMenuWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
             settingsMenuWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
             playerOptionsMenuWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));
             onScreenKeyboardWindow.CloseableWindowContents.SetBackGroundColor(new Color32(0, 0, 0, (byte)opacityLevel));

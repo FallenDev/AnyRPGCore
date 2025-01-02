@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 namespace AnyRPG {
     public class FishNetNetworkController : NetworkController {
 
-        private FishNet.Managing.NetworkManager networkManager;
+        private FishNet.Managing.NetworkManager fishNetNetworkManager;
         private FishNetNetworkConnector networkConnector;
         //private GameObject networkConnectorSpawnPrefab = null;
         //private GameObject networkConnectorSpawnReference = null;
@@ -31,21 +31,22 @@ namespace AnyRPG {
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
-            networkManager = InstanceFinder.NetworkManager;
-            if (networkManager != null) {
+            fishNetNetworkManager = InstanceFinder.NetworkManager;
+            if (fishNetNetworkManager != null) {
+
                 //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
-                networkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
-                networkManager.ServerManager.OnClientKick += HandleClientKick;
-                networkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
-                networkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+                fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
+                fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
+                fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+                fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
                 
                 // stuff that was previously done only on active connection
-                networkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
-                networkManager.SceneManager.OnLoadStart += HandleLoadStart;
-                networkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
-                networkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
-                networkManager.SceneManager.OnUnloadStart += HandleUnloadStart;
-                networkManager.SceneManager.OnUnloadEnd += HandleUnloadEnd;
+                fishNetNetworkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
+                fishNetNetworkManager.SceneManager.OnLoadStart += HandleLoadStart;
+                fishNetNetworkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
+                fishNetNetworkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
+                fishNetNetworkManager.SceneManager.OnUnloadStart += HandleUnloadStart;
+                fishNetNetworkManager.SceneManager.OnUnloadEnd += HandleUnloadEnd;
 
             } else {
                 Debug.Log("FishNetNetworkController.Configure() Could not find FishNet NetworkManager");
@@ -59,10 +60,12 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
+        #region client functions
+
         public override bool Login(string username, string password, string server) {
             //Debug.Log($"FishNetNetworkController.Login({username}, {password})");
 
-            if (networkManager == null) {
+            if (fishNetNetworkManager == null) {
                 return false;
             }
 
@@ -88,9 +91,9 @@ namespace AnyRPG {
 
             bool connectionResult;
             if (customPort) {
-                connectionResult = networkManager.ClientManager.StartConnection(server, (ushort)port);
+                connectionResult = fishNetNetworkManager.ClientManager.StartConnection(server, (ushort)port);
             } else {
-                connectionResult = networkManager.ClientManager.StartConnection(server);
+                connectionResult = fishNetNetworkManager.ClientManager.StartConnection(server);
             }
             
             //Debug.Log($"FishNetNetworkController.Login() Result of connection attempt: {connectionResult}");
@@ -104,7 +107,7 @@ namespace AnyRPG {
                 return;
             }
 
-            bool connectionResult = networkManager.ClientManager.StopConnection();
+            bool connectionResult = fishNetNetworkManager.ClientManager.StopConnection();
             Debug.Log($"FishNetNetworkController.Login() Result of disconnection attempt: {connectionResult}");
         }
 
@@ -205,7 +208,7 @@ namespace AnyRPG {
             this.networkConnector = networkConnector;
             if (networkConnector != null) {
                 networkConnector.Configure(systemGameManager);
-                networkConnector.SetNetworkManager(networkManager);
+                networkConnector.SetNetworkManager(fishNetNetworkManager);
             }
         }
 
@@ -240,12 +243,12 @@ namespace AnyRPG {
         public override void LoadScene(string sceneName) {
             //Debug.Log($"FishNetNetworkController.LoadScene({sceneName})");
 
-            networkConnector.LoadSceneServer(networkManager.ClientManager.Connection, sceneName);
+            networkConnector.LoadSceneServer(fishNetNetworkManager.ClientManager.Connection, sceneName);
         }
 
         public override bool CanSpawnCharacterOverNetwork() {
             //Debug.Log($"FishNetNetworkController.CanSpawnCharacterOverNetwork() isClient: {networkManager.IsClient}");
-            return networkManager.IsClientStarted;
+            return fishNetNetworkManager.IsClientStarted;
         }
 
         public override bool OwnPlayer(UnitController unitController) {
@@ -277,6 +280,20 @@ namespace AnyRPG {
             }
             networkConnector.LoadCharacterList();
         }
+
+        #endregion
+
+        #region server functions
+
+        public override void StartServer() {
+            fishNetNetworkManager.ServerManager.StartConnection();
+        }
+
+        public override void StopServer() {
+            fishNetNetworkManager.ServerManager.StopConnection(true);
+        }
+
+        #endregion
 
     }
 }

@@ -67,13 +67,24 @@ namespace AnyRPG {
             uIManager.deleteGameMenuWindow.CloseWindow();
             uIManager.settingsMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.playMenuWindow.OpenWindow();
+        }
+
+        public void PlayOnlineMenu() {
+            //Debug.Log("MainMenuController.PlayOnlineMenu()");
+            uIManager.exitMenuWindow.CloseWindow();
+            uIManager.deleteGameMenuWindow.CloseWindow();
+            uIManager.settingsMenuWindow.CloseWindow();
+            uIManager.networkLoginWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.OpenWindow();
         }
 
         public void NetworkLoginMenu() {
             //Debug.Log("MainMenuController.NetworkMenu()");
             uIManager.exitMenuWindow.CloseWindow();
             uIManager.playMenuWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
             uIManager.settingsMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.OpenWindow();
@@ -82,6 +93,8 @@ namespace AnyRPG {
         public void ExitMenu() {
             //Debug.Log("MainMenuController.ExitMenu()");
             uIManager.playMenuWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.CloseWindow();
             uIManager.exitMenuWindow.OpenWindow();
@@ -90,6 +103,7 @@ namespace AnyRPG {
         public void SettingsMenu() {
             //Debug.Log("MainMenuController.SettingsMenu()");
             uIManager.playMenuWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
             //systemWindowManager.mainMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.CloseWindow();
@@ -99,7 +113,9 @@ namespace AnyRPG {
         public void CreditsMenu() {
             //Debug.Log("MainMenuController.SettingsMenu()");
             uIManager.playMenuWindow.CloseWindow();
+            uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
+            uIManager.hostServerWindow.CloseWindow();
             //systemWindowManager.mainMenuWindow.CloseWindow();
             uIManager.settingsMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.CloseWindow();

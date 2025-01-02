@@ -13,6 +13,7 @@ namespace AnyRPG {
     /// </summary>
     public abstract class NetworkController : ConfiguredMonoBehaviour {
         
+        // client functions
         public virtual bool Login(string username, string password, string server) {
             return false;
         }
@@ -25,6 +26,10 @@ namespace AnyRPG {
         public abstract void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData);
         public abstract void DeletePlayerCharacter(int playerCharacterId);
         public abstract void LoadCharacterList();
+
+        // server functions
+        public abstract void StartServer();
+        public abstract void StopServer();
     }
 
 }

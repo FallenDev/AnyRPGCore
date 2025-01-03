@@ -191,6 +191,7 @@ namespace AnyRPG {
         public CloseableWindow keyboardHintWindow;
         public CloseableWindow creditsWindow;
         public CloseableWindow hostServerWindow;
+        public CloseableWindow clientLobbyWindow;
         public CloseableWindow exitMenuWindow;
         public CloseableWindow disconnectedWindow;
         public CloseableWindow loginFailedWindow;
@@ -280,6 +281,7 @@ namespace AnyRPG {
         private ControlsManager controlsManager = null;
         private WindowManager windowManager = null;
         private LevelManager levelManager = null;
+        private NetworkManagerClient networkManagerClient = null;
 
         public CloseableWindow StatusEffectWindow { get => statusEffectWindow; }
         public UnitFrameController FocusUnitFrameController { get => focusUnitFrameController; }
@@ -390,6 +392,7 @@ namespace AnyRPG {
             playOnlineMenuWindow.Configure(systemGameManager);
             creditsWindow.Configure(systemGameManager);
             hostServerWindow.Configure(systemGameManager);
+            clientLobbyWindow.Configure(systemGameManager);
             exitMenuWindow.Configure(systemGameManager);
             disconnectedWindow.Configure(systemGameManager);
             loginFailedWindow.Configure(systemGameManager);
@@ -440,6 +443,7 @@ namespace AnyRPG {
             controlsManager = systemGameManager.ControlsManager;
             windowManager = systemGameManager.WindowManager;
             levelManager = systemGameManager.LevelManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         public void PerformSetupActivities() {
@@ -853,6 +857,7 @@ namespace AnyRPG {
             copyGameMenuWindow.CloseWindow();
             creditsWindow.CloseWindow();
             hostServerWindow.CloseWindow();
+            clientLobbyWindow.CloseWindow();
             deleteGameMenuWindow.CloseWindow();
             networkLoginWindow.CloseWindow();
             disconnectedWindow.CloseWindow();
@@ -1572,7 +1577,11 @@ namespace AnyRPG {
         public void ProcessLoginSuccess() {
             networkLoginWindow.CloseWindow();
             loginInProgressWindow.CloseWindow();
-            loadGameWindow.OpenWindow();
+            if (networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
+                clientLobbyWindow.OpenWindow();
+            } else {
+                loadGameWindow.OpenWindow();
+            }
         }
 
         public void ProcessLevelLoad() {

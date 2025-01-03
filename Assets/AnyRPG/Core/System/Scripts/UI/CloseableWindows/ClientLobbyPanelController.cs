@@ -7,9 +7,9 @@ using TMPro;
 using System;
 
 namespace AnyRPG {
-    public class HostServerPanelController : WindowContentController {
+    public class ClientLobbyPanelController : WindowContentController {
 
-        [Header("HostGamePanelController")]
+        [Header("ClientLobbyPanelController")]
 
         [SerializeField]
         protected TextMeshProUGUI serverStatusText = null;
@@ -24,10 +24,10 @@ namespace AnyRPG {
         //protected HighlightButton returnButton = null;
 
         [SerializeField]
-        protected HighlightButton startServerButton = null;
+        protected HighlightButton createGameButton = null;
 
         [SerializeField]
-        protected HighlightButton stopServerButton = null;
+        protected HighlightButton joinGameButton = null;
 
         protected Dictionary<string, List<CreditsNode>> categoriesDictionary = new Dictionary<string, List<CreditsNode>>();
 
@@ -36,6 +36,7 @@ namespace AnyRPG {
         protected ObjectPooler objectPooler = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -48,6 +49,7 @@ namespace AnyRPG {
             objectPooler = systemGameManager.ObjectPooler;
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
 
@@ -66,29 +68,23 @@ namespace AnyRPG {
             }
         }
 
-        public void CloseMenu() {
-            uIManager.hostServerWindow.CloseWindow();
+        public void Logout() {
+            networkManagerClient.Logout();
+            uIManager.clientLobbyWindow.CloseWindow();
         }
 
-        public void StartServer() {
-            Debug.Log($"HostServerPanelController.StartServer()");
+        public void CreateGame() {
+            Debug.Log($"ClientLobbyPanelController.CreateGame()");
 
-            networkManagerServer.ClientMode = NetworkClientMode.Lobby;
-            networkManagerServer.StartServer();
         }
 
-        public void StopServer() {
-            Debug.Log($"HostServerPanelController.StopServer()");
+        public void JoinGame() {
+            Debug.Log($"ClientLobbyPanelController.JoinGame()");
 
-            networkManagerServer.StopServer();
         }
 
-        public void SetStartServerLabel() {
-            serverStatusText.text = "Server Status: Online";
-        }
-
-        public void SetStopServerLabel() {
-            serverStatusText.text = "Server Status: Offline";
+        public void SetStatusLabel() {
+            serverStatusText.text = $"Logged In As: a guy";
         }
 
         public void HandleLobbyLogin() {
@@ -97,16 +93,13 @@ namespace AnyRPG {
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
-            networkManagerServer.OnStartServer += SetStartServerLabel;
-            networkManagerServer.OnStopServer += SetStopServerLabel;
-            networkManagerServer.OnLobbyLogin += HandleLobbyLogin;
+            PopulatePlayerList();
+            //networkManagerServer.OnStartServer += SetStartServerLabel;
         }
 
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
-            networkManagerServer.OnStartServer -= SetStartServerLabel;
-            networkManagerServer.OnStopServer -= SetStopServerLabel;
-            networkManagerServer.OnLobbyLogin -= HandleLobbyLogin;
+            //networkManagerServer.OnStartServer -= SetStartServerLabel;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace AnyRPG {
         
         private bool isLoggingInOrOut = false;
 
+        private NetworkClientMode clientMode = NetworkClientMode.Lobby;
+
         [SerializeField]
         private NetworkController networkController = null;
 
@@ -27,6 +29,7 @@ namespace AnyRPG {
 
         public string Username { get => username; }
         public string Password { get => password; }
+        public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -159,5 +162,7 @@ namespace AnyRPG {
         }
 
     }
+
+    public enum NetworkClientMode { Lobby, MMO }
 
 }

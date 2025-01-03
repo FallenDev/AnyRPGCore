@@ -293,6 +293,7 @@ namespace AnyRPG {
             fishNetNetworkController.RegisterConnector(this);
         }
 
+        /*
         public override void OnStartServer() {
             base.OnStartServer();
             Debug.Log($"FishNetNetworkConnector.OnStartServer()");
@@ -310,5 +311,6 @@ namespace AnyRPG {
             systemGameManager.SetGameMode(GameMode.Local);
             networkManagerServer.DeactivateServerMode();
         }
+        */
     }
 }

@@ -21,6 +21,7 @@ namespace AnyRPG {
         // game manager references
         protected UIManager uIManager = null;
         protected SaveManager saveManager = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -36,6 +37,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             uIManager = systemGameManager.UIManager;
             saveManager = systemGameManager.SaveManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         public void HostServer() {
@@ -47,6 +49,7 @@ namespace AnyRPG {
         public void JoinServer() {
             //Debug.Log("PlayOnlineMenuController.JoinServer()");
             uIManager.playOnlineMenuWindow.CloseWindow();
+            networkManagerClient.ClientMode = NetworkClientMode.Lobby;
             uIManager.networkLoginWindow.OpenWindow();
         }
 

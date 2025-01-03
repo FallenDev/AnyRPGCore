@@ -27,17 +27,6 @@ namespace AnyRPG
         public override event Action<NetworkConnection, bool> OnAuthenticationResult;
         #endregion
 
-        /*
-        #region Serialized.
-        /// <summary>
-        /// Password to authenticate.
-        /// </summary>
-        [Tooltip("Password to authenticate.")]
-        [SerializeField]
-        private string _password = "HelloWorld";
-        #endregion
-        */
-
 
         public override void InitializeOnce(FishNet.Managing.NetworkManager networkManager)
         {

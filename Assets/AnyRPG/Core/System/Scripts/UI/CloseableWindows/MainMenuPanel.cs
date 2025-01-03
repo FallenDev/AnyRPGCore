@@ -116,6 +116,7 @@ namespace AnyRPG {
             uIManager.playOnlineMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
             uIManager.hostServerWindow.CloseWindow();
+            uIManager.clientLobbyWindow.CloseWindow();
             //systemWindowManager.mainMenuWindow.CloseWindow();
             uIManager.settingsMenuWindow.CloseWindow();
             uIManager.networkLoginWindow.CloseWindow();

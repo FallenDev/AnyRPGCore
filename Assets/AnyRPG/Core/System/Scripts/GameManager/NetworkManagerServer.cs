@@ -15,6 +15,7 @@ namespace AnyRPG {
         public event Action<int> OnCreatePlayerCharacter = delegate { };
         public event Action OnStartServer = delegate { };
         public event Action OnStopServer = delegate { };
+        public event Action OnLobbyLogin = delegate { };
 
         // jwt for each client so the server can make API calls to the api server on their behalf
         private Dictionary<int, string> clientTokens = new Dictionary<int, string>();
@@ -25,9 +26,13 @@ namespace AnyRPG {
         // playerCharacterId
         private Dictionary<int, PlayerCharacterMonitor> activePlayerCharacters = new Dictionary<int, PlayerCharacterMonitor>();
 
+        // mapping of client Ids to account name
+        private Dictionary<int, string> loggedInAccounts = new Dictionary<int, string>();
+
         private GameServerClient gameServerClient = null;
         private Coroutine monitorPlayerCharactersCoroutine = null;
         private bool serverModeActive = false;
+        private NetworkClientMode clientMode = NetworkClientMode.Lobby;
 
         // game manager references
         private SaveManager saveManager = null;
@@ -36,6 +41,8 @@ namespace AnyRPG {
         private NetworkController networkController = null;
 
         public bool ServerModeActive { get => serverModeActive; }
+        public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
+        public Dictionary<int, string> LoggedInAccounts { get => loggedInAccounts; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -99,10 +106,15 @@ namespace AnyRPG {
         }
 
         public void GetLoginToken(int clientId, string username, string password) {
-            //Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
+            Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
 
             //(bool correctPassword, string token) = gameServerClient.Login(clientId, username, password);
-            gameServerClient.Login(clientId, username, password);
+            if (clientMode == NetworkClientMode.MMO) {
+                gameServerClient.Login(clientId, username, password);
+            } else {
+                loggedInAccounts.Add(clientId, username);
+                OnAuthenticationResult(clientId, true, true);
+            }
             //if (correctPassword == true) {
             //    SetClientToken(clientId, token);
             //}
@@ -271,6 +283,9 @@ namespace AnyRPG {
 
             if (clientTokens.ContainsKey(clientId)) {
                 clientTokens.Remove(clientId);
+            }
+            if (loggedInAccounts.ContainsKey(clientId)) {
+                loggedInAccounts.Remove(clientId);
             }
         }
 

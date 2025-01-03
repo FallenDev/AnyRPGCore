@@ -16,13 +16,20 @@ namespace AnyRPG {
 
         private FishNet.Managing.NetworkManager fishNetNetworkManager;
         private FishNetNetworkConnector networkConnector;
-        //private GameObject networkConnectorSpawnPrefab = null;
-        //private GameObject networkConnectorSpawnReference = null;
+        
+        [SerializeField]
+        private GameObject networkConnectorSpawnPrefab = null;
+        private GameObject networkConnectorSpawnReference = null;
 
         /// <summary>
         /// Current state of client socket.
         /// </summary>
         private LocalConnectionState clientState = LocalConnectionState.Stopped;
+
+        /// <summary>
+        /// Current state of server socket.
+        /// </summary>
+        private LocalConnectionState serverState = LocalConnectionState.Stopped;
 
         // game manager references
         private LevelManager levelManager = null;
@@ -39,6 +46,7 @@ namespace AnyRPG {
                 fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
                 fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
                 fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+                fishNetNetworkManager.ServerManager.OnServerConnectionState += HandleServerConnectionState;
                 
                 // stuff that was previously done only on active connection
                 fishNetNetworkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
@@ -141,7 +149,7 @@ namespace AnyRPG {
                 //networkManager.SceneManager.OnLoadStart += HandleLoadStart;
                 //networkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
                 //networkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
-                //InstantiateNetworkConnector();
+                InstantiateNetworkConnector();
             } else if (clientState == LocalConnectionState.Stopping) {
                 Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
             } else if (clientState == LocalConnectionState.Stopped) {
@@ -149,6 +157,23 @@ namespace AnyRPG {
                 systemGameManager.NetworkManagerClient.ProcessStopConnection();
             }
         }
+
+        private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
+            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+            serverState = obj.ConnectionState;
+            if (serverState == LocalConnectionState.Started) {
+                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Connection Successful. Setting mode to network");
+                systemGameManager.SetGameMode(GameMode.Network);
+                networkManagerServer.ActivateServerMode();
+            } else if (serverState == LocalConnectionState.Stopping) {
+                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopping");
+            } else if (serverState == LocalConnectionState.Stopped) {
+                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopped");
+                systemGameManager.SetGameMode(GameMode.Local);
+                networkManagerServer.DeactivateServerMode();
+            }
+        }
+
 
         private void HandleLoadPercentChange(SceneLoadPercentEventArgs obj) {
             Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
@@ -212,19 +237,28 @@ namespace AnyRPG {
             }
         }
 
-        /*
+        
         private void InstantiateNetworkConnector() {
             Debug.Log("FishNetNetworkController.InstantiateNetworkConnector()");
 
             networkConnectorSpawnReference = GameObject.Instantiate(networkConnectorSpawnPrefab);
-            //SpawnPrefab(networkConnectorSpawnPrefab, null, Vector3.zero, Vector3.zero);
             networkConnector = networkConnectorSpawnReference.gameObject.GetComponentInChildren<FishNetNetworkConnector>();
             if (networkConnector != null) {
                 networkConnector.Configure(systemGameManager);
-                networkConnector.SetNetworkManager(networkManager);
+                networkConnector.SetNetworkManager(fishNetNetworkManager);
             }
+
+            NetworkObject networkPrefab = networkConnectorSpawnPrefab.GetComponent<NetworkObject>();
+            if (networkPrefab == null) {
+                Debug.LogWarning($"Could not find NetworkObject component on {networkConnectorSpawnPrefab.name}");
+                return;
+            }
+
+            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, true);
+            fishNetNetworkManager.ServerManager.Spawn(nob);
+
         }
-        */
+
 
         public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform) {
             Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
@@ -286,6 +320,8 @@ namespace AnyRPG {
         #region server functions
 
         public override void StartServer() {
+            Debug.Log($"FishNetNetworkController.StartServer()");
+
             fishNetNetworkManager.ServerManager.StartConnection();
         }
 

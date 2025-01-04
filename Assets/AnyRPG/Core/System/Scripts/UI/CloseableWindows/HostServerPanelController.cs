@@ -29,7 +29,7 @@ namespace AnyRPG {
         [SerializeField]
         protected HighlightButton stopServerButton = null;
 
-        protected Dictionary<string, List<CreditsNode>> categoriesDictionary = new Dictionary<string, List<CreditsNode>>();
+        private Dictionary<int, PlayerConnectionButtonController> playerButtons = new Dictionary<int, PlayerConnectionButtonController>();
 
         // game manager references
         protected UIManager uIManager = null;
@@ -39,7 +39,8 @@ namespace AnyRPG {
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
-            PopulatePlayerList();
+
+            stopServerButton.Button.interactable = false;
         }
 
         public override void SetGameManagerReferences() {
@@ -52,18 +53,47 @@ namespace AnyRPG {
 
 
         public void PopulatePlayerList() {
+            Debug.Log($"HostServerPanelController.PopulatePlayerList()");
 
-            foreach (KeyValuePair<int, string> loggedInAccount in networkManagerServer.LoggedInAccounts) {
-                GameObject go = null;
-                go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
-                PlayerConnectionButtonController playerConnectionButtonController = go.GetComponent<PlayerConnectionButtonController>();
-                playerConnectionButtonController.PlayerNameText.text = loggedInAccount.Value;
-                playerConnectionButtonController.PlayerInfoText.text = "10.10.10.11";
-                uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.NameHighlightButton);
-                uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.AttributionHighlightButton);
-                playerConnectionButtonController.NameHighlightButton.Configure(systemGameManager);
-                playerConnectionButtonController.AttributionHighlightButton.Configure(systemGameManager);
+            foreach (KeyValuePair<int, LoggedInAccount> loggedInAccount in networkManagerServer.LoggedInAccounts) {
+                AddPlayerToList(loggedInAccount.Value.clientId, loggedInAccount.Value.username);
             }
+        }
+
+        public void AddPlayerToList(int clientId, string userName) {
+            Debug.Log($"HostServerPanelController.AddPlayerToList({userName})");
+
+            GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
+            PlayerConnectionButtonController playerConnectionButtonController = go.GetComponent<PlayerConnectionButtonController>();
+            playerConnectionButtonController.Configure(systemGameManager);
+            playerConnectionButtonController.SetClientId(clientId, userName, networkManagerServer.LoggedInAccounts[clientId].ipAddress);
+            uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.KickButton);
+            playerButtons.Add(clientId, playerConnectionButtonController);
+        }
+
+        public void RemovePlayerFromList(int clientId) {
+            Debug.Log($"HostServerPanelController.RemovePlayerFromList({clientId})");
+
+            if (playerButtons.ContainsKey(clientId)) {
+                uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);
+                if (playerButtons[clientId].gameObject != null) {
+                    playerButtons[clientId].gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(playerButtons[clientId].gameObject);
+                }
+            }
+        }
+
+        public void ClearPlayerList() {
+
+            // clear the skill list so any skill left over from a previous time opening the window aren't shown
+            foreach (PlayerConnectionButtonController playerConnectionButtonController in playerButtons.Values) {
+                if (playerConnectionButtonController.gameObject != null) {
+                    playerConnectionButtonController.gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(playerConnectionButtonController.gameObject);
+                }
+            }
+            playerButtons.Clear();
+            uINavigationControllers[1].ClearActiveButtons();
         }
 
         public void CloseMenu() {
@@ -83,30 +113,46 @@ namespace AnyRPG {
             networkManagerServer.StopServer();
         }
 
-        public void SetStartServerLabel() {
+        public void HandleStartServer() {
             serverStatusText.text = "Server Status: Online";
+            startServerButton.Button.interactable = false;
+            stopServerButton.Button.interactable = true;
         }
 
-        public void SetStopServerLabel() {
+        public void HandleStopServer() {
             serverStatusText.text = "Server Status: Offline";
+            startServerButton.Button.interactable = true;
+            stopServerButton.Button.interactable = false;
         }
 
-        public void HandleLobbyLogin() {
-            PopulatePlayerList();
+        public void HandleLobbyLogin(int clientId) {
+            Debug.Log($"HostServerPanelController.HandleLobbyLogin({clientId})");
+
+            AddPlayerToList(clientId, networkManagerServer.LoggedInAccounts[clientId].username);
+        }
+
+        public void HandleLobbyLogout(int clientId) {
+            Debug.Log($"HostServerPanelController.HandleLobbyLogout({clientId})");
+            
+            RemovePlayerFromList(clientId);
         }
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
-            networkManagerServer.OnStartServer += SetStartServerLabel;
-            networkManagerServer.OnStopServer += SetStopServerLabel;
+            PopulatePlayerList();
+            networkManagerServer.OnStartServer += HandleStartServer;
+            networkManagerServer.OnStopServer += HandleStopServer;
             networkManagerServer.OnLobbyLogin += HandleLobbyLogin;
+            networkManagerServer.OnLobbyLogout += HandleLobbyLogout;
         }
 
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
-            networkManagerServer.OnStartServer -= SetStartServerLabel;
-            networkManagerServer.OnStopServer -= SetStopServerLabel;
+            networkManagerServer.OnStartServer -= HandleStartServer;
+            networkManagerServer.OnStopServer -= HandleStopServer;
             networkManagerServer.OnLobbyLogin -= HandleLobbyLogin;
+            networkManagerServer.OnLobbyLogout -= HandleLobbyLogout;
+            ClearPlayerList();
         }
     }
 }

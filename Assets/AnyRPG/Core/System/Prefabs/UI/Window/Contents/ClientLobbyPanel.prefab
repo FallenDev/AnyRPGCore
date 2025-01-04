@@ -374,9 +374,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: AnyRPG.HostServerPanelController, Assembly-CSharp
-        m_MethodName: CloseMenu
+      - m_Target: {fileID: 878553087276699977}
+        m_TargetAssemblyTypeName: AnyRPG.ClientLobbyPanelController, Assembly-CSharp
+        m_MethodName: Logout
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -945,6 +945,7 @@ MonoBehaviour:
   serverStatusText: {fileID: 3414227744206962600}
   playerConnectionTemplate: {fileID: 7786369561794122327}
   playerConnectionContainer: {fileID: 8400903935940789668}
+  logoutButton: {fileID: 0}
   createGameButton: {fileID: 0}
   joinGameButton: {fileID: 0}
 --- !u!222 &511441070343466101
@@ -1477,9 +1478,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: AnyRPG.HostServerPanelController, Assembly-CSharp
-        m_MethodName: StartServer
+      - m_Target: {fileID: 878553087276699977}
+        m_TargetAssemblyTypeName: AnyRPG.ClientLobbyPanelController, Assembly-CSharp
+        m_MethodName: CreateGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2061,9 +2062,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: AnyRPG.HostServerPanelController, Assembly-CSharp
-        m_MethodName: StopServer
+      - m_Target: {fileID: 878553087276699977}
+        m_TargetAssemblyTypeName: AnyRPG.ClientLobbyPanelController, Assembly-CSharp
+        m_MethodName: JoinGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

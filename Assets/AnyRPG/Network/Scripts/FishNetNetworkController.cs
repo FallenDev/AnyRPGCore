@@ -15,7 +15,7 @@ namespace AnyRPG {
     public class FishNetNetworkController : NetworkController {
 
         private FishNet.Managing.NetworkManager fishNetNetworkManager;
-        private FishNetNetworkConnector networkConnector;
+        private FishNetClientConnector clientConnector;
         
         [SerializeField]
         private GameObject networkConnectorSpawnPrefab = null;
@@ -41,7 +41,8 @@ namespace AnyRPG {
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
 
-                //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
+                Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
+
                 fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
                 fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
                 fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
@@ -149,7 +150,7 @@ namespace AnyRPG {
                 //networkManager.SceneManager.OnLoadStart += HandleLoadStart;
                 //networkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
                 //networkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
-                InstantiateNetworkConnector();
+                //InstantiateNetworkConnector();
             } else if (clientState == LocalConnectionState.Stopping) {
                 Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
             } else if (clientState == LocalConnectionState.Stopped) {
@@ -159,12 +160,14 @@ namespace AnyRPG {
         }
 
         private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+            Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+
             serverState = obj.ConnectionState;
             if (serverState == LocalConnectionState.Started) {
-                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Connection Successful. Setting mode to network");
+                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Server connection started.  Activating Server Mode.");
                 systemGameManager.SetGameMode(GameMode.Network);
                 networkManagerServer.ActivateServerMode();
+                InstantiateNetworkConnector();
             } else if (serverState == LocalConnectionState.Stopping) {
                 Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopping");
             } else if (serverState == LocalConnectionState.Stopped) {
@@ -229,23 +232,26 @@ namespace AnyRPG {
         }
 
 
-        public void RegisterConnector(FishNetNetworkConnector networkConnector) {
-            this.networkConnector = networkConnector;
-            if (networkConnector != null) {
-                networkConnector.Configure(systemGameManager);
-                networkConnector.SetNetworkManager(fishNetNetworkManager);
+        public void RegisterConnector(FishNetClientConnector clientConnector) {
+            this.clientConnector = clientConnector;
+            if (clientConnector != null) {
+                clientConnector.Configure(systemGameManager);
+                clientConnector.SetNetworkManager(fishNetNetworkManager);
             }
         }
 
         
-        private void InstantiateNetworkConnector() {
+        /// <summary>
+        /// Instantiate the network connector on the server that will spawn on every client, allowing them to issue requests to the server
+        /// </summary>
+        public void InstantiateNetworkConnector() {
             Debug.Log("FishNetNetworkController.InstantiateNetworkConnector()");
 
             networkConnectorSpawnReference = GameObject.Instantiate(networkConnectorSpawnPrefab);
-            networkConnector = networkConnectorSpawnReference.gameObject.GetComponentInChildren<FishNetNetworkConnector>();
-            if (networkConnector != null) {
-                networkConnector.Configure(systemGameManager);
-                networkConnector.SetNetworkManager(fishNetNetworkManager);
+            clientConnector = networkConnectorSpawnReference.gameObject.GetComponentInChildren<FishNetClientConnector>();
+            if (clientConnector != null) {
+                clientConnector.Configure(systemGameManager);
+                clientConnector.SetNetworkManager(fishNetNetworkManager);
             }
 
             NetworkObject networkPrefab = networkConnectorSpawnPrefab.GetComponent<NetworkObject>();
@@ -263,21 +269,21 @@ namespace AnyRPG {
         public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform) {
             Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            networkConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform);
+            clientConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform);
             //return null;
         }
 
         public override GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId})");
 
-            networkConnector.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
+            clientConnector.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
             return null;
         }
 
         public override void LoadScene(string sceneName) {
             //Debug.Log($"FishNetNetworkController.LoadScene({sceneName})");
 
-            networkConnector.LoadSceneServer(fishNetNetworkManager.ClientManager.Connection, sceneName);
+            clientConnector.LoadSceneServer(fishNetNetworkManager.ClientManager.Connection, sceneName);
         }
 
         public override bool CanSpawnCharacterOverNetwork() {
@@ -296,23 +302,23 @@ namespace AnyRPG {
         public override void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData) {
             Debug.Log($"FishNetNetworkController.CreatePlayerCharacter(AnyRPGSaveData)");
 
-            networkConnector.CreatePlayerCharacter(anyRPGSaveData);
+            clientConnector.CreatePlayerCharacter(anyRPGSaveData);
         }
 
         public override void DeletePlayerCharacter(int playerCharacterId) {
             Debug.Log($"FishNetNetworkController.DeletePlayerCharacter({playerCharacterId})");
 
-            networkConnector.DeletePlayerCharacter(playerCharacterId);
+            clientConnector.DeletePlayerCharacter(playerCharacterId);
         }
 
         public override void LoadCharacterList() {
             //Debug.Log($"FishNetNetworkController.LoadCharacterList()");
 
-            if (networkConnector == null) {
+            if (clientConnector == null) {
                 Debug.LogWarning($"FishNetNetworkController.LoadCharacterList(): networkConnector is null");
                 return;
             }
-            networkConnector.LoadCharacterList();
+            clientConnector.LoadCharacterList();
         }
 
         #endregion
@@ -328,6 +334,19 @@ namespace AnyRPG {
         public override void StopServer() {
             fishNetNetworkManager.ServerManager.StopConnection(true);
         }
+
+        public override void KickPlayer(int clientId) {
+            fishNetNetworkManager.ServerManager.Kick(clientId, KickReason.Unset);
+        }
+
+        public override string GetClientIPAddress(int clientId) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return "ClientId not found";
+            }
+
+            return fishNetNetworkManager.ServerManager.Clients[clientId].GetAddress();
+        }
+
 
         #endregion
 

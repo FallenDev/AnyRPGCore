@@ -34,7 +34,6 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            networkController?.Configure(systemGameManager);
         }
 
         public override void SetGameManagerReferences() {
@@ -116,6 +115,7 @@ namespace AnyRPG {
             // main menu, close main menu windows and open the disconnected window
             uIManager.newGameWindow.CloseWindow();
             uIManager.loadGameWindow.CloseWindow();
+            uIManager.clientLobbyWindow.CloseWindow();
             uIManager.disconnectedWindow.OpenWindow();
         }
 

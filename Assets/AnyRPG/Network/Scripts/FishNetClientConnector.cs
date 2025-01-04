@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class FishNetNetworkConnector : ConfiguredNetworkBehaviour {
+    public class FishNetClientConnector : ConfiguredNetworkBehaviour {
 
         private FishNet.Managing.NetworkManager networkManager;
 

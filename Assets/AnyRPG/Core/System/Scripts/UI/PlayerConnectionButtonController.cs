@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace AnyRPG {
-    public class PlayerConnectionButtonController : MonoBehaviour {
+    public class PlayerConnectionButtonController : ConfiguredMonoBehaviour {
 
         [SerializeField]
         private TextMeshProUGUI playerNameText = null;
@@ -11,21 +11,34 @@ namespace AnyRPG {
         private TextMeshProUGUI playerInfoText = null;
 
         [SerializeField]
-        private HighlightButton nameHighlightButton = null;
+        private HighlightButton kickButton = null;
 
-        [SerializeField]
-        private HighlightButton infoHighlightButton = null;
+        private int clientId;
 
-        public TextMeshProUGUI PlayerNameText { get => playerNameText; set => playerNameText = value; }
-        public TextMeshProUGUI PlayerInfoText { get => playerInfoText; set => playerInfoText = value; }
-        public HighlightButton NameHighlightButton { get => nameHighlightButton; }
-        public HighlightButton AttributionHighlightButton { get => infoHighlightButton; }
+        // game manager references
+        NetworkManagerServer networkManagerServer = null;
 
-        //public void OpenURL() {
-        //    if (UserUrl != null && UserUrl != string.Empty) {
-        //        Application.OpenURL(UserUrl);
-        //    }
-        //}
+        public TextMeshProUGUI PlayerNameText { get => playerNameText; }
+        public TextMeshProUGUI PlayerInfoText { get => playerInfoText; }
+        public HighlightButton KickButton { get => kickButton; }
+
+        public override void Configure(SystemGameManager systemGameManager) {
+            base.Configure(systemGameManager);
+
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            kickButton.Configure(systemGameManager);
+        }
+
+        public void SetClientId(int clientId, string userName, string ipAddress) {
+            this.clientId = clientId;
+            playerNameText.text = userName;
+            playerInfoText.text = ipAddress;
+
+        }
+
+        public void KickPlayer() {
+            networkManagerServer.KickPlayer(clientId);
+        }
 
 
     }

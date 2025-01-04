@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7642919041448045618}
   - component: {fileID: 7659142933386643973}
   m_Layer: 0
-  m_Name: NetworkConnector
+  m_Name: FishNetClientConnector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

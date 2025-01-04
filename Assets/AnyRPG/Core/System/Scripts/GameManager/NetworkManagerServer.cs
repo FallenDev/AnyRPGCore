@@ -15,19 +15,21 @@ namespace AnyRPG {
         public event Action<int> OnCreatePlayerCharacter = delegate { };
         public event Action OnStartServer = delegate { };
         public event Action OnStopServer = delegate { };
-        public event Action OnLobbyLogin = delegate { };
+        public event Action<int> OnLobbyLogin = delegate { };
+        public event Action<int> OnLobbyLogout = delegate { };
 
         // jwt for each client so the server can make API calls to the api server on their behalf
-        private Dictionary<int, string> clientTokens = new Dictionary<int, string>();
-        
+        //private Dictionary<int, string> clientTokens = new Dictionary<int, string>();
+
         // cached list of player character save data from client lookups used for loading games
         private Dictionary<int, Dictionary<int, PlayerCharacterSaveData>> playerCharacterDataDict = new Dictionary<int, Dictionary<int, PlayerCharacterSaveData>>();
 
         // playerCharacterId
         private Dictionary<int, PlayerCharacterMonitor> activePlayerCharacters = new Dictionary<int, PlayerCharacterMonitor>();
 
-        // mapping of client Ids to account name
-        private Dictionary<int, string> loggedInAccounts = new Dictionary<int, string>();
+        // mapping of client Ids to account information
+        private Dictionary<int, LoggedInAccount> loggedInAccounts = new Dictionary<int, LoggedInAccount>();
+        private Dictionary<int, string> loginRequests = new Dictionary<int, string>();
 
         private GameServerClient gameServerClient = null;
         private Coroutine monitorPlayerCharactersCoroutine = null;
@@ -42,7 +44,7 @@ namespace AnyRPG {
 
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
-        public Dictionary<int, string> LoggedInAccounts { get => loggedInAccounts; }
+        public Dictionary<int, LoggedInAccount> LoggedInAccounts { get => loggedInAccounts; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -55,11 +57,8 @@ namespace AnyRPG {
         public void SetClientToken(int clientId, string token) {
             //Debug.Log($"NetworkManagerServer.SetClientToken({clientId}, {token})");
 
-            if (clientTokens.ContainsKey(clientId)) {
-                Debug.Log($"NetworkManagerServer.SetClientToken({clientId}, {token}) Client tokens contained key");
-                clientTokens[clientId] = token;
-            } else {
-                clientTokens.Add(clientId, token);
+            if (loginRequests.ContainsKey(clientId)) {
+                loggedInAccounts.Add(clientId, new LoggedInAccount(clientId, loginRequests[clientId], token, GetClientIPAddress(clientId)));
             }
         }
 
@@ -93,13 +92,13 @@ namespace AnyRPG {
         private void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
             playerCharacterMonitor.SavePlayerLocation();
             if (playerCharacterMonitor.saveDataDirty == true) {
-                if (clientTokens.ContainsKey(playerCharacterMonitor.clientId) == false) {
+                if (loggedInAccounts.ContainsKey(playerCharacterMonitor.clientId) == false) {
                     // can't do anything without a token
                     return;
                 }
                 gameServerClient.SavePlayerCharacter(
                     playerCharacterMonitor.clientId,
-                    clientTokens[playerCharacterMonitor.clientId],
+                    loggedInAccounts[playerCharacterMonitor.clientId].token,
                     playerCharacterMonitor.playerCharacterSaveData.PlayerCharacterId,
                     playerCharacterMonitor.playerCharacterSaveData.SaveData);
             }
@@ -108,37 +107,42 @@ namespace AnyRPG {
         public void GetLoginToken(int clientId, string username, string password) {
             Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
 
+            loginRequests.Add(clientId, username);
             //(bool correctPassword, string token) = gameServerClient.Login(clientId, username, password);
             if (clientMode == NetworkClientMode.MMO) {
                 gameServerClient.Login(clientId, username, password);
             } else {
-                loggedInAccounts.Add(clientId, username);
-                OnAuthenticationResult(clientId, true, true);
+                // fow now the lobby mode accept any password to avoid having to deal with an account system
+                ProcessLoginResponse(clientId, true, string.Empty);
             }
-            //if (correctPassword == true) {
-            //    SetClientToken(clientId, token);
-            //}
-            //OnAuthenticationResult(clientId, correctPassword);
-            //return correctPassword;
         }
 
         public void ProcessLoginResponse(int clientId, bool correctPassword, string token) {
-            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
+            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
 
             if (correctPassword == true) {
                 SetClientToken(clientId, token);
             }
+            loginRequests.Remove(clientId);
             OnAuthenticationResult(clientId, true, correctPassword);
+            
+            if (correctPassword == false) {
+                return;
+            }
+
+            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token}) {loggedInAccounts[clientId].username} logged in.");
+
+            OnLobbyLogin(clientId);
         }
 
         public void CreatePlayerCharacter(int clientId, AnyRPGSaveData anyRPGSaveData) {
             Debug.Log($"NetworkManagerServer.CreatePlayerCharacter(AnyRPGSaveData)");
-            if (clientTokens.ContainsKey(clientId) == false) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
                 // can't do anything without a token
                 return;
             }
 
-            gameServerClient.CreatePlayerCharacter(clientId, clientTokens[clientId], anyRPGSaveData);
+            gameServerClient.CreatePlayerCharacter(clientId, loggedInAccounts[clientId].token, anyRPGSaveData);
         }
 
         public void ProcessCreatePlayerCharacterResponse(int clientId) {
@@ -151,12 +155,12 @@ namespace AnyRPG {
         public void DeletePlayerCharacter(int clientId, int playerCharacterId) {
             Debug.Log($"NetworkManagerServer.DeletePlayerCharacter({playerCharacterId})");
 
-            if (clientTokens.ContainsKey(clientId) == false) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
                 // can't do anything without a token
                 return;
             }
 
-            gameServerClient.DeletePlayerCharacter(clientId, clientTokens[clientId], playerCharacterId);
+            gameServerClient.DeletePlayerCharacter(clientId, loggedInAccounts[clientId].token, playerCharacterId);
         }
 
         public void ProcessStopServer(UnitController unitController) {
@@ -179,12 +183,12 @@ namespace AnyRPG {
 
         public void LoadCharacterList(int clientId) {
             Debug.Log($"NetworkManagerServer.LoadCharacterList({clientId})");
-            if (clientTokens.ContainsKey(clientId) == false) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
                 // can't do anything without a token
                 //return new List<PlayerCharacterSaveData>();
                 return;
             }
-            gameServerClient.LoadCharacterList(clientId, clientTokens[clientId]);
+            gameServerClient.LoadCharacterList(clientId, loggedInAccounts[clientId].token);
             //List<PlayerCharacterData> playerCharacterDataList = gameServerClient.LoadCharacterList(clientId, clientTokens[clientId]);
 
             //Debug.Log($"NetworkManagerServer.LoadCharacterListServer({clientId}) list size: {playerCharacterDataList.Count}");
@@ -272,8 +276,8 @@ namespace AnyRPG {
         public string GetClientToken(int clientId) {
             Debug.Log($"NetworkManagerServer.GetClientToken({clientId})");
 
-            if (clientTokens.ContainsKey(clientId)) {
-                return clientTokens[clientId];
+            if (loggedInAccounts.ContainsKey(clientId)) {
+                return loggedInAccounts[clientId].token;
             }
             return string.Empty;
         }
@@ -281,12 +285,11 @@ namespace AnyRPG {
         public void ProcessClientDisconnect(int clientId) {
             Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({clientId})");
 
-            if (clientTokens.ContainsKey(clientId)) {
-                clientTokens.Remove(clientId);
-            }
             if (loggedInAccounts.ContainsKey(clientId)) {
                 loggedInAccounts.Remove(clientId);
             }
+
+            OnLobbyLogout(clientId);
         }
 
         public void ActivateServerMode() {
@@ -322,6 +325,30 @@ namespace AnyRPG {
             }
 
             networkController?.StopServer();
+        }
+
+        public void KickPlayer(int clientId) {
+            networkController?.KickPlayer(clientId);
+        }
+
+        public string GetClientIPAddress(int clientId) {
+            return networkController?.GetClientIPAddress(clientId);
+        }
+
+    }
+
+    public class LoggedInAccount {
+
+        public int clientId;
+        public string username;
+        public string token;
+        public string ipAddress;
+
+        public LoggedInAccount(int clientId, string username, string token, string ipAddress) {
+            this.clientId = clientId;
+            this.username = username;
+            this.token = token;
+            this.ipAddress = ipAddress;
         }
     }
 

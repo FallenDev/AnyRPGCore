@@ -943,7 +943,8 @@ MonoBehaviour:
   subPanels: []
   hintBarController: {fileID: 0}
   serverStatusText: {fileID: 3414227744206962600}
-  playerConnectionTemplate: {fileID: 7786369561794122327}
+  playerConnectionTemplate: {fileID: 3129540725068152788, guid: 9f35a63c0996a134fb84328b3f33e795,
+    type: 3}
   playerConnectionContainer: {fileID: 8400903935940789668}
   startServerButton: {fileID: 8851822845891549981}
   stopServerButton: {fileID: 3081536838753811160}
@@ -1672,7 +1673,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000061035156}
+  m_AnchoredPosition: {x: 0, y: -178.00006}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8299301148417774672
@@ -1843,7 +1844,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7969054300103166219}
   m_HandleRect: {fileID: 4793488627644318457}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0.5069252
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2250,12 +2251,6 @@ PrefabInstance:
 --- !u!224 &7087542731927694760 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2683270139370700843, guid: 9f35a63c0996a134fb84328b3f33e795,
-    type: 3}
-  m_PrefabInstance: {fileID: 5143358618085174659}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7786369561794122327 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3129540725068152788, guid: 9f35a63c0996a134fb84328b3f33e795,
     type: 3}
   m_PrefabInstance: {fileID: 5143358618085174659}
   m_PrefabAsset: {fileID: 0}

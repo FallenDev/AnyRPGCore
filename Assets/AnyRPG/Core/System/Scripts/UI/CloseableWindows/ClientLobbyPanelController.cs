@@ -20,8 +20,8 @@ namespace AnyRPG {
         [SerializeField]
         protected Transform playerConnectionContainer = null;
 
-        //[SerializeField]
-        //protected HighlightButton returnButton = null;
+        [SerializeField]
+        protected HighlightButton logoutButton = null;
 
         [SerializeField]
         protected HighlightButton createGameButton = null;
@@ -55,16 +55,15 @@ namespace AnyRPG {
 
         public void PopulatePlayerList() {
 
-            foreach (KeyValuePair<int, string> loggedInAccount in networkManagerServer.LoggedInAccounts) {
+            foreach (KeyValuePair<int, LoggedInAccount> loggedInAccount in networkManagerServer.LoggedInAccounts) {
+                /*
                 GameObject go = null;
                 go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
                 PlayerConnectionButtonController playerConnectionButtonController = go.GetComponent<PlayerConnectionButtonController>();
-                playerConnectionButtonController.PlayerNameText.text = loggedInAccount.Value;
+                playerConnectionButtonController.PlayerNameText.text = loggedInAccount.Value.username;
                 playerConnectionButtonController.PlayerInfoText.text = "10.10.10.11";
                 uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.NameHighlightButton);
-                uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.AttributionHighlightButton);
-                playerConnectionButtonController.NameHighlightButton.Configure(systemGameManager);
-                playerConnectionButtonController.AttributionHighlightButton.Configure(systemGameManager);
+                */
             }
         }
 

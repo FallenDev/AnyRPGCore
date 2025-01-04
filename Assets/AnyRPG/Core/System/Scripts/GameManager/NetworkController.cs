@@ -30,6 +30,8 @@ namespace AnyRPG {
         // server functions
         public abstract void StartServer();
         public abstract void StopServer();
+        public abstract void KickPlayer(int clientId);
+        public abstract string GetClientIPAddress(int clientId);
     }
 
 }

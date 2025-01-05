@@ -37,6 +37,7 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
+            Debug.Log("FishNetNetworkController.Configure()");
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
@@ -160,7 +161,7 @@ namespace AnyRPG {
         }
 
         private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
 
             serverState = obj.ConnectionState;
             if (serverState == LocalConnectionState.Started) {
@@ -321,6 +322,38 @@ namespace AnyRPG {
             clientConnector.LoadCharacterList();
         }
 
+        public override void CreateLobbyGame() {
+            clientConnector.CreateLobbyGame();
+        }
+
+        public override void CancelLobbyGame(int gameId) {
+            clientConnector.CancelLobbyGame(gameId);
+        }
+
+        public override void JoinLobbyGame(int gameId) {
+            clientConnector.JoinLobbyGame(gameId);
+        }
+
+        public override void LeaveLobbyGame(int gameId) {
+            clientConnector.LeaveLobbyGame(gameId);
+        }
+
+        public override int GetClientId() {
+            return fishNetNetworkManager.ClientManager.Connection.ClientId;
+        }
+
+        public override void SendLobbyChatMessage(string messageText) {
+            clientConnector.SendLobbyChatMessage(messageText);
+        }
+
+        public override void RequestLobbyGameList() {
+            clientConnector.RequestLobbyGameList();
+        }
+
+        public override void RequestLobbyPlayerList() {
+            clientConnector.RequestLobbyPlayerList();
+        }
+
         #endregion
 
         #region server functions
@@ -347,6 +380,41 @@ namespace AnyRPG {
             return fishNetNetworkManager.ServerManager.Clients[clientId].GetAddress();
         }
 
+        public override void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
+            clientConnector.AdvertiseCreateLobbyGame(lobbyGame);
+        }
+
+        public override void AdvertiseCancelLobbyGame(int gameId) {
+            clientConnector.AdvertiseCancelLobbyGame(gameId);
+        }
+
+        public override void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
+            clientConnector.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        }
+
+        public override void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
+            clientConnector.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+        }
+
+        public override void AdvertiseSendLobbyChatMessage(string messageText) {
+            clientConnector.AdvertiseSendLobbyChatMessage(messageText);
+        }
+
+        public override void AdvertiseLobbyLogin(int clientId, string userName) {
+            clientConnector.AdvertiseLobbyLogin(clientId, userName);
+        }
+
+        public override void AdvertiseLobbyLogout(int clientId) {
+            clientConnector.AdvertiseLobbyLogout(clientId);
+        }
+
+        public override void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames) {
+            clientConnector.SendLobbyGameList(clientId, lobbyGames);
+        }
+
+        public override void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers) {
+            clientConnector.SendLobbyPlayerList(clientId, lobbyPlayers);
+        }
 
         #endregion
 

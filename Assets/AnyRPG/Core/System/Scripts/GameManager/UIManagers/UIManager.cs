@@ -192,6 +192,7 @@ namespace AnyRPG {
         public CloseableWindow creditsWindow;
         public CloseableWindow hostServerWindow;
         public CloseableWindow clientLobbyWindow;
+        public CloseableWindow createLobbyGameWindow;
         public CloseableWindow exitMenuWindow;
         public CloseableWindow disconnectedWindow;
         public CloseableWindow loginFailedWindow;
@@ -393,6 +394,7 @@ namespace AnyRPG {
             creditsWindow.Configure(systemGameManager);
             hostServerWindow.Configure(systemGameManager);
             clientLobbyWindow.Configure(systemGameManager);
+            createLobbyGameWindow.Configure(systemGameManager);
             exitMenuWindow.Configure(systemGameManager);
             disconnectedWindow.Configure(systemGameManager);
             loginFailedWindow.Configure(systemGameManager);
@@ -858,6 +860,7 @@ namespace AnyRPG {
             creditsWindow.CloseWindow();
             hostServerWindow.CloseWindow();
             clientLobbyWindow.CloseWindow();
+            createLobbyGameWindow.CloseWindow();
             deleteGameMenuWindow.CloseWindow();
             networkLoginWindow.CloseWindow();
             disconnectedWindow.CloseWindow();

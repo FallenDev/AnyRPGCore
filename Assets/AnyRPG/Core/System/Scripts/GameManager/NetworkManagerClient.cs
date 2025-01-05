@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,15 @@ namespace AnyRPG {
     public class NetworkManagerClient : ConfiguredMonoBehaviour {
 
         public event Action<string> OnClientVersionFailure = delegate { };
+        public event Action<LobbyGame> OnCreateLobbyGame = delegate { };
+        public event Action<int> OnCancelLobbyGame = delegate { };
+        public event Action<int, int> OnClientJoinLobbyGame = delegate { };
+        public event Action<int, int> OnClientLeaveLobbyGame = delegate { };
+        public event Action<string> OnSendLobbyChatMessage = delegate { };
+        public event Action<int, string> OnLobbyLogin = delegate { };
+        public event Action<int> OnLobbyLogout = delegate { };
+        public event Action<List<LobbyGame>> OnSetLobbyGameList = delegate { };
+        public event Action<Dictionary<int, string>> OnSetLobbyPlayerList = delegate { };
 
         private string username = string.Empty;
         private string password = string.Empty;
@@ -21,6 +31,11 @@ namespace AnyRPG {
         [SerializeField]
         private NetworkController networkController = null;
 
+        private Dictionary<int, LoggedInAccount> lobbyGamePlayerList = new Dictionary<int, LoggedInAccount>();
+        
+        private Dictionary<int, LobbyGame> lobbyGames = new Dictionary<int, LobbyGame>();
+        private Dictionary<int, string> lobbyPlayers = new Dictionary<int, string>();
+
         // game manager references
         private PlayerManager playerManager = null;
         private CharacterManager characterManager = null;
@@ -30,6 +45,7 @@ namespace AnyRPG {
         public string Username { get => username; }
         public string Password { get => password; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
+        public Dictionary<int, LoggedInAccount> LobbyGamePlayerList { get => lobbyGamePlayerList; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -78,6 +94,14 @@ namespace AnyRPG {
             return networkController.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
         }
 
+        public void SendLobbyChatMessage(string messageText) {
+            networkController.SendLobbyChatMessage(messageText);
+        }
+
+        public void RequestLobbyPlayerList() {
+            networkController.RequestLobbyPlayerList();
+        }
+
         public bool CanSpawnPlayerOverNetwork() {
             return networkController.CanSpawnCharacterOverNetwork();
         }
@@ -116,6 +140,7 @@ namespace AnyRPG {
             uIManager.newGameWindow.CloseWindow();
             uIManager.loadGameWindow.CloseWindow();
             uIManager.clientLobbyWindow.CloseWindow();
+            uIManager.createLobbyGameWindow.CloseWindow();
             uIManager.disconnectedWindow.OpenWindow();
         }
 
@@ -149,6 +174,10 @@ namespace AnyRPG {
             networkController.CreatePlayerCharacter(anyRPGSaveData);
         }
 
+        public void RequestLobbyGameList() {
+            networkController.RequestLobbyGameList();
+        }
+
         public void LoadCharacterList() {
             //Debug.Log($"NetworkManagerClient.LoadCharacterList()");
 
@@ -159,6 +188,71 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerClient.DeletePlayerCharacter({playerCharacterId})");
 
             networkController.DeletePlayerCharacter(playerCharacterId);
+        }
+
+        public void CreateLobbyGame() {
+            networkController.CreateLobbyGame();
+        }
+
+        public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
+            OnCreateLobbyGame(lobbyGame);
+        }
+
+        public void CancelLobbyGame(int gameId) {
+            networkController.CancelLobbyGame(gameId);
+        }
+
+        public void AdvertiseCancelLobbyGame(int gameId) {
+            OnCancelLobbyGame(gameId);
+        }
+
+        public void JoinLobbyGame(int gameId) {
+            networkController.JoinLobbyGame(gameId);
+        }
+
+        public void LeaveLobbyGame(int gameId) {
+            networkController.LeaveLobbyGame(gameId);
+        }
+
+
+        public int GetClientId() {
+            return networkController.GetClientId();
+        }
+
+        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
+            OnClientJoinLobbyGame(gameId, clientId);
+        }
+
+        public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
+            OnClientLeaveLobbyGame(gameId, clientId);
+        }
+
+        public void AdvertiseSendLobbyChatMessage(string messageText) {
+            OnSendLobbyChatMessage(messageText);
+        }
+
+        public void AdvertiseLobbyLogin(int clientId, string userName) {
+            OnLobbyLogin(clientId, userName);
+        }
+
+        public void AdvertiseLobbyLogout(int clientId) {
+            OnLobbyLogout(clientId);
+        }
+
+        public void SetLobbyGameList(List<LobbyGame> lobbyGames) {
+            this.lobbyGames.Clear();
+            foreach (LobbyGame lobbyGame in lobbyGames) {
+                this.lobbyGames.Add(lobbyGame.gameId, lobbyGame);
+            }
+            OnSetLobbyGameList(this.lobbyGames.Values.ToList<LobbyGame>());
+        }
+
+        public void SetLobbyPlayerList(Dictionary<int, string> lobbyPlayers) {
+            this.lobbyPlayers.Clear();
+            foreach (int loggedInClientId in lobbyPlayers.Keys) {
+                this.lobbyPlayers.Add(loggedInClientId, lobbyPlayers[loggedInClientId]);
+            }
+            OnSetLobbyPlayerList(lobbyPlayers);
         }
 
     }

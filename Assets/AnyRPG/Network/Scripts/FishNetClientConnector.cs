@@ -5,17 +5,19 @@ using FishNet.Transporting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AnyRPG {
     public class FishNetClientConnector : ConfiguredNetworkBehaviour {
 
-        private FishNet.Managing.NetworkManager networkManager;
+        private FishNet.Managing.NetworkManager fishNetNetworkManager;
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
         private CharacterManager characterManager = null;
         private NetworkManagerServer networkManagerServer = null;
+        private NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -31,10 +33,11 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
             characterManager = systemGameManager.CharacterManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         public void SetNetworkManager(FishNet.Managing.NetworkManager networkManager) {
-            this.networkManager = networkManager;
+            this.fishNetNetworkManager = networkManager;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -48,10 +51,10 @@ namespace AnyRPG {
                     Debug.LogError($"FishNetNetworkConnector.SpawnPlayer({ clientSpawnRequestId}, { playerCharacterId}) got invalid clientId for an active player character");
                     return;
                 }
-                if (networkManager.ServerManager.Clients.ContainsKey(otherClientId)) {
+                if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(otherClientId)) {
                     // manually stop monitoring here because the actual despawn of the unit won't happen until later after we attempt to spawn the new unit
                     networkManagerServer.StopMonitoringPlayerUnit(playerCharacterId);
-                    networkManager.ServerManager.Clients[otherClientId].Kick(FishNet.Managing.Server.KickReason.Unset);
+                    fishNetNetworkManager.ServerManager.Clients[otherClientId].Kick(FishNet.Managing.Server.KickReason.Unset);
                 }
             }
 
@@ -161,7 +164,7 @@ namespace AnyRPG {
                 return null;
             }
 
-            NetworkObject nob = networkManager.GetPooledInstantiated(networkPrefab, true);
+            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, true);
             //nob.transform.SetPositionAndRotation(position, rotation);
             nob.transform.parent = parentTransform;
             nob.transform.position = position;
@@ -179,7 +182,7 @@ namespace AnyRPG {
 
         private void SpawnPrefab(NetworkObject nob, NetworkConnection networkConnection) {
             //Debug.Log($"FishNetNetworkController.SpawnPlayer() Spawning player at {position}");
-            networkManager.ServerManager.Spawn(nob, networkConnection);
+            fishNetNetworkManager.ServerManager.Spawn(nob, networkConnection);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -190,26 +193,26 @@ namespace AnyRPG {
             sceneLoadData.ReplaceScenes = ReplaceOption.All;
             //sceneLoadData.PreferredActiveScene = sceneLoadData.SceneLookupDatas[0];
             sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(sceneName));
-            networkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
+            fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.CreatePlayerCharacter(AnyRPGSaveData)");
 
-            systemGameManager.NetworkManagerServer.CreatePlayerCharacter(networkConnection.ClientId, anyRPGSaveData);
+            networkManagerServer.CreatePlayerCharacter(networkConnection.ClientId, anyRPGSaveData);
         }
 
         public void HandleCreatePlayerCharacter(int clientId) {
             Debug.Log($"FishNetNetworkConnector.HandleCreatePlayerCharacter({clientId})");
 
-            if (networkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
                 Debug.Log($"FishNetNetworkConnector.HandleCreatePlayerCharacter() could not find client id {clientId}");
                 return;
             }
 
             //LoadCharacterList(networkManager.ServerManager.Clients[clientId]);
-            systemGameManager.NetworkManagerServer.LoadCharacterList(clientId);
+            networkManagerServer.LoadCharacterList(clientId);
         }
 
 
@@ -217,7 +220,7 @@ namespace AnyRPG {
         public void DeletePlayerCharacter(int playerCharacterId, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.DeletePlayerCharacter({playerCharacterId})");
 
-            systemGameManager.NetworkManagerServer.DeletePlayerCharacter(networkConnection.ClientId, playerCharacterId);
+            networkManagerServer.DeletePlayerCharacter(networkConnection.ClientId, playerCharacterId);
 
             // now that character is deleted, just load the character list
             //LoadCharacterList(networkConnection);
@@ -226,13 +229,13 @@ namespace AnyRPG {
         public void HandleDeletePlayerCharacter(int clientId) {
             Debug.Log($"FishNetNetworkConnector.HandleDeletePlayerCharacter({clientId})");
 
-            if (networkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
                 Debug.Log($"FishNetNetworkConnector.HandleDeletePlayerCharacter() could not find client id {clientId}");
                 return;
             }
 
             //LoadCharacterList(networkManager.ServerManager.Clients[clientId]);
-            systemGameManager.NetworkManagerServer.LoadCharacterList(clientId);
+            networkManagerServer.LoadCharacterList(clientId);
         }
 
 
@@ -249,8 +252,8 @@ namespace AnyRPG {
         public void LoadCharacterList(NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.LoadCharacterList()");
 
-            systemGameManager.NetworkManagerServer.LoadCharacterList(networkConnection.ClientId);
-            //List<PlayerCharacterSaveData> playerCharacterSaveDataList = systemGameManager.NetworkManagerServer.LoadCharacterList(networkConnection.ClientId);
+            networkManagerServer.LoadCharacterList(networkConnection.ClientId);
+            //List<PlayerCharacterSaveData> playerCharacterSaveDataList = networkManagerServer.LoadCharacterList(networkConnection.ClientId);
 
             //Debug.Log($"FishNetNetworkConnector.LoadCharacterList() list size: {playerCharacterSaveDataList.Count}");
             //SetCharacterList(networkConnection, playerCharacterSaveDataList);
@@ -259,15 +262,15 @@ namespace AnyRPG {
         public void HandleLoadCharacterList(int clientId, List<PlayerCharacterSaveData> playerCharacterSaveDataList) {
             //Debug.Log($"FishNetNetworkConnector.HandleLoadCharacterList({clientId})");
 
-            if (networkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
-                foreach (int client in networkManager.ServerManager.Clients.Keys) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                foreach (int client in fishNetNetworkManager.ServerManager.Clients.Keys) {
                     Debug.Log($"FishNetNetworkConnector.LoadCharacterList() found client id {client}");
                 }
                 Debug.Log($"FishNetNetworkConnector.LoadCharacterList() could not find client id {clientId}");
                 return;
             }
 
-            SetCharacterList(networkManager.ServerManager.Clients[clientId], playerCharacterSaveDataList);
+            SetCharacterList(fishNetNetworkManager.ServerManager.Clients[clientId], playerCharacterSaveDataList);
         }
 
         [TargetRpc]
@@ -285,6 +288,21 @@ namespace AnyRPG {
             systemGameManager.UIManager.ProcessLoginSuccess();
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestLobbyGameList(NetworkConnection networkConnection = null) {
+            networkManagerServer.RequestLobbyGameList(networkConnection.ClientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestLobbyPlayerList(NetworkConnection networkConnection = null) {
+            networkManagerServer.RequestLobbyPlayerList(networkConnection.ClientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SendLobbyChatMessage(string messageText, NetworkConnection networkConnection = null) {
+            networkManagerServer.SendLobbyChatMessage(messageText, networkConnection.ClientId);
+        }
+
         public override void OnStartNetwork() {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
@@ -292,6 +310,90 @@ namespace AnyRPG {
             FishNetNetworkController fishNetNetworkController = GameObject.FindAnyObjectByType<FishNetNetworkController>();
             fishNetNetworkController.RegisterConnector(this);
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void CreateLobbyGame(NetworkConnection networkConnection = null) {
+            //Debug.Log($"FishNetNetworkConnector.CreateLobbyGame()");
+
+            networkManagerServer.CreateLobbyGame(networkConnection.ClientId);
+        }
+
+
+        [ObserversRpc]
+        public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
+            networkManagerClient.AdvertiseCreateLobbyGame(lobbyGame);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void CancelLobbyGame(int gameId, NetworkConnection networkConnection = null) {
+            //Debug.Log($"FishNetNetworkConnector.CancelLobbyGame()");
+
+            networkManagerServer.CancelLobbyGame(networkConnection.ClientId, gameId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void JoinLobbyGame(int gameId, NetworkConnection networkConnection = null) {
+            //Debug.Log($"FishNetNetworkConnector.JoinLobbyGame()");
+
+            networkManagerServer.JoinLobbyGame(gameId, networkConnection.ClientId);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseLobbyLogin(int clientId, string userName) {
+            networkManagerClient.AdvertiseLobbyLogin(clientId, userName);
+        }
+
+        public void SendLobbyGameList(int clientId, List<LobbyGame> lobbyGames) {
+            SetLobbyGameList(fishNetNetworkManager.ServerManager.Clients[clientId], lobbyGames);
+        }
+
+        [TargetRpc]
+        public void SetLobbyGameList(NetworkConnection networkConnection, List<LobbyGame> lobbyGames) {
+            networkManagerClient.SetLobbyGameList(lobbyGames);
+        }
+
+        public void SendLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers) {
+            SetLobbyPlayerList(fishNetNetworkManager.ServerManager.Clients[clientId], lobbyPlayers);
+        }
+
+        [TargetRpc]
+        public void SetLobbyPlayerList(NetworkConnection networkConnection, Dictionary<int, string> lobbyPlayers) {
+            networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
+        }
+
+
+        [ObserversRpc]
+        public void AdvertiseLobbyLogout(int clientId) {
+            networkManagerClient.AdvertiseLobbyLogout(clientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void LeaveLobbyGame(int gameId, NetworkConnection networkConnection = null) {
+            //Debug.Log($"FishNetNetworkConnector.LeaveLobbyGame()");
+
+            networkManagerServer.LeaveLobbyGame(gameId, networkConnection.ClientId);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseCancelLobbyGame(int gameId) {
+            networkManagerClient.AdvertiseCancelLobbyGame(gameId);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
+            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
+            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseSendLobbyChatMessage(string messageText) {
+            networkManagerClient.AdvertiseSendLobbyChatMessage(messageText);
+        }
+
 
         /*
         public override void OnStartServer() {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,15 @@ namespace AnyRPG {
         private Dictionary<int, LoggedInAccount> loggedInAccounts = new Dictionary<int, LoggedInAccount>();
         private Dictionary<int, string> loginRequests = new Dictionary<int, string>();
 
+        // list of lobby games
+        private Dictionary<int, LobbyGame> lobbyGames = new Dictionary<int, LobbyGame>();
+        private int lobbyGameCounter = 0;
+        private int maxLobbyChatTextSize = 64000;
+
+        // lobby chat
+        private string lobbyChatText = string.Empty;
+
+
         private GameServerClient gameServerClient = null;
         private Coroutine monitorPlayerCharactersCoroutine = null;
         private bool serverModeActive = false;
@@ -45,6 +55,7 @@ namespace AnyRPG {
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LoggedInAccounts { get => loggedInAccounts; }
+        public Dictionary<int, LobbyGame> LobbyGames { get => lobbyGames; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -133,6 +144,7 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token}) {loggedInAccounts[clientId].username} logged in.");
 
             OnLobbyLogin(clientId);
+            networkController.AdvertiseLobbyLogin(clientId, loggedInAccounts[clientId].username);
         }
 
         public void CreatePlayerCharacter(int clientId, AnyRPGSaveData anyRPGSaveData) {
@@ -290,6 +302,7 @@ namespace AnyRPG {
             }
 
             OnLobbyLogout(clientId);
+            networkController?.AdvertiseLobbyLogout(clientId);
         }
 
         public void ActivateServerMode() {
@@ -335,21 +348,68 @@ namespace AnyRPG {
             return networkController?.GetClientIPAddress(clientId);
         }
 
-    }
+        public void CreateLobbyGame(int clientId) {
+            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter);
+            lobbyGameCounter++;
+            lobbyGames.Add(lobbyGame.GameId, lobbyGame);
+            networkController.AdvertiseCreateLobbyGame(lobbyGame);
+        }
 
-    public class LoggedInAccount {
+        public void CancelLobbyGame(int clientId, int gameId) {
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].leaderClientId != clientId) {
+                // game not found, or requesting client is not leader
+                return;
+            }
+            lobbyGames.Remove(gameId);
+            networkController.AdvertiseCancelLobbyGame(gameId);
+        }
 
-        public int clientId;
-        public string username;
-        public string token;
-        public string ipAddress;
+        public void JoinLobbyGame(int gameId, int clientId) {
+            if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(clientId) == false) {
+                // game or client doesn't exist
+                return;
+            }
+            lobbyGames[gameId].AddPlayer(clientId);
+            networkController.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        }
 
-        public LoggedInAccount(int clientId, string username, string token, string ipAddress) {
-            this.clientId = clientId;
-            this.username = username;
-            this.token = token;
-            this.ipAddress = ipAddress;
+        public void RequestLobbyGameList(int clientId) {
+            networkController.SetLobbyGameList(clientId, lobbyGames.Values.ToList<LobbyGame>());
+        }
+
+        public void RequestLobbyPlayerList(int clientId) {
+            Dictionary<int, string> lobbyPlayerList = new Dictionary<int, string>();
+            foreach (int loggedInClientId in loggedInAccounts.Keys) {
+                lobbyPlayerList.Add(loggedInClientId, loggedInAccounts[loggedInClientId].username);
+            }
+            networkController.SetLobbyPlayerList(clientId, lobbyPlayerList);
+        }
+
+        public void LeaveLobbyGame(int gameId, int clientId) {
+            if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(clientId) == false) {
+                // game or client doesn't exist
+                return;
+            }
+            lobbyGames[gameId].RemovePlayer(clientId);
+            networkController.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+        }
+
+        public void SendLobbyChatMessage(string messageText, int clientId) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
+                return;
+            }
+            string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
+            lobbyChatText += addedText;
+            
+            // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
+            while (lobbyChatText.Length > maxLobbyChatTextSize && lobbyChatText.Contains("\n")) {
+                lobbyChatText = lobbyChatText.Split("\n", 1)[1];
+            }
+
+            networkController.AdvertiseSendLobbyChatMessage(addedText);
         }
     }
+
+ 
 
 }

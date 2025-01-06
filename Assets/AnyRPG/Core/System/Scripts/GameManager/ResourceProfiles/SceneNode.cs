@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Serialization;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "New SceneNode", menuName = "AnyRPG/SceneNode")]
@@ -12,6 +13,11 @@ namespace AnyRPG {
     public class SceneNode : DescribableResource {
 
         public event System.Action OnVisitZone = delegate { };
+
+        [Header("Loading Screen")]
+
+        [SerializeField]
+        private Sprite loadingScreenImage = null;
 
         [Header("Scene File")]
 
@@ -273,6 +279,7 @@ namespace AnyRPG {
         }
 
         public SunRotationMode SunRotationMode { get => sunRotationMode; set => sunRotationMode = value; }
+        public Sprite LoadingScreenImage { get => loadingScreenImage; set => loadingScreenImage = value; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();

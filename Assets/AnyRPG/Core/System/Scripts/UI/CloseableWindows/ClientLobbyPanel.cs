@@ -7,7 +7,7 @@ using TMPro;
 using System;
 
 namespace AnyRPG {
-    public class ClientLobbyPanelController : WindowContentController {
+    public class ClientLobbyPanel : WindowContentController {
 
         [Header("ClientLobbyPanelController")]
 
@@ -195,7 +195,7 @@ namespace AnyRPG {
             GameObject go = objectPooler.GetPooledObject(lobbyGameTemplate, lobbyGameContainer);
             ClientLobbyGameConnectionButtonController clientLobbyGameConnectionButtonController = go.GetComponent<ClientLobbyGameConnectionButtonController>();
             clientLobbyGameConnectionButtonController.Configure(systemGameManager);
-            clientLobbyGameConnectionButtonController.SetGameId(gameId, lobbyGame.gameName, string.Empty);
+            clientLobbyGameConnectionButtonController.SetGameId(gameId, lobbyGame.sceneName, lobbyGame.leaderUserName);
             uINavigationControllers[1].AddActiveButton(clientLobbyGameConnectionButtonController.JoinButton);
             lobbyGameButtons.Add(gameId, clientLobbyGameConnectionButtonController);
         }

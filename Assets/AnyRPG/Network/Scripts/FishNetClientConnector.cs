@@ -303,6 +303,11 @@ namespace AnyRPG {
             networkManagerServer.SendLobbyChatMessage(messageText, networkConnection.ClientId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void SendLobbyGameChatMessage(string messageText, int gameId, NetworkConnection networkConnection = null) {
+            networkManagerServer.SendLobbyGameChatMessage(messageText, networkConnection.ClientId, gameId);
+        }
+
         public override void OnStartNetwork() {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
@@ -312,10 +317,10 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void CreateLobbyGame(NetworkConnection networkConnection = null) {
+        public void CreateLobbyGame(string sceneName, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.CreateLobbyGame()");
 
-            networkManagerServer.CreateLobbyGame(networkConnection.ClientId);
+            networkManagerServer.CreateLobbyGame(sceneName, networkConnection.ClientId);
         }
 
 
@@ -380,18 +385,23 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
-        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
-            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
+            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId, userName);
         }
 
         [ObserversRpc]
         public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
-            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId);
+            networkManagerClient.AdvertiseClientLeaveLobbyGame(gameId, clientId);
         }
 
         [ObserversRpc]
         public void AdvertiseSendLobbyChatMessage(string messageText) {
             networkManagerClient.AdvertiseSendLobbyChatMessage(messageText);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId) {
+            networkManagerClient.AdvertiseSendLobbyGameChatMessage(messageText, gameId);
         }
 
 

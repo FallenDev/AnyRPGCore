@@ -49,6 +49,7 @@ namespace AnyRPG {
                 fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
                 fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
                 fishNetNetworkManager.ServerManager.OnServerConnectionState += HandleServerConnectionState;
+                fishNetNetworkManager.ClientManager.OnAuthenticated += HandleClientAuthenticated;
                 
                 // stuff that was previously done only on active connection
                 fishNetNetworkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
@@ -129,6 +130,12 @@ namespace AnyRPG {
             if (args.ConnectionState == RemoteConnectionState.Stopped) {
                 networkManagerServer.ProcessClientDisconnect(networkConnection.ClientId);
             }
+        }
+
+        private void HandleClientAuthenticated() {
+            Debug.Log($"FishNetNetworkController.HandleClientAuthenticated({fishNetNetworkManager.ClientManager.Connection.ClientId})");
+
+            networkManagerClient.SetClientId(fishNetNetworkManager.ClientManager.Connection.ClientId);
         }
 
         private void HandleClientKick(NetworkConnection arg1, int arg2, KickReason kickReason) {
@@ -322,8 +329,8 @@ namespace AnyRPG {
             clientConnector.LoadCharacterList();
         }
 
-        public override void CreateLobbyGame() {
-            clientConnector.CreateLobbyGame();
+        public override void CreateLobbyGame(string sceneName) {
+            clientConnector.CreateLobbyGame(sceneName);
         }
 
         public override void CancelLobbyGame(int gameId) {
@@ -344,6 +351,10 @@ namespace AnyRPG {
 
         public override void SendLobbyChatMessage(string messageText) {
             clientConnector.SendLobbyChatMessage(messageText);
+        }
+
+        public override void SendLobbyGameChatMessage(string messageText, int gameId) {
+            clientConnector.SendLobbyGameChatMessage(messageText, gameId);
         }
 
         public override void RequestLobbyGameList() {
@@ -388,8 +399,8 @@ namespace AnyRPG {
             clientConnector.AdvertiseCancelLobbyGame(gameId);
         }
 
-        public override void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
-            clientConnector.AdvertiseClientJoinLobbyGame(gameId, clientId);
+        public override void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
+            clientConnector.AdvertiseClientJoinLobbyGame(gameId, clientId, userName);
         }
 
         public override void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
@@ -398,6 +409,10 @@ namespace AnyRPG {
 
         public override void AdvertiseSendLobbyChatMessage(string messageText) {
             clientConnector.AdvertiseSendLobbyChatMessage(messageText);
+        }
+
+        public override void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId) {
+            clientConnector.AdvertiseSendLobbyGameChatMessage(messageText, gameId);
         }
 
         public override void AdvertiseLobbyLogin(int clientId, string userName) {

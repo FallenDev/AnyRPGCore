@@ -614,6 +614,13 @@ namespace AnyRPG {
         [SerializeField]
         private string clientDownloadUrl = "https://www.anyrpg.org/downloads";
 
+        [Tooltip("The list of scenes that can be chosen in lobby game mode.")]
+        [SerializeField]
+        [ResourceSelector(resourceType = typeof(SceneNode))]
+        private List<string> lobbyGameSceneNames = new List<string>();
+
+        // reference to the lobby game scene nodes
+        private List<SceneNode> lobbyGameScenes = new List<SceneNode>();
 
         // game manager references
         SystemDataFactory systemDataFactory = null;
@@ -778,6 +785,7 @@ namespace AnyRPG {
         public string ClientDownloadUrl { get => clientDownloadUrl; set => clientDownloadUrl = value; }
         public string ClientVersion { get => clientVersion; set => clientVersion = value; }
         public string GameServerAddress { get => gameServerAddress; set => gameServerAddress = value; }
+        public List<SceneNode> LobbyGameScenes { get => lobbyGameScenes; }
 
         //public bool AllowClickToMove { get => allowClickToMove; }
 
@@ -969,7 +977,7 @@ namespace AnyRPG {
                 }
                 // it shouldn't be required to have this scene node
                 /* else {
-                    Debug.LogError("LevelManager.SetupScriptableObjects: could not find scene node " + initializationScene + ". Check inspector.");
+                    Debug.LogError("SystemConfigurationManager.SetupScriptableObjects: could not find scene node " + initializationScene + ". Check inspector.");
                 }*/
             }
 
@@ -978,11 +986,20 @@ namespace AnyRPG {
                 if (tmpSceneNode != null) {
                     mainMenuSceneNode = tmpSceneNode;
                 }/* else {
-                    Debug.LogError("LevelManager.SetupScriptableObjects: could not find scene node " + mainMenuScene + ". Check inspector.");
+                    Debug.LogError("SystemConfigurationManager.SetupScriptableObjects: could not find scene node " + mainMenuScene + ". Check inspector.");
                 }*/
             }
 
-
+            foreach (string sceneName in lobbyGameSceneNames) {
+                if (sceneName != null && sceneName != string.Empty) {
+                    SceneNode tmpSceneNode = systemDataFactory.GetResource<SceneNode>(sceneName);
+                    if (tmpSceneNode != null) {
+                        lobbyGameScenes.Add(tmpSceneNode);
+                    } else {
+                        Debug.LogError($"SystemConfigurationManager.SetupScriptableObjects: could not find scene node {sceneName}. Check inspector.");
+                    }
+                }
+            }
 
 
         }

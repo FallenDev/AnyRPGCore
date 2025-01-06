@@ -13,9 +13,10 @@ namespace AnyRPG {
         public event Action<string> OnClientVersionFailure = delegate { };
         public event Action<LobbyGame> OnCreateLobbyGame = delegate { };
         public event Action<int> OnCancelLobbyGame = delegate { };
-        public event Action<int, int> OnClientJoinLobbyGame = delegate { };
-        public event Action<int, int> OnClientLeaveLobbyGame = delegate { };
+        public event Action<int, int, string> OnJoinLobbyGame = delegate { };
+        public event Action<int, int> OnLeaveLobbyGame = delegate { };
         public event Action<string> OnSendLobbyChatMessage = delegate { };
+        public event Action<string, int> OnSendLobbyGameChatMessage = delegate { };
         public event Action<int, string> OnLobbyLogin = delegate { };
         public event Action<int> OnLobbyLogout = delegate { };
         public event Action<List<LobbyGame>> OnSetLobbyGameList = delegate { };
@@ -27,6 +28,8 @@ namespace AnyRPG {
         private bool isLoggingInOrOut = false;
 
         private NetworkClientMode clientMode = NetworkClientMode.Lobby;
+        private int clientId;
+        private LobbyGame lobbyGame;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -46,6 +49,7 @@ namespace AnyRPG {
         public string Password { get => password; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LobbyGamePlayerList { get => lobbyGamePlayerList; }
+        public LobbyGame LobbyGame { get => lobbyGame; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -98,6 +102,10 @@ namespace AnyRPG {
             networkController.SendLobbyChatMessage(messageText);
         }
 
+        public void SendLobbyGameChatMessage(string messageText, int gameId) {
+            networkController.SendLobbyGameChatMessage(messageText, gameId);
+        }
+
         public void RequestLobbyPlayerList() {
             networkController.RequestLobbyPlayerList();
         }
@@ -140,6 +148,7 @@ namespace AnyRPG {
             uIManager.newGameWindow.CloseWindow();
             uIManager.loadGameWindow.CloseWindow();
             uIManager.clientLobbyWindow.CloseWindow();
+            uIManager.clientLobbyGameWindow.CloseWindow();
             uIManager.createLobbyGameWindow.CloseWindow();
             uIManager.disconnectedWindow.OpenWindow();
         }
@@ -190,11 +199,17 @@ namespace AnyRPG {
             networkController.DeletePlayerCharacter(playerCharacterId);
         }
 
-        public void CreateLobbyGame() {
-            networkController.CreateLobbyGame();
+        public void CreateLobbyGame(string sceneName) {
+            networkController.CreateLobbyGame(sceneName);
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
+            Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderClientId}) clientid: {clientId}");
+
+            if (lobbyGame.leaderClientId == clientId) {
+                this.lobbyGame = lobbyGame;
+                uIManager.clientLobbyGameWindow.OpenWindow();
+            }
             OnCreateLobbyGame(lobbyGame);
         }
 
@@ -214,21 +229,38 @@ namespace AnyRPG {
             networkController.LeaveLobbyGame(gameId);
         }
 
-
-        public int GetClientId() {
-            return networkController.GetClientId();
+        public void SetClientId(int clientId) {
+            this.clientId = clientId;
         }
 
-        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId) {
-            OnClientJoinLobbyGame(gameId, clientId);
+        /*
+        public int GetClientId() {
+            Debug.Log($"NetworkManagerClient.GetClientId()");
+
+            return networkController.GetClientId();
+        }
+        */
+
+        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
+            OnJoinLobbyGame(gameId, clientId, userName);
+            lobbyGames[gameId].AddPlayer(clientId, userName);
+            if (clientId == this.clientId) {
+                // this client just joined a game
+                lobbyGame = lobbyGames[gameId];
+                uIManager.clientLobbyGameWindow.OpenWindow();
+            }
         }
 
         public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
-            OnClientLeaveLobbyGame(gameId, clientId);
+            OnLeaveLobbyGame(gameId, clientId);
         }
 
         public void AdvertiseSendLobbyChatMessage(string messageText) {
             OnSendLobbyChatMessage(messageText);
+        }
+
+        public void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId) {
+            OnSendLobbyGameChatMessage(messageText, gameId);
         }
 
         public void AdvertiseLobbyLogin(int clientId, string userName) {

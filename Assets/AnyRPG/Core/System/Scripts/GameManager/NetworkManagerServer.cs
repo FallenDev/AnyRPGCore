@@ -39,6 +39,7 @@ namespace AnyRPG {
 
         // lobby chat
         private string lobbyChatText = string.Empty;
+        private Dictionary<int, string> lobbyGameChatText = new Dictionary<int, string>();
 
 
         private GameServerClient gameServerClient = null;
@@ -348,10 +349,11 @@ namespace AnyRPG {
             return networkController?.GetClientIPAddress(clientId);
         }
 
-        public void CreateLobbyGame(int clientId) {
-            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter);
+        public void CreateLobbyGame(string sceneName, int clientId) {
+            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneName, loggedInAccounts[clientId].username);
             lobbyGameCounter++;
             lobbyGames.Add(lobbyGame.GameId, lobbyGame);
+            lobbyGameChatText.Add(lobbyGame.gameId, string.Empty);
             networkController.AdvertiseCreateLobbyGame(lobbyGame);
         }
 
@@ -361,6 +363,7 @@ namespace AnyRPG {
                 return;
             }
             lobbyGames.Remove(gameId);
+            lobbyGameChatText.Remove(gameId);
             networkController.AdvertiseCancelLobbyGame(gameId);
         }
 
@@ -369,8 +372,8 @@ namespace AnyRPG {
                 // game or client doesn't exist
                 return;
             }
-            lobbyGames[gameId].AddPlayer(clientId);
-            networkController.AdvertiseClientJoinLobbyGame(gameId, clientId);
+            lobbyGames[gameId].AddPlayer(clientId, loggedInAccounts[clientId].username);
+            networkController.AdvertiseClientJoinLobbyGame(gameId, clientId, loggedInAccounts[clientId].username);
         }
 
         public void RequestLobbyGameList(int clientId) {
@@ -400,16 +403,35 @@ namespace AnyRPG {
             }
             string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
             lobbyChatText += addedText;
-            
-            // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
-            while (lobbyChatText.Length > maxLobbyChatTextSize && lobbyChatText.Contains("\n")) {
-                lobbyChatText = lobbyChatText.Split("\n", 1)[1];
-            }
+            lobbyChatText = ShortenStringOnNewline(lobbyChatText, maxLobbyChatTextSize);
 
             networkController.AdvertiseSendLobbyChatMessage(addedText);
         }
+
+        public void SendLobbyGameChatMessage(string messageText, int clientId, int gameId) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
+                return;
+            }
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
+                return;
+            }
+            string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
+            lobbyGameChatText[gameId] += addedText;
+            lobbyGameChatText[gameId] = ShortenStringOnNewline(lobbyGameChatText[gameId], maxLobbyChatTextSize);
+
+            networkController.AdvertiseSendLobbyGameChatMessage(addedText, gameId);
+        }
+
+        public static string ShortenStringOnNewline(string message, int messageLength) {
+            // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
+            while (message.Length > messageLength && message.Contains("\n")) {
+                message = message.Split("\n", 1)[1];
+            }
+            return message;
+        }
+
     }
 
- 
+
 
 }

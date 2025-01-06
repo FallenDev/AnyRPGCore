@@ -26,12 +26,13 @@ namespace AnyRPG {
         public abstract void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData);
         public abstract void DeletePlayerCharacter(int playerCharacterId);
         public abstract void LoadCharacterList();
-        public abstract void CreateLobbyGame();
+        public abstract void CreateLobbyGame(string sceneName);
         public abstract void CancelLobbyGame(int gameId);
         public abstract void JoinLobbyGame(int gameId);
         public abstract void LeaveLobbyGame(int gameId);
         public abstract int GetClientId();
         public abstract void SendLobbyChatMessage(string messageText);
+        public abstract void SendLobbyGameChatMessage(string messageText, int gameId);
         public abstract void RequestLobbyGameList();
         public abstract void RequestLobbyPlayerList();
 
@@ -42,9 +43,10 @@ namespace AnyRPG {
         public abstract string GetClientIPAddress(int clientId);
         public abstract void AdvertiseCreateLobbyGame(LobbyGame lobbyGame);
         public abstract void AdvertiseCancelLobbyGame(int gameId);
-        public abstract void AdvertiseClientJoinLobbyGame(int gameId, int clientId);
+        public abstract void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName);
         public abstract void AdvertiseClientLeaveLobbyGame(int gameId, int clientId);
         public abstract void AdvertiseSendLobbyChatMessage(string messageText);
+        public abstract void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId);
         public abstract void AdvertiseLobbyLogin(int clientId, string userName);
         public abstract void AdvertiseLobbyLogout(int clientId);
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);

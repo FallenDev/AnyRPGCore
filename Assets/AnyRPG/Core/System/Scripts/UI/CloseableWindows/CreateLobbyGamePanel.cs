@@ -25,6 +25,9 @@ namespace AnyRPG {
         private HighlightButton createGameButton = null;
 
         [SerializeField]
+        private TextMeshProUGUI statusText = null;
+
+        [SerializeField]
         private TextMeshProUGUI nameText = null;
 
         [SerializeField]
@@ -71,8 +74,14 @@ namespace AnyRPG {
 
             base.ProcessOpenWindowNotification();
 
+            SetStatusLabel();
             ShowSceneButtonsCommon();
         }
+
+        public void SetStatusLabel() {
+            statusText.text = $"Logged In As: {networkManagerClient.Username}";
+        }
+
 
         private void DisableCreateButton() {
 

@@ -35,6 +35,7 @@ namespace AnyRPG {
         public abstract void SendLobbyGameChatMessage(string messageText, int gameId);
         public abstract void RequestLobbyGameList();
         public abstract void RequestLobbyPlayerList();
+        public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
 
         // server functions
         public abstract void StartServer();
@@ -51,6 +52,7 @@ namespace AnyRPG {
         public abstract void AdvertiseLobbyLogout(int clientId);
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
         public abstract void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers);
+        public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
     }
 
 }

@@ -46,7 +46,7 @@ namespace AnyRPG {
         private string lobbyChatText = string.Empty;
         private int maxLobbyChatTextSize = 64000;
 
-        private Dictionary<int, ClientPlayerLobbyConnectionButtonController> playerButtons = new Dictionary<int, ClientPlayerLobbyConnectionButtonController>();
+        private Dictionary<int, ClientPlayerLobbyConnectionButton> playerButtons = new Dictionary<int, ClientPlayerLobbyConnectionButton>();
         private Dictionary<int, ClientLobbyGameConnectionButtonController> lobbyGameButtons = new Dictionary<int, ClientLobbyGameConnectionButtonController>();
 
 
@@ -138,7 +138,7 @@ namespace AnyRPG {
             Debug.Log($"ClientLobbyPanelController.AddPlayerToList({userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
-            ClientPlayerLobbyConnectionButtonController clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButtonController>();
+            ClientPlayerLobbyConnectionButton clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButton>();
             clientPlayerLobbyConnectionButtonController.Configure(systemGameManager);
             clientPlayerLobbyConnectionButtonController.SetClientId(clientId, userName);
             //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyConnectionButtonController.joinbu);
@@ -160,7 +160,7 @@ namespace AnyRPG {
         public void ClearPlayerList() {
 
             // clear the skill list so any skill left over from a previous time opening the window aren't shown
-            foreach (ClientPlayerLobbyConnectionButtonController clientPlayerLobbyConnectionButtonController in playerButtons.Values) {
+            foreach (ClientPlayerLobbyConnectionButton clientPlayerLobbyConnectionButtonController in playerButtons.Values) {
                 if (clientPlayerLobbyConnectionButtonController.gameObject != null) {
                     clientPlayerLobbyConnectionButtonController.gameObject.transform.SetParent(null);
                     objectPooler.ReturnObjectToPool(clientPlayerLobbyConnectionButtonController.gameObject);

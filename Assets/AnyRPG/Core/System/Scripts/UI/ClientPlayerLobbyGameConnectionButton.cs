@@ -2,10 +2,13 @@
 using UnityEngine;
 
 namespace AnyRPG {
-    public class ClientPlayerLobbyConnectionButtonController : ConfiguredMonoBehaviour {
+    public class ClientPlayerLobbyGameConnectionButton : ConfiguredMonoBehaviour {
 
         [SerializeField]
         private TextMeshProUGUI playerNameText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI unitProfileNameText = null;
 
         private int clientId;
 
@@ -23,6 +26,10 @@ namespace AnyRPG {
         public void SetClientId(int clientId, string userName) {
             this.clientId = clientId;
             playerNameText.text = userName;
+        }
+
+        public void SetUnitProfileName(string unitProfileName) {
+            unitProfileNameText.text = unitProfileName;
         }
 
     }

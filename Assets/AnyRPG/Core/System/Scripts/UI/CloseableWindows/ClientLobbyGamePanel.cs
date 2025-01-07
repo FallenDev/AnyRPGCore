@@ -36,6 +36,15 @@ namespace AnyRPG {
         protected TextMeshProUGUI sceneDescriptionText = null;
 
         [SerializeField]
+        protected Image characterImage = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI characterNameText = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI characterDescriptionText = null;
+
+        [SerializeField]
         protected HighlightButton leaveButton = null;
 
         [SerializeField]
@@ -47,7 +56,9 @@ namespace AnyRPG {
         private string lobbyGameChatText = string.Empty;
         private int maxLobbyChatTextSize = 64000;
 
-        private Dictionary<int, ClientPlayerLobbyConnectionButtonController> playerButtons = new Dictionary<int, ClientPlayerLobbyConnectionButtonController>();
+        private UnitProfile unitProfile = null;
+
+        private Dictionary<int, ClientPlayerLobbyGameConnectionButton> playerButtons = new Dictionary<int, ClientPlayerLobbyGameConnectionButton>();
 
         // game manager references
         protected UIManager uIManager = null;
@@ -71,7 +82,7 @@ namespace AnyRPG {
         }
 
         public void ChooseLobbyGameCharacter() {
-
+            uIManager.newGameWindow.OpenWindow();
         }
 
         public void StartGame() {
@@ -84,6 +95,7 @@ namespace AnyRPG {
         }
 
         public void Leave() {
+            networkManagerClient.LeaveLobbyGame(networkManagerClient.LobbyGame.gameId);
             uIManager.clientLobbyGameWindow.CloseWindow();
         }
 
@@ -151,23 +163,27 @@ namespace AnyRPG {
             networkManagerClient.RequestLobbyPlayerList();
         }
 
-        public void PopulatePlayerList(Dictionary<int, string> userNames) {
+        public void PopulatePlayerList(Dictionary<int, LobbyGamePlayerInfo> userNames) {
             Debug.Log($"ClientLobbyGamePanel.PopulatePlayerList({userNames.Count})");
 
-            foreach (KeyValuePair<int, string> loggedInAccount in userNames) {
-                AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value);
+            foreach (KeyValuePair<int, LobbyGamePlayerInfo> loggedInAccount in userNames) {
+                AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value.userName);
             }
         }
 
         public void AddPlayerToList(int clientId, string userName) {
-            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({userName})");
+            Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({clientId}, {userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
-            ClientPlayerLobbyConnectionButtonController clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButtonController>();
-            clientPlayerLobbyConnectionButtonController.Configure(systemGameManager);
-            clientPlayerLobbyConnectionButtonController.SetClientId(clientId, userName);
-            //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyConnectionButtonController.joinbu);
-            playerButtons.Add(clientId, clientPlayerLobbyConnectionButtonController);
+            ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton = go.GetComponent<ClientPlayerLobbyGameConnectionButton>();
+            clientPlayerLobbyGameConnectionButton.Configure(systemGameManager);
+            if (networkManagerClient.LobbyGame.leaderClientId == clientId) {
+                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, $"{userName} (leader)");
+            } else {
+                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, userName);
+            }
+            //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyGameConnectionButton.joinbu);
+            playerButtons.Add(clientId, clientPlayerLobbyGameConnectionButton);
         }
 
         public void RemovePlayerFromList(int clientId) {
@@ -185,26 +201,55 @@ namespace AnyRPG {
         public void ClearPlayerList() {
 
             // clear the skill list so any skill left over from a previous time opening the window aren't shown
-            foreach (ClientPlayerLobbyConnectionButtonController clientPlayerLobbyConnectionButtonController in playerButtons.Values) {
-                if (clientPlayerLobbyConnectionButtonController.gameObject != null) {
-                    clientPlayerLobbyConnectionButtonController.gameObject.transform.SetParent(null);
-                    objectPooler.ReturnObjectToPool(clientPlayerLobbyConnectionButtonController.gameObject);
+            foreach (ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton in playerButtons.Values) {
+                if (clientPlayerLobbyGameConnectionButton.gameObject != null) {
+                    clientPlayerLobbyGameConnectionButton.gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(clientPlayerLobbyGameConnectionButton.gameObject);
                 }
             }
             playerButtons.Clear();
             //uINavigationControllers[1].ClearActiveButtons();
         }
 
+        public void HandleChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
+            
+            if (clientId == networkManagerClient.ClientId) {
+                unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
+                if (unitProfile != null) {
+                    characterImage.sprite = unitProfile.Icon;
+                    characterImage.color = Color.white;
+                    characterNameText.text = unitProfile.DisplayName;
+                    characterDescriptionText.text = unitProfile.Description;
+                } else {
+                    characterImage.sprite = null;
+                    characterImage.color = Color.black;
+                }
+            }
+            playerButtons[clientId].SetUnitProfileName(unitProfileName);
+        }
+
+        public void UpdateNavigationButtons() {
+            
+            // hide the cancel game button for anyone other than the leader
+            if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
+                cancelGameButton.gameObject.SetActive(true);
+            } else {
+                cancelGameButton.gameObject.SetActive(false);
+            }
+            uINavigationControllers[0].UpdateNavigationList();
+        }
 
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
             SetStatusLabel();
             PopulatePlayerList(networkManagerClient.LobbyGame.PlayerList);
+            UpdateNavigationButtons();
             networkManagerClient.OnSendLobbyGameChatMessage += HandleSendLobbyGameChatMessage;
             networkManagerClient.OnJoinLobbyGame += HandleJoinLobbyGame;
             networkManagerClient.OnLeaveLobbyGame += HandleLeaveLobbyGame;
             networkManagerClient.OnCancelLobbyGame += HandleCancelLobbyGame;
+            networkManagerClient.OnChooseLobbyGameCharacter += HandleChooseLobbyGameCharacter;
         }
 
         public override void ReceiveClosedWindowNotification() {
@@ -213,6 +258,7 @@ namespace AnyRPG {
             networkManagerClient.OnJoinLobbyGame -= HandleJoinLobbyGame;
             networkManagerClient.OnLeaveLobbyGame -= HandleLeaveLobbyGame;
             networkManagerClient.OnCancelLobbyGame -= HandleCancelLobbyGame;
+            networkManagerClient.OnChooseLobbyGameCharacter -= HandleChooseLobbyGameCharacter;
 
             ClearPlayerList();
         }

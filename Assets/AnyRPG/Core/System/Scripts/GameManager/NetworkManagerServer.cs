@@ -301,8 +301,12 @@ namespace AnyRPG {
             if (loggedInAccounts.ContainsKey(clientId)) {
                 loggedInAccounts.Remove(clientId);
             }
-
             OnLobbyLogout(clientId);
+            foreach (LobbyGame lobbyGame in lobbyGames.Values) {
+                if (lobbyGame.leaderClientId == clientId) {
+                    CancelLobbyGame(clientId, lobbyGame.gameId);
+                }
+            }
             networkController?.AdvertiseLobbyLogout(clientId);
         }
 
@@ -352,7 +356,7 @@ namespace AnyRPG {
         public void CreateLobbyGame(string sceneName, int clientId) {
             LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneName, loggedInAccounts[clientId].username);
             lobbyGameCounter++;
-            lobbyGames.Add(lobbyGame.GameId, lobbyGame);
+            lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             lobbyGameChatText.Add(lobbyGame.gameId, string.Empty);
             networkController.AdvertiseCreateLobbyGame(lobbyGame);
         }
@@ -388,13 +392,30 @@ namespace AnyRPG {
             networkController.SetLobbyPlayerList(clientId, lobbyPlayerList);
         }
 
+        public void ChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
+            if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(clientId) == false) {
+                // game or client doesn't exist
+                return;
+            }
+            if (lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
+                // client isn't part of lobby game
+                return;
+            }
+            lobbyGames[gameId].PlayerList[clientId].unitProfileName = unitProfileName;
+            networkController.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        }
+
         public void LeaveLobbyGame(int gameId, int clientId) {
             if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(clientId) == false) {
                 // game or client doesn't exist
                 return;
             }
-            lobbyGames[gameId].RemovePlayer(clientId);
-            networkController.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+            if (lobbyGames[gameId].leaderClientId == clientId) {
+                CancelLobbyGame(clientId, gameId);
+            } else {
+                lobbyGames[gameId].RemovePlayer(clientId);
+                networkController.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+            }
         }
 
         public void SendLobbyChatMessage(string messageText, int clientId) {

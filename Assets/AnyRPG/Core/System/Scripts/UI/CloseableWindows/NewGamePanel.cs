@@ -90,6 +90,7 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected NewGameManager newGameManager = null;
         protected ObjectPooler objectPooler = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -117,6 +118,7 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             newGameManager = systemGameManager.NewGameManager;
             objectPooler = systemGameManager.ObjectPooler;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         private void AddDefaultAppearancePanel() {
@@ -251,7 +253,13 @@ namespace AnyRPG {
             if (systemGameManager.GameMode == GameMode.Local) {
                 startButtonText.text = "Start Game";
             } else {
-                startButtonText.text = "Create Character";
+                // network mode
+                if (networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
+                    startButtonText.text = "Select Character";
+                } else {
+                    // MMO mode
+                    startButtonText.text = "Create Character";
+                }
             }
         }
 
@@ -689,7 +697,11 @@ namespace AnyRPG {
 
             SaveAppearanceData(newGameManager.PlayerCharacterSaveData.SaveData);
 
-            uIManager.confirmNewGameMenuWindow.OpenWindow();
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
+                networkManagerClient.ChooseLobbyGameCharacter(newGameManager.PlayerCharacterSaveData.SaveData.unitProfileName);
+            } else {
+                uIManager.confirmNewGameMenuWindow.OpenWindow();
+            }
         }
 
         public void SaveAppearanceData(AnyRPGSaveData saveData) {

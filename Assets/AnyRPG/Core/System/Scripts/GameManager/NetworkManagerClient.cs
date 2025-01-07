@@ -21,6 +21,7 @@ namespace AnyRPG {
         public event Action<int> OnLobbyLogout = delegate { };
         public event Action<List<LobbyGame>> OnSetLobbyGameList = delegate { };
         public event Action<Dictionary<int, string>> OnSetLobbyPlayerList = delegate { };
+        public event Action<int, int, string> OnChooseLobbyGameCharacter = delegate { };
 
         private string username = string.Empty;
         private string password = string.Empty;
@@ -50,6 +51,7 @@ namespace AnyRPG {
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LobbyGamePlayerList { get => lobbyGamePlayerList; }
         public LobbyGame LobbyGame { get => lobbyGame; }
+        public int ClientId { get => clientId; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -287,6 +289,26 @@ namespace AnyRPG {
             OnSetLobbyPlayerList(lobbyPlayers);
         }
 
+        public void ChooseLobbyGameCharacter(string unitProfileName) {
+            networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId);
+        }
+
+        public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
+            Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {clientId}, {unitProfileName})");
+
+            if (gameId != lobbyGame.gameId) {
+                // this is for another game, ignore it
+                return;
+            }
+            if (lobbyGame.PlayerList.ContainsKey(clientId) == false) {
+                // this client is not part of the current lobby game
+                return;
+            }
+            lobbyGame.PlayerList[clientId].unitProfileName = unitProfileName;
+            
+            OnChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+            uIManager.newGameWindow.CloseWindow();
+        }
     }
 
     public enum NetworkClientMode { Lobby, MMO }

@@ -308,6 +308,11 @@ namespace AnyRPG {
             networkManagerServer.SendLobbyGameChatMessage(messageText, networkConnection.ClientId, gameId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void ChooseLobbyGameCharacter(string unitProfileName, int gameId, NetworkConnection networkConnection = null) {
+            networkManagerServer.ChooseLobbyGameCharacter(gameId, networkConnection.ClientId, unitProfileName);
+        }
+
         public override void OnStartNetwork() {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
@@ -366,6 +371,10 @@ namespace AnyRPG {
             networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
         }
 
+        [ObserversRpc]
+        public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
+            networkManagerClient.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        }
 
         [ObserversRpc]
         public void AdvertiseLobbyLogout(int clientId) {

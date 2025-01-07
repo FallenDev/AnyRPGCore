@@ -365,6 +365,10 @@ namespace AnyRPG {
             clientConnector.RequestLobbyPlayerList();
         }
 
+        public override void ChooseLobbyGameCharacter(string unitProfileName, int gameId) {
+            clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId);
+        }
+
         #endregion
 
         #region server functions
@@ -430,6 +434,11 @@ namespace AnyRPG {
         public override void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers) {
             clientConnector.SendLobbyPlayerList(clientId, lobbyPlayers);
         }
+
+        public override void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
+            clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        }
+
 
         #endregion
 

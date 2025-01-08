@@ -113,6 +113,57 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void SpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
+
+            if (networkManagerServer.LobbyGames.ContainsKey(gameId) == false || networkManagerServer.LobbyGames[gameId].PlayerList.ContainsKey(networkConnection.ClientId) == false) {
+                // game not running or client not in game
+                return;
+            }
+
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerServer.LobbyGames[gameId].PlayerList[networkConnection.ClientId].unitProfileName);
+            if (unitProfile == null) {
+                return;
+            }
+            NetworkObject networkPrefab = unitProfile.UnitPrefabProps.NetworkUnitPrefab.GetComponent<NetworkObject>();
+            if (networkPrefab == null) {
+                Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
+                return;
+            }
+            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
+            /*
+            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
+            characterConfigurationRequest.unitLevel = playerCharacterSaveData.SaveData.PlayerLevel;
+            characterConfigurationRequest.unitControllerMode = unitControllerMode;
+            CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
+            */
+            //characterManager.AddUnitSpawnRequest(serverSpawnRequestId, characterRequestData);
+            position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
+            NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
+            // update syncvars
+            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
+            if (networkCharacterUnit != null) {
+                networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
+                networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.Player;
+                networkCharacterUnit.unitLevel.Value = 1;
+                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
+            }
+
+            /*
+            UnitController unitController = nob.gameObject.GetComponent<UnitController>();
+            if (unitController != null) {
+                networkManagerServer.MonitorPlayerUnit(networkConnection.ClientId, playerCharacterSaveData, unitController);
+            }
+            */
+
+            SpawnPrefab(nob, networkConnection);
+            if (nob == null) {
+                return;
+            }
+        }
+
+        // currently unused 
+        [ServerRpc(RequireOwnership = false)]
         public void SpawnCharacterUnit(int clientSpawnRequestId, string unitProfileName, Transform parentTransform, Vector3 position, Vector3 forward, UnitControllerMode unitControllerMode, int unitLevel, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.SpawnPlayer({clientSpawnRequestId}, {unitProfileName})");
 
@@ -149,6 +200,8 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void SpawnModelPrefab(int clientSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
+
             int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
             NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             SpawnPrefab(nob, networkConnection);
@@ -169,6 +222,15 @@ namespace AnyRPG {
             nob.transform.parent = parentTransform;
             nob.transform.position = position;
             nob.transform.forward = forward;
+            if (parentTransform != null) {
+                NetworkObject nob2 = parentTransform.GetComponent<NetworkObject>();
+                if (nob2 == null) {
+                    Debug.Log($"could not find network object on {parentTransform.gameObject.name}");
+                } else {
+                    Debug.Log($"found a network object on {parentTransform.gameObject.name}");
+                    nob.SetParent(nob2);
+                }
+            }
 
             SpawnedNetworkObject spawnedNetworkObject = nob.gameObject.GetComponent<SpawnedNetworkObject>();
             if (spawnedNetworkObject != null) {
@@ -313,6 +375,11 @@ namespace AnyRPG {
             networkManagerServer.ChooseLobbyGameCharacter(gameId, networkConnection.ClientId, unitProfileName);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void StartLobbyGame(int gameId, NetworkConnection networkConnection = null) {
+            networkManagerServer.StartLobbyGame(gameId, networkConnection.ClientId);
+        }
+
         public override void OnStartNetwork() {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
@@ -369,6 +436,11 @@ namespace AnyRPG {
         [TargetRpc]
         public void SetLobbyPlayerList(NetworkConnection networkConnection, Dictionary<int, string> lobbyPlayers) {
             networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseStartLobbyGame(int gameId, string sceneName) {
+            networkManagerClient.AdvertiseStartLobbyGame(gameId, sceneName);
         }
 
         [ObserversRpc]

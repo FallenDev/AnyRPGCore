@@ -462,7 +462,6 @@ namespace AnyRPG {
             uIManager.DeactivateInGameUI();
             uIManager.DeactivateSystemMenuUI();
 
-            //StartCoroutine(LoadAsynchronously(levelName.Replace(" ", string.Empty)));
             SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
             if (sceneNode != null) {
                 StartLoadAsync(sceneNode.SceneFile);

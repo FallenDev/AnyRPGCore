@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 251337143587947253}
   - component: {fileID: 8596961643164384451}
   m_Layer: 0
-  m_Name: NetworkManager
+  m_Name: FishNetNetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -86,7 +86,7 @@ namespace AnyRPG {
         }
 
         public void StartGame() {
-
+            networkManagerClient.StartLobbyGame(networkManagerClient.LobbyGame.gameId);
         }
 
 

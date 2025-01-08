@@ -405,6 +405,15 @@ namespace AnyRPG {
             networkController.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
         }
 
+        public void StartLobbyGame(int gameId, int clientId) {
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].leaderClientId != clientId || lobbyGames[gameId].inProgress == true) {
+                // game did not exist, non leader tried to start, or already in progress, nothing to do
+                return;
+            }
+            lobbyGames[gameId].inProgress = true;
+            networkController.AdvertiseStartLobbyGame(gameId, lobbyGames[gameId].sceneName);
+        }
+
         public void LeaveLobbyGame(int gameId, int clientId) {
             if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(clientId) == false) {
                 // game or client doesn't exist

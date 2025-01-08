@@ -254,10 +254,8 @@ namespace AnyRPG {
         public void LoadGame() {
             //Debug.Log("LoadGamePanel.LoadGame()");
             if (selectedLoadGameButton != null) {
-                // this variable will be set to null in the Close() call so save the property we need first
-                PlayerCharacterSaveData playerCharacterSaveData = selectedLoadGameButton.PlayerCharacterSaveData;
-                Close();
-                loadGameManager.LoadGame(playerCharacterSaveData);
+                loadGameManager.LoadGame(selectedLoadGameButton.PlayerCharacterSaveData);
+                //Close();
             }
         }
 

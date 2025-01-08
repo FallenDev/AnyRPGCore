@@ -86,7 +86,7 @@ namespace AnyRPG {
         protected MessageFeedManager messageFeedManager = null;
         protected ObjectPooler objectPooler = null;
         protected ControlsManager controlsManager = null;
-        protected NetworkManagerClient networkManager = null;
+        protected NetworkManagerClient networkManagerClient = null;
         protected CharacterManager characterManager = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
@@ -121,7 +121,7 @@ namespace AnyRPG {
             inventoryManager = systemGameManager.InventoryManager;
             objectPooler = systemGameManager.ObjectPooler;
             controlsManager = systemGameManager.ControlsManager;
-            networkManager = systemGameManager.NetworkManagerClient;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
             characterManager = systemGameManager.CharacterManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
 
@@ -396,13 +396,30 @@ namespace AnyRPG {
 
             // spawn the player unit and set references
             Vector3 spawnRotation = levelManager.GetSpawnRotation();
-            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
-            characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
-            characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
-            CharacterRequestData characterRequestData = new CharacterRequestData(this,
-                systemGameManager.GameMode,
-                characterConfigurationRequest);
-            characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, spawnLocation, spawnRotation);
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
+                // load lobby player
+                UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerClient.LobbyGame.PlayerList[networkManagerClient.ClientId].unitProfileName);
+                if (unitProfile == null) {
+                    return;
+                }
+                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
+                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
+                CharacterRequestData characterRequestData = new CharacterRequestData(this,
+                    systemGameManager.GameMode,
+                    characterConfigurationRequest);
+                characterManager.SpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, spawnLocation, spawnRotation);
+            } else {
+                // load MMO or local player
+                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
+                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
+                characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
+                CharacterRequestData characterRequestData = new CharacterRequestData(this,
+                    systemGameManager.GameMode,
+                    characterConfigurationRequest);
+                characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, spawnLocation, spawnRotation);
+            }
+
         }
 
         private bool OwnPlayer(UnitController unitController, CharacterRequestData characterRequestData) {

@@ -96,6 +96,15 @@ namespace AnyRPG {
             networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform);
         }
 
+        public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+            //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
+
+            if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
+                Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
+            }
+            networkController.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward);
+        }
+
         public GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             return networkController.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
         }
@@ -311,6 +320,26 @@ namespace AnyRPG {
                 // the character was chosen for this client so close the new game window
                 uIManager.newGameWindow.CloseWindow();
             }
+        }
+
+        public void StartLobbyGame(int gameId) {
+            networkController.StartLobbyGame(gameId);
+        }
+
+        public void AdvertiseStartLobbyGame(int gameId, string sceneName) {
+            if (lobbyGames.ContainsKey(gameId) == false) {
+                // lobby game does not exist
+                return;
+            }
+            lobbyGames[gameId].inProgress = true;
+            if (lobbyGame == null || lobbyGame.gameId != gameId) {
+                // have not joined lobby game, or joined different lobby game
+                return;
+            }
+
+            // this is our lobby game
+            uIManager.clientLobbyGameWindow.CloseWindow();
+            levelManager.LoadLevel(sceneName);
         }
     }
 

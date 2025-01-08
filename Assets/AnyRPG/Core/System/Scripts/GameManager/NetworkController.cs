@@ -19,6 +19,7 @@ namespace AnyRPG {
         }
         public abstract void Logout();
         public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform);
+        public abstract void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();
@@ -36,6 +37,7 @@ namespace AnyRPG {
         public abstract void RequestLobbyGameList();
         public abstract void RequestLobbyPlayerList();
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
+        public abstract void StartLobbyGame(int gameId);
 
         // server functions
         public abstract void StartServer();
@@ -53,6 +55,7 @@ namespace AnyRPG {
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
         public abstract void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers);
         public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
+        public abstract void AdvertiseStartLobbyGame(int gameId, string sceneName);
     }
 
 }

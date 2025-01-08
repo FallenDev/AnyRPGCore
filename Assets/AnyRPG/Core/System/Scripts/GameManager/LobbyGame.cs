@@ -8,6 +8,7 @@ namespace AnyRPG {
         public int gameId;
         public string gameName = string.Empty;
         public string sceneName = string.Empty;
+        public bool inProgress = false;
 
         private Dictionary<int, LobbyGamePlayerInfo> playerList = new Dictionary<int, LobbyGamePlayerInfo>();
 

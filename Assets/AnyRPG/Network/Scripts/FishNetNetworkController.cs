@@ -281,8 +281,16 @@ namespace AnyRPG {
             //return null;
         }
 
+        public override void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+            Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+
+            clientConnector.SpawnLobbyGamePlayer(characterRequestData.spawnRequestId, gameId, parentTransform, position, forward);
+            //return null;
+        }
+
+
         public override GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId})");
+            Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId}, {parentTransform.gameObject.name})");
 
             clientConnector.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
             return null;
@@ -369,6 +377,10 @@ namespace AnyRPG {
             clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId);
         }
 
+        public override void StartLobbyGame(int gameId) {
+            clientConnector.StartLobbyGame(gameId);
+        }
+
         #endregion
 
         #region server functions
@@ -439,6 +451,9 @@ namespace AnyRPG {
             clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
         }
 
+        public override void AdvertiseStartLobbyGame(int gameId, string sceneName) {
+            clientConnector.AdvertiseStartLobbyGame(gameId, sceneName);
+        }
 
         #endregion
 

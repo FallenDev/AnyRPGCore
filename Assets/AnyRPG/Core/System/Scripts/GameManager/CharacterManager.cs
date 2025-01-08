@@ -49,6 +49,14 @@ namespace AnyRPG {
 
         }
 
+        public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+
+            SetupUnitSpawnRequest(characterRequestData);
+
+            networkManager.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward);
+
+        }
+
         public void SpawnPlayer(PlayerCharacterSaveData playerCharacterSaveData, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
 
             SetupUnitSpawnRequest(characterRequestData);
@@ -91,7 +99,7 @@ namespace AnyRPG {
         }
 
         public UnitController CompleteCharacterRequest(GameObject characterGameObject, CharacterRequestData characterRequestData, bool isOwner) {
-            //Debug.Log($"CharacterManager.CompleteCharacterRequest({gameObject.name}, {isOwner})");
+            Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {isOwner})");
 
             UnitController unitController = ConfigureUnitController(characterRequestData, characterGameObject, isOwner);
             if (unitController == null) {
@@ -212,7 +220,7 @@ namespace AnyRPG {
         }
 
         private GameObject SpawnModelPrefab(int spawnRequestId, GameMode spawnMode, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"CharacterManager.SpawnPrefab({spawnMode}, {spawnPrefab.name})");
+            Debug.Log($"CharacterManager.SpawnModelPrefab({spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name})");
 
             if (spawnMode == GameMode.Network) {
                 return networkManager.SpawnModelPrefab(spawnRequestId, spawnPrefab, parentTransform, position, forward);
@@ -228,7 +236,7 @@ namespace AnyRPG {
         /// <param name="settingsTransform"></param>
         /// <returns></returns>
         public GameObject SpawnModelPrefab(UnitController unitController, UnitProfile unitProfile, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName})");
+            Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
 
             if (modelSpawnRequests.ContainsKey(unitController) == false) {
                 return null;

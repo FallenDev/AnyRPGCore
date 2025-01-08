@@ -23,9 +23,10 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
-        public void SetClientId(int clientId, string userName) {
+        public void SetClientId(int clientId, string userName, string unitProfileName) {
             this.clientId = clientId;
             playerNameText.text = userName;
+            unitProfileNameText.text = unitProfileName;
         }
 
         public void SetUnitProfileName(string unitProfileName) {

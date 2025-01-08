@@ -208,6 +208,7 @@ namespace AnyRPG {
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
             Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderClientId}) clientid: {clientId}");
 
+            lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             if (lobbyGame.leaderClientId == clientId) {
                 this.lobbyGame = lobbyGame;
                 uIManager.clientLobbyGameWindow.OpenWindow();
@@ -274,6 +275,8 @@ namespace AnyRPG {
         }
 
         public void SetLobbyGameList(List<LobbyGame> lobbyGames) {
+            Debug.Log($"NetworkManagerClient.SetLobbyGameList({lobbyGames.Count})");
+
             this.lobbyGames.Clear();
             foreach (LobbyGame lobbyGame in lobbyGames) {
                 this.lobbyGames.Add(lobbyGame.gameId, lobbyGame);
@@ -296,18 +299,18 @@ namespace AnyRPG {
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
             Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {clientId}, {unitProfileName})");
 
-            if (gameId != lobbyGame.gameId) {
-                // this is for another game, ignore it
+            if (lobbyGames.ContainsKey(gameId) == false) {
+                // game does not exist
                 return;
             }
-            if (lobbyGame.PlayerList.ContainsKey(clientId) == false) {
-                // this client is not part of the current lobby game
-                return;
-            }
-            lobbyGame.PlayerList[clientId].unitProfileName = unitProfileName;
+            lobbyGames[gameId].PlayerList[clientId].unitProfileName = unitProfileName;
             
             OnChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
-            uIManager.newGameWindow.CloseWindow();
+
+            if (gameId == lobbyGame.gameId && clientId == this.clientId) {
+                // the character was chosen for this client so close the new game window
+                uIManager.newGameWindow.CloseWindow();
+            }
         }
     }
 

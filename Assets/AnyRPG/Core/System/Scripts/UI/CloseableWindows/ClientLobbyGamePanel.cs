@@ -121,7 +121,7 @@ namespace AnyRPG {
             if (gameId != networkManagerClient.LobbyGame.gameId) {
                 return;
             }
-            AddPlayerToList(clientId, userName);
+            AddPlayerToList(clientId, userName, string.Empty);
         }
 
         public void HandleLeaveLobbyGame(int clientId, int gameId) {
@@ -167,20 +167,20 @@ namespace AnyRPG {
             Debug.Log($"ClientLobbyGamePanel.PopulatePlayerList({userNames.Count})");
 
             foreach (KeyValuePair<int, LobbyGamePlayerInfo> loggedInAccount in userNames) {
-                AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value.userName);
+                AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value.userName, loggedInAccount.Value.unitProfileName);
             }
         }
 
-        public void AddPlayerToList(int clientId, string userName) {
+        public void AddPlayerToList(int clientId, string userName, string unitProfileName) {
             Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({clientId}, {userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton = go.GetComponent<ClientPlayerLobbyGameConnectionButton>();
             clientPlayerLobbyGameConnectionButton.Configure(systemGameManager);
             if (networkManagerClient.LobbyGame.leaderClientId == clientId) {
-                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, $"{userName} (leader)");
+                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, $"{userName} (leader)", unitProfileName);
             } else {
-                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, userName);
+                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, userName, unitProfileName);
             }
             //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyGameConnectionButton.joinbu);
             playerButtons.Add(clientId, clientPlayerLobbyGameConnectionButton);

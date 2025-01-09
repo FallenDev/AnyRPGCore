@@ -46,6 +46,9 @@ namespace AnyRPG {
 
         public void DisableCastBar() {
             //Debug.Log($"{gameObject.name}.CastBarController.DisableCastBar()");
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
             if (closeableWindow?.DragHandle != null && closeableWindow.DragHandle.UiLocked == false && closeableWindow.DragHandle.NeverDraggable != true) {
                 //Debug.Log($"{gameObject.name}.CastBarController.InitializeController(): ui is unlocked and neverdraggable is not set to true.  returning to avoid deactivating cast bar");
                 return;

@@ -1,3 +1,4 @@
+using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -29,8 +30,21 @@ namespace AnyRPG {
         SystemGameManager systemGameManager = null;
 
         private void Awake() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
+
+            /*
+            NetworkTransform networkTransform = GetComponent<NetworkTransform>();
+            if (networkTransform != null) {
+                networkTransform.OnDataReceived += HandleDataReceived;
+            }
+            */
             characterName.OnChange += HandleNameSync;
             unitControllerMode.Value = UnitControllerMode.Preview;
+        }
+
+        private void HandleDataReceived(NetworkTransform.TransformData prev, NetworkTransform.TransformData next) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDataReceived({prev.Position}, {next.Position})");
+
         }
 
         private void Configure() {
@@ -41,6 +55,8 @@ namespace AnyRPG {
             //    unitController.UnitEventController.OnNameChange += HandleUnitNameChange;
             //}
         }
+
+       
 
         private void HandleUnitNameChange(string characterName) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChange({characterName})");
@@ -120,8 +136,11 @@ namespace AnyRPG {
         }
 
         public override void OnStopServer() {
-            base.OnStopClient();
+            base.OnStopServer();
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopServer()");
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
 
             systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
         }

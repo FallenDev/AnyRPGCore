@@ -381,6 +381,10 @@ namespace AnyRPG {
             clientConnector.StartLobbyGame(gameId);
         }
 
+        public override void ToggleLobbyGameReadyStatus(int gameId) {
+            clientConnector.ToggleLobbyGameReadyStatus(gameId);
+        }
+
         #endregion
 
         #region server functions
@@ -453,6 +457,10 @@ namespace AnyRPG {
 
         public override void AdvertiseStartLobbyGame(int gameId, string sceneName) {
             clientConnector.AdvertiseStartLobbyGame(gameId, sceneName);
+        }
+
+        public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
+            clientConnector.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
 
         #endregion

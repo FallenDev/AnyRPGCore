@@ -65,7 +65,11 @@ namespace AnyRPG {
             characterConfigurationRequest.characterClass = playerManager.UnitController.BaseCharacter.CharacterClass;
             characterConfigurationRequest.classSpecialization = playerManager.UnitController.BaseCharacter.ClassSpecialization;
             characterConfigurationRequest.unitLevel = playerManager.UnitController.CharacterStats.Level;
-            characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerManager.PlayerCharacterSaveData.SaveData);
+
+            // if the game is in lobby mode, there will be no save data
+            if (playerManager.PlayerCharacterSaveData != null) {
+                characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerManager.PlayerCharacterSaveData.SaveData);
+            }
 
             SpawnUnit(characterConfigurationRequest);
             systemEventManager.OnEquipmentChanged += HandleEquipmentChanged;

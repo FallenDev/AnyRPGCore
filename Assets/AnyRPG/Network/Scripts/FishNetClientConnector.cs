@@ -203,13 +203,14 @@ namespace AnyRPG {
             Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
 
             int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
+            //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             SpawnPrefab(nob, networkConnection);
         }
 
 
         private NetworkObject GetSpawnablePrefab(NetworkConnection networkConnection, int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name})");
+            Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}, {position}, {forward})");
 
             NetworkObject networkPrefab = prefab.GetComponent<NetworkObject>();
             if (networkPrefab == null) {
@@ -217,20 +218,23 @@ namespace AnyRPG {
                 return null;
             }
 
-            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, true);
+            //NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, true);
+            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, position, Quaternion.identity, true);
+            //NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, position, Quaternion.identity, parentTransform, true);
             //nob.transform.SetPositionAndRotation(position, rotation);
-            nob.transform.parent = parentTransform;
-            nob.transform.position = position;
-            nob.transform.forward = forward;
+            
             if (parentTransform != null) {
                 NetworkObject nob2 = parentTransform.GetComponent<NetworkObject>();
                 if (nob2 == null) {
-                    Debug.Log($"could not find network object on {parentTransform.gameObject.name}");
+                    Debug.Log($"FishNetNetworkConnector.SpawnPrefab() could not find network object on {parentTransform.gameObject.name}");
                 } else {
-                    Debug.Log($"found a network object on {parentTransform.gameObject.name}");
+                    Debug.Log($"FishNetNetworkConnector.SpawnPrefab() found a network object on {parentTransform.gameObject.name}");
                     nob.SetParent(nob2);
                 }
             }
+            
+            //nob.transform.position = position;
+            nob.transform.forward = forward;
 
             SpawnedNetworkObject spawnedNetworkObject = nob.gameObject.GetComponent<SpawnedNetworkObject>();
             if (spawnedNetworkObject != null) {
@@ -298,6 +302,11 @@ namespace AnyRPG {
 
             //LoadCharacterList(networkManager.ServerManager.Clients[clientId]);
             networkManagerServer.LoadCharacterList(clientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void ToggleLobbyGameReadyStatus(int gameId, NetworkConnection networkConnection = null) {
+            networkManagerServer.ToggleLobbyGameReadyStatus(gameId, networkConnection.ClientId);
         }
 
 
@@ -484,6 +493,12 @@ namespace AnyRPG {
         public void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId) {
             networkManagerClient.AdvertiseSendLobbyGameChatMessage(messageText, gameId);
         }
+
+        [ObserversRpc]
+        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
+            networkManagerClient.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
+        }
+
 
 
         /*

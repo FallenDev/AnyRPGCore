@@ -179,6 +179,10 @@ namespace AnyRPG {
         public void ProcessStopServer(UnitController unitController) {
             Debug.Log($"NetworkManagerServer.ProcessStopServer({unitController.gameObject.name})");
 
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
+
             foreach (int playerCharacterId in activePlayerCharacters.Keys) {
                 if (activePlayerCharacters[playerCharacterId].unitController == unitController) {
                     StopMonitoringPlayerUnit(playerCharacterId);
@@ -305,6 +309,7 @@ namespace AnyRPG {
             foreach (LobbyGame lobbyGame in lobbyGames.Values) {
                 if (lobbyGame.leaderClientId == clientId) {
                     CancelLobbyGame(clientId, lobbyGame.gameId);
+                    break;
                 }
             }
             networkController?.AdvertiseLobbyLogout(clientId);
@@ -403,6 +408,16 @@ namespace AnyRPG {
             }
             lobbyGames[gameId].PlayerList[clientId].unitProfileName = unitProfileName;
             networkController.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        }
+
+        public void ToggleLobbyGameReadyStatus(int gameId, int clientId) {
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
+                // game did not exist or client was not in game
+                return;
+            }
+
+            lobbyGames[gameId].PlayerList[clientId].ready = !lobbyGames[gameId].PlayerList[clientId].ready;
+            networkController.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, lobbyGames[gameId].PlayerList[clientId].ready);
         }
 
         public void StartLobbyGame(int gameId, int clientId) {

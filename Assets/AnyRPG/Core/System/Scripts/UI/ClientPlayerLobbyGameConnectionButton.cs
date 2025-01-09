@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -9,6 +10,9 @@ namespace AnyRPG {
 
         [SerializeField]
         private TextMeshProUGUI unitProfileNameText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI readyText = null;
 
         private int clientId;
 
@@ -27,12 +31,21 @@ namespace AnyRPG {
             this.clientId = clientId;
             playerNameText.text = userName;
             unitProfileNameText.text = unitProfileName;
+            SetReadyStatus(false);
         }
 
         public void SetUnitProfileName(string unitProfileName) {
             unitProfileNameText.text = unitProfileName;
         }
 
+        public void SetReadyStatus(bool ready) {
+            Debug.Log($"ClientPlayerLobbyGameConnectionButton.SetReadyStatus({ready})");
+            if (ready) {
+                readyText.text = "Ready";
+            } else {
+                readyText.text = "Not Ready";
+            }
+        }
     }
 
 }

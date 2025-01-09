@@ -44,7 +44,7 @@ namespace AnyRPG {
             if (completeBefore) {
                 return;
             }
-            if (playerManager.UnitController.CharacterSkillManager.HasSkill(skill)) {
+            if (playerManager.PlayerHasSkill(skill)) {
                 CurrentAmount++;
                 questBase.CheckCompletion(true, printMessages);
             }

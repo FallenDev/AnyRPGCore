@@ -22,6 +22,8 @@ namespace AnyRPG {
         public event Action<List<LobbyGame>> OnSetLobbyGameList = delegate { };
         public event Action<Dictionary<int, string>> OnSetLobbyPlayerList = delegate { };
         public event Action<int, int, string> OnChooseLobbyGameCharacter = delegate { };
+        public event Action<int, int, bool> OnSetLobbyGameReadyStatus = delegate { };
+
 
         private string username = string.Empty;
         private string password = string.Empty;
@@ -119,6 +121,10 @@ namespace AnyRPG {
 
         public void RequestLobbyPlayerList() {
             networkController.RequestLobbyPlayerList();
+        }
+
+        public void ToggleLobbyGameReadyStatus(int gameId) {
+            networkController.ToggleLobbyGameReadyStatus(gameId);
         }
 
         public bool CanSpawnPlayerOverNetwork() {
@@ -339,7 +345,19 @@ namespace AnyRPG {
 
             // this is our lobby game
             uIManager.clientLobbyGameWindow.CloseWindow();
+
+            playerManager.SpawnPlayerConnection();
             levelManager.LoadLevel(sceneName);
+        }
+
+        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
+
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
+                // game does not exist or player is not in game
+                return;
+            }
+            lobbyGames[gameId].PlayerList[clientId].ready = ready;
+            OnSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
     }
 

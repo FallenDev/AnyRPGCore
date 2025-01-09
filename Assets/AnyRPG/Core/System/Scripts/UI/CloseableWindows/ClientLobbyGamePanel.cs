@@ -51,6 +51,12 @@ namespace AnyRPG {
         protected HighlightButton cancelGameButton = null;
 
         [SerializeField]
+        protected HighlightButton readyButton = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI readyButtonText = null;
+
+        [SerializeField]
         protected HighlightButton startGameButton = null;
 
         private string lobbyGameChatText = string.Empty;
@@ -92,6 +98,10 @@ namespace AnyRPG {
 
         public void CancelLobbyGame() {
             networkManagerClient.CancelLobbyGame(networkManagerClient.LobbyGame.gameId);
+        }
+
+        public void ToggleReady() {
+            networkManagerClient.ToggleLobbyGameReadyStatus(networkManagerClient.LobbyGame.gameId);
         }
 
         public void Leave() {
@@ -220,6 +230,7 @@ namespace AnyRPG {
                     characterImage.color = Color.white;
                     characterNameText.text = unitProfile.DisplayName;
                     characterDescriptionText.text = unitProfile.Description;
+                    readyButton.Button.interactable = true;
                 } else {
                     characterImage.sprite = null;
                     characterImage.color = Color.black;
@@ -228,14 +239,58 @@ namespace AnyRPG {
             playerButtons[clientId].SetUnitProfileName(unitProfileName);
         }
 
+        public void HandleSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
+            Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
+
+            if (networkManagerClient.LobbyGame.gameId != gameId) {
+                return;
+            }
+
+            if (clientId == networkManagerClient.ClientId) {
+                if (ready) {
+                    readyButtonText.text = "Not Ready";
+                } else {
+                    readyButtonText.text = "Ready";
+                }
+            }
+            
+            playerButtons[clientId].SetReadyStatus(ready);
+
+            if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
+                // check if the start button can be made interactable
+                if (AllPlayersReady()) {
+                    startGameButton.Button.interactable = true;
+                } else {
+                    startGameButton.Button.interactable = false;
+
+                }
+            }
+        }
+
+        private bool AllPlayersReady() {
+            foreach (LobbyGamePlayerInfo lobbyGamePlayerInfo in networkManagerClient.LobbyGame.PlayerList.Values) {
+                if (lobbyGamePlayerInfo.ready == false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
         public void UpdateNavigationButtons() {
             
             // hide the cancel game button for anyone other than the leader
             if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
                 cancelGameButton.gameObject.SetActive(true);
+                startGameButton.gameObject.SetActive(true);
+                startGameButton.Button.interactable = false;
             } else {
                 cancelGameButton.gameObject.SetActive(false);
+                startGameButton.gameObject.SetActive(false);
             }
+            readyButton.Button.interactable = false;
+            readyButtonText.text = "Ready";
+
             uINavigationControllers[0].UpdateNavigationList();
         }
 
@@ -250,6 +305,7 @@ namespace AnyRPG {
             networkManagerClient.OnLeaveLobbyGame += HandleLeaveLobbyGame;
             networkManagerClient.OnCancelLobbyGame += HandleCancelLobbyGame;
             networkManagerClient.OnChooseLobbyGameCharacter += HandleChooseLobbyGameCharacter;
+            networkManagerClient.OnSetLobbyGameReadyStatus += HandleSetLobbyGameReadyStatus;
         }
 
         public override void ReceiveClosedWindowNotification() {
@@ -259,6 +315,7 @@ namespace AnyRPG {
             networkManagerClient.OnLeaveLobbyGame -= HandleLeaveLobbyGame;
             networkManagerClient.OnCancelLobbyGame -= HandleCancelLobbyGame;
             networkManagerClient.OnChooseLobbyGameCharacter -= HandleChooseLobbyGameCharacter;
+            networkManagerClient.OnSetLobbyGameReadyStatus -= HandleSetLobbyGameReadyStatus;
 
             ClearPlayerList();
         }

@@ -50,6 +50,7 @@ namespace AnyRPG {
         }
 
         public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+            Debug.Log($"CharacterManager.SpawnLobbyGamePlayer({gameId}, {position}, {forward})");
 
             SetupUnitSpawnRequest(characterRequestData);
 

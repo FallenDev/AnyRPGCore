@@ -16,6 +16,8 @@ namespace AnyRPG {
         private Animator animator = null;
 
         private void FindGameManager() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
+
             // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             networkAnimator = GetComponent<NetworkAnimator>();

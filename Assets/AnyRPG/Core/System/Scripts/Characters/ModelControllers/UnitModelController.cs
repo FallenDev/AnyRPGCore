@@ -262,7 +262,9 @@ namespace AnyRPG {
 
         public void DespawnModel() {
             //Debug.Log($"{unitController.gameObject.name}UnitModelController.DespawnModel()");
-
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
             mecanimModelController.DespawnModel();
             modelAppearanceController.DespawnModel();
             if (unitController.UnitProfile?.UnitPrefabProps?.ModelPrefab != null) {

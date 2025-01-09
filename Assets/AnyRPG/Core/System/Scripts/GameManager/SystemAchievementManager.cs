@@ -16,11 +16,13 @@ namespace AnyRPG {
         // game manager references
         PlayerManager playerManager = null;
         SystemDataFactory systemDataFactory = null;
+        NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
             playerManager = systemGameManager.PlayerManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
 
             CreateEventSubscriptions();
         }
@@ -47,7 +49,9 @@ namespace AnyRPG {
         }
 
         public void HandlePlayerConnectionSpawn(string eventName, EventParamProperties eventParamProperties) {
-            AcceptAchievements();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerClient.ClientMode == NetworkClientMode.MMO) {
+                AcceptAchievements();
+            }
         }
 
         public void OnDisable() {

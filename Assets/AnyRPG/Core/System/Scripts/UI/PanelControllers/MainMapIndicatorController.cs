@@ -84,6 +84,9 @@ namespace AnyRPG {
         }
 
         public void ResetSettings() {
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
             foreach (MiniMapIndicatorLayerController miniMapIndicatorLayerController in mainMapLayers.Values) {
                 objectPooler.ReturnObjectToPool(miniMapIndicatorLayerController.gameObject);
             }

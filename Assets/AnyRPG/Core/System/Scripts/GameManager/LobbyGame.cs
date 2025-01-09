@@ -43,6 +43,7 @@ namespace AnyRPG {
         public int clientId;
         public string userName = string.Empty;
         public string unitProfileName = string.Empty;
+        public bool ready = false;
 
         public LobbyGamePlayerInfo() {
         }

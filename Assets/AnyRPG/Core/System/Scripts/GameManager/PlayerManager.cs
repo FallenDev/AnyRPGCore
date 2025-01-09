@@ -187,7 +187,9 @@ namespace AnyRPG {
         /// </summary>
         public void ProcessStopClient() {
             //Debug.Log("PlayerManager.ProcessStopClient()");
-
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
             DespawnPlayerUnit();
         }
 
@@ -380,7 +382,7 @@ namespace AnyRPG {
         }
 
         public void SpawnPlayerUnit(Vector3 spawnLocation) {
-            //Debug.Log($"PlayerManager.SpawnPlayerUnit({spawnLocation}");
+            Debug.Log($"PlayerManager.SpawnPlayerUnit({spawnLocation}");
 
             if (activeUnitController != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
@@ -405,6 +407,7 @@ namespace AnyRPG {
                 }
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
+                characterConfigurationRequest.characterName = networkManagerClient.Username;
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
@@ -471,8 +474,10 @@ namespace AnyRPG {
                 HandlePlayerUnitSpawn();
             }
 
-            // load player data from saveManager
-            saveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerClient.ClientMode == NetworkClientMode.MMO) {
+                // load player data from saveManager
+                saveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
+            }
 
             SubscribeToPlayerInventoryEvents();
             unitController.BaseCharacter.Initialize();
@@ -563,11 +568,26 @@ namespace AnyRPG {
         public void SpawnPlayerConnection(PlayerCharacterSaveData playerCharacterSaveData) {
             //Debug.Log("PlayerManager.SpawnPlayerConnection()");
 
+            SetCharacterSaveData(playerCharacterSaveData);
+
+            SpawnPlayerConnectionObject();
+
+        }
+
+        public void SpawnPlayerConnection() {
+            //Debug.Log("PlayerManager.SpawnPlayerConnection()");
+
+            SpawnPlayerConnectionObject();
+
+        }
+
+        public void SpawnPlayerConnectionObject() {
+            //Debug.Log("PlayerManager.SpawnPlayerConnection()");
+
             if (playerConnectionObject != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerConnection(): The Player Connection is not null.  exiting.");
                 return;
             }
-            SetCharacterSaveData(playerCharacterSaveData);
 
             playerConnectionObject = objectPooler.GetPooledObject(playerConnectionPrefab, playerConnectionParent.transform);
             playerController = playerConnectionObject.GetComponent<PlayerController>();
@@ -901,6 +921,15 @@ namespace AnyRPG {
 
         public void HandleImmuneToEffect(AbilityEffectContext abilityEffectContext) {
             combatTextManager.SpawnCombatText(activeUnitController, 0, CombatTextType.immune, CombatMagnitude.normal, abilityEffectContext);
+        }
+
+        public bool PlayerHasSkill(Skill skill) {
+            foreach (SkillSaveData skillSaveData in playerCharacterSaveData.SaveData.skillSaveData) {
+                if (skillSaveData.SkillName == skill.ResourceName) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

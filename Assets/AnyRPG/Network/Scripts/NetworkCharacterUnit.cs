@@ -105,6 +105,31 @@ namespace AnyRPG {
             OnCompleteCharacterRequest();
         }
 
+        public void HandleBeginChatMessageServer(string messageText) {
+            HandleBeginChatMessageClient(messageText);
+        }
+
+        [ObserversRpc]
+        public void HandleBeginChatMessageClient(string messageText) {
+            unitController.BeginChatMessage(messageText);
+        }
+
+        public void SubscribeToServerUnitEvents() {
+            if (unitController == null) {
+                // something went wrong
+                return;
+            }
+
+            unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
+        }
+
+        public void UnsubscribeFromServerUnitEvents() {
+            if (unitController == null) {
+                return;
+            }
+            unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
+        }
+
         public override void OnStartClient() {
             base.OnStartClient();
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartClient()");
@@ -132,6 +157,7 @@ namespace AnyRPG {
                 return;
             }
             CompleteCharacterRequest(false);
+            SubscribeToServerUnitEvents();
             //systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, serverRequestId, false);
         }
 
@@ -141,12 +167,13 @@ namespace AnyRPG {
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
-
+            UnsubscribeFromServerUnitEvents();
             systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
         }
 
         void OnDisable() {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnDisable()");
+            UnsubscribeFromServerUnitEvents();
         }
 
     }

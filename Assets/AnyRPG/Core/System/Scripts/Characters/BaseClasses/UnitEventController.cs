@@ -72,6 +72,8 @@ namespace AnyRPG {
         public event System.Action<BaseAbilityProperties, IAbilityCaster> OnPowerResourceCheckFail = delegate { };
         public event System.Action<BaseAbilityProperties> OnPerformAbility = delegate { };
         public event System.Action<UnitController> OnDespawn = delegate { };
+        public event System.Action<string> OnBeginChatMessage = delegate { };
+
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
 
@@ -363,6 +365,10 @@ namespace AnyRPG {
         public void NotifyOnMessageFeed(string message) {
             //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
             OnMessageFeed(message);
+        }
+        public void NotifyOnBeginChatMessage(string message) {
+            //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
+            OnBeginChatMessage(message);
         }
 
         #endregion

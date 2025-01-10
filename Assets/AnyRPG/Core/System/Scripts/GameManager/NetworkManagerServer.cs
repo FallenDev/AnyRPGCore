@@ -28,6 +28,7 @@ namespace AnyRPG {
 
         // playerCharacterId
         private Dictionary<int, PlayerCharacterMonitor> activePlayerCharacters = new Dictionary<int, PlayerCharacterMonitor>();
+        private Dictionary<int, PlayerCharacterMonitor> activePlayerCharactersByClient = new Dictionary<int, PlayerCharacterMonitor>();
 
         // mapping of client Ids to account information
         private Dictionary<int, LoggedInAccount> loggedInAccounts = new Dictionary<int, LoggedInAccount>();
@@ -239,12 +240,14 @@ namespace AnyRPG {
         }
 
         public void MonitorPlayerUnit(int clientId,  PlayerCharacterSaveData playerCharacterSaveData, UnitController unitController) {
-            activePlayerCharacters.Add(playerCharacterSaveData.PlayerCharacterId, new PlayerCharacterMonitor(
+            PlayerCharacterMonitor playerCharacterMonitor = new PlayerCharacterMonitor(
                 systemGameManager,
                 clientId,
                 playerCharacterSaveData,
                 unitController
-            ));
+            );
+            activePlayerCharacters.Add(playerCharacterSaveData.PlayerCharacterId, playerCharacterMonitor);
+            activePlayerCharactersByClient.Add(clientId, playerCharacterMonitor);
         }
 
         public void StopMonitoringPlayerUnit(int playerCharacterId) {
@@ -254,6 +257,7 @@ namespace AnyRPG {
                 activePlayerCharacters[playerCharacterId].StopMonitoring();
                 // flush data to database before stop monitoring
                 SavePlayerCharacter(activePlayerCharacters[playerCharacterId]);
+                activePlayerCharactersByClient.Remove(activePlayerCharacters[playerCharacterId].clientId);
                 activePlayerCharacters.Remove(playerCharacterId);
             }
         }
@@ -482,6 +486,13 @@ namespace AnyRPG {
             string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
 
             networkController.AdvertiseSendSceneChatMessage(addedText, clientId);
+
+            if (activePlayerCharactersByClient.ContainsKey(clientId) == false) {
+                // no unit logged in
+                return;
+            }
+
+            activePlayerCharactersByClient[clientId].unitController.UnitEventController.NotifyOnBeginChatMessage(messageText);
         }
 
 

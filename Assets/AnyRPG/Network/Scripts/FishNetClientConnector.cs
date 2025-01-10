@@ -18,6 +18,7 @@ namespace AnyRPG {
         private CharacterManager characterManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private NetworkManagerClient networkManagerClient = null;
+        private SaveManager saveManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -34,6 +35,7 @@ namespace AnyRPG {
             characterManager = systemGameManager.CharacterManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
+            saveManager = systemGameManager.SaveManager;
         }
 
         public void SetNetworkManager(FishNet.Managing.NetworkManager networkManager) {
@@ -149,12 +151,17 @@ namespace AnyRPG {
                 networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
             }
 
-            /*
+            PlayerCharacterSaveData playerCharacterSaveData = saveManager.CreateSaveData();
+            playerCharacterSaveData.PlayerCharacterId = networkConnection.ClientId;
+            playerCharacterSaveData.SaveData.playerName = networkManagerServer.LobbyGames[gameId].PlayerList[networkConnection.ClientId].userName;
+            playerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
+            playerCharacterSaveData.SaveData.CurrentScene = networkManagerServer.LobbyGames[gameId].sceneName;
+
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
             if (unitController != null) {
                 networkManagerServer.MonitorPlayerUnit(networkConnection.ClientId, playerCharacterSaveData, unitController);
             }
-            */
+            
 
             SpawnPrefab(nob, networkConnection);
             if (nob == null) {

@@ -2250,6 +2250,10 @@ namespace AnyRPG {
             dialogController.BeginDialog(dialogName);
         }
 
+        public void BeginChatMessage(string messageText) {
+            dialogController.BeginChatMessage(messageText);
+        }
+
         public void BeginPatrol(string patrolName) {
             patrolController.BeginPatrol(patrolName);
         }

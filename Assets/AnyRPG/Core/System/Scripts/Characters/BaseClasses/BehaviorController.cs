@@ -62,7 +62,7 @@ namespace AnyRPG {
 
         public void Cleanup() {
             //Debug.Log("PlayerManager.OnDisable()");
-            CleanupDialog();
+            CleanupBehavior();
             CleanupScriptableObjects();
         }
 
@@ -78,16 +78,13 @@ namespace AnyRPG {
             }
         }
 
-        private void CleanupDialog() {
+        private void CleanupBehavior() {
             //nameplate
             if (behaviorCoroutine != null) {
                 unitController.StopCoroutine(behaviorCoroutine);
             }
             behaviorCoroutine = null;
             SetBehaviorPlaying(false);
-            if (unitController != null && unitController.NamePlateController.NamePlate != null) {
-                unitController.NamePlateController.NamePlate.HideSpeechBubble();
-            }
         }
 
         public IEnumerator PlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null) {

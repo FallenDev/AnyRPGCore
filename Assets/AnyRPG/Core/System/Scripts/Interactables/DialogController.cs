@@ -15,6 +15,7 @@ namespace AnyRPG {
         private int dialogIndex = 0;
 
         private float maxDialogTime = 300f;
+        private float chatDisplayTime = 5f;
 
         private Coroutine dialogCoroutine = null;
 
@@ -42,15 +43,9 @@ namespace AnyRPG {
         private void CleanupDialog() {
             if (dialogCoroutine != null) {
                 interactable.StopCoroutine(dialogCoroutine);
+                interactable.ProcessEndDialog();
+                dialogCoroutine = null;
             }
-            dialogCoroutine = null;
-
-            // testing - is this needed ?  it should be cleaned up by namePlate removal anyway
-            /*
-            if (interactable != null && interactable.NamePlateController.NamePlate != null) {
-                interactable.NamePlateController.NamePlate.HideSpeechBubble();
-            }
-            */
         }
 
         public void BeginDialog(string dialogName, DialogComponent caller = null) {
@@ -66,6 +61,22 @@ namespace AnyRPG {
             if (dialog != null && dialogCoroutine == null) {
                 dialogCoroutine = interactable.StartCoroutine(PlayDialog(dialog, caller));
             }
+        }
+
+        public void BeginChatMessage(string messageText) {
+            CleanupDialog();
+            dialogCoroutine = interactable.StartCoroutine(PlayChatMessage(messageText));
+        }
+
+        public IEnumerator PlayChatMessage(string messageText) {
+            //Debug.Log(interactable.gameObject.name + ".DialogController.PlayDialog(" + dialog.DisplayName + ")");
+
+            interactable.ProcessBeginDialog();
+
+            interactable.ProcessDialogTextUpdate(messageText);
+
+            yield return new WaitForSeconds(chatDisplayTime);
+            interactable.ProcessEndDialog();
         }
 
         public IEnumerator PlayDialog(Dialog dialog, DialogComponent caller = null) {

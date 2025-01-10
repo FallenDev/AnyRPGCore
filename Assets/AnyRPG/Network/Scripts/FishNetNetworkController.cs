@@ -365,6 +365,10 @@ namespace AnyRPG {
             clientConnector.SendLobbyGameChatMessage(messageText, gameId);
         }
 
+        public override void SendSceneChatMessage(string messageText) {
+            clientConnector.SendSceneChatMessage(messageText);
+        }
+
         public override void RequestLobbyGameList() {
             clientConnector.RequestLobbyGameList();
         }
@@ -435,6 +439,10 @@ namespace AnyRPG {
             clientConnector.AdvertiseSendLobbyGameChatMessage(messageText, gameId);
         }
 
+        public override void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
+            clientConnector.AdvertiseSendSceneChatMessage(messageText, clientId);
+        }
+
         public override void AdvertiseLobbyLogin(int clientId, string userName) {
             clientConnector.AdvertiseLobbyLogin(clientId, userName);
         }
@@ -461,6 +469,10 @@ namespace AnyRPG {
 
         public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
             clientConnector.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
+        }
+
+        public override int GetServerPort() {
+            return fishNetNetworkManager.TransportManager.Transport.GetPort();
         }
 
         #endregion

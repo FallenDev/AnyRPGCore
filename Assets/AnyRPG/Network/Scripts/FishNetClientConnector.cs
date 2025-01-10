@@ -380,6 +380,12 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
+        internal void SendSceneChatMessage(string messageText, NetworkConnection networkConnection = null) {
+            networkManagerServer.SendSceneChatMessage(messageText, networkConnection.ClientId);
+        }
+
+
+        [ServerRpc(RequireOwnership = false)]
         public void ChooseLobbyGameCharacter(string unitProfileName, int gameId, NetworkConnection networkConnection = null) {
             networkManagerServer.ChooseLobbyGameCharacter(gameId, networkConnection.ClientId, unitProfileName);
         }
@@ -495,10 +501,14 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
+        public void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
+            networkManagerClient.AdvertiseSendSceneChatMessage(messageText, clientId);
+        }
+
+        [ObserversRpc]
         public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
             networkManagerClient.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
-
 
 
         /*

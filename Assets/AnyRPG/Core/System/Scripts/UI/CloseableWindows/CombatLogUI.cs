@@ -105,6 +105,7 @@ namespace AnyRPG {
         protected LogManager logManager = null;
         protected ChatCommandManager chatCommandManager = null;
         protected UIManager uiManager = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             //Debug.Log("CombatLogUI.Awake()");
@@ -125,6 +126,7 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             chatCommandManager = systemGameManager.ChatCommandManager;
             uiManager = systemGameManager.UIManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         private void ClearLog() {
@@ -342,7 +344,12 @@ namespace AnyRPG {
                 chatCommandManager.ParseChatCommand(chatMessage.Substring(1));
                 return;
             }
-            HandleWriteChatMessage(chatMessage);
+
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.SendSceneChatMessage(chatMessage);
+            } else {
+                HandleWriteChatMessage(chatMessage);
+            }
         }
 
         public override void ReceiveClosedWindowNotification() {

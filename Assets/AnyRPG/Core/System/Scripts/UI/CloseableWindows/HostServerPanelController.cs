@@ -114,7 +114,7 @@ namespace AnyRPG {
         }
 
         public void HandleStartServer() {
-            serverStatusText.text = "Server Status: Online";
+            serverStatusText.text = $"Server Status: Online\nListening on Port: {networkManagerServer.GetServerPort()}";
             startServerButton.Button.interactable = false;
             stopServerButton.Button.interactable = true;
         }
@@ -123,6 +123,7 @@ namespace AnyRPG {
             serverStatusText.text = "Server Status: Offline";
             startServerButton.Button.interactable = true;
             stopServerButton.Button.interactable = false;
+            ClearPlayerList();
         }
 
         public void HandleLobbyLogin(int clientId) {

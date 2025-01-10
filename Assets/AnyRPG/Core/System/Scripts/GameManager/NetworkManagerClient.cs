@@ -17,6 +17,7 @@ namespace AnyRPG {
         public event Action<int, int> OnLeaveLobbyGame = delegate { };
         public event Action<string> OnSendLobbyChatMessage = delegate { };
         public event Action<string, int> OnSendLobbyGameChatMessage = delegate { };
+        public event Action<string, int> OnSendSceneChatMessage = delegate { };
         public event Action<int, string> OnLobbyLogin = delegate { };
         public event Action<int> OnLobbyLogout = delegate { };
         public event Action<List<LobbyGame>> OnSetLobbyGameList = delegate { };
@@ -47,6 +48,7 @@ namespace AnyRPG {
         private CharacterManager characterManager = null;
         private UIManager uIManager = null;
         private LevelManager levelManager = null;
+        private LogManager logManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -66,6 +68,7 @@ namespace AnyRPG {
             characterManager = systemGameManager.CharacterManager;
             levelManager = systemGameManager.LevelManager;
             uIManager = systemGameManager.UIManager;
+            logManager = systemGameManager.LogManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -117,6 +120,10 @@ namespace AnyRPG {
 
         public void SendLobbyGameChatMessage(string messageText, int gameId) {
             networkController.SendLobbyGameChatMessage(messageText, gameId);
+        }
+
+        public void SendSceneChatMessage(string chatMessage) {
+            networkController.SendSceneChatMessage(chatMessage);
         }
 
         public void RequestLobbyPlayerList() {
@@ -251,6 +258,8 @@ namespace AnyRPG {
             this.clientId = clientId;
         }
 
+
+
         /*
         public int GetClientId() {
             Debug.Log($"NetworkManagerClient.GetClientId()");
@@ -279,6 +288,11 @@ namespace AnyRPG {
 
         public void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId) {
             OnSendLobbyGameChatMessage(messageText, gameId);
+        }
+
+        public void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
+            OnSendSceneChatMessage(messageText, clientId);
+            logManager.WriteChatMessage(messageText);
         }
 
         public void AdvertiseLobbyLogin(int clientId, string userName) {
@@ -351,6 +365,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
+            Debug.Log($"NetworkManagerClient.AdvertiseSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
 
             if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
                 // game does not exist or player is not in game
@@ -359,6 +374,7 @@ namespace AnyRPG {
             lobbyGames[gameId].PlayerList[clientId].ready = ready;
             OnSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
+
     }
 
     public enum NetworkClientMode { Lobby, MMO }

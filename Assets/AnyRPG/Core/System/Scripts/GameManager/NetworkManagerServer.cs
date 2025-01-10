@@ -1,3 +1,4 @@
+using FishNet.Serializing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -326,6 +327,11 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerServer.DeactivateServerMode()");
 
             serverModeActive = false;
+
+            loggedInAccounts.Clear();
+            lobbyGames.Clear();
+            lobbyGameChatText.Clear();
+
             OnStopServer();
         }
 
@@ -411,6 +417,8 @@ namespace AnyRPG {
         }
 
         public void ToggleLobbyGameReadyStatus(int gameId, int clientId) {
+            //Debug.Log($"NetworkManagerClient.ToggleLobbyGameReadyStatus({gameId}, {clientId})");
+
             if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
                 // game did not exist or client was not in game
                 return;
@@ -467,6 +475,16 @@ namespace AnyRPG {
             networkController.AdvertiseSendLobbyGameChatMessage(addedText, gameId);
         }
 
+        public void SendSceneChatMessage(string messageText, int clientId) {
+            if (loggedInAccounts.ContainsKey(clientId) == false) {
+                return;
+            }
+            string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
+
+            networkController.AdvertiseSendSceneChatMessage(addedText, clientId);
+        }
+
+
         public static string ShortenStringOnNewline(string message, int messageLength) {
             // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
             while (message.Length > messageLength && message.Contains("\n")) {
@@ -475,6 +493,9 @@ namespace AnyRPG {
             return message;
         }
 
+        public int GetServerPort() {
+            return networkController.GetServerPort();
+        }
     }
 
 

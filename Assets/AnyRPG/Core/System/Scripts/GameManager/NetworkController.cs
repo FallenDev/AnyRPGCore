@@ -34,6 +34,7 @@ namespace AnyRPG {
         public abstract int GetClientId();
         public abstract void SendLobbyChatMessage(string messageText);
         public abstract void SendLobbyGameChatMessage(string messageText, int gameId);
+        public abstract void SendSceneChatMessage(string chatMessage);
         public abstract void RequestLobbyGameList();
         public abstract void RequestLobbyPlayerList();
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
@@ -51,6 +52,7 @@ namespace AnyRPG {
         public abstract void AdvertiseClientLeaveLobbyGame(int gameId, int clientId);
         public abstract void AdvertiseSendLobbyChatMessage(string messageText);
         public abstract void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId);
+        public abstract void AdvertiseSendSceneChatMessage(string messageText, int clientId);
         public abstract void AdvertiseLobbyLogin(int clientId, string userName);
         public abstract void AdvertiseLobbyLogout(int clientId);
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
@@ -58,6 +60,7 @@ namespace AnyRPG {
         public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
         public abstract void AdvertiseStartLobbyGame(int gameId, string sceneName);
         public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready);
+        public abstract int GetServerPort();
     }
 
 }

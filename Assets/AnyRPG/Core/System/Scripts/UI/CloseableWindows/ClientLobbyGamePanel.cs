@@ -1,10 +1,10 @@
-using AnyRPG;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using FishNet.Serializing;
 
 namespace AnyRPG {
     public class ClientLobbyGamePanel : WindowContentController {
@@ -178,6 +178,9 @@ namespace AnyRPG {
 
             foreach (KeyValuePair<int, LobbyGamePlayerInfo> loggedInAccount in userNames) {
                 AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value.userName, loggedInAccount.Value.unitProfileName);
+                if (loggedInAccount.Value.ready == true) {
+                    HandleSetLobbyGameReadyStatus(networkManagerClient.LobbyGame.gameId, loggedInAccount.Key, true);
+                }
             }
         }
 

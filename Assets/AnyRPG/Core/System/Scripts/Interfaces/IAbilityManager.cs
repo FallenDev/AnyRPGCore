@@ -103,7 +103,7 @@ namespace AnyRPG {
 
         float GetMeleeRange();
 
-        void PerformCastingAnimation(AnimationClip animationClip, BaseAbilityProperties baseAbility);
+        void PerformCastingAnimation(BaseAbilityProperties baseAbility);
 
         /// <summary>
         /// give a chance to cast any onhit abilities from the equipped weapon

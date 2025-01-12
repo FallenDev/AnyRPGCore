@@ -59,6 +59,8 @@ namespace AnyRPG {
         public System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
         public event System.Action<AnimatedAbilityProperties> OnAnimatedAbilityCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
+        public event System.Action<string, bool> OnBeginAction = delegate { };
+        public event System.Action<BaseAbilityProperties, Interactable, bool> OnBeginAbility = delegate { };
         public event System.Action OnBeginAbilityCoolDown = delegate { };
         public event System.Action OnUnlearnAbilities = delegate { };
         public event System.Action<BaseAbilityProperties> OnActivateTargetingMode = delegate { };
@@ -133,6 +135,14 @@ namespace AnyRPG {
 
         public void NotifyOnUnlearnAbilities() {
             OnUnlearnAbilities();
+        }
+
+        public void NotifyOnBeginAction(string actionName, bool playerInitiated) {
+            OnBeginAction(actionName, playerInitiated);
+        }
+
+        public void NotifyOnBeginAbility(BaseAbilityProperties baseAbility, Interactable target, bool playerInitiated) {
+            OnBeginAbility(baseAbility, target, playerInitiated);
         }
 
         public void NotifyOnBeginAbilityCoolDown() {

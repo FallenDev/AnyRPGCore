@@ -393,11 +393,11 @@ namespace AnyRPG {
 
         }
 
-        public override void PerformCastingAnimation(AnimationClip animationClip, BaseAbilityProperties baseAbility) {
-            base.PerformCastingAnimation(animationClip, baseAbility);
-            if (animationClip != null) {
-                unitController.UnitAnimator.HandleCastingAbility(animationClip, baseAbility);
-            }
+        public override void PerformCastingAnimation(BaseAbilityProperties baseAbility) {
+            base.PerformCastingAnimation(baseAbility);
+            //if (animationClip != null) {
+                unitController.UnitAnimator.PerformCastingAbility(baseAbility);
+            //}
         }
 
         public override void AddTemporaryPet(UnitProfile unitProfile, UnitController unitController) {
@@ -1185,7 +1185,8 @@ namespace AnyRPG {
                 if (!ability.CanSimultaneousCast) {
                     //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() ability: " + ability.DisplayName + " can simultaneous cast is false, setting casting to true");
                     performingCast = true;
-                    ability.StartCasting(unitController);
+                    //ability.StartCasting(unitController);
+                    PerformCastingAnimation(ability);
                 }
                 float currentCastPercent = 0f;
                 float nextTickPercent = 0f;
@@ -1244,6 +1245,21 @@ namespace AnyRPG {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(): Cast Complete and cannot cast");
             }
         }
+
+        /*
+        public void StartCasting(BaseAbilityProperties ability) {
+            //Debug.Log("BaseAbility.OnCastStart(" + source.name + ")");
+            List<AnimationClip> usedCastAnimationClips = ability.GetCastClips(unitController);
+            if (usedCastAnimationClips != null && usedCastAnimationClips.Count > 0) {
+                int clipIndex = UnityEngine.Random.Range(0, usedCastAnimationClips.Count);
+                if (usedCastAnimationClips[clipIndex] != null) {
+                    // perform the actual animation
+                    PerformCastingAnimation(usedCastAnimationClips[clipIndex], ability);
+                }
+
+            }
+        }
+        */
 
         public void NotifyOnCastCancel() {
             unitController.UnitEventController.NotifyOnCastCancel();
@@ -1330,12 +1346,26 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
             }
-            return BeginAbilityCommon(ability, unitController.Target, playerInitiated);
+            return BeginAbilityInternal(ability, unitController.Target, playerInitiated);
         }
 
-        public bool BeginAbility(BaseAbilityProperties ability, Interactable target) {
+        public bool BeginAbility(BaseAbilityProperties ability, Interactable target, bool playerInitiated = false) {
             //Debug.Log($"{gameObject.name}.CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
-            return BeginAbilityCommon(ability, target);
+
+            unitController.UnitEventController.NotifyOnBeginAbility(ability, target, playerInitiated);
+
+            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {
+                return BeginAbilityInternal(ability, target, playerInitiated);
+            }
+
+            // in the case this is a client in network mode, returning true will not matter because the only thing that checks this value is consumables, which
+            // are called from the server anyway
+            return true;
+        }
+
+        public bool BeginAbilityInternal(BaseAbilityProperties ability, Interactable target, bool playerInitiated) {
+
+            return BeginAbilityCommon(ability, target, playerInitiated);
         }
 
         public override float GetSpeed() {

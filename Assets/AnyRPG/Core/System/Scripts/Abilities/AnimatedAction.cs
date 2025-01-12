@@ -198,7 +198,7 @@ namespace AnyRPG {
 
         [Header("Animation")]
 
-        [Tooltip("The animation clip the character will perform")]
+        [Tooltip("The animation clip the character will perform. If this is set, the animation profile will not be used.")]
         [SerializeField]
         protected AnimationClip animationClip = null;
 

@@ -7,9 +7,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class UnitActionManager : ConfiguredClass {
 
-        //public event System.Action<BaseCharacter> OnCastCancel = delegate { };
-        //public event System.Action<AnimatedAction> OnCombatCheckFail = delegate { };
-        //public event System.Action<AnimatedAbility> OnAnimatedAbilityCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
 
         private UnitController unitController = null;
@@ -199,14 +196,14 @@ namespace AnyRPG {
         }
         */
 
-        public void PerformActionAnimation(AnimationClip animationClip, AnimatedActionProperties animatedActionProperties) {
+        public void PerformActionAnimation(AnimatedAction animatedAction) {
             //Debug.Log($"{unitController.gameObject.name}.PerformActionAnimation(" + (animationClip == null ? "null" : animationClip.name) + ")");
 
-            if (animationClip == null) {
+            if (animatedAction.ActionProperties.AnimationClip == null) {
                 return;
             }
 
-            unitController.UnitAnimator.HandleAction(animationClip, animatedActionProperties);
+            unitController.UnitAnimator.PerformAnimatedAction(animatedAction);
         }
 
         /*
@@ -230,12 +227,13 @@ namespace AnyRPG {
         /// <param name="animatedAction"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public IEnumerator PerformActionCast(AnimatedActionProperties animatedActionProperties, Interactable target) {
+        public IEnumerator PerformActionCast(AnimatedAction animatedAction, Interactable target) {
             float startTime = Time.time;
             isPerformingAction = true;
+            AnimatedActionProperties animatedActionProperties = animatedAction.ActionProperties;
             //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + ", " + (target == null ? "null" : target.name) + ") Enter Ienumerator with tag: " + startTime);
 
-            PerformActionAnimation(animatedActionProperties.AnimationClip, animatedActionProperties);
+            PerformActionAnimation(animatedAction);
 
             float currentCastPercent = 0f;
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastPercent: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.MyAbilityCastingTime);
@@ -271,57 +269,59 @@ namespace AnyRPG {
         /// This is the entrypoint for character behavior calls and should not be used for anything else due to the runtime ability lookup that happens
         /// </summary>
         /// <param name="actionName"></param>
-        public bool BeginAction(string actionName) {
+        public void BeginAction(string actionName) {
             //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
             AnimatedAction animatedAction = systemDataFactory.GetResource<AnimatedAction>(actionName);
             if (animatedAction != null) {
                 //return BeginAction(animatedAction);
-                return BeginAction(animatedAction);
+                BeginAction(animatedAction);
             }
-            return false;
         }
 
         /// <summary>
         /// Call an action directly, checking if the action is known
         /// </summary>
         /// <returns></returns>
-        public bool BeginAction(AnimatedAction animatedAction) {
-            return BeginAction(animatedAction.ActionProperties);
+        public void BeginAction(AnimatedAction animatedAction, bool playerInitiated = false) {
+            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.BeginAction(" + (animatedAction == null ? "null" : animatedAction.DisplayName) + $", {playerInitiated})");
+            unitController.UnitEventController.NotifyOnBeginAction(animatedAction.ResourceName, playerInitiated);
+            
+            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {
+                BeginActionInternal(animatedAction, playerInitiated);
+            }
         }
 
         /// <summary>
         /// The entrypoint to Casting a spell.  handles all logic such as instant/timed cast, current cast in progress, enough mana, target being alive etc
         /// </summary>
         /// <param name="animatedAction"></param>
-        public bool BeginAction(AnimatedActionProperties animatedActionProperties, bool playerInitiated = false) {
+        public void BeginActionInternal(AnimatedAction animatedAction, bool playerInitiated) {
             //Debug.Log($"{unitController.gameObject.name}.UnitActionManager.BeginAction(" + (animatedActionProperties == null ? "null" : animatedActionProperties.DisplayName) + ")");
 
-            if (animatedActionProperties == null) {
-                //Debug.Log("CharacterAbilityManager.BeginAbility(): ability is null! Exiting!");
-                return false;
-            }
-            return BeginActionCommon(animatedActionProperties, unitController.Target, playerInitiated);
+            BeginActionCommon(animatedAction, unitController.Target, playerInitiated);
         }
 
-        public bool BeginAction(AnimatedActionProperties animatedActionProperties, Interactable target) {
+        /*
+        public void BeginAction(AnimatedAction animatedAction, Interactable target) {
             //Debug.Log($"{gameObject.name}.CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
-            return BeginActionCommon(animatedActionProperties, target);
+            BeginActionCommon(animatedAction, target);
         }
+        */
 
-        protected bool BeginActionCommon(AnimatedActionProperties animatedActionProperties, Interactable target, bool playerInitiated = false) {
+        protected void BeginActionCommon(AnimatedAction animatedAction, Interactable target, bool playerInitiated = false) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.gameObject.name) + ")");
 
             if (unitController != null) {
                 if (unitController.ControlLocked == true) {
-                    return false;
+                    return;
                 }
             }
 
-            if (!CanPerformAction(animatedActionProperties, playerInitiated)) {
+            if (!CanPerformAction(animatedAction.ActionProperties, playerInitiated)) {
                 if (playerInitiated) {
                     //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + ability.DisplayName + ", " + (target != null ? target.name : "null") + ") cannot cast");
                 }
-                return false;
+                return;
             }
 
             /*
@@ -341,13 +341,13 @@ namespace AnyRPG {
 
                 // currentAction must be set before starting the coroutine because for animated events, the cast time is zero and the variable will be cleared in the coroutine
                 //currentAction = animatedAction;
-                currentActionCoroutine = unitController.StartCoroutine(PerformActionCast(animatedActionProperties, target));
+                currentActionCoroutine = unitController.StartCoroutine(PerformActionCast(animatedAction, target));
             } else {
                 // return false so that items in the inventory don't get used if this came from a castable item
-                return false;
+                return;
             }
 
-            return true;
+            return;
         }
 
         // this only checks if the ability is able to be cast based on character state.  It does not check validity of target or ability specific requirements

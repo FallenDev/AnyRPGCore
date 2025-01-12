@@ -156,6 +156,7 @@ namespace AnyRPG {
 
         public UnitController ConfigureUnitController(CharacterRequestData characterRequestData, GameObject prefabObject, bool isOwner) {
             //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name})");
+            characterRequestData.isOwner = isOwner;
 
             UnitController unitController = null;
 
@@ -180,7 +181,7 @@ namespace AnyRPG {
                     //Debug.Log($"CharacterManager.ConfigureUnitController({unitProfile.ResourceName}, {prefabObject.name}) renaming gameobject from {unitController.gameObject.name}");
                     unitController.gameObject.name = characterRequestData.characterConfigurationRequest.unitProfile.ResourceName.Replace(" ", "") + systemGameManager.GetSpawnCount();
                     unitController.Configure(systemGameManager);
-                    unitController.SetCharacterConfiguration(characterRequestData.characterConfigurationRequest);
+                    unitController.SetCharacterConfiguration(characterRequestData);
 
                 }
             }

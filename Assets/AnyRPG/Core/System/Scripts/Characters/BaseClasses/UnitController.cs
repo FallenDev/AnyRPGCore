@@ -142,6 +142,10 @@ namespace AnyRPG {
         // rider information
         private UnitController riderUnitController = null;
 
+        // network state
+        private bool isOwner = false;
+        private bool isServer = false;
+
 
         // game manager references
         protected LevelManager levelManager = null;
@@ -424,7 +428,8 @@ namespace AnyRPG {
         public CharacterPetManager CharacterPetManager { get => characterPetManager; set => characterPetManager = value; }
         public CharacterRecipeManager CharacterRecipeManager { get => characterRecipeManager; set => characterRecipeManager = value; }
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
-
+        public bool IsOwner { get => isOwner; set => isOwner = value; }
+        public bool IsServer { get => isServer; set => isServer = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -1095,8 +1100,13 @@ namespace AnyRPG {
         /// This method is meant to be called after OnEnable() and before Init()
         /// </summary>
         /// <param name="unitProfile"></param>
-        public void SetCharacterConfiguration(CharacterConfigurationRequest characterConfigurationRequest) {
+        public void SetCharacterConfiguration(CharacterRequestData characterRequestData) {
             //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration()");
+
+            CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
+
+            isServer = characterRequestData.isServer;
+            isOwner = characterRequestData.isOwner;
 
             unitModelController.LoadInitialSavedAppearance(characterConfigurationRequest.characterAppearanceData);
 

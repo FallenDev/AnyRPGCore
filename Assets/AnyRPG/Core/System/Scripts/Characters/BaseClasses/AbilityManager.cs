@@ -211,7 +211,7 @@ namespace AnyRPG {
             // do nothing.  environment effects cannot have pets
         }
 
-        public virtual void PerformCastingAnimation(AnimationClip animationClip, BaseAbilityProperties baseAbility) {
+        public virtual void PerformCastingAnimation(BaseAbilityProperties baseAbility) {
             // do nothing.  environmental effects have no animations for now
         }
 

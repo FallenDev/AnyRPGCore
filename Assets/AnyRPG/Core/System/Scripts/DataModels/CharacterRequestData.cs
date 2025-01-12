@@ -13,6 +13,8 @@ namespace AnyRPG {
         public int unitLevel;
         public UnitController unitController;
         public CharacterConfigurationRequest characterConfigurationRequest;
+        public bool isServer = false;
+        public bool isOwner = false;
 
         public CharacterRequestData(ICharacterRequestor characterRequestor, GameMode requestMode/*, UnitProfile unitProfile*//*, UnitControllerMode unitControllerMode*/, CharacterConfigurationRequest characterConfigurationRequest) {
             this.characterRequestor = characterRequestor;

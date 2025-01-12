@@ -36,8 +36,8 @@ MonoBehaviour:
   characterClassRequirementList: []
   toolTip: Increase strength
   coolDown: 10
-  actionType: 2
-  actionName: 
+  actionType: 1
+  actionName: Hold Up Scroll
   actionProperties:
     animationClip: {fileID: -871236342318560452, guid: 6397dc4217362a642821d38659e201d8,
       type: 3}
@@ -50,8 +50,9 @@ MonoBehaviour:
   useInlineEffect: 0
   effectName: Increased Strength
   inlineEffect:
-    id: 0
+    rid: -2
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: -2
       type: {class: , ns: , asm: }

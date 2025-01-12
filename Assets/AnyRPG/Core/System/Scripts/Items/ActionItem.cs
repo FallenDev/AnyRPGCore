@@ -21,21 +21,12 @@ namespace AnyRPG {
 
         [Header("Action")]
 
-        [Tooltip("Action Property Source")]
-        [SerializeField]
-        protected ResourcePropertyType actionType = ResourcePropertyType.None;
-
-        [Tooltip("If Action Type is named, the name of the action to perform")]
+        [Tooltip("The name of the action to perform")]
         [SerializeField]
         [ResourceSelector(resourceType = typeof(AnimatedAction))]
         protected string actionName = string.Empty;
 
-        [Tooltip("If Action Type is inline, the action type properties")]
-        [SerializeField]
-        protected AnimatedActionProperties actionProperties = new AnimatedActionProperties();
-
-        //[SerializeField]
-        //protected AnimatedActionProperties actionProperties = null;
+        protected AnimatedAction animatedAction = null;
 
         // game manager references
         protected SystemAbilityController systemAbilityController = null;
@@ -69,10 +60,7 @@ namespace AnyRPG {
                 return false;
             }
 
-            // perform action
-            if (actionType != ResourcePropertyType.None) {
-                playerManager.UnitController.UnitActionManager.BeginAction(actionProperties);
-            }
+            playerManager.UnitController.UnitActionManager.BeginAction(animatedAction);
 
             BeginAbilityCoolDown(playerManager.UnitController, coolDown);
             Remove();
@@ -185,13 +173,9 @@ namespace AnyRPG {
             base.SetupScriptableObjects(systemGameManager);
 
 
-            if (actionType == ResourcePropertyType.Inline) {
-                actionProperties.SetupScriptableObjects(systemGameManager, ResourceName);
-            } else if (actionType == ResourcePropertyType.Named && actionName != null && actionName != string.Empty) {
-                AnimatedAction tmpAction = systemDataFactory.GetResource<AnimatedAction>(actionName);
-                if (tmpAction != null) {
-                    actionProperties = tmpAction.ActionProperties;
-                } else {
+            if (actionName != string.Empty) {
+                animatedAction = systemDataFactory.GetResource<AnimatedAction>(actionName);
+                if (animatedAction == null) {
                     Debug.LogError("ActionItem.SetupScriptableObjects(): Could not find action : " + actionName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }
             }

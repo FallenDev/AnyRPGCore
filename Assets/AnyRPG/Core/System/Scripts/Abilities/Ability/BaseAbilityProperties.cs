@@ -888,6 +888,7 @@ namespace AnyRPG {
             return target;
         }
 
+        /*
         public virtual void StartCasting(IAbilityCaster source) {
             //Debug.Log("BaseAbility.OnCastStart(" + source.name + ")");
             List<AnimationClip> usedCastAnimationClips = GetCastClips(source);
@@ -899,14 +900,8 @@ namespace AnyRPG {
                 }
 
             }
-
-
-            // GRAVITY FREEZE FOR CASTING
-            // DISABLING SINCE IT IS CAUSING INSTANT CASTS TO STOP CHARACTER WHILE MOVING.  MAYBE CHECK IF CAST TIMER AND THEN DO IT?
-            // NEXT LINE NO LONGER NEEDED SINCE WE NOW ACTUALLY CHECK THE REAL DISTANCE MOVED BY THE CHARACTER AND DON'T CANCEL CAST UNTIL DISTANCE IS > 0.1F
-            //source.RigidBody.constraints = RigidbodyConstraints.FreezeAll;
-            
         }
+        */
 
         public virtual float OnCastTimeChanged(float currentCastPercent, float nextTickPercent, IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
             //Debug.Log(DisplayName + ".BaseAbility.OnCastTimeChanged(" + currentCastPercent + ", " + nextTickPercent + ")");

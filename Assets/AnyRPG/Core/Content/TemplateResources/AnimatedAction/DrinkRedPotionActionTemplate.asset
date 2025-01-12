@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9b51b8d3aa844448aaeab0a989e2fa, type: 3}
-  m_Name: DanceChatCommandTemplatePackage
+  m_Script: {fileID: 11500000, guid: 9f23dff0aa3ad384a9a0df82e420748a, type: 3}
+  m_Name: DrinkRedPotionActionTemplate
   m_EditorClassIdentifier: 
-  resourceName: Dance Chat Command
+  resourceName: Drink Red Potion
   displayName: 
   icon: {fileID: 0}
   iconBackgroundImage: {fileID: 0}
@@ -20,8 +20,11 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  resources:
-  - {fileID: 11400000, guid: 6194dcce4cbffcd48983d9a2f0321aca, type: 2}
-  - {fileID: 11400000, guid: d23b4af418db4b84ca086b937a9cc702, type: 2}
-  prefabs: []
-  dependencies: []
+  actionProperties:
+    animationClip: {fileID: 0}
+    animationProfileName: Drink
+    castingAudioProfileName: 
+    holdableObjectList:
+    - holdableObjectName: Drinkable Red Potion
+      useUniversalAttachment: 1
+      attachmentName: Right Hand

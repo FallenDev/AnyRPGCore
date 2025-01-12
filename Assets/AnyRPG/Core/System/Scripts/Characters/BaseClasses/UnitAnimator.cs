@@ -24,9 +24,17 @@ namespace AnyRPG {
         public event System.Action<bool> OnEndStunned = delegate { };
         public event System.Action OnStartRevive = delegate { };
         public event System.Action OnDeath = delegate { };
+        public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
+        public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
+        public event System.Action<BaseAbilityProperties, int> OnPerformCastingAbilityAnimation = delegate { };
+        public event System.Action OnClearAction = delegate { };
+        public event System.Action OnClearCasting = delegate { };
 
         // components
         private Animator animator = null;
+
+        // reference to the system animation profile
+        private AnimationProfile systemAnimationProfile = null;
 
         // reference to default animation profile
         private AnimationProps defaultAnimationProps = null;
@@ -145,6 +153,7 @@ namespace AnyRPG {
 
             animatorController = systemConfigurationManager.DefaultAnimatorController;
             defaultAnimationProps = systemConfigurationManager.DefaultAnimationProfile.AnimationProps;
+            //systemAnimationProfile = systemConfigurationManager.SystemAnimationProfile;
 
             // out of combat animations
             animationSpeeds.Add("WalkClip", 1f);
@@ -490,10 +499,7 @@ namespace AnyRPG {
             }
             */
 
-            if (systemConfigurationManager != null) {
-                // override the default attack animation
-                overrideController[systemConfigurationManager.SystemAnimationProfile.AnimationProps.AttackClips[0].name] = animationClip;
-            }
+            SetAnimationClipOverride(systemAnimations.AttackClips[0].name, animationClip);
 
             // save animation length for weapon damage normalization
             lastAnimationLength = animationClip.length;
@@ -511,18 +517,38 @@ namespace AnyRPG {
         }
 
         // non melee ability (spell) cast
-        public void HandleCastingAbility(AnimationClip animationClip, BaseAbilityProperties baseAbility) {
+        public void PerformCastingAbility(BaseAbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
             if (animator == null) {
                 return;
             }
 
-            if (systemConfigurationManager != null) {
-                // override the casting animation
-
-                overrideController[systemConfigurationManager.SystemAnimationProfile.AnimationProps.CastClips[0].name] = animationClip;
-                float animationLength = animationClip.length;
+            int clipIndex = 0;
+            List<AnimationClip> usedCastAnimationClips = baseAbility.GetCastClips(unitController);
+            if (usedCastAnimationClips != null && usedCastAnimationClips.Count > 0) {
+                clipIndex = UnityEngine.Random.Range(0, usedCastAnimationClips.Count);
+                if (usedCastAnimationClips[clipIndex] == null) {
+                    return;
+                }
             }
+            PerformCastingAbility(baseAbility, clipIndex);
+        }
+
+        public void PerformCastingAbility(BaseAbilityProperties baseAbility, int clipIndex) {
+            //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
+            if (animator == null) {
+                return;
+            }
+
+            List<AnimationClip> usedCastAnimationClips = baseAbility.GetCastClips(unitController);
+            if (usedCastAnimationClips != null && usedCastAnimationClips.Count > 0) {
+                if (usedCastAnimationClips[clipIndex] == null) {
+                    return;
+                }
+            }
+
+            SetAnimationClipOverride(systemAnimations.CastClips[0].name, usedCastAnimationClips[clipIndex]);
+            OnPerformCastingAbilityAnimation(baseAbility, clipIndex);
 
             if (baseAbility.GetUnitAnimationProps(unitController)?.UseRootMotion == true) {
                 unitController.SetUseRootMotion(true);
@@ -530,37 +556,33 @@ namespace AnyRPG {
                 unitController.SetUseRootMotion(false);
             }
 
-            if (baseAbility.GetAbilityCastingTime(unitController) > 0f) {
-                SetCasting(true, true, (baseAbility.UseSpeedMultipliers == true ? (unitController.CharacterStats.GetSpeedModifiers() / 100f) : 1f));
+            if (unitController.IsOwner) {
+                if (baseAbility.GetAbilityCastingTime(unitController) > 0f) {
+                    SetCasting(true, true, (baseAbility.UseSpeedMultipliers == true ? (unitController.CharacterStats.GetSpeedModifiers() / 100f) : 1f));
+                }
             }
         }
 
         // non combat action
-        public void HandleAction(AnimationClip animationClip, AnimatedActionProperties animatedActionProperties) {
+        public void PerformAnimatedAction(AnimatedAction animatedAction) {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleAction()");
 
             if (animator == null) {
                 return;
             }
 
-            if (systemConfigurationManager != null) {
-                // override the default action animation
+            SetAnimationClipOverride(systemAnimations.ActionClips[0].name, animatedAction.ActionProperties.AnimationClip);
+            OnPerformAnimatedActionAnimation(animatedAction);
 
-                overrideController[systemConfigurationManager.SystemAnimationProfile.AnimationProps.ActionClips[0].name] = animationClip;
-                //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility() current casting clip: " + overrideController[systemConfigurationManager.MySystemAnimationProfile.MyCastClips[0].name].name);
-                float animationLength = animationClip.length;
-                //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility() animationlength: " + animationLength);
+            if (unitController.IsOwner) {
+                SetActing(true, true);
             }
+        }
 
-            /*
-            if (baseAbility.GetUnitAnimationProps(unitController.BaseCharacter).UseRootMotion == true) {
-                unitController.SetUseRootMotion(true);
-            } else {
-                unitController.SetUseRootMotion(false);
-            }
-            */
-
-            SetActing(true, true);
+        public void SetAnimationClipOverride(string originalClipName, AnimationClip animationClip) {
+            OnSetAnimationClipOverride(originalClipName, animationClip);
+            
+            overrideController[originalClipName] = animationClip;
         }
 
         public bool WaitingForCastOrAttackAnimation() {
@@ -578,12 +600,13 @@ namespace AnyRPG {
         }
 
         public void ClearAction() {
+            OnClearAction();
             SetActing(false);
         }
 
         public void ClearCasting() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.ClearCasting()");
-
+            OnClearCasting();
             SetCasting(false);
         }
 
@@ -635,7 +658,7 @@ namespace AnyRPG {
             SetTrigger("ReviveTrigger");
             // add 1 to account for the transition
             if (systemConfigurationManager != null) {
-                float animationLength = overrideController[systemConfigurationManager.SystemAnimationProfile.AnimationProps.ReviveClip.name].length + 2;
+                float animationLength = overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name].length + 2;
                 resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrectionAnimation(animationLength));
             }
         }
@@ -717,7 +740,7 @@ namespace AnyRPG {
                 SetTrigger("ActionTrigger");
             }
             if (varValue == false) {
-                OnEndCasting(swapAnimator);
+                OnEndActing(swapAnimator);
             }
 
         }

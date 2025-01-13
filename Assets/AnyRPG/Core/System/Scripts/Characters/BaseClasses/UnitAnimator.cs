@@ -26,8 +26,10 @@ namespace AnyRPG {
         public event System.Action OnDeath = delegate { };
         public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
         public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
-        public event System.Action<BaseAbilityProperties, int> OnPerformCastingAbilityAnimation = delegate { };
+        public event System.Action<AbilityProperties, int> OnPerformCastingAbilityAnimation = delegate { };
+        public event System.Action<AbilityProperties, int> OnPerformAbilityAnimation = delegate { };
         public event System.Action OnClearAction = delegate { };
+        public event System.Action OnClearAnimatedAbility = delegate { };
         public event System.Action OnClearCasting = delegate { };
 
         // components
@@ -491,7 +493,7 @@ namespace AnyRPG {
         /// <param name="baseAbility"></param>
         /// <param name="targetCharacterUnit"></param>
         /// <returns></returns>
-        public void HandleAbility(AnimationClip animationClip, BaseAbilityProperties baseAbility) {
+        public void PerformAbility(AbilityProperties baseAbility, int clipIndex) {
             //Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.HandleAbility(" + baseAbility.DisplayName + ")");
             /*
             if (animator == null) {
@@ -499,7 +501,18 @@ namespace AnyRPG {
             }
             */
 
+            // THIS NEEDS TO BE FIXED TO GetAnimationClips()
+            List<AnimationClip> usedAnimationClips = baseAbility.GetCastClips(unitController);
+
+            AnimationClip animationClip = usedAnimationClips[clipIndex];
+            if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
+                if (usedAnimationClips[clipIndex] == null) {
+                    return;
+                }
+            }
+
             SetAnimationClipOverride(systemAnimations.AttackClips[0].name, animationClip);
+            OnPerformAbilityAnimation(baseAbility, clipIndex);
 
             // save animation length for weapon damage normalization
             lastAnimationLength = animationClip.length;
@@ -507,8 +520,10 @@ namespace AnyRPG {
             // save animation number of hits for multi hit weapon damage normalization
             lastAnimationHits = GetAnimationHitCount(animationClip);
 
-            // tell the animator to play the animation
-            SetAttacking(true, true, unitController.CharacterStats.GetSpeedModifiers() / 100f);
+            if (unitController.IsOwner) {
+                // tell the animator to play the animation
+                SetAttacking(true, true, unitController.CharacterStats.GetSpeedModifiers() / 100f);
+            }
 
             // there were 2 pieces of code that were setting animation speed.  One was using 1f / and one was not.  Not sure which one is correct?!!!
             //SetAttacking(true, true, 1f / (unitController.CharacterStats.GetSpeedModifiers() / 100f));
@@ -517,7 +532,7 @@ namespace AnyRPG {
         }
 
         // non melee ability (spell) cast
-        public void PerformCastingAbility(BaseAbilityProperties baseAbility) {
+        public void PerformCastingAbility(AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
             if (animator == null) {
                 return;
@@ -534,7 +549,7 @@ namespace AnyRPG {
             PerformCastingAbility(baseAbility, clipIndex);
         }
 
-        public void PerformCastingAbility(BaseAbilityProperties baseAbility, int clipIndex) {
+        public void PerformCastingAbility(AbilityProperties baseAbility, int clipIndex) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
             if (animator == null) {
                 return;
@@ -596,6 +611,7 @@ namespace AnyRPG {
         }
 
         public void ClearAnimatedAbility() {
+            OnClearAnimatedAbility();
             SetAttacking(false);
         }
 

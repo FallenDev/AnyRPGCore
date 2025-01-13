@@ -23,7 +23,7 @@ namespace AnyRPG {
         private AudioProfile phaseMusicProfile;
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         private List<string> maintainBuffNames = new List<string>();
 
         /*
@@ -31,10 +31,10 @@ namespace AnyRPG {
         private List<string> maintainBuffs = new List<string>();
         */
 
-        private List<BaseAbilityProperties> maintainBuffList = new List<BaseAbilityProperties>();
+        private List<AbilityProperties> maintainBuffList = new List<AbilityProperties>();
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         private List<string> attackAbilityNames = new List<string>();
 
         /*
@@ -42,7 +42,7 @@ namespace AnyRPG {
         private List<string> attackAbilities = new List<string>();
         */
 
-        private List<BaseAbilityProperties> attackAbilityList = new List<BaseAbilityProperties>();
+        private List<AbilityProperties> attackAbilityList = new List<AbilityProperties>();
 
         // game manager references
         private AudioManager audioManager = null;
@@ -54,8 +54,8 @@ namespace AnyRPG {
         public List<string> MyMaintainBuffs { get => maintainBuffs; set => maintainBuffs = value; }
         public List<string> MyAttackAbilities { get => attackAbilities; set => attackAbilities = value; }
         */
-        public List<BaseAbilityProperties> AttackAbilityList { get => attackAbilityList; set => attackAbilityList = value; }
-        public List<BaseAbilityProperties> MaintainBuffList { get => maintainBuffList; set => maintainBuffList = value; }
+        public List<AbilityProperties> AttackAbilityList { get => attackAbilityList; set => attackAbilityList = value; }
+        public List<AbilityProperties> MaintainBuffList { get => maintainBuffList; set => maintainBuffList = value; }
 
         public void StartPhase() {
             if (phaseMusicProfile != null) {
@@ -74,10 +74,10 @@ namespace AnyRPG {
 
             Configure(systemGameManager);
 
-            attackAbilityList = new List<BaseAbilityProperties>();
+            attackAbilityList = new List<AbilityProperties>();
             if (attackAbilityNames != null) {
                 foreach (string baseAbilityName in attackAbilityNames) {
-                    BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(baseAbilityName);
+                    Ability baseAbility = systemDataFactory.GetResource<Ability>(baseAbilityName);
                     if (baseAbility != null) {
                         attackAbilityList.Add(baseAbility.AbilityProperties);
                     } else {
@@ -86,10 +86,10 @@ namespace AnyRPG {
                 }
             }
 
-            maintainBuffList = new List<BaseAbilityProperties>();
+            maintainBuffList = new List<AbilityProperties>();
             if (maintainBuffNames != null) {
                 foreach (string baseAbilityName in maintainBuffNames) {
-                    BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(baseAbilityName);
+                    Ability baseAbility = systemDataFactory.GetResource<Ability>(baseAbilityName);
                     if (baseAbility != null) {
                         maintainBuffList.Add(baseAbility.AbilityProperties);
                     } else {

@@ -30,7 +30,7 @@ namespace AnyRPG {
             SetupFactoryDataAccess<ArmorClass>();
             SetupFactoryDataAccess<AttachmentProfile>();
             SetupFactoryDataAccess<AudioProfile>();
-            SetupFactoryDataAccess<BaseAbility>();
+            SetupFactoryDataAccess<Ability>();
             SetupFactoryDataAccess<BehaviorProfile>();
             SetupFactoryDataAccess<ChatCommand>();
             SetupFactoryDataAccess<CharacterClass>();

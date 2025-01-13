@@ -10,12 +10,12 @@ namespace AnyRPG {
         public event System.Action OnStatusUpdated = delegate { };
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         private string prerequisiteName = string.Empty;
 
         private bool prerequisiteMet = false;
 
-        private BaseAbilityProperties prerequisiteAbility = null;
+        private AbilityProperties prerequisiteAbility = null;
 
         private string ownerName = null;
 
@@ -56,7 +56,7 @@ namespace AnyRPG {
             Configure(systemGameManager);
             prerequisiteAbility = null;
             if (prerequisiteName != null && prerequisiteName != string.Empty) {
-                prerequisiteAbility = systemDataFactory.GetResource<BaseAbility>(prerequisiteName).AbilityProperties;
+                prerequisiteAbility = systemDataFactory.GetResource<Ability>(prerequisiteName).AbilityProperties;
                 if (prerequisiteAbility != null) {
                     prerequisiteAbility.OnAbilityLearn += HandleAbilityListChanged;
                 }

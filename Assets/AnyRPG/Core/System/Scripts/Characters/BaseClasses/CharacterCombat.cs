@@ -251,8 +251,7 @@ namespace AnyRPG {
                     // on-hit effects spawned by auto-attacks show wrong color
                     // testing - add physical requirement
                     //if ((abilityEffectContext.baseAbility is AnimatedAbility) && (abilityEffectContext.baseAbility as AnimatedAbility).IsAutoAttack) {
-                    if ((abilityEffectContext.baseAbility is AnimatedAbilityProperties)
-                        && (abilityEffectContext.baseAbility as AnimatedAbilityProperties).IsAutoAttack
+                    if (abilityEffectContext.baseAbility.IsAutoAttack
                         && (abilityEffect as AttackEffectProperties).DamageType == DamageType.physical) {
                         combatTextType = CombatTextType.normal;
                     } else {
@@ -465,12 +464,12 @@ namespace AnyRPG {
             return aggroTable.AddToAggroTable(CharacterUnit.GetCharacterUnit(target), 0);
         }
 
-        public BaseAbilityProperties GetValidAttackAbility() {
+        public AbilityProperties GetValidAttackAbility() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.GetValidAttackAbility()");
 
-            List<BaseAbilityProperties> returnList = new List<BaseAbilityProperties>();
+            List<AbilityProperties> returnList = new List<AbilityProperties>();
 
-            foreach (BaseAbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
+            foreach (AbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.GetValidAttackAbility(): Checking ability: " + baseAbility.DisplayName);
                 if (baseAbility.GetTargetOptions(unitController).CanCastOnEnemy &&
                     unitController.CharacterAbilityManager.CanCastAbility(baseAbility) &&
@@ -492,8 +491,8 @@ namespace AnyRPG {
             return null;
         }
 
-        public BaseAbilityProperties GetMeleeAbility() {
-            foreach (BaseAbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
+        public AbilityProperties GetMeleeAbility() {
+            foreach (AbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
                 if (baseAbility.GetTargetOptions(unitController).CanCastOnEnemy && baseAbility.GetTargetOptions(unitController).UseMeleeRange == true) {
                     return baseAbility;
                 }
@@ -501,18 +500,18 @@ namespace AnyRPG {
             return null;
         }
 
-        public List<BaseAbilityProperties> GetAttackRangeAbilityList() {
-            List<BaseAbilityProperties> returnList = new List<BaseAbilityProperties>();
-            foreach (BaseAbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
+        public List<AbilityProperties> GetAttackRangeAbilityList() {
+            List<AbilityProperties> returnList = new List<AbilityProperties>();
+            foreach (AbilityProperties baseAbility in unitController.CharacterAbilityManager.AbilityList.Values) {
                 returnList.Add(baseAbility);
             }
             return returnList;
         }
 
-        public float GetMinAttackRange(List<BaseAbilityProperties> baseAbilityList) {
+        public float GetMinAttackRange(List<AbilityProperties> baseAbilityList) {
             float returnValue = 0f;
 
-            foreach (BaseAbilityProperties baseAbility in baseAbilityList) {
+            foreach (AbilityProperties baseAbility in baseAbilityList) {
                 if (baseAbility.GetTargetOptions(unitController).CanCastOnEnemy
                     && baseAbility.GetTargetOptions(unitController).UseMeleeRange == false
                     && baseAbility.GetTargetOptions(unitController).MaxRange > 0f) {
@@ -532,10 +531,10 @@ namespace AnyRPG {
             AttackHitAnimationEvent();
         }
 
-        public bool ProcessAttackHit() {
+        public void ProcessAttackHit() {
             if (!unitController.CharacterStats.IsAlive) {
                 //Debug.Log($"{gameObject.name}.CharacterCombat.AttackHit_AnimationEvent() Character is not alive!");
-                return false;
+                return;
             }
             CharacterUnit targetCharacterUnit = null;
             //stats.TakeDamage(myStats.damage.GetValue());
@@ -549,31 +548,17 @@ namespace AnyRPG {
             if (unitController.CharacterAbilityManager.CurrentAbilityEffectContext != null) {
                 usedAbilityEffectContext = unitController.CharacterAbilityManager.CurrentAbilityEffectContext.GetCopy();
             } else {
-                return false;
+                return;
             }
 
-            //BaseAbilityProperties animatorCurrentAbility = null;
-            if ((unitController.Target != null && targetCharacterUnit != null) || usedAbilityEffectContext.baseAbility.GetTargetOptions(unitController).RequireTarget == false) {
+            if ((unitController.Target != null && targetCharacterUnit != null)
+                || usedAbilityEffectContext.baseAbility.GetTargetOptions(unitController).RequireTarget == false) {
 
-                //bool attackLanded = true;
-                if (usedAbilityEffectContext != null) {
-                    //animatorCurrentAbility = usedAbilityEffectContext.baseAbility;
-                    if (usedAbilityEffectContext.baseAbility is AnimatedAbilityProperties) {
-                        /*attackLanded =*/ (usedAbilityEffectContext.baseAbility as AnimatedAbilityProperties).HandleAbilityHit(
-                            unitController,
-                            unitController.Target,
-                            usedAbilityEffectContext);
-                    }
-                }
-
-                // onHitAbility is only for weapons, not for special moves
-                /*
-                if (!attackLanded) {
-                    return false;
-                }
-                */
-
-                return true;
+                usedAbilityEffectContext.baseAbility.HandleAbilityHit(
+                    unitController,
+                    unitController.Target,
+                    usedAbilityEffectContext);
+                return;
             } else {
                 // this appears to be some old code since nothing is subscribed to OnHitEvent() !
                 //Debug.Log("Processing hit on null target");
@@ -581,11 +566,11 @@ namespace AnyRPG {
                 if (usedAbilityEffectContext != null) {
                     if (usedAbilityEffectContext.baseAbility.GetTargetOptions(unitController).RequireTarget == false) {
                         unitController.UnitEventController.NotifyOnHitEvent(unitController, unitController.Target);
-                        return true;
+                        return;
                     }
                 }
             }
-            return false;
+            return;
         }
 
         /// <summary>

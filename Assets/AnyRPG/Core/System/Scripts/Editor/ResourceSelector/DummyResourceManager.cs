@@ -14,7 +14,7 @@ namespace AnyRPG {
             typeof(AnimationProfile).Name,
             typeof(ArmorClass).Name,
             typeof(AudioProfile).Name,
-            typeof(BaseAbility).Name,
+            typeof(Ability).Name,
             typeof(BehaviorProfile).Name,
             typeof(CharacterClass).Name,
             typeof(CharacterRace).Name,

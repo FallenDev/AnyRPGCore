@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7f20dbf54d5643499578902863f014d, type: 3}
+  m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
   m_Name: ShieldSlamAbilityTemplate
   m_EditorClassIdentifier: 
   resourceName: Shield Slam
@@ -20,21 +20,29 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  animatedAbilityProperties:
+  abilityProperties:
     requireOutOfCombat: 0
     requireStealth: 0
     weaponAffinityNames:
     - Shield
     holdableObjectList: []
+    despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
     animationClip: {fileID: 0}
     animationProfileName: Shield Slam
     useUnitCastAnimations: 0
+    isAutoAttack: 0
+    useUnitAttackAnimations: 0
+    useAutoAttackAnimations: 0
+    useWeaponHitSound: 0
+    useWeaponSkillAttackVoiceSetting: 1
+    playAttackVoice: 1
     animationHitAudioProfileName: 
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: 
+    loopAudio: 0
     requiredLevel: 1
     characterClassRequirements: []
     classSpecializationRequirements: []
@@ -67,6 +75,7 @@ MonoBehaviour:
       canCastOnNeutral: 0
       canCastOnFriendly: 0
       autoSelfCast: 0
+      unitTypeRestrictions: []
       useMeleeRange: 1
       maxRange: 5
       requireFacingTarget: 0
@@ -75,19 +84,18 @@ MonoBehaviour:
       requiresGroundTarget: 0
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
-    inlineAbilityEffects:
-    - id: 0
-    abilityEffectNames: []
     tickRate: 1
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    isAutoAttack: 0
-    useUnitAttackAnimations: 0
-    useAutoAttackAnimations: 0
-    useWeaponHitSound: 0
+    inlineAbilityEffects:
+    - rid: 3214878833861722224
+    abilityEffectNames: []
+    actionHitAbilityEffectNames: []
+    actionEndAbilityEffectNames: []
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: 3214878833861722224
       type: {class: AttackEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         effectProperties:
@@ -102,13 +110,12 @@ MonoBehaviour:
             canCastOnNeutral: 0
             canCastOnFriendly: 0
             autoSelfCast: 0
+            unitTypeRestrictions: []
             useMeleeRange: 1
             maxRange: 0
             lineOfSightSourceLocation: 0
             targetRangeSourceLocation: 0
           chanceToCast: 100
-          effectMaterialName: 
-          materialChangeDuration: 2
           onHitAudioProfileNames:
           - Chop
           randomAudioProfiles: 0
@@ -141,6 +148,8 @@ MonoBehaviour:
             baseAmount: 0
             amountPerLevel: 0
             maxAmount: 0
-          damageType: 1
+            ignoreCastTime: 0
           ignoreAccuracy: 0
+          weaponAttack: 0
+          damageType: 1
           ignoreArmorPercent: 0

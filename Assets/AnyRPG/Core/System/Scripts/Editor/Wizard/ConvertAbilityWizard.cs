@@ -7,9 +7,13 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 namespace AnyRPG {
+    /// <summary>
+    /// Creates a new ability using the Ability class from one of its previous children
+    /// </summary>
     public class ConvertAbilityWizard : ScriptableWizard {
 
-        public List<BaseAbility> baseAbilities = new List<BaseAbility>();
+        public List<Ability> abilities = new List<Ability>();
+        //public List<GameObject> abilityObjects = new List<GameObject>();
 
         //[MenuItem("Tools/AnyRPG/Wizard/Convert Ability Wizard")]
         public static void CreateWizard() {
@@ -30,19 +34,37 @@ namespace AnyRPG {
             EditorUtility.DisplayProgressBar("Convert Ability Wizard", "Beginning Conversion...", 0f);
 
             int i = 0;
-            foreach (BaseAbility baseAbility in baseAbilities) {
+            string existingAssetPath = string.Empty;
+            foreach (Ability ability in abilities) {
                 i++;
-                EditorUtility.DisplayProgressBar("Convert Ability Effect Wizard", "Beginning Conversion...", (float)i / (float)baseAbilities.Count);
+                EditorUtility.DisplayProgressBar("Convert Ability Wizard", "Beginning Conversion...", (float)i / (float)abilities.Count);
 
+                existingAssetPath = AssetDatabase.GetAssetPath(ability);
+                int index = existingAssetPath.LastIndexOf('/');
+                string existingAssetPathOnly = existingAssetPath.Substring(0, index);
+                string existingAssetFilename = existingAssetPath.Substring(index + 1);
+                string existingAssetFilenameOnly = existingAssetFilename.Substring(0, existingAssetFilename.LastIndexOf("."));
+                    
+                Debug.Log($"Old Asset Path: {existingAssetPath}");
 
-                //baseAbility.Convert();
+                Ability newAbility = ScriptableObject.CreateInstance("Ability") as Ability;
+                newAbility.resourceName = ability.resourceName;
+                newAbility.displayName = ability.displayName;
+                newAbility.icon = ability.icon;
+                newAbility.iconBackgroundImage = ability.iconBackgroundImage;
+                newAbility.description = ability.description;
+                newAbility.useRegionalDescription = ability.useRegionalDescription;
+                newAbility.resourceDescriptionProfile = ability.resourceDescriptionProfile;
+                newAbility.optionalOverride = ability.optionalOverride;
+                newAbility.abilityProperties = ability.AbilityProperties;
 
-                EditorUtility.SetDirty(baseAbility);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
+                string scriptableObjectPath = existingAssetPathOnly + "/" + existingAssetFilenameOnly + "2.asset";
+                Debug.Log($"New Asset Path: {scriptableObjectPath}");
+
+                AssetDatabase.CreateAsset(newAbility, scriptableObjectPath);
             }
-
-            //AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             EditorUtility.ClearProgressBar();
             EditorUtility.DisplayDialog("Convert Ability Wizard", "Conversion Complete!", "OK");

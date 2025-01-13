@@ -1604,13 +1604,13 @@ namespace AnyRPG {
 
             if (CombatStrategy != null) {
                 // attempt to get a valid ability from combat strategy before defaulting to random attacks
-                BaseAbilityProperties meleeAbility = CombatStrategy.GetMeleeAbility(this);
+                AbilityProperties meleeAbility = CombatStrategy.GetMeleeAbility(this);
                 if (meleeAbility != null) {
                     return true;
                 }
             } else {
                 // get random attack if no strategy exists
-                BaseAbilityProperties validAttackAbility = characterCombat.GetMeleeAbility();
+                AbilityProperties validAttackAbility = characterCombat.GetMeleeAbility();
                 if (validAttackAbility != null) {
                     return true;
                 }
@@ -2090,14 +2090,14 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack(" + beginAttack + ")");
             if (CombatStrategy != null) {
                 // attempt to get a valid ability from combat strategy before defaulting to random attacks
-                BaseAbilityProperties validCombatStrategyAbility = CombatStrategy.GetValidAbility(this);
+                AbilityProperties validCombatStrategyAbility = CombatStrategy.GetValidAbility(this);
                 if (validCombatStrategyAbility != null) {
                     characterAbilityManager.BeginAbility(validCombatStrategyAbility);
                     return true;
                 }
             } else {
                 // get random attack if no strategy exists
-                BaseAbilityProperties validAttackAbility = characterCombat.GetValidAttackAbility();
+                AbilityProperties validAttackAbility = characterCombat.GetValidAttackAbility();
                 if (validAttackAbility != null) {
                     characterAbilityManager.BeginAbility(validAttackAbility);
                     return true;

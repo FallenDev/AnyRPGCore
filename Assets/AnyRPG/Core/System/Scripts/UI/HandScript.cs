@@ -54,7 +54,7 @@ namespace AnyRPG {
                 if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && Moveable != null) {
                     if (Moveable is Item) {
                         uIManager.confirmDestroyMenuWindow.OpenWindow();
-                    } else if (Moveable is BaseAbility) {
+                    } else if (Moveable is Ability) {
                         // DROP ABILITY SAFELY
                         if (actionBarManager.FromButton != null) {
                             actionBarManager.FromButton.ClearUseable();

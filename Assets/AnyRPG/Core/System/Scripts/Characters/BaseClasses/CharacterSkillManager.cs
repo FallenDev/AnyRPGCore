@@ -50,7 +50,7 @@ namespace AnyRPG {
 
             if (!skillList.ContainsValue(newSkill)) {
                 skillList[SystemDataUtility.PrepareStringForMatch(newSkill.ResourceName)] = newSkill;
-                foreach (BaseAbilityProperties ability in newSkill.AbilityList) {
+                foreach (AbilityProperties ability in newSkill.AbilityList) {
                     unitController.CharacterAbilityManager.LearnAbility(ability);
                 }
                 foreach (Recipe recipe in systemDataFactory.GetResourceList<Recipe>()) {
@@ -80,7 +80,7 @@ namespace AnyRPG {
         public void UnlearnSkill(Skill oldSkill) {
             if (skillList.ContainsValue(oldSkill)) {
                 skillList.Remove(SystemDataUtility.PrepareStringForMatch(oldSkill.ResourceName));
-                foreach (BaseAbilityProperties ability in oldSkill.AbilityList) {
+                foreach (AbilityProperties ability in oldSkill.AbilityList) {
                     unitController.CharacterAbilityManager.UnlearnAbility(ability);
                 }
             }

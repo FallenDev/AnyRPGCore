@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "New Craft Ability",menuName = "AnyRPG/Abilities/CraftAbility")]
-    public class CraftAbility : BaseAbility {
+    public class CraftAbility : Ability {
 
         [SerializeField]
         private CraftAbilityProperties craftAbilityProperties = new CraftAbilityProperties();
 
-        public override BaseAbilityProperties AbilityProperties { get => craftAbilityProperties; }
+        public override AbilityProperties AbilityProperties { get => craftAbilityProperties; }
         
         /*
         public override void Convert() {

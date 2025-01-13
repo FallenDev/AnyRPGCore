@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7f20dbf54d5643499578902863f014d, type: 3}
+  m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
   m_Name: PenetratingShotAbilityTemplate
   m_EditorClassIdentifier: 
   resourceName: Penetrating Shot
@@ -20,18 +20,25 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  animatedAbilityProperties:
+  abilityProperties:
     requireOutOfCombat: 0
     requireStealth: 0
     weaponAffinityNames:
     - Crossbow
     holdableObjectList: []
+    despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 2
     animatorCreatePrefabs: 1
     prefabDestroyDelay: 0
     animationClip: {fileID: 0}
     animationProfileName: 
     useUnitCastAnimations: 0
+    isAutoAttack: 0
+    useUnitAttackAnimations: 1
+    useAutoAttackAnimations: 0
+    useWeaponHitSound: 1
+    useWeaponSkillAttackVoiceSetting: 0
+    playAttackVoice: 0
     animationHitAudioProfileName: 
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: 
@@ -79,22 +86,18 @@ MonoBehaviour:
       requiresGroundTarget: 0
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
-    inlineAbilityEffects:
-    - rid: 0
-    abilityEffectNames: []
     tickRate: 1
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    isAutoAttack: 0
-    useUnitAttackAnimations: 1
-    useAutoAttackAnimations: 0
-    useWeaponHitSound: 1
-    useWeaponSkillAttackVoiceSetting: 0
-    playAttackVoice: 0
+    inlineAbilityEffects:
+    - rid: 3214878833861722215
+    abilityEffectNames: []
+    actionHitAbilityEffectNames: []
+    actionEndAbilityEffectNames: []
   references:
     version: 2
     RefIds:
-    - rid: 0
+    - rid: 3214878833861722215
       type: {class: ProjectileEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         effectProperties:
@@ -115,8 +118,6 @@ MonoBehaviour:
             lineOfSightSourceLocation: 0
             targetRangeSourceLocation: 0
           chanceToCast: 100
-          effectMaterialName: 
-          materialChangeDuration: 0
           onHitAudioProfileNames: []
           randomAudioProfiles: 0
           hitAbilityEffectNames:

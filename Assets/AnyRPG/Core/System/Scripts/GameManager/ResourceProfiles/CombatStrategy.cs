@@ -18,8 +18,8 @@ namespace AnyRPG {
 
         public List<CombatStrategyNode> PhaseNodes { get => phaseNodes; set => phaseNodes = value; }
 
-        public BaseAbilityProperties GetValidAbility(UnitController sourceCharacter) {
-            List<BaseAbilityProperties> returnList = new List<BaseAbilityProperties>();
+        public AbilityProperties GetValidAbility(UnitController sourceCharacter) {
+            List<AbilityProperties> returnList = new List<AbilityProperties>();
 
             if (sourceCharacter != null) {
                 //Debug.Log($"{gameObject.name}.AICombat.GetValidAttackAbility(): CHARACTER HAS ABILITY MANAGER");
@@ -30,9 +30,9 @@ namespace AnyRPG {
                     AttempStartPhase(sourceCharacter, validPhaseNode);
 
                     // ATTEMPT BUFF AND IMMEDIATELY RETURN ANY BUFF THAT NEEDS CASTING
-                    foreach (BaseAbilityProperties baseAbility in validPhaseNode.MaintainBuffList) {
+                    foreach (AbilityProperties baseAbility in validPhaseNode.MaintainBuffList) {
                         if (sourceCharacter.AbilityManager.HasAbility(baseAbility)) {
-                            if (!sourceCharacter.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(baseAbility.GetAbilityEffects(sourceCharacter)[0].DisplayName))
+                            if (!sourceCharacter.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(baseAbility.GetCastEndEffects(sourceCharacter)[0].DisplayName))
                                 && sourceCharacter.AbilityManager.CanCastAbility(baseAbility)
                                 && baseAbility.CanUseOn(sourceCharacter, sourceCharacter)) {
                                 return baseAbility;
@@ -41,7 +41,7 @@ namespace AnyRPG {
                     }
 
                     // IF NO BUFF AVAILABLE, GET A LIST OF VALID ATTACKS
-                    foreach (BaseAbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
+                    foreach (AbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
                         if (sourceCharacter.AbilityManager.HasAbility(baseAbility)) {
                             if (sourceCharacter.AbilityManager.CanCastAbility(baseAbility)
                                 && baseAbility.CanUseOn(sourceCharacter.Target, sourceCharacter)
@@ -63,7 +63,7 @@ namespace AnyRPG {
 
         }
 
-        public BaseAbilityProperties GetMeleeAbility(UnitController sourceCharacter) {
+        public AbilityProperties GetMeleeAbility(UnitController sourceCharacter) {
 
             if (sourceCharacter != null && sourceCharacter.AbilityManager != null) {
                 //Debug.Log($"{gameObject.name}.AICombat.GetValidAttackAbility(): CHARACTER HAS ABILITY MANAGER");
@@ -74,7 +74,7 @@ namespace AnyRPG {
                     AttempStartPhase(sourceCharacter, validPhaseNode);
 
                     // IF NO BUFF AVAILABLE, GET A LIST OF VALID ATTACKS
-                    foreach (BaseAbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
+                    foreach (AbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
                         if (sourceCharacter.AbilityManager.HasAbility(baseAbility)) {
                             if (baseAbility.GetTargetOptions(sourceCharacter).CanCastOnEnemy && baseAbility.GetTargetOptions(sourceCharacter).UseMeleeRange == true) {
                                 return baseAbility;
@@ -96,10 +96,10 @@ namespace AnyRPG {
             }
         }
 
-        public List<BaseAbilityProperties> GetAttackRangeAbilityList(UnitController sourceCharacter) {
+        public List<AbilityProperties> GetAttackRangeAbilityList(UnitController sourceCharacter) {
             //Debug.Log(sourceCharacter.gameObject.name + ".CombatStrategy.GetAttackRangeAbilityList()");
 
-            List<BaseAbilityProperties> returnList = new List<BaseAbilityProperties>();
+            List<AbilityProperties> returnList = new List<AbilityProperties>();
 
             if (sourceCharacter != null) {
                 //Debug.Log($"{gameObject.name}.AICombat.GetValidAttackAbility(): CHARACTER HAS ABILITY MANAGER");
@@ -109,7 +109,7 @@ namespace AnyRPG {
 
                     AttempStartPhase(sourceCharacter, validPhaseNode);
 
-                    foreach (BaseAbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
+                    foreach (AbilityProperties baseAbility in validPhaseNode.AttackAbilityList) {
                         if (sourceCharacter.AbilityManager.HasAbility(baseAbility)) {
                             returnList.Add(baseAbility);
                         } else {

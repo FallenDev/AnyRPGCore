@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c80d744dccc642148ab1014a88212085, type: 3}
+  m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
   m_Name: BloodShieldAbilityTemplate
   m_EditorClassIdentifier: 
   resourceName: Blood Shield
@@ -20,7 +20,7 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  directAbilityProperties:
+  abilityProperties:
     requireOutOfCombat: 0
     requireStealth: 0
     weaponAffinityNames: []
@@ -28,12 +28,19 @@ MonoBehaviour:
     - holdableObjectName: Red Casting Circle
       useUniversalAttachment: 0
       attachmentName: 
+    despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
     animationClip: {fileID: 0}
     animationProfileName: Cast 2H Out
     useUnitCastAnimations: 0
+    isAutoAttack: 0
+    useUnitAttackAnimations: 1
+    useAutoAttackAnimations: 0
+    useWeaponHitSound: 0
+    useWeaponSkillAttackVoiceSetting: 1
+    playAttackVoice: 1
     animationHitAudioProfileName: 
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: Destruction Spell
@@ -79,12 +86,14 @@ MonoBehaviour:
       requiresGroundTarget: 0
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
-    inlineAbilityEffects: []
-    abilityEffectNames:
-    - Blood Shield
     tickRate: 1
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
+    inlineAbilityEffects: []
+    abilityEffectNames:
+    - Blood Shield
+    actionHitAbilityEffectNames: []
+    actionEndAbilityEffectNames: []
   references:
     version: 2
     RefIds: []

@@ -62,11 +62,11 @@ namespace AnyRPG {
         [ResourceSelector(resourceType = typeof(StatusEffect))]
         private string statusEffect = string.Empty;
 
-        private ChanneledAbilityProperties channeledAbility = null;
+        private AbilityProperties ability = null;
 
-        public override BaseAbilityProperties Ability {
+        public override AbilityProperties Ability {
             get {
-                return channeledAbility;
+                return ability;
             }
         }
 
@@ -110,7 +110,7 @@ namespace AnyRPG {
 
 
             // set up the ability
-            channeledAbility = new ChanneledAbilityProperties();
+            ability = new AbilityProperties();
             // target options
             AbilityTargetProps abilityTargetProps = new AbilityTargetProps();
             abilityTargetProps.AutoSelfCast = true;
@@ -118,26 +118,26 @@ namespace AnyRPG {
             abilityTargetProps.CanCastOnSelf = true;
             abilityTargetProps.RequireLiveTarget = true;
             abilityTargetProps.RequireTarget = true;
-            channeledAbility.TargetOptions = abilityTargetProps;
+            ability.TargetOptions = abilityTargetProps;
 
-            channeledAbility.AbilityPrefabSource = AbilityPrefabSource.Ability;
-            channeledAbility.HoldableObjectList = holdableObjectList;
-            channeledAbility.AnimationProfileName = animationProfileName;
-            channeledAbility.CastingAnimationClip = animationClip;
-            channeledAbility.UseAnimationCastTime = true;
-            channeledAbility.CastingAudioClip = castingAudioClip;
-            channeledAbility.CastingAudioProfileName = castingAudioProfileName;
-            channeledAbility.LoopAudio = loopAudio;
-            channeledAbility.UseableWithoutLearning = true;
-            channeledAbility.UseSpeedMultipliers = false;
-            channeledAbility.TickRate = tickRate;
+            ability.AbilityPrefabSource = AbilityPrefabSource.Ability;
+            ability.HoldableObjectList = holdableObjectList;
+            ability.AnimationProfileName = animationProfileName;
+            ability.CastingAnimationClip = animationClip;
+            ability.UseAnimationCastTime = true;
+            ability.CastingAudioClip = castingAudioClip;
+            ability.CastingAudioProfileName = castingAudioProfileName;
+            ability.LoopAudio = loopAudio;
+            ability.UseableWithoutLearning = true;
+            ability.UseSpeedMultipliers = false;
+            ability.TickRate = tickRate;
             if (statusEffect != string.Empty) {
-                channeledAbility.AbilityEffectNames = new List<string>() { statusEffect };
+                ability.AbilityEffectNames = new List<string>() { statusEffect };
             }
             //channeledAbility.AbilityEffectNames.Add(statusEffect);
-            channeledAbility.ChanneledAbilityEffects.Add(healEffect);
+            ability.ChanneledAbilityEffects.Add(healEffect);
 
-            channeledAbility.SetupScriptableObjects(systemGameManager, describable);
+            ability.SetupScriptableObjects(systemGameManager, describable);
         }
 
     }

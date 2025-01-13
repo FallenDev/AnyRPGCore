@@ -20,7 +20,7 @@ namespace AnyRPG {
         [SerializeField]
         private string toolTip = string.Empty;
 
-        public abstract BaseAbilityProperties Ability { get; }
+        public abstract AbilityProperties Ability { get; }
 
         // game manager references
         protected SystemAbilityController systemAbilityController = null;

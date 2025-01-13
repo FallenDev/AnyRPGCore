@@ -12,7 +12,7 @@ namespace AnyRPG {
         [Header("Ability Button")]
 
         //[SerializeField]
-        protected BaseAbilityProperties ability = null;
+        protected AbilityProperties ability = null;
 
         [SerializeField]
         protected Image icon = null;
@@ -34,7 +34,7 @@ namespace AnyRPG {
             actionBarManager = systemGameManager.UIManager.ActionBarManager;
         }
 
-        public void AddAbility(BaseAbilityProperties ability) {
+        public void AddAbility(AbilityProperties ability) {
             this.ability = ability;
             icon.sprite = ability.Icon;
             icon.color = Color.white;

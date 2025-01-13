@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace AnyRPG {
 
     [System.Serializable]
-    public class CraftAbilityProperties : DirectAbilityProperties {
+    public class CraftAbilityProperties : AbilityProperties {
 
         // game manager references
         protected CraftingManager craftingManager = null;

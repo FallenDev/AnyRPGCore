@@ -94,10 +94,10 @@ namespace AnyRPG {
         protected int maxAbilityRewards = 0;
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         protected List<string> abilityRewardNames = new List<string>();
 
-        protected List<BaseAbility> abilityRewardList = new List<BaseAbility>();
+        protected List<Ability> abilityRewardList = new List<Ability>();
 
         [Header("Skill Rewards")]
 
@@ -131,7 +131,7 @@ namespace AnyRPG {
 
         public virtual List<Item> ItemRewards { get => itemRewardList; }
         public virtual List<FactionNode> FactionRewards { get => factionRewards; }
-        public virtual List<BaseAbility> AbilityRewards { get => abilityRewardList; }
+        public virtual List<Ability> AbilityRewards { get => abilityRewardList; }
         public virtual List<Skill> SkillRewards { get => skillRewardList; }
 
         public virtual bool TurnInItems { get => turnInItems; set => turnInItems = value; }
@@ -255,10 +255,10 @@ namespace AnyRPG {
                 }
             }
 
-            abilityRewardList = new List<BaseAbility>();
+            abilityRewardList = new List<Ability>();
             if (abilityRewardNames != null) {
                 foreach (string baseAbilityName in abilityRewardNames) {
-                    BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(baseAbilityName);
+                    Ability baseAbility = systemDataFactory.GetResource<Ability>(baseAbilityName);
                     if (baseAbility != null) {
                         abilityRewardList.Add(baseAbility);
                     } else {

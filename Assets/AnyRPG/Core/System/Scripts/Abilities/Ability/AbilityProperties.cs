@@ -1,4 +1,6 @@
 using AnyRPG;
+using MonoFN.Cecil;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using UnityEngine.UI;
 namespace AnyRPG {
 
     [Serializable]
-    public abstract class BaseAbilityProperties : ConfiguredClass, IRewardable, IDescribable, IUseable, IMoveable, ITargetable, ILearnable {
+    public class AbilityProperties : ConfiguredClass, IRewardable, IDescribable, IUseable, IMoveable, ITargetable, ILearnable {
 
         public event System.Action OnAbilityLearn = delegate { };
         public event System.Action OnAbilityUsed = delegate { };
@@ -31,11 +33,17 @@ namespace AnyRPG {
 
         private List<WeaponSkill> weaponAffinityList = new List<WeaponSkill>();
 
+
         [Header("Prefabs")]
 
         [Tooltip("Physical prefabs to attach to bones on the character unit")]
         [SerializeField]
         private List<AbilityAttachmentNode> holdableObjectList = new List<AbilityAttachmentNode>();
+
+        [Tooltip("If true, the prefabs will be despawned when the cast phase ends, instead of during or at the end of the action phase")]
+        [SerializeField]
+        private bool despawnPrefabsOnCastEnd = false;
+
 
         [Header("Prefab Control")]
 
@@ -51,9 +59,10 @@ namespace AnyRPG {
         [SerializeField]
         protected float prefabDestroyDelay = 0f;
 
+
         [Header("Animation")]
 
-        [Tooltip("The animation clip the character will perform")]
+        [Tooltip("The animation clip the character will perform while casting")]
         [SerializeField]
         protected AnimationClip animationClip = null;
 
@@ -67,6 +76,34 @@ namespace AnyRPG {
         [Tooltip("If true, the ability will use the casting animations from the caster.")]
         [SerializeField]
         protected bool useUnitCastAnimations = false;
+
+        
+        [Header("Animated Ability")]
+
+        [Tooltip("Is this an auto attack ability")]
+        [SerializeField]
+        private bool isAutoAttack = false;
+
+        [Tooltip("If true, a random animation from the unit attack animations will be used")]
+        [SerializeField]
+        private bool useUnitAttackAnimations = true;
+
+        [Tooltip("This option is only valid if this is not an auto attack ability.  If true, it will use the current auto-attack animations so it looks good with any weapon.")]
+        [SerializeField]
+        private bool useAutoAttackAnimations = false;
+
+        [Tooltip("If true, the current weapon default hit sound will be played when this ability hits an enemy.")]
+        [SerializeField]
+        private bool useWeaponHitSound = false;
+
+        [Tooltip("If true, the choice of whether or not to play the attack voice is controlled by the weapon skill.")]
+        [SerializeField]
+        private bool useWeaponSkillAttackVoiceSetting = true;
+
+        [Tooltip("If true, the character will play their attack voice clip when this ability is used.")]
+        [SerializeField]
+        private bool playAttackVoice = true;
+
 
         [Header("Audio")]
 
@@ -91,6 +128,7 @@ namespace AnyRPG {
         [Tooltip("If true, the audio will be looped until the cast is complete.")]
         [SerializeField]
         protected bool loopAudio = false;
+
 
         [Header("Learning")]
 
@@ -120,6 +158,7 @@ namespace AnyRPG {
         [SerializeField]
         protected bool autoAddToBars = true;
 
+
         [Header("Casting Restrictions")]
 
         [Tooltip("This spell can be cast while other spell casts are in progress. Use this option for things like system abilities (level up, achievement, take damage effect, etc) that should not be blocked by an active spell cast in progress.")]
@@ -133,6 +172,7 @@ namespace AnyRPG {
         [Tooltip("This spell can be cast while the global cooldown is active. Use this option for things like system abilities (level up, achievement, take damage effect, etc) that should not be blocked by an active spell cast in progress.")]
         [SerializeField]
         private bool ignoreGlobalCoolDown = false;
+
 
         [Header("Cost")]
 
@@ -154,6 +194,7 @@ namespace AnyRPG {
         [Tooltip("Delay the spending of the resource by this many seconds when the ability is cast.  Useful if the ability can kill the caster to give time to complete final cast.")]
         [SerializeField]
         protected float spendDelay = 0f;
+
 
         [Header("Power Generation")]
 
@@ -195,6 +236,7 @@ namespace AnyRPG {
         [SerializeField]
         protected bool coolDownOnCast = false;
 
+
         [Header("Target Properties")]
 
         [Tooltip("Ignore the below target options and use the check from the first ability effect instead")]
@@ -204,23 +246,12 @@ namespace AnyRPG {
         [SerializeField]
         private AbilityTargetProps targetOptions = new AbilityTargetProps();
 
-        [Header("Cast Complete Ability Effects")]
-
-        [Tooltip("When casting is complete, these ability effects will be triggered.")]
-        [SerializeReference]
-        [SerializeReferenceButton]
-        protected List<AbilityEffectConfig> inlineAbilityEffects = new List<AbilityEffectConfig>();
-
-        [Tooltip("When casting is complete, these ability effects will be triggered.")]
-        [SerializeField]
-        [ResourceSelector(resourceType = typeof(AbilityEffect))]
-        protected List<string> abilityEffectNames = new List<string>();
-
         [Header("Channeling")]
 
         [Tooltip("During casting, this ability will perform its tick effects, every x seconds")]
         [SerializeField]
         private float tickRate = 1f;
+
 
         [Header("Chanelling Effects")]
 
@@ -236,7 +267,41 @@ namespace AnyRPG {
 
         protected List<AbilityEffectProperties> channeledAbilityEffects = new List<AbilityEffectProperties>();
 
+
+        [Header("Cast Complete Ability Effects")]
+
+        [Tooltip("When casting is complete, these ability effects will be triggered.")]
+        [SerializeReference]
+        [SerializeReferenceButton]
+        protected List<AbilityEffectConfig> inlineAbilityEffects = new List<AbilityEffectConfig>();
+
+        [Tooltip("When casting is complete, these ability effects will be triggered.")]
+        [SerializeField]
+        [ResourceSelector(resourceType = typeof(AbilityEffect))]
+        protected List<string> abilityEffectNames = new List<string>();
+
         private List<AbilityEffectProperties> abilityEffects = new List<AbilityEffectProperties>();
+
+
+        [Header("Action Hit Ability Effects")]
+
+        [Tooltip("In response to Hit events during the animation, these ability effects will be triggered.")]
+        [SerializeField]
+        [ResourceSelector(resourceType = typeof(AbilityEffect))]
+        protected List<string> actionHitAbilityEffectNames = new List<string>();
+
+        private List<AbilityEffectProperties> actionHitAbilityEffects = new List<AbilityEffectProperties>();
+
+
+        [Header("Action End Ability Effects")]
+
+        [Tooltip("When the action is complete, these ability effects will be triggered.")]
+        [SerializeField]
+        [ResourceSelector(resourceType = typeof(AbilityEffect))]
+        protected List<string> actionEndAbilityEffectNames = new List<string>();
+
+        private List<AbilityEffectProperties> actionEndAbilityEffects = new List<AbilityEffectProperties>();
+
 
         protected IDescribable describableData = null;
 
@@ -249,6 +314,10 @@ namespace AnyRPG {
         public string DisplayName { get => describableData.DisplayName; }
         public Sprite Icon { get => describableData.Icon; }
         public string Description { get => describableData.Description; }
+        public bool IsAutoAttack { get => isAutoAttack; set => isAutoAttack = value; }
+        public bool UseWeaponHitSound { get => useWeaponHitSound; set => useWeaponHitSound = value; }
+        public bool UseWeaponSkillAttackVoiceSetting { get => useWeaponSkillAttackVoiceSetting; set => useWeaponSkillAttackVoiceSetting = value; }
+
 
 
         public AnimationClip CastingAnimationClip {
@@ -402,7 +471,14 @@ namespace AnyRPG {
         }
 
         public virtual float GetTimeMultiplier(IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
+            
+            // casting phase multiplier
             return Mathf.Clamp(abilityEffectContext.castTimeMultiplier, 1f, Mathf.Infinity);
+
+            // FIX ME - figure out which one to return
+            // action phase multiplier
+            //return Mathf.Clamp(sourceCharacter.AbilityManager.GetAnimationLengthMultiplier(), 1f, Mathf.Infinity);
+
         }
 
         public void GiveReward() {
@@ -435,7 +511,7 @@ namespace AnyRPG {
         }
 
         public IUseable GetFactoryUseable() {
-            return systemDataFactory.GetResource<BaseAbility>(DisplayName).AbilityProperties;
+            return systemDataFactory.GetResource<Ability>(DisplayName).AbilityProperties;
         }
 
         public virtual void UpdateChargeCount(ActionButton actionButton) {
@@ -443,26 +519,64 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessUnLearnAbility(CharacterAbilityManager abilityManager) {
-            // do nothing here
+            if (isAutoAttack) {
+                abilityManager.UnsetAutoAttackAbility();
+            }
         }
 
         public virtual void PrepareToLearnAbility(CharacterAbilityManager abilityManager) {
-            // do nothing here
+            if (IsAutoAttack == true) {
+                abilityManager.UnLearnDefaultAutoAttackAbility();
+            }
         }
 
         public virtual void ProcessLearnAbility(CharacterAbilityManager abilityManager) {
-            // do nothing here
+            if (isAutoAttack) {
+                abilityManager.SetAutoAttackAbility(this);
+            }
         }
 
         public virtual bool CanLearnAbility(CharacterAbilityManager characterAbilityManager) {
+            if (isAutoAttack == true && characterAbilityManager.AutoAttackAbility != null) {
+                return false;
+            }
             return true;
         }
 
         public virtual void ProcessLoadAbility(CharacterAbilityManager abilityManager) {
-            // do nothing here
+            if (isAutoAttack == true) {
+                abilityManager.LearnAutoAttack(this);
+            }
         }
 
         public virtual bool HadSpecialIcon(ActionButton actionButton) {
+            if (systemConfigurationManager.AllowAutoAttack == true && IsAutoAttack == true) {
+
+                if (playerManager.UnitController.CharacterCombat.GetInCombat() == true
+                    && playerManager.UnitController.CharacterCombat.AutoAttackActive == true) {
+                    if (actionButton.CoolDownIcon.isActiveAndEnabled == false) {
+                        actionButton.CoolDownIcon.enabled = true;
+                    }
+                    if (actionButton.CoolDownIcon.color == new Color32(255, 0, 0, 155)) {
+                        actionButton.CoolDownIcon.color = new Color32(255, 146, 146, 155);
+                    } else {
+                        actionButton.CoolDownIcon.color = new Color32(255, 0, 0, 155);
+                    }
+
+                    if (actionButton.CoolDownIcon.fillMethod != Image.FillMethod.Radial360) {
+                        actionButton.CoolDownIcon.fillMethod = Image.FillMethod.Radial360;
+                    }
+                    if (actionButton.CoolDownIcon.fillAmount != 1f) {
+                        actionButton.CoolDownIcon.fillAmount = 1f;
+                    }
+                } else {
+                    //Debug.Log("ActionButton.UpdateVisual(): Player is not in combat");
+                    actionButton.DisableCoolDownIcon();
+                }
+                // don't need to continue on and do radial fill on auto-attack icons
+                return true;
+            }
+
             return false;
         }
 
@@ -472,6 +586,10 @@ namespace AnyRPG {
         /// <param name="characterCombat"></param>
         /// <returns></returns>
         public virtual bool ReadyToCast(CharacterCombat characterCombat) {
+            if (isAutoAttack == true && characterCombat.OnAutoAttackCooldown() == true) {
+                return false;
+            }
+
             return true;
         }
 
@@ -481,6 +599,24 @@ namespace AnyRPG {
 
         public virtual void UpdateActionButtonVisual(ActionButton actionButton) {
             //Debug.Log(DisplayName + ".BaseAbility.UpdateActionButtonVisual()");
+
+            // this must happen first because it's an image update that doesn't rely on cooldowns
+            // auto-attack buttons are special and display the current weapon of the character
+            if (IsAutoAttack == true) {
+                //Debug.Log("ActionButton.UpdateVisual(): updating auto-attack ability");
+                foreach (EquipmentSlotProfile equipmentSlotProfile in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Keys) {
+                    //Debug.Log("ActionButton.UpdateVisual(): updating auto-attack ability");
+                    if (equipmentSlotProfile.MainWeaponSlot == true
+                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile] != null
+                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile] is Weapon) {
+                        if (actionButton.Icon.sprite != playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon) {
+                            actionButton.Icon.sprite = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon;
+                            break;
+                        }
+                    }
+                }
+            }
+
             // set cooldown icon on abilities that don't have enough resources to cast
             if (PowerResource != null
                 && (GetResourceCost(playerManager.ActiveUnitController) >= playerManager.ActiveUnitController.CharacterStats.GetPowerResourceAmount(PowerResource))) {
@@ -550,27 +686,70 @@ namespace AnyRPG {
         }
 
         public virtual Coroutine ChooseMonitorCoroutine(ActionButton actionButton) {
-            // actionbuttons can be disabled, but the systemability manager will not.  That's why the ability is monitored here
-                //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + "): WAS NOT ANIMATED AUTO ATTACK");
-                //if (abilityCoRoutine == null) {
+
+            if (systemConfigurationManager.AllowAutoAttack == true && IsAutoAttack == true) {
+                //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + "): WAS ANIMATED AUTO ATTACK");
+                //if (autoAttackCoRoutine == null) {
                 //if (monitorCoroutine == null) {
-                    return systemAbilityController.StartCoroutine(actionButton.MonitorAbility(DisplayName));
+                return systemAbilityController.StartCoroutine(actionButton.MonitorAutoAttack(this));
                 //}
-            //return null;
+            }
+            // actionbuttons can be disabled, but the systemability manager will not.  That's why the ability is monitored here
+            return systemAbilityController.StartCoroutine(actionButton.MonitorAbility(DisplayName));
         }
 
         public TargetProps GetTargetOptions(IAbilityCaster abilityCaster) {
-            if (useAbilityEffectTargetting == true && GetAbilityEffects(abilityCaster).Count > 0) {
-                return GetAbilityEffects(abilityCaster)[0].GetTargetOptions(abilityCaster);
+            // FIX ME - action hits should be able to target by their effects
+            if (useAbilityEffectTargetting == true && GetCastEndEffects(abilityCaster).Count > 0) {
+                return GetCastEndEffects(abilityCaster)[0].GetTargetOptions(abilityCaster);
             }
             return targetOptions;
         }
 
-        public virtual List<AbilityEffectProperties> GetAbilityEffects(IAbilityCaster abilityCaster) {
+        public bool PlayAttackVoice(CharacterCombat characterCombat) {
+            if (useWeaponSkillAttackVoiceSetting == true) {
+                return characterCombat.GetWeaponSkillAttackVoiceSetting();
+            }
+
+            return playAttackVoice;
+        }
+
+        public virtual List<AbilityEffectProperties> GetCastEndEffects(IAbilityCaster abilityCaster) {
             return abilityEffects;
         }
 
+        public virtual List<AbilityEffectProperties> GetActionHitEffects(IAbilityCaster abilityCaster) {
+            if (isAutoAttack) {
+                List<AbilityEffectProperties> weaponAbilityList = abilityCaster.AbilityManager.GetDefaultHitEffects();
+                if (weaponAbilityList != null && weaponAbilityList.Count > 0) {
+                    return weaponAbilityList;
+                }
+            }
+            return actionHitAbilityEffects;
+        }
+
+        public virtual List<AbilityEffectProperties> GetActionEndEffects(IAbilityCaster abilityCaster) {
+            if (isAutoAttack) {
+                List<AbilityEffectProperties> weaponAbilityList = abilityCaster.AbilityManager.GetDefaultHitEffects();
+                if (weaponAbilityList != null && weaponAbilityList.Count > 0) {
+                    return weaponAbilityList;
+                }
+            }
+            return actionEndAbilityEffects;
+        }
+
         public virtual List<AbilityAttachmentNode> GetHoldableObjectList(IAbilityCaster abilityCaster) {
+            if (abilityPrefabSource == AbilityPrefabSource.Both) {
+                List<AbilityAttachmentNode> returnList = new List<AbilityAttachmentNode>();
+                returnList.AddRange(holdableObjectList);
+                returnList.AddRange(abilityCaster.AbilityManager.GetWeaponAbilityAnimationObjectList());
+                return returnList;
+            }
+            if (abilityPrefabSource == AbilityPrefabSource.Weapon) {
+                return abilityCaster.AbilityManager.GetWeaponAbilityAnimationObjectList();
+            }
+
+            // abilityPrefabSource is Ability
             return holdableObjectList;
         }
 
@@ -705,8 +884,24 @@ namespace AnyRPG {
             return AnimationHitAudioClip;
         }
 
+        public List<AnimationClip> GetActionClips(IAbilityCaster sourceCharacter) {
+            List<AnimationClip> animationClips = new List<AnimationClip>();
+            if (useUnitAttackAnimations == true) {
+                animationClips = sourceCharacter.AbilityManager.GetUnitAttackAnimations();
+            } else if (useAutoAttackAnimations == true) {
+                animationClips = sourceCharacter.AbilityManager.GetDefaultAttackAnimations();
+            } else {
+                animationClips = AttackClips;
+            }
+            return animationClips;
+        }
+
         public virtual AudioClip GetHitSound(IAbilityCaster abilityCaster) {
-            // only meant for animated Abilities
+            //Debug.Log(DisplayName + ".AnimatedAbility.GetHitSound(" + abilityCaster.AbilityManager.Name + ")");
+            if (useWeaponHitSound == true) {
+                //Debug.Log(DisplayName + ".AnimatedAbility.GetHitSound(" + abilityCaster.Name + "): using weapon hit sound");
+                return abilityCaster.AbilityManager.GetAnimatedAbilityHitSound();
+            }
             return null;
         }
 
@@ -737,7 +932,8 @@ namespace AnyRPG {
                 return false;
             }
             if (useAbilityEffectTargetting) {
-                List<AbilityEffectProperties> abilityEffects = GetAbilityEffects(sourceCharacter);
+                // FIX ME - this should take into account which of the ability effects (cast/hit/end) are used for targeting
+                List<AbilityEffectProperties> abilityEffects = GetCastEndEffects(sourceCharacter);
                 if (abilityEffects != null && abilityEffects.Count > 0 && abilityEffects[0].CanCast() == false) {
                     return false;
                 }
@@ -772,13 +968,73 @@ namespace AnyRPG {
                 BeginAbilityCoolDown(sourceCharacter);
             }
 
-            ProcessAbilityPrefabs(sourceCharacter);
+            ProcessCleanupAbilityPrefabs(sourceCharacter);
             ProcessGCDAuto(sourceCharacter);
 
+            List<AbilityEffectProperties> abilityEffectProperties = GetCastEndEffects(sourceCharacter);
+            PerformAbilityEffects(sourceCharacter, target, abilityEffectContext, abilityEffectProperties);
+
+            List<AnimationClip> usedAnimationClips = GetActionClips(sourceCharacter);
+            if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
+                //Debug.Log("AnimatedAbility.Cast(): animationClip is not null, setting animator");
+
+                CharacterUnit targetCharacterUnit = null;
+                if (target != null) {
+                    targetCharacterUnit = CharacterUnit.GetCharacterUnit(target);
+                }
+                UnitController targetUnitController = null;
+                if (targetCharacterUnit != null) {
+                    targetUnitController = targetCharacterUnit.UnitController;
+                }
+
+                int attackIndex = UnityEngine.Random.Range(0, usedAnimationClips.Count);
+                if (usedAnimationClips[attackIndex] != null) {
+                    // perform the actual animation
+                    float animationLength = sourceCharacter.AbilityManager.PerformAbilityAction(this, usedAnimationClips[attackIndex], attackIndex, targetUnitController, abilityEffectContext);
+
+                    sourceCharacter.AbilityManager.ProcessAbilityCoolDowns(this, animationLength, abilityCoolDown);
+                }
+
+            } else {
+                Debug.LogError(DisplayName + ".AnimatedAbility.Cast(): no animation clips returned");
+            }
             return true;
             // notify subscribers
             //OnAbilityCast(this);
         }
+
+        
+        public void HandleAbilityHit(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+            List<AbilityEffectProperties> abilityEffectProperties = GetActionHitEffects(source);
+            HandleAbilityHitCommon(source, target, abilityEffectContext, abilityEffectProperties);
+        }
+
+        public void HandleAbilityEndHit(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+            List<AbilityEffectProperties> abilityEffectProperties = GetActionEndEffects(source);
+            HandleAbilityHitCommon(source, target, abilityEffectContext, abilityEffectProperties);
+        }
+
+        public void HandleAbilityHitCommon(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext, List<AbilityEffectProperties> abilityEffectProperties) {
+            //Debug.Log(DisplayName + ".AnimatedAbilityProperties.HandleAbilityHit()");
+            // perform a check that includes range to target, and does not include in progress ability action check
+            bool rangeResult = CanUseOnBase(target, source);
+            bool deactivateAutoAttack = false;
+            if (rangeResult == false) {
+                // if the range to target check failed, perform another check without range
+                // if that passes, do not deactivate auto-attack.  target just moved away mid swing and didn't die/change faction etc
+                if (!CanUseOnBase(target, source, true, null, false, false)) {
+                    deactivateAutoAttack = true;
+                }
+            }
+            source.AbilityManager.ProcessAnimatedAbilityHit(target, deactivateAutoAttack);
+
+            // since ability and effects can have their own individual range and LOS requirements, check if the effects are allowed to hit
+            // as long as only the LOS and range check failed from the ability (meaning no faction, liveness etc violations)
+            if (deactivateAutoAttack == false || abilityEffectContext.baseAbility.GetTargetOptions(source).RequireTarget == false) {
+                bool missResult = PerformAbilityEffects(source, target, abilityEffectContext, abilityEffectProperties);
+            }
+        }
+
 
         public virtual void BeginAbilityCoolDown(IAbilityCaster sourceCharacter, float animationLength = -1f) {
             if (sourceCharacter != null) {
@@ -786,20 +1042,36 @@ namespace AnyRPG {
             }
         }
 
+        /// <summary>
+        /// give the cooldowns a chance to trigger
+        /// </summary>
+        /// <param name="sourceCharacter"></param>
         public virtual void ProcessGCDAuto(IAbilityCaster sourceCharacter) {
             //Debug.Log(DisplayName + ".BaseAbility.ProcessGCDManual()");
+
+            if (GetActionClips(sourceCharacter).Count > 0) {
+                // cooldown length will be based on action animation length
+                return;
+            }
+
+            // cooldown length 
             ProcessGCDManual(sourceCharacter);
         }
 
         public virtual void ProcessGCDManual(IAbilityCaster sourceCharacter, float usedCoolDown = 0f) {
             //Debug.Log(DisplayName + ".BaseAbility.ProcessGCDManual(" + usedCoolDown + ")");
             if (CanSimultaneousCast == false && IgnoreGlobalCoolDown == false && GetAbilityCastingTime(sourceCharacter) == 0f) {
+                // if cast time was zero, initiate global cooldown to prevent spamming
                 sourceCharacter.AbilityManager.InitiateGlobalCooldown(usedCoolDown);
             }
         }
 
-        public virtual void ProcessAbilityPrefabs(IAbilityCaster sourceCharacter) {
+        public virtual void ProcessCleanupAbilityPrefabs(IAbilityCaster sourceCharacter) {
             //Debug.Log(DisplayName + ".BaseAbility.ProcessAbilityPrefabs()");
+            if (despawnPrefabsOnCastEnd == false) {
+                return;
+            }
+            
             if (GetHoldableObjectList(sourceCharacter) == null || GetHoldableObjectList(sourceCharacter).Count == 0) {
                 return;
             }
@@ -809,27 +1081,59 @@ namespace AnyRPG {
 
         public virtual bool CanUseOn(Interactable target, IAbilityCaster sourceCharacter, bool performCooldownChecks = true, AbilityEffectContext abilityEffectContext = null, bool playerInitiated = false, bool performRangeCheck = true) {
             //Debug.Log(DisplayName + ".BaseAbility.CanUseOn(" + (target != null ? target.name : "null") + ", " + (sourceCharacter != null ? sourceCharacter.AbilityManager.Name : "null") + ")");
+            if (performCooldownChecks && !sourceCharacter.AbilityManager.PerformAbilityActionCheck(this)) {
+                return false;
+            }
 
+            if (!CanUseOnBase(target, sourceCharacter, performCooldownChecks, abilityEffectContext, playerInitiated, performRangeCheck)) {
+                return false;
+            }
+
+            if (!CanSimultaneousCast) {
+                if (sourceCharacter.AbilityManager.PerformingAbility) {
+                    if (playerInitiated) {
+                        sourceCharacter.AbilityManager.ReceiveCombatMessage("Cannot cast " + describableData.DisplayName + ". another cast is in progress");
+                    }
+                    return false;
+                }
+            }
+            return true;
+
+        }
+
+        // to be used at the end of ability hit because it doesn't perform in progress check
+        public bool CanUseOnBase(Interactable target, IAbilityCaster sourceCharacter, bool performCooldownChecks = true, AbilityEffectContext abilityEffectContext = null, bool playerInitiated = false, bool performRangeCheck = true) {
             if (useAbilityEffectTargetting == true
-                && GetAbilityEffects(sourceCharacter).Count > 0) {
-                return GetAbilityEffects(sourceCharacter)[0].CanUseOn(target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
+                && GetCastEndEffects(sourceCharacter).Count > 0) {
+                return GetCastEndEffects(sourceCharacter)[0].CanUseOn(target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
             }
 
             return targetOptions.CanUseOn(this, target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
 
         }
 
-        //public virtual void PerformAbilityEffect(BaseAbility ability, GameObject source, GameObject target) {
-        public virtual bool PerformAbilityEffects(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+        public virtual void PerformCastEndEffects(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+            List<AbilityEffectProperties> usedCastEndEffects = GetCastEndEffects(source);
+
+        }
+
+        public virtual void PerformActionHitEffects(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+            List<AbilityEffectProperties> usedActionHitEffects = GetActionHitEffects(source);
+        }
+
+        public virtual void PerformActionEndEffects(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
+            List<AbilityEffectProperties> usedActionEndEffects = GetActionEndEffects(source);
+        }
+
+        public virtual bool PerformAbilityEffects(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext, List<AbilityEffectProperties> abilityEffectProperties) {
             //Debug.Log(DisplayName + ".BaseAbility.PerformAbilityEffects(" + source.AbilityManager.Name + ", " + (target ? target.name : "null") + ")");
-            if (GetAbilityEffects(source).Count == 0) {
-                //Debug.Log(resourceName + ".BaseAbility.PerformAbilityEffects(" + source.name + ", " + (target ? target.name : "null") + "): THERE ARE NO EFFECTS ATTACHED TO THIS ABILITY!");
-                // this is fine for channeled abilities
-            }
+            
+            // FIX ME - this line existed only for DirectAbility - does it break anything else by being here ?
+            abilityEffectContext.castTimeMultiplier = GetBaseAbilityCastingTime(source);
 
             // perform hit / miss check only if baseability requires target and return false if miss
             if (GetTargetOptions(source).RequireTarget) {
-                if (!source.AbilityManager.AbilityHit(target, abilityEffectContext)) {
+                if (!source.AbilityManager.DidAbilityHit(target, abilityEffectContext)) {
                     //Debug.Log(DisplayName + ".BaseAbility.PerformAbilityEffects(): miss");
                     return false;
                 }
@@ -838,7 +1142,7 @@ namespace AnyRPG {
             // generate power resource
             source.AbilityManager.GeneratePower(this);
 
-            foreach (AbilityEffectProperties abilityEffect in GetAbilityEffects(source)) {
+            foreach (AbilityEffectProperties abilityEffect in abilityEffectProperties) {
                 if (abilityEffect == null) {
                     Debug.Log("Forgot to set ability affect in inspector?");
                 }
@@ -971,27 +1275,6 @@ namespace AnyRPG {
 
             Configure(systemGameManager);
 
-            // add inline effects
-            foreach (AbilityEffectConfig abilityEffectConfig in inlineAbilityEffects) {
-                if (abilityEffectConfig != null) {
-                    abilityEffectConfig.SetupScriptableObjects(systemGameManager, this);
-                    abilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
-                } else {
-                    Debug.LogWarning("Null inline AbilityEffect detected while initializing BaseAbility Properties for " + describable.ResourceName);
-                }
-            }
-
-            // add named effects
-            if (AbilityEffectNames != null) {
-                foreach (string abilityEffectName in AbilityEffectNames) {
-                    AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
-                    if (abilityEffect != null) {
-                        abilityEffects.Add(abilityEffect.AbilityEffectProperties);
-                    } else {
-                        Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
-                    }
-                }
-            }
             if (holdableObjectList != null) {
                 foreach (AbilityAttachmentNode holdableObjectAttachment in holdableObjectList) {
                     if (holdableObjectAttachment != null) {
@@ -1062,15 +1345,14 @@ namespace AnyRPG {
             }
 
 
-            //channeledAbilityEffects = new List<AbilityEffectProperties>();
-            
-            // add inline effects
+
+            // add inline channeled effects
             foreach (AbilityEffectConfig abilityEffectConfig in inlineChannelingEffects) {
                 abilityEffectConfig.SetupScriptableObjects(systemGameManager, this);
                 channeledAbilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
             }
 
-            // add named effects
+            // add named channeled effects
             if (channeledAbilityEffectnames != null) {
                 foreach (string abilityEffectName in channeledAbilityEffectnames) {
                     AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
@@ -1081,6 +1363,54 @@ namespace AnyRPG {
                     }
                 }
             }
+
+            // add inline cast end effects
+            foreach (AbilityEffectConfig abilityEffectConfig in inlineAbilityEffects) {
+                if (abilityEffectConfig != null) {
+                    abilityEffectConfig.SetupScriptableObjects(systemGameManager, this);
+                    abilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
+                } else {
+                    Debug.LogWarning("Null inline AbilityEffect detected while initializing BaseAbility Properties for " + describable.ResourceName);
+                }
+            }
+
+            // add named cast end effects
+            if (AbilityEffectNames != null) {
+                foreach (string abilityEffectName in AbilityEffectNames) {
+                    AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
+                    if (abilityEffect != null) {
+                        abilityEffects.Add(abilityEffect.AbilityEffectProperties);
+                    } else {
+                        Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    }
+                }
+            }
+
+
+            // add action hit effects
+            if (actionHitAbilityEffectNames != null) {
+                foreach (string abilityEffectName in actionHitAbilityEffectNames) {
+                    AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
+                    if (abilityEffect != null) {
+                        actionHitAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
+                    } else {
+                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    }
+                }
+            }
+
+            // add action end effects
+            if (actionEndAbilityEffectNames != null) {
+                foreach (string abilityEffectName in actionEndAbilityEffectNames) {
+                    AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
+                    if (abilityEffect != null) {
+                        actionEndAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
+                    } else {
+                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    }
+                }
+            }
+
 
             characterClassRequirementList = new List<CharacterClass>();
             if (characterClassRequirements != null) {
@@ -1110,8 +1440,5 @@ namespace AnyRPG {
         }
 
     }
-
-    //public enum PrefabSpawnLocation { None, Caster, Target, GroundTarget, OriginalTarget, TargetPoint, CasterPoint }
-    //public enum AbilityPrefabSource { Both, Ability, Weapon }
 
 }

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c80d744dccc642148ab1014a88212085, type: 3}
+  m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
   m_Name: RingOfFireAbilityTemplate
   m_EditorClassIdentifier: 
   resourceName: Ring Of Fire
@@ -20,7 +20,7 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  directAbilityProperties:
+  abilityProperties:
     requireOutOfCombat: 0
     requireStealth: 0
     weaponAffinityNames: []
@@ -28,15 +28,23 @@ MonoBehaviour:
     - holdableObjectName: Red Casting Circle
       useUniversalAttachment: 0
       attachmentName: 
+    despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
     animationClip: {fileID: 0}
     animationProfileName: Cast 2H Up
     useUnitCastAnimations: 0
+    isAutoAttack: 0
+    useUnitAttackAnimations: 1
+    useAutoAttackAnimations: 0
+    useWeaponHitSound: 0
+    useWeaponSkillAttackVoiceSetting: 1
+    playAttackVoice: 1
     animationHitAudioProfileName: 
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: Fire Spell
+    loopAudio: 0
     requiredLevel: 1
     characterClassRequirements: []
     classSpecializationRequirements: []
@@ -69,6 +77,7 @@ MonoBehaviour:
       canCastOnNeutral: 0
       canCastOnFriendly: 0
       autoSelfCast: 0
+      unitTypeRestrictions: []
       useMeleeRange: 0
       maxRange: 0
       requireFacingTarget: 0
@@ -77,15 +86,18 @@ MonoBehaviour:
       requiresGroundTarget: 1
       groundTargetColor: {r: 1, g: 0.16509432, b: 0.16509432, a: 1}
       groundTargetRadius: 5
-    inlineAbilityEffects:
-    - id: 0
-    abilityEffectNames: []
     tickRate: 1
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
+    inlineAbilityEffects:
+    - rid: 3214878833861722264
+    abilityEffectNames: []
+    actionHitAbilityEffectNames: []
+    actionEndAbilityEffectNames: []
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: 3214878833861722264
       type: {class: AOEEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         effectProperties:
@@ -100,13 +112,12 @@ MonoBehaviour:
             canCastOnNeutral: 0
             canCastOnFriendly: 0
             autoSelfCast: 0
+            unitTypeRestrictions: []
             useMeleeRange: 0
             maxRange: 0
             lineOfSightSourceLocation: 0
             targetRangeSourceLocation: 0
           chanceToCast: 100
-          effectMaterialName: 
-          materialChangeDuration: 2
           onHitAudioProfileNames: []
           randomAudioProfiles: 0
           hitAbilityEffectNames: []

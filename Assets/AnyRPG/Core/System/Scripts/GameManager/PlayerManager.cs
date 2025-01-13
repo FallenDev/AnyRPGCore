@@ -653,7 +653,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnPowerResourceCheckFail += HandlePowerResourceCheckFail;
             unitController.UnitEventController.OnCombatCheckFail += HandleCombatCheckFail;
             unitController.UnitEventController.OnStealthCheckFail += HandleStealthCheckFail;
-            unitController.UnitEventController.OnAnimatedAbilityCheckFail += HandleAnimatedAbilityCheckFail;
+            unitController.UnitEventController.OnAbilityActionCheckFail += HandleAbilityActionCheckFail;
             unitController.UnitEventController.OnPerformAbility += HandlePerformAbility;
             unitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail += HandleTargetInAbilityRangeFail;
@@ -687,7 +687,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnPowerResourceCheckFail -= HandlePowerResourceCheckFail;
             unitController.UnitEventController.OnCombatCheckFail -= HandleCombatCheckFail;
             unitController.UnitEventController.OnStealthCheckFail -= HandleStealthCheckFail;
-            unitController.UnitEventController.OnAnimatedAbilityCheckFail -= HandleAnimatedAbilityCheckFail;
+            unitController.UnitEventController.OnAbilityActionCheckFail -= HandleAbilityActionCheckFail;
             unitController.UnitEventController.OnPerformAbility -= HandlePerformAbility;
             unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail -= HandleTargetInAbilityRangeFail;
@@ -739,17 +739,17 @@ namespace AnyRPG {
             combatTextManager.SpawnCombatText(targetObject, 0, CombatTextType.miss, CombatMagnitude.normal, abilityEffectContext);
         }
 
-        public void HandleActivateTargetingMode(BaseAbilityProperties baseAbility) {
+        public void HandleActivateTargetingMode(AbilityProperties baseAbility) {
             castTargettingManager.EnableProjector(baseAbility);
         }
 
-        public void HandleAnimatedAbilityCheckFail(AnimatedAbilityProperties animatedAbility) {
+        public void HandleAbilityActionCheckFail(AbilityProperties baseAbility) {
             if (PlayerUnitSpawned == true && logManager != null) {
-                logManager.WriteCombatMessage("Cannot use " + (animatedAbility.DisplayName == null ? "null" : animatedAbility.DisplayName) + ". Waiting for another ability to finish.");
+                logManager.WriteCombatMessage("Cannot use " + (baseAbility.DisplayName == null ? "null" : baseAbility.DisplayName) + ". Waiting for another ability to finish.");
             }
         }
 
-        public void HandleLearnAbility(BaseAbilityProperties baseAbility) {
+        public void HandleLearnAbility(AbilityProperties baseAbility) {
             systemEventManager.NotifyOnAbilityListChanged(baseAbility);
             baseAbility.NotifyOnLearn();
         }
@@ -784,30 +784,30 @@ namespace AnyRPG {
             SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
         }
 
-        public void HandleTargetInAbilityRangeFail(BaseAbilityProperties baseAbility, Interactable target) {
+        public void HandleTargetInAbilityRangeFail(AbilityProperties baseAbility, Interactable target) {
             if (baseAbility != null && logManager != null) {
                 logManager.WriteCombatMessage(target.name + " is out of range of " + (baseAbility.DisplayName == null ? "null" : baseAbility.DisplayName));
             }
         }
 
-        public void HandlePerformAbility(BaseAbilityProperties ability) {
+        public void HandlePerformAbility(AbilityProperties ability) {
             systemEventManager.NotifyOnAbilityUsed(ability);
             ability.NotifyOnAbilityUsed();
         }
 
-        public void HandleCombatCheckFail(BaseAbilityProperties ability) {
+        public void HandleCombatCheckFail(AbilityProperties ability) {
             logManager.WriteCombatMessage("The ability " + ability.DisplayName + " can only be cast while out of combat");
         }
 
-        public void HandleStealthCheckFail(BaseAbilityProperties ability) {
+        public void HandleStealthCheckFail(AbilityProperties ability) {
             logManager.WriteCombatMessage("The ability " + ability.DisplayName + " can only be cast while while stealthed");
         }
 
-        public void HandlePowerResourceCheckFail(BaseAbilityProperties ability, IAbilityCaster abilityCaster) {
+        public void HandlePowerResourceCheckFail(AbilityProperties ability, IAbilityCaster abilityCaster) {
             logManager.WriteCombatMessage("Not enough " + ability.PowerResource.DisplayName + " to perform " + ability.DisplayName + " at a cost of " + ability.GetResourceCost(abilityCaster));
         }
 
-        public void HandleLearnedCheckFail(BaseAbilityProperties ability) {
+        public void HandleLearnedCheckFail(AbilityProperties ability) {
             logManager.WriteCombatMessage("You have not learned the ability " + ability.DisplayName + " yet");
         }
 

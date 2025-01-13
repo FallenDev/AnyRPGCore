@@ -281,7 +281,7 @@ namespace AnyRPG {
             }
         }
 
-        public void OnAttemptUseableUse(BaseAbilityProperties ability) {
+        public void OnAttemptUseableUse(AbilityProperties ability) {
             //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + ")");
             ChooseMonitorCoroutine();
         }
@@ -310,12 +310,12 @@ namespace AnyRPG {
             }
         }
 
-        public void OnUseableUse(BaseAbilityProperties ability) {
+        public void OnUseableUse(AbilityProperties ability) {
             //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + ")");
             ChooseMonitorCoroutine();
         }
 
-        public IEnumerator MonitorAutoAttack(BaseAbilityProperties ability) {
+        public IEnumerator MonitorAutoAttack(AbilityProperties ability) {
             //Debug.Log("ActionButton.MonitorautoAttack(" + ability.DisplayName + ")");
             yield return null;
 

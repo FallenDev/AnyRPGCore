@@ -8,14 +8,13 @@ using UnityEngine.UI;
 
 namespace AnyRPG {
 
-    //[CreateAssetMenu(fileName = "NewAbility",menuName = "AnyRPG/Abilities/Ability")]
-    public abstract class BaseAbility : DescribableResource /*, IUseable, IMoveable, ILearnable*/ {
+    [CreateAssetMenu(fileName = "NewAbility",menuName = "AnyRPG/Abilities/Ability")]
+    public class Ability : DescribableResource /*, IUseable, IMoveable, ILearnable*/ {
 
-        //public event System.Action OnAbilityLearn = delegate { };
-        //public event System.Action OnAbilityUsed = delegate { };
-
-
-        public virtual BaseAbilityProperties AbilityProperties { get => null; }
+        [SerializeField]
+        public AbilityProperties abilityProperties = new AbilityProperties();
+        
+        public virtual AbilityProperties AbilityProperties { get => abilityProperties; }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);

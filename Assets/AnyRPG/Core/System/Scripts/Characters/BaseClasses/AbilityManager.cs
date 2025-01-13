@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AnyRPG {
     public class AbilityManager : ConfiguredClass, IAbilityManager {
 
-        protected BaseAbilityProperties currentCastAbility = null;
+        protected AbilityProperties currentCastAbility = null;
 
         protected Coroutine globalCoolDownCoroutine = null;
         protected Coroutine currentCastCoroutine = null;
@@ -65,14 +65,14 @@ namespace AnyRPG {
             }
         }
 
-        public virtual Dictionary<string, BaseAbilityProperties> RawAbilityList {
-            get => new Dictionary<string, BaseAbilityProperties>();
+        public virtual Dictionary<string, AbilityProperties> RawAbilityList {
+            get => new Dictionary<string, AbilityProperties>();
         }
 
         public List<GameObject> AbilityEffectGameObjects { get => abilityEffectGameObjects; set => abilityEffectGameObjects = value; }
         public Coroutine DestroyAbilityEffectObjectCoroutine { get => destroyAbilityEffectObjectCoroutine; set => destroyAbilityEffectObjectCoroutine = value; }
         public List<Coroutine> DestroyAbilityEffectObjectCoroutines { get => destroyAbilityEffectObjectCoroutines; set => destroyAbilityEffectObjectCoroutines = value; }
-        public BaseAbilityProperties CurrentCastAbility { get => currentCastAbility; }
+        public AbilityProperties CurrentCastAbility { get => currentCastAbility; }
 
         public AbilityManager(MonoBehaviour abilityCaster, SystemGameManager systemGameManager) {
             this.abilityCaster = abilityCaster;
@@ -128,13 +128,13 @@ namespace AnyRPG {
 
 
         // this only checks if the ability is able to be cast based on character state.  It does not check validity of target or ability specific requirements
-        public virtual bool CanCastAbility(BaseAbilityProperties ability, bool playerInitiated = false) {
+        public virtual bool CanCastAbility(AbilityProperties ability, bool playerInitiated = false) {
             //Debug.Log($"{gameObject.name}.CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + ")");
 
             return true;
         }
 
-        public virtual void GeneratePower(BaseAbilityProperties ability) {
+        public virtual void GeneratePower(AbilityProperties ability) {
             // do nothing
         }
 
@@ -162,7 +162,7 @@ namespace AnyRPG {
             return true;
         }
 
-        public virtual bool HasAbility(BaseAbilityProperties baseAbility) {
+        public virtual bool HasAbility(AbilityProperties baseAbility) {
             
             return false;
         }
@@ -211,7 +211,7 @@ namespace AnyRPG {
             // do nothing.  environment effects cannot have pets
         }
 
-        public virtual void PerformCastingAnimation(BaseAbilityProperties baseAbility) {
+        public virtual void PerformCastingAnimation(AbilityProperties baseAbility) {
             // do nothing.  environmental effects have no animations for now
         }
 
@@ -223,7 +223,7 @@ namespace AnyRPG {
             // do nothing
         }
 
-        public virtual void BeginAbilityCoolDown(BaseAbilityProperties baseAbility, float coolDownLength = -1f) {
+        public virtual void BeginAbilityCoolDown(AbilityProperties baseAbility, float coolDownLength = -1f) {
             // do nothing
         }
 
@@ -241,7 +241,7 @@ namespace AnyRPG {
         }
 
 
-        public virtual void ProcessAbilityCoolDowns(AnimatedAbilityProperties baseAbility, float animationLength, float abilityCoolDown) {
+        public virtual void ProcessAbilityCoolDowns(AbilityProperties baseAbility, float animationLength, float abilityCoolDown) {
             // do nothing
         }
 
@@ -379,11 +379,11 @@ namespace AnyRPG {
         }
         */
 
-        public virtual bool PerformWeaponAffinityCheck(BaseAbilityProperties baseAbility, bool playerInitiated = false) {
+        public virtual bool PerformWeaponAffinityCheck(AbilityProperties baseAbility, bool playerInitiated = false) {
             return true;
         }
 
-        public virtual bool PerformAnimatedAbilityCheck(AnimatedAbilityProperties animatedAbility) {
+        public virtual bool PerformAbilityActionCheck(AbilityProperties baseAbility) {
             return true;
         }
 
@@ -404,13 +404,13 @@ namespace AnyRPG {
         */
 
 
-        public virtual float PerformAnimatedAbility(AnimationClip animationClip, AnimatedAbilityProperties animatedAbility, UnitController targetUnitController, AbilityEffectContext abilityEffectContext) {
+        public virtual float PerformAbilityAction(AbilityProperties baseAbility, AnimationClip animationClip, int clipIndex, UnitController targetUnitController, AbilityEffectContext abilityEffectContext) {
 
             // do nothing for now
             return 0f;
         }
 
-        public virtual bool AbilityHit(Interactable target, AbilityEffectContext abilityEffectContext) {
+        public virtual bool DidAbilityHit(Interactable target, AbilityEffectContext abilityEffectContext) {
             return true;
         }
 

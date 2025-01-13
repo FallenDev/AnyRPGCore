@@ -130,7 +130,7 @@ namespace AnyRPG {
         [SerializeField]
         private CapabilityProps capabilities = new CapabilityProps();
 
-        private BaseAbilityProperties defaultAutoAttackAbility = null;
+        private AbilityProperties defaultAutoAttackAbility = null;
 
         [Tooltip("Stats available to this unit, in addition to the stats defined at the system level that all character use")]
         [FormerlySerializedAs("statScaling")]
@@ -300,7 +300,7 @@ namespace AnyRPG {
         }
 
         public UnitToughness DefaultToughness { get => unitToughness; set => unitToughness = value; }
-        public BaseAbilityProperties DefaultAutoAttackAbility { get => defaultAutoAttackAbility; set => defaultAutoAttackAbility = value; }
+        public AbilityProperties DefaultAutoAttackAbility { get => defaultAutoAttackAbility; set => defaultAutoAttackAbility = value; }
         public bool IsPet { get => isPet; set => isPet = value; }
         public FootstepType FootstepType { get => footstepType; set => footstepType = value; }
         public bool PlayOnFootstep { get => playOnFootstep; set => playOnFootstep = value; }

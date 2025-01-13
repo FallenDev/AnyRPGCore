@@ -33,7 +33,7 @@ namespace AnyRPG {
         private int outputCount = 0;
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         private string craftAbilityName = string.Empty;
 
         [Header("Prefabs")]
@@ -57,7 +57,7 @@ namespace AnyRPG {
             base.SetupScriptableObjects(systemGameManager);
             craftAbility = null;
             if (craftAbilityName != null) {
-                BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(craftAbilityName);
+                Ability baseAbility = systemDataFactory.GetResource<Ability>(craftAbilityName);
                 if (baseAbility != null) {
                     craftAbility = baseAbility.AbilityProperties as CraftAbilityProperties;
                 } else {

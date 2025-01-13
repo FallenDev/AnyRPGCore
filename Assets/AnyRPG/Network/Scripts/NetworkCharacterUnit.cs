@@ -116,13 +116,13 @@ namespace AnyRPG {
             unitController.BeginChatMessage(messageText);
         }
 
-        public void HandlePerformCastingAbilityAnimationServer(BaseAbilityProperties baseAbility, int clipIndex) {
+        public void HandlePerformCastingAbilityAnimationServer(AbilityProperties baseAbility, int clipIndex) {
             HandlePerformAnimatedActionClient(baseAbility.ResourceName);
         }
 
         [ObserversRpc]
         public void HandlePerformCastingAbilityAnimationClient(string abilityName, int clipIndex) {
-            BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(abilityName);
+            Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;
             }
@@ -149,6 +149,11 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
+        public void HandleClearAnimatedAbilityClient() {
+            unitController.UnitAnimator.ClearAnimatedAbility();
+        }
+
+        [ObserversRpc]
         public void HandleClearCastingClient() {
             unitController.UnitAnimator.ClearCasting();
         }
@@ -164,6 +169,7 @@ namespace AnyRPG {
             unitController.UnitAnimator.OnPerformAnimatedActionAnimation += HandlePerformAnimatedActionServer;
             unitController.UnitAnimator.OnPerformCastingAbilityAnimation += HandlePerformCastingAbilityAnimationServer;
             unitController.UnitAnimator.OnClearAction += HandleClearActionClient;
+            unitController.UnitAnimator.OnClearAnimatedAbility += HandleClearAnimatedAbilityClient;
             unitController.UnitAnimator.OnClearCasting += HandleClearCastingClient;
         }
 
@@ -175,6 +181,7 @@ namespace AnyRPG {
             unitController.UnitAnimator.OnPerformAnimatedActionAnimation -= HandlePerformAnimatedActionServer;
             unitController.UnitAnimator.OnPerformCastingAbilityAnimation -= HandlePerformCastingAbilityAnimationServer;
             unitController.UnitAnimator.OnClearAction -= HandleClearActionClient;
+            unitController.UnitAnimator.OnClearAnimatedAbility -= HandleClearAnimatedAbilityClient;
             unitController.UnitAnimator.OnClearCasting -= HandleClearCastingClient;
 
         }
@@ -201,14 +208,14 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleBeginAbilityLocal(BaseAbilityProperties abilityProperties, Interactable target, bool playerInitiated) {
+        public void HandleBeginAbilityLocal(AbilityProperties abilityProperties, Interactable target, bool playerInitiated) {
             NetworkCharacterUnit targetNetworkCharacterUnit = target.GetComponent<NetworkCharacterUnit>();
             HandleBeginAbilityServer(abilityProperties.ResourceName, targetNetworkCharacterUnit, playerInitiated);
         }
 
         [ServerRpc]
         public void HandleBeginAbilityServer(string abilityName, NetworkCharacterUnit target, bool playerInitiated) {
-            BaseAbility baseAbility = systemDataFactory.GetResource<BaseAbility>(abilityName);
+            Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;
             }

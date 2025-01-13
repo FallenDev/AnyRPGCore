@@ -10,7 +10,7 @@ namespace AnyRPG {
     public class LearnAbilityObjective : QuestObjective {
 
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         protected string abilityName = null;
 
         public override string ObjectiveName { get => abilityName; }
@@ -21,7 +21,7 @@ namespace AnyRPG {
             }
         }
 
-        private BaseAbilityProperties baseAbility;
+        private AbilityProperties baseAbility;
 
         // for learning
         public void UpdateCompletionCount() {
@@ -78,7 +78,7 @@ namespace AnyRPG {
             base.SetupScriptableObjects(systemGameManager, quest);
             
             if (abilityName != null && abilityName != string.Empty) {
-                BaseAbility tmpAbility = systemDataFactory.GetResource<BaseAbility>(abilityName);
+                Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
                 if (tmpAbility != null) {
                     baseAbility = tmpAbility.AbilityProperties;
                 } else {

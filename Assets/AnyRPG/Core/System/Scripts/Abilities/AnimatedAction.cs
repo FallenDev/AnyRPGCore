@@ -68,7 +68,7 @@ namespace AnyRPG {
         }
 
         public IUseable GetFactoryUseable() {
-            return systemDataFactory.GetResource<BaseAbility>(ResourceName).AbilityProperties;
+            return systemDataFactory.GetResource<Ability>(ResourceName).AbilityProperties;
         }
 
         public virtual void UpdateChargeCount(ActionButton actionButton) {

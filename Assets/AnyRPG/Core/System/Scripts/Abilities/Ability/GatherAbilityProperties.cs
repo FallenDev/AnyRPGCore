@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace AnyRPG {
 
     [System.Serializable]
-    public class GatherAbilityProperties : DirectAbilityProperties {
+    public class GatherAbilityProperties : AbilityProperties {
 
         public override bool Cast(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
             if (target == null) {

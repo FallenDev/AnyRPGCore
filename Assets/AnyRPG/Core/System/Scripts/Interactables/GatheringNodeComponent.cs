@@ -41,7 +41,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleAbilityListChange(BaseAbilityProperties baseAbility) {
+        public void HandleAbilityListChange(AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.GatheringNode.HandleAbilityListChange(" + baseAbility.DisplayName + ")");
             HandlePrerequisiteUpdates();
         }

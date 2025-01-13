@@ -346,7 +346,7 @@ namespace AnyRPG {
             }
         }
 
-        public bool PerformPowerResourceCheck(BaseAbilityProperties ability, float resourceCost) {
+        public bool PerformPowerResourceCheck(AbilityProperties ability, float resourceCost) {
             //Debug.Log($"{gameObject.name}.CharacterStats.PerformPowerResourceCheck(" + (ability == null ? "null" : ability.DisplayName) + ", " + resourceCost + ")");
             if (resourceCost == 0f || (ability != null & ability.PowerResource == null)) {
                 return true;

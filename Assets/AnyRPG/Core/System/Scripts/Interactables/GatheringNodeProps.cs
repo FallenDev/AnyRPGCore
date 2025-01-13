@@ -49,7 +49,7 @@ namespace AnyRPG {
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);
             if (abilityName != null && abilityName != string.Empty) {
-                GatherAbility tmpBaseAbility = systemDataFactory.GetResource<BaseAbility>(abilityName) as GatherAbility;
+                GatherAbility tmpBaseAbility = systemDataFactory.GetResource<Ability>(abilityName) as GatherAbility;
                 if (tmpBaseAbility != null) {
                     baseAbility = tmpBaseAbility;
                 } else {

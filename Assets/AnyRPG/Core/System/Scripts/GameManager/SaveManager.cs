@@ -768,7 +768,7 @@ namespace AnyRPG {
 
         public void SaveAbilityData(AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveAbilityData()");
-            foreach (BaseAbilityProperties baseAbility in playerManager.UnitController.CharacterAbilityManager.RawAbilityList.Values) {
+            foreach (AbilityProperties baseAbility in playerManager.UnitController.CharacterAbilityManager.RawAbilityList.Values) {
                 AbilitySaveData saveData = new AbilitySaveData();
                 saveData.AbilityName = baseAbility.DisplayName;
                 anyRPGSaveData.abilitySaveData.Add(saveData);
@@ -1099,12 +1099,12 @@ namespace AnyRPG {
                     // find ability from system ability manager
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable in ability manager");
                     if (actionBarSaveData.DisplayName != null && actionBarSaveData.DisplayName != string.Empty) {
-                        useable = systemDataFactory.GetResource<BaseAbility>(actionBarSaveData.DisplayName).AbilityProperties;
+                        useable = systemDataFactory.GetResource<Ability>(actionBarSaveData.DisplayName).AbilityProperties;
                     } else {
                         //Debug.Log("Savemanager.LoadActionBarData(): saved action bar had no name");
                     }
                     if (actionBarSaveData.savedName != null && actionBarSaveData.savedName != string.Empty) {
-                        IUseable savedUseable = systemDataFactory.GetResource<BaseAbility>(actionBarSaveData.savedName).AbilityProperties;
+                        IUseable savedUseable = systemDataFactory.GetResource<Ability>(actionBarSaveData.savedName).AbilityProperties;
                         if (savedUseable != null) {
                             actionButtons[counter].SavedUseable = savedUseable;
                         }
@@ -1135,12 +1135,12 @@ namespace AnyRPG {
                     // find ability from system ability manager
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable in ability manager");
                     if (actionBarSaveData.DisplayName != null && actionBarSaveData.DisplayName != string.Empty) {
-                        useable = systemDataFactory.GetResource<BaseAbility>(actionBarSaveData.DisplayName).AbilityProperties;
+                        useable = systemDataFactory.GetResource<Ability>(actionBarSaveData.DisplayName).AbilityProperties;
                     } else {
                         //Debug.Log("Savemanager.LoadActionBarData(): saved action bar had no name");
                     }
                     if (actionBarSaveData.savedName != null && actionBarSaveData.savedName != string.Empty) {
-                        IUseable savedUseable = systemDataFactory.GetResource<BaseAbility>(actionBarSaveData.savedName).AbilityProperties;
+                        IUseable savedUseable = systemDataFactory.GetResource<Ability>(actionBarSaveData.savedName).AbilityProperties;
                         if (savedUseable != null) {
                             actionButtons[counter].SavedUseable = savedUseable;
                         }

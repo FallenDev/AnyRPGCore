@@ -29,7 +29,7 @@ namespace AnyRPG {
         public event System.Action<string> OnTitleChange = delegate { };
         public event System.Action<PowerResource, int, int> OnResourceAmountChanged = delegate { };
         public event System.Action<StatusEffectNode> OnStatusEffectAdd = delegate { };
-        public event System.Action<IAbilityCaster, BaseAbilityProperties, float> OnCastTimeChanged = delegate { };
+        public event System.Action<IAbilityCaster, AbilityProperties, float> OnCastTimeChanged = delegate { };
         public event System.Action OnCastComplete = delegate { };
         public event System.Action OnCastCancel = delegate { };
         public event System.Action<UnitProfile> OnUnitDestroy = delegate { };
@@ -57,22 +57,22 @@ namespace AnyRPG {
         public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
         public event System.Action<UnitController, float> OnKillEvent = delegate { };
         public System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
-        public event System.Action<AnimatedAbilityProperties> OnAnimatedAbilityCheckFail = delegate { };
+        public event System.Action<AbilityProperties> OnAbilityActionCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
         public event System.Action<string, bool> OnBeginAction = delegate { };
-        public event System.Action<BaseAbilityProperties, Interactable, bool> OnBeginAbility = delegate { };
+        public event System.Action<AbilityProperties, Interactable, bool> OnBeginAbility = delegate { };
         public event System.Action OnBeginAbilityCoolDown = delegate { };
         public event System.Action OnUnlearnAbilities = delegate { };
-        public event System.Action<BaseAbilityProperties> OnActivateTargetingMode = delegate { };
-        public event System.Action<BaseAbilityProperties> OnLearnAbility = delegate { };
+        public event System.Action<AbilityProperties> OnActivateTargetingMode = delegate { };
+        public event System.Action<AbilityProperties> OnLearnAbility = delegate { };
         public event System.Action<bool> OnUnlearnAbility = delegate { };
-        public event System.Action<BaseAbilityProperties> OnAttemptPerformAbility = delegate { };
+        public event System.Action<AbilityProperties> OnAttemptPerformAbility = delegate { };
         public event System.Action<string> OnMessageFeedMessage = delegate { };
-        public event System.Action<BaseAbilityProperties> OnLearnedCheckFail = delegate { };
-        public event System.Action<BaseAbilityProperties> OnCombatCheckFail = delegate { };
-        public event System.Action<BaseAbilityProperties> OnStealthCheckFail = delegate { };
-        public event System.Action<BaseAbilityProperties, IAbilityCaster> OnPowerResourceCheckFail = delegate { };
-        public event System.Action<BaseAbilityProperties> OnPerformAbility = delegate { };
+        public event System.Action<AbilityProperties> OnLearnedCheckFail = delegate { };
+        public event System.Action<AbilityProperties> OnCombatCheckFail = delegate { };
+        public event System.Action<AbilityProperties> OnStealthCheckFail = delegate { };
+        public event System.Action<AbilityProperties, IAbilityCaster> OnPowerResourceCheckFail = delegate { };
+        public event System.Action<AbilityProperties> OnPerformAbility = delegate { };
         public event System.Action<UnitController> OnDespawn = delegate { };
         public event System.Action<string> OnBeginChatMessage = delegate { };
 
@@ -93,23 +93,23 @@ namespace AnyRPG {
             OnDespawn(despawnController);
         }
 
-        public void NotifyOnPerformAbility(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnPerformAbility(AbilityProperties abilityProperties) {
             OnPerformAbility(abilityProperties);
         }
 
-        public void NotifyOnPowerResourceCheckFail(BaseAbilityProperties abilityProperties, IAbilityCaster abilityCaster) {
+        public void NotifyOnPowerResourceCheckFail(AbilityProperties abilityProperties, IAbilityCaster abilityCaster) {
             OnPowerResourceCheckFail(abilityProperties, abilityCaster);
         }
 
-        public void NotifyOnStealthCheckFail(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnStealthCheckFail(AbilityProperties abilityProperties) {
             OnStealthCheckFail(abilityProperties);
         }
 
-        public void NotifyOnCombatCheckFail(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnCombatCheckFail(AbilityProperties abilityProperties) {
             OnCombatCheckFail(abilityProperties);
         }
 
-        public void NotifyOnLearnedCheckFail(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnLearnedCheckFail(AbilityProperties abilityProperties) {
             OnLearnedCheckFail(abilityProperties);
         }
 
@@ -117,7 +117,7 @@ namespace AnyRPG {
             OnMessageFeedMessage(message);
         }
 
-        public void NotifyOnAttemptPerformAbility(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnAttemptPerformAbility(AbilityProperties abilityProperties) {
             OnAttemptPerformAbility(abilityProperties);
         }
 
@@ -125,11 +125,11 @@ namespace AnyRPG {
             OnUnlearnAbility(updateActionBars);
         }
 
-        public void NotifyOnLearnAbility(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnLearnAbility(AbilityProperties abilityProperties) {
             OnLearnAbility(abilityProperties);
         }
 
-        public void NotifyOnActivateTargetingMode(BaseAbilityProperties abilityProperties) {
+        public void NotifyOnActivateTargetingMode(AbilityProperties abilityProperties) {
             OnActivateTargetingMode(abilityProperties);
         }
 
@@ -141,7 +141,7 @@ namespace AnyRPG {
             OnBeginAction(actionName, playerInitiated);
         }
 
-        public void NotifyOnBeginAbility(BaseAbilityProperties baseAbility, Interactable target, bool playerInitiated) {
+        public void NotifyOnBeginAbility(AbilityProperties baseAbility, Interactable target, bool playerInitiated) {
             OnBeginAbility(baseAbility, target, playerInitiated);
         }
 
@@ -153,8 +153,8 @@ namespace AnyRPG {
             OnCombatMessage(message);
         }
 
-        public void NotifyOnAnimatedAbilityCheckFail(AnimatedAbilityProperties animatedAbilityProperties) {
-            OnAnimatedAbilityCheckFail(animatedAbilityProperties);
+        public void NotifyOnAbilityActionCheckFail(AbilityProperties baseAbilityProperties) {
+            OnAbilityActionCheckFail(baseAbilityProperties);
         }
 
         public void NotifyOnEquipmentChanged(Equipment newEquipment, Equipment oldEquipment, int slotIndex) {
@@ -357,7 +357,7 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NotifyOnStatusEffectAdd()");
             OnStatusEffectAdd(statusEffectNode);
         }
-        public void NotifyOnCastTimeChanged(IAbilityCaster source, BaseAbilityProperties baseAbility, float castPercent) {
+        public void NotifyOnCastTimeChanged(IAbilityCaster source, AbilityProperties baseAbility, float castPercent) {
             OnCastTimeChanged(source, baseAbility, castPercent);
         }
         public void NotifyOnCastComplete() {

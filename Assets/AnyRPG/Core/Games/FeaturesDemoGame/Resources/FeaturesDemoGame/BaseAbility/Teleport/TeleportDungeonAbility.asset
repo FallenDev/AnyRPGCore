@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c80d744dccc642148ab1014a88212085, type: 3}
+  m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
   m_Name: TeleportDungeonAbility
   m_EditorClassIdentifier: 
   resourceName: Teleport Dungeon
@@ -20,78 +20,34 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  requireOutOfCombat: 0
-  weaponAffinityNames: []
-  holdableObjectList:
-  - holdableObjectName: Blue Casting Circle
-    useUniversalAttachment: 0
-    attachmentName: 
-  abilityPrefabSource: 0
-  animatorCreatePrefabs: 0
-  prefabDestroyDelay: 0
-  animationProfileName: 
-  useUnitCastAnimations: 1
-  animationHitAudioProfileName: 
-  castingAudioProfileName: Teleport Spell
-  requiredLevel: 1
-  characterClassRequirements: []
-  useableWithoutLearning: 1
-  autoAddToBars: 1
-  canSimultaneousCast: 0
-  canCastWhileMoving: 0
-  ignoreGlobalCoolDown: 0
-  powerResourceName: 
-  baseResourceCost: 0
-  resourceCostPerLevel: 5
-  spendDelay: 0
-  generatePowerResourceName: 
-  baseResourceGain: 0
-  resourceGainPerLevel: 0
-  useSpeedMultipliers: 1
-  useAnimationCastTime: 1
-  abilityCastingTime: 5
-  abilityCoolDown: 0
-  coolDownOnCast: 0
-  useAbilityEffectTargetting: 0
-  targetOptions:
-    requireTarget: 0
-    requireLineOfSight: 0
-    requireLiveTarget: 0
-    requireDeadTarget: 0
-    canCastOnSelf: 0
-    canCastOnOthers: 0
-    canCastOnEnemy: 0
-    canCastOnNeutral: 0
-    canCastOnFriendly: 0
-    autoSelfCast: 0
-    useMeleeRange: 0
-    maxRange: 0
-    requireFacingTarget: 0
-    maxAngle: 45
-    requiresGroundTarget: 0
-    groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
-    groundTargetRadius: 0
-  inlineAbilityEffects:
-  - id: 0
-  abilityEffectNames: []
-  tickRate: 1
-  channeledAbilityEffectnames: []
-  directAbilityProperties:
+  abilityProperties:
     requireOutOfCombat: 0
+    requireStealth: 0
     weaponAffinityNames: []
     holdableObjectList:
     - holdableObjectName: Blue Casting Circle
       useUniversalAttachment: 0
       attachmentName: 
+    despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
+    animationClip: {fileID: 0}
     animationProfileName: 
     useUnitCastAnimations: 1
+    isAutoAttack: 0
+    useUnitAttackAnimations: 1
+    useAutoAttackAnimations: 0
+    useWeaponHitSound: 0
+    useWeaponSkillAttackVoiceSetting: 1
+    playAttackVoice: 1
     animationHitAudioProfileName: 
+    castingAudioClip: {fileID: 0}
     castingAudioProfileName: Teleport Spell
+    loopAudio: 0
     requiredLevel: 1
     characterClassRequirements: []
+    classSpecializationRequirements: []
     useableWithoutLearning: 1
     autoAddToBars: 1
     canSimultaneousCast: 0
@@ -121,21 +77,27 @@ MonoBehaviour:
       canCastOnNeutral: 0
       canCastOnFriendly: 0
       autoSelfCast: 0
+      unitTypeRestrictions: []
       useMeleeRange: 0
       maxRange: 0
       requireFacingTarget: 0
       maxAngle: 45
+      requireBehindTarget: 0
       requiresGroundTarget: 0
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
-    inlineAbilityEffects:
-    - id: 0
-    abilityEffectNames: []
     tickRate: 1
+    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
+    inlineAbilityEffects:
+    - rid: 3214878833861722281
+    abilityEffectNames: []
+    actionHitAbilityEffectNames: []
+    actionEndAbilityEffectNames: []
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: 3214878833861722281
       type: {class: TeleportEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         effectProperties:
@@ -150,13 +112,12 @@ MonoBehaviour:
             canCastOnNeutral: 0
             canCastOnFriendly: 0
             autoSelfCast: 0
+            unitTypeRestrictions: []
             useMeleeRange: 0
             maxRange: 0
             lineOfSightSourceLocation: 0
             targetRangeSourceLocation: 0
           chanceToCast: 100
-          effectMaterialName: 
-          materialChangeDuration: 2
           onHitAudioProfileNames: []
           randomAudioProfiles: 0
           hitAbilityEffectNames: []

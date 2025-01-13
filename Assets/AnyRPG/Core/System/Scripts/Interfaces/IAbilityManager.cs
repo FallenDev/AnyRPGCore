@@ -25,18 +25,18 @@ namespace AnyRPG {
 
         CharacterUnit GetCharacterUnit();
 
-        void GeneratePower(BaseAbilityProperties ability);
+        void GeneratePower(AbilityProperties ability);
 
         bool BeginAbility(string abilityName);
 
-        bool CanCastAbility(BaseAbilityProperties ability, bool playerInitiated = false);
+        bool CanCastAbility(AbilityProperties ability, bool playerInitiated = false);
 
-        Dictionary<string, BaseAbilityProperties> RawAbilityList { get; }
+        Dictionary<string, AbilityProperties> RawAbilityList { get; }
 
         AudioClip GetAnimatedAbilityHitSound();
 
         //Interactable ReturnTarget(AbilityEffect abilityEffect, Interactable target);
-        float PerformAnimatedAbility(AnimationClip animationClip, AnimatedAbilityProperties animatedAbility, UnitController targetUnitController, AbilityEffectContext abilityEffectContext);
+        float PerformAbilityAction(AbilityProperties baseAbility, AnimationClip animationClip, int clipIndex, UnitController targetUnitController, AbilityEffectContext abilityEffectContext);
 
         void SetMountedState(UnitProfile mountUnitProfile);
 
@@ -91,7 +91,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="baseAbility"></param>
         /// <returns></returns>
-        bool HasAbility(BaseAbilityProperties baseAbility);
+        bool HasAbility(AbilityProperties baseAbility);
 
         /// <summary>
         /// True if the target is in line of sight of the caster
@@ -103,7 +103,7 @@ namespace AnyRPG {
 
         float GetMeleeRange();
 
-        void PerformCastingAnimation(BaseAbilityProperties baseAbility);
+        void PerformCastingAnimation(AbilityProperties baseAbility);
 
         /// <summary>
         /// give a chance to cast any onhit abilities from the equipped weapon
@@ -191,7 +191,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="baseAbility"></param>
         /// <param name="coolDownLength"></param>
-        void BeginAbilityCoolDown(BaseAbilityProperties baseAbility, float coolDownLength = -1f);
+        void BeginAbilityCoolDown(AbilityProperties baseAbility, float coolDownLength = -1f);
 
         /// <summary>
         /// Put an ability on cooldown and prevent it from being cast for x seconds
@@ -212,7 +212,7 @@ namespace AnyRPG {
         /// <param name="baseAbility"></param>
         /// <param name="animationLength"></param>
         /// <param name="abilityCoolDown"></param>
-        void ProcessAbilityCoolDowns(AnimatedAbilityProperties baseAbility, float animationLength, float abilityCoolDown);
+        void ProcessAbilityCoolDowns(AbilityProperties baseAbility, float animationLength, float abilityCoolDown);
 
         /// <summary>
         /// despawn the ability objects
@@ -232,21 +232,21 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="baseAbility"></param>
         /// <returns></returns>
-        bool PerformWeaponAffinityCheck(BaseAbilityProperties baseAbility, bool playerInitiated = false);
+        bool PerformWeaponAffinityCheck(AbilityProperties baseAbility, bool playerInitiated = false);
 
         /// <summary>
         /// True if an animated ability can be performed
         /// </summary>
         /// <param name="animatedAbility"></param>
         /// <returns></returns>
-        bool PerformAnimatedAbilityCheck(AnimatedAbilityProperties animatedAbility);
+        bool PerformAbilityActionCheck(AbilityProperties animatedAbility);
 
         /// <summary>
         /// True if the ability hit after hit/miss check
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        bool AbilityHit(Interactable target, AbilityEffectContext abilityEffectContext);
+        bool DidAbilityHit(Interactable target, AbilityEffectContext abilityEffectContext);
 
         void AddPet(CharacterUnit target);
 

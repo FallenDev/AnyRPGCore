@@ -18,7 +18,7 @@ namespace AnyRPG {
 
         [Tooltip("Only applies if Fixed Ability is true")]
         [SerializeField]
-        [ResourceSelector(resourceType = typeof(BaseAbility))]
+        [ResourceSelector(resourceType = typeof(Ability))]
         private string abilityName = string.Empty;
 
         public override void SetGameManagerReferences() {
@@ -46,7 +46,7 @@ namespace AnyRPG {
         }
 
         private void LearnAbility(string abilityName) {
-            BaseAbility tmpAbility = systemDataFactory.GetResource<BaseAbility>(abilityName);
+            Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (tmpAbility != null) {
                 playerManager.UnitController.CharacterAbilityManager.LearnAbility(tmpAbility.AbilityProperties);
             }
@@ -56,7 +56,7 @@ namespace AnyRPG {
             base.SetupScriptableObjects(systemGameManager);
 
             if (fixedAbility == true && abilityName != null && abilityName != string.Empty) {
-                BaseAbility tmpAbility = systemDataFactory.GetResource<BaseAbility>(abilityName);
+                Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
                 if (tmpAbility == null) {
                     Debug.LogError("LearnAbilityCommand.SetupScriptableObjects(): Could not find ability : " + abilityName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }

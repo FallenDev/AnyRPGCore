@@ -230,7 +230,7 @@ namespace AnyRPG {
         /// <param name="newScene"></param>
         /// <param name="loadSceneMode"></param>
         public void HandleLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
-            Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             if (!levelManagerInitialized) {
                 //Debug.Log("Levelmanager.OnLoadLevel(): Start has not run yet, returning!");
@@ -289,7 +289,7 @@ namespace AnyRPG {
         }
 
         public void PerformLevelLoadActivities() {
-            Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             loadingLevel = false;
             SetActiveSceneNode();

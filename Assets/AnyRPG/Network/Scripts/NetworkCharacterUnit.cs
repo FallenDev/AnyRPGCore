@@ -8,7 +8,7 @@ using UnityEngine;
 
 
 namespace AnyRPG {
-    public class NetworkCharacterUnit : SpawnedNetworkObject {
+    public class NetworkCharacterUnit : NetworkInteractable {
 
         public event System.Action OnCompleteCharacterRequest = delegate { };
 
@@ -26,12 +26,9 @@ namespace AnyRPG {
         private UnitProfile unitProfile = null;
         private UnitController unitController = null;
 
-        // game manager references
-        SystemGameManager systemGameManager = null;
-        SystemDataFactory systemDataFactory = null;
-
-        private void Awake() {
+        protected override void Awake() {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
+            base.Awake();
 
             /*
             NetworkTransform networkTransform = GetComponent<NetworkTransform>();
@@ -45,20 +42,165 @@ namespace AnyRPG {
 
         private void HandleDataReceived(NetworkTransform.TransformData prev, NetworkTransform.TransformData next) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDataReceived({prev.Position}, {next.Position})");
-
         }
 
-        private void Configure() {
-            // call character manager with spawnRequestId to complete configuration
-            systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
-            systemDataFactory = systemGameManager.SystemDataFactory;
+        protected override void Configure() {
+            base.Configure();
             unitController = GetComponent<UnitController>();
-            //if (base.IsOwner && unitController != null) {
-            //    unitController.UnitEventController.OnNameChange += HandleUnitNameChange;
-            //}
         }
 
-       
+        public override void OnStartClient() {
+            base.OnStartClient();
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartClient()");
+
+            Configure();
+            if (systemGameManager == null) {
+                return;
+            }
+            CompleteCharacterRequest(base.IsOwner);
+            SubscribeToClientUnitEvents();
+        }
+
+        public override void OnStopClient() {
+            base.OnStopClient();
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopClient()");
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
+
+            UnsubscribeFromClientUnitEvents();
+            systemGameManager.NetworkManagerClient.ProcessStopClient(unitController);
+        }
+
+        public override void OnStartServer() {
+            base.OnStartServer();
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartServer()");
+
+            Configure();
+            if (systemGameManager == null) {
+                return;
+            }
+            CompleteCharacterRequest(false);
+            SubscribeToServerUnitEvents();
+        }
+
+        public override void OnStopServer() {
+            base.OnStopServer();
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopServer()");
+            if (SystemGameManager.IsShuttingDown == true) {
+                return;
+            }
+            UnsubscribeFromServerUnitEvents();
+            systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
+        }
+
+        public void SubscribeToClientUnitEvents() {
+            if (unitController == null) {
+                // something went wrong
+                return;
+            }
+
+            if (base.IsOwner) {
+                unitController.UnitEventController.OnBeginAction += HandleBeginAction;
+                unitController.UnitEventController.OnBeginAbility += HandleBeginAbilityLocal;
+                unitController.UnitEventController.OnSetTarget += HandleSetTargetClient;
+                unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
+            }
+        }
+
+        public void UnsubscribeFromClientUnitEvents() {
+            if (unitController == null) {
+                return;
+            }
+            if (base.IsOwner) {
+                unitController.UnitEventController.OnBeginAction -= HandleBeginAction;
+                unitController.UnitEventController.OnBeginAbility -= HandleBeginAbilityLocal;
+                unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
+                unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
+            }
+        }
+
+        public void SubscribeToServerUnitEvents() {
+            if (unitController == null) {
+                // something went wrong
+                return;
+            }
+
+            unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
+            unitController.UnitEventController.OnPerformAnimatedActionAnimation += HandlePerformAnimatedActionServer;
+            unitController.UnitEventController.OnPerformAbilityCastAnimation += HandlePerformAbilityCastAnimationServer;
+            unitController.UnitEventController.OnPerformAbilityActionAnimation += HandlePerformAbilityActionAnimationServer;
+            unitController.UnitEventController.OnAnimatorClearAction += HandleClearActionClient;
+            unitController.UnitEventController.OnAnimatorClearAbilityAction += HandleClearAnimatedAbilityClient;
+            unitController.UnitEventController.OnAnimatorClearAbilityCast += HandleClearCastingClient;
+            //unitController.UnitEventController.OnAnimatorDeath += HandleAnimatorDeathClient;
+            unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChangedServer;
+            unitController.UnitEventController.OnBeforeDie += HandleBeforeDieServer;
+        }
+
+        public void UnsubscribeFromServerUnitEvents() {
+            if (unitController == null) {
+                return;
+            }
+            unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
+            unitController.UnitEventController.OnPerformAnimatedActionAnimation -= HandlePerformAnimatedActionServer;
+            unitController.UnitEventController.OnPerformAbilityCastAnimation -= HandlePerformAbilityCastAnimationServer;
+            unitController.UnitEventController.OnPerformAbilityActionAnimation -= HandlePerformAbilityActionAnimationServer;
+            unitController.UnitEventController.OnAnimatorClearAction -= HandleClearActionClient;
+            unitController.UnitEventController.OnAnimatorClearAbilityAction -= HandleClearAnimatedAbilityClient;
+            unitController.UnitEventController.OnAnimatorClearAbilityCast -= HandleClearCastingClient;
+            //unitController.UnitEventController.OnAnimatorDeath -= HandleAnimatorDeathClient;
+            unitController.UnitEventController.OnResourceAmountChanged -= HandleResourceAmountChangedServer;
+            unitController.UnitEventController.OnBeforeDie -= HandleBeforeDieServer;
+        }
+
+        private void HandleBeforeDieServer(UnitController targetUnitController) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
+
+            HandleBeforeDieClient();
+        }
+
+        [ObserversRpc]
+        public void HandleBeforeDieClient() {
+            Debug.Log($"{gameObject.name}.HandleBeforeDieClient()");
+
+            unitController.CharacterStats.Die();
+        }
+
+        private void HandleClearTargetClient(Interactable oldTarget) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
+
+            NetworkInteractable networkInteractable = null;
+            if (oldTarget != null) {
+                networkInteractable = oldTarget.GetComponent<NetworkInteractable>();
+            }
+            HandleClearTargetServer(networkInteractable);
+        }
+
+        [ServerRpc]
+        private void HandleClearTargetServer(NetworkInteractable networkInteractable) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+
+            unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
+        }
+
+
+        private void HandleSetTargetClient(Interactable target) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetClient(" + (target == null ? "null" : target.gameObject.name) + ")");
+
+            NetworkInteractable networkInteractable = null;
+            if (target != null) {
+                networkInteractable = target.GetComponent<NetworkInteractable>();
+            }
+            HandleSetTargetServer(networkInteractable);
+        }
+
+        [ServerRpc]
+        private void HandleSetTargetServer(NetworkInteractable networkInteractable) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+
+            unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
+        }
 
         private void HandleUnitNameChange(string characterName) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChange({characterName})");
@@ -107,6 +249,15 @@ namespace AnyRPG {
             OnCompleteCharacterRequest();
         }
 
+        public void HandleResourceAmountChangedServer(PowerResource powerResource, int oldValue, int newValue) {
+            HandleResourceAmountChangedClient(powerResource.resourceName, oldValue, newValue);
+        }
+
+        [ObserversRpc]
+        public void HandleResourceAmountChangedClient(string powerResourceName, int oldValue, int newValue) {
+            unitController.CharacterStats.SetResourceAmount(powerResourceName, newValue);
+        }
+
         public void HandleBeginChatMessageServer(string messageText) {
             HandleBeginChatMessageClient(messageText);
         }
@@ -116,17 +267,34 @@ namespace AnyRPG {
             unitController.BeginChatMessage(messageText);
         }
 
-        public void HandlePerformCastingAbilityAnimationServer(AbilityProperties baseAbility, int clipIndex) {
-            HandlePerformAnimatedActionClient(baseAbility.ResourceName);
+        public void HandlePerformAbilityCastAnimationServer(AbilityProperties baseAbility, int clipIndex) {
+            HandlePerformAbilityCastAnimationClient(baseAbility.ResourceName, clipIndex);
         }
 
         [ObserversRpc]
-        public void HandlePerformCastingAbilityAnimationClient(string abilityName, int clipIndex) {
+        public void HandlePerformAbilityCastAnimationClient(string abilityName, int clipIndex) {
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;
             }
-            unitController.UnitAnimator.PerformCastingAbility(baseAbility.AbilityProperties, clipIndex);
+            unitController.UnitAnimator.PerformAbilityCast(baseAbility.AbilityProperties, clipIndex);
+        }
+
+        public void HandlePerformAbilityActionAnimationServer(AbilityProperties baseAbility, int clipIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityActionAnimationServer({baseAbility.ResourceName}, {clipIndex})");
+
+            HandlePerformAbilityActionAnimationClient(baseAbility.ResourceName, clipIndex);
+        }
+
+        [ObserversRpc]
+        public void HandlePerformAbilityActionAnimationClient(string abilityName, int clipIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityActionAnimationClient({abilityName})");
+
+            Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
+            if (baseAbility == null) {
+                return;
+            }
+            unitController.UnitAnimator.PerformAbilityAction(baseAbility.AbilityProperties, clipIndex);
         }
 
 
@@ -158,70 +326,35 @@ namespace AnyRPG {
             unitController.UnitAnimator.ClearCasting();
         }
 
-
-        public void SubscribeToServerUnitEvents() {
-            if (unitController == null) {
-                // something went wrong
-                return;
-            }
-
-            unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
-            unitController.UnitAnimator.OnPerformAnimatedActionAnimation += HandlePerformAnimatedActionServer;
-            unitController.UnitAnimator.OnPerformCastingAbilityAnimation += HandlePerformCastingAbilityAnimationServer;
-            unitController.UnitAnimator.OnClearAction += HandleClearActionClient;
-            unitController.UnitAnimator.OnClearAnimatedAbility += HandleClearAnimatedAbilityClient;
-            unitController.UnitAnimator.OnClearCasting += HandleClearCastingClient;
+        /*
+        [ObserversRpc]
+        public void HandleAnimatorDeathClient() {
+            unitController.UnitAnimator.HandleDie();
         }
-
-        public void UnsubscribeFromServerUnitEvents() {
-            if (unitController == null) {
-                return;
-            }
-            unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
-            unitController.UnitAnimator.OnPerformAnimatedActionAnimation -= HandlePerformAnimatedActionServer;
-            unitController.UnitAnimator.OnPerformCastingAbilityAnimation -= HandlePerformCastingAbilityAnimationServer;
-            unitController.UnitAnimator.OnClearAction -= HandleClearActionClient;
-            unitController.UnitAnimator.OnClearAnimatedAbility -= HandleClearAnimatedAbilityClient;
-            unitController.UnitAnimator.OnClearCasting -= HandleClearCastingClient;
-
-        }
-
-        public void SubscribeToClientUnitEvents() {
-            if (unitController == null) {
-                // something went wrong
-                return;
-            }
-
-            if (base.IsOwner) {
-                unitController.UnitEventController.OnBeginAction += HandleBeginAction;
-                unitController.UnitEventController.OnBeginAbility += HandleBeginAbilityLocal;
-            }
-        }
-
-        public void UnsubscribeFromClientUnitEvents() {
-            if (unitController == null) {
-                return;
-            }
-            if (base.IsOwner) {
-                unitController.UnitEventController.OnBeginAction -= HandleBeginAction;
-                unitController.UnitEventController.OnBeginAbility -= HandleBeginAbilityLocal;
-            }
-        }
+        */
 
         public void HandleBeginAbilityLocal(AbilityProperties abilityProperties, Interactable target, bool playerInitiated) {
-            NetworkCharacterUnit targetNetworkCharacterUnit = target.GetComponent<NetworkCharacterUnit>();
-            HandleBeginAbilityServer(abilityProperties.ResourceName, targetNetworkCharacterUnit, playerInitiated);
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
+
+
+            NetworkInteractable targetNetworkInteractable = null;
+            if (target != null) {
+                targetNetworkInteractable = target.GetComponent<NetworkInteractable>();
+            }
+            HandleBeginAbilityServer(abilityProperties.ResourceName, targetNetworkInteractable, playerInitiated);
         }
 
         [ServerRpc]
-        public void HandleBeginAbilityServer(string abilityName, NetworkCharacterUnit target, bool playerInitiated) {
+        public void HandleBeginAbilityServer(string abilityName, NetworkInteractable targetNetworkInteractable, bool playerInitiated) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityServer({abilityName})");
+
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;
             }
             Interactable targetInteractable = null;
-            if (target != null) {
-                targetInteractable = target.GetComponent<Interactable>();
+            if (targetNetworkInteractable != null) {
+                targetInteractable = targetNetworkInteractable.GetComponent<Interactable>();
             }
             unitController.CharacterAbilityManager.BeginAbilityInternal(baseAbility.AbilityProperties, targetInteractable, playerInitiated);
         }
@@ -235,63 +368,9 @@ namespace AnyRPG {
             unitController.UnitActionManager.BeginActionInternal(animatedAction, playerInitiated);
         }
 
-        //[ObserversRpc]
-        public void HandleSetAnimationClipOverride(string originalAnimationClipName, AnimationClip animationClip) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetAnimationClipOverride()");
+       
 
-            //unitController.UnitAnimator.SetAnimationClipOverride(originalAnimationClipName, animationClip);
-        }
-
-
-
-        public override void OnStartClient() {
-            base.OnStartClient();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartClient()");
-
-            Configure();
-            if (systemGameManager == null) {
-                return;
-            }
-            CompleteCharacterRequest(base.IsOwner);
-            SubscribeToClientUnitEvents();
-            //systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, spawnRequestId, base.isOwner);
-        }
-
-        public override void OnStopClient() {
-            base.OnStopClient();
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopClient()");
-            if (SystemGameManager.IsShuttingDown == true) {
-                return;
-            }
-
-            UnsubscribeFromClientUnitEvents();
-            systemGameManager.NetworkManagerClient.ProcessStopClient(unitController);
-        }
-
-        public override void OnStartServer() {
-            base.OnStartServer();
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartServer()");
-
-            Configure();
-            if (systemGameManager == null) {
-                return;
-            }
-            CompleteCharacterRequest(false);
-            SubscribeToServerUnitEvents();
-            //systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, serverRequestId, false);
-        }
-
-        public override void OnStopServer() {
-            base.OnStopServer();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopServer()");
-            if (SystemGameManager.IsShuttingDown == true) {
-                return;
-            }
-            UnsubscribeFromServerUnitEvents();
-            systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
-        }
-
-        void OnDisable() {
+        protected override void OnDisable() {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnDisable()");
         }
 

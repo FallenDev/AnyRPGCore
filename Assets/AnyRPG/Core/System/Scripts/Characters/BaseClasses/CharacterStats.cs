@@ -7,22 +7,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterStats : ConfiguredClass {
 
-        /*
-        public event System.Action<int, int> OnPrimaryResourceAmountChanged = delegate { };
-        public event System.Action<PowerResource, int, int> OnResourceAmountChanged = delegate { };
-        public event System.Action OnReviveBegin = delegate { };
-        public event System.Action OnReviveComplete = delegate { };
-        public event System.Action<StatusEffectNode> OnStatusEffectAdd = delegate { };
-        public event System.Action OnStatChanged = delegate { };
-        public event System.Action OnEnterStealth = delegate { };
-        public event System.Action OnLeaveStealth = delegate { };
-        public event System.Action<int> OnLevelChanged = delegate { };
-        public event System.Action<AbilityEffectContext> OnImmuneToEffect = delegate { };
-        public event System.Action<int> OnGainXP = delegate { };
-        public event System.Action<PowerResource, int> OnRecoverResource = delegate { };
-        public event System.Action<float, float, float, float> OnCalculateRunSpeed = delegate { };
-        */
-
         //private int level = 1;
 
         protected float sprintSpeedModifier = 1.5f;
@@ -1179,6 +1163,7 @@ namespace AnyRPG {
             PowerResource tmpPowerResource = systemDataFactory.GetResource<PowerResource>(resourceName);
 
             if (tmpPowerResource != null && powerResourceDictionary.ContainsKey(tmpPowerResource)) {
+                int oldAmount = (int)powerResourceDictionary[tmpPowerResource].currentValue;
                 powerResourceDictionary[tmpPowerResource].currentValue = newAmount;
                 powerResourceDictionary[tmpPowerResource].currentValue = Mathf.Clamp(
                     powerResourceDictionary[tmpPowerResource].currentValue,
@@ -1311,7 +1296,8 @@ namespace AnyRPG {
         }
 
         public void Die() {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.Die()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.Die()");
+
             if (isAlive) {
                 isAlive = false;
                 ClearStatusEffects(false);
@@ -1321,7 +1307,7 @@ namespace AnyRPG {
                 unitController.CharacterCombat.HandleDie();
                 unitController.CharacterAbilityManager.HandleDie(this);
                 unitController.FreezePositionXZ();
-                unitController.UnitAnimator.HandleDie(this);
+                unitController.UnitAnimator.HandleDie();
                 unitController.RemoveNamePlate();
                 unitController.CharacterUnit.HandleDie(this);
                 unitController.UnitEventController.NotifyOnAfterDie(this);
@@ -1444,7 +1430,9 @@ namespace AnyRPG {
         }
 
         public void Update() {
-            PerformResourceRegen();
+            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {
+                PerformResourceRegen();
+            }
         }
 
         public float GetPowerResourceAmount(PowerResource powerResource) {

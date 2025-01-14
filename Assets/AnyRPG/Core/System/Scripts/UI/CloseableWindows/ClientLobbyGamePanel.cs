@@ -61,6 +61,8 @@ namespace AnyRPG {
 
         private string lobbyGameChatText = string.Empty;
         private int maxLobbyChatTextSize = 64000;
+        private string originalCharacterNameText = string.Empty;
+        private string originalCharacterDescriptionText = string.Empty;
 
         private UnitProfile unitProfile = null;
 
@@ -76,6 +78,8 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
             chatDisplay.text = string.Empty;
+            originalCharacterNameText = characterNameText.text;
+            originalCharacterDescriptionText = characterDescriptionText.text;
         }
 
         public override void SetGameManagerReferences() {
@@ -109,7 +113,7 @@ namespace AnyRPG {
             uIManager.clientLobbyGameWindow.CloseWindow();
         }
 
-        public void SetStatusLabel() {
+        public void UpdateUIELements() {
             serverStatusText.text = $"Logged In As: {networkManagerClient.Username}";
             SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(networkManagerClient.LobbyGame.sceneName);
             if (sceneNode == null) {
@@ -125,6 +129,11 @@ namespace AnyRPG {
             }
             sceneNameText.text = sceneNode.DisplayName;
             sceneDescriptionText.text = sceneNode.Description;
+
+            characterImage.sprite = null;
+            characterImage.color = Color.black;
+            characterNameText.text = originalCharacterNameText;
+            characterDescriptionText.text = originalCharacterDescriptionText;
         }
 
         public void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
@@ -300,7 +309,7 @@ namespace AnyRPG {
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
-            SetStatusLabel();
+            UpdateUIELements();
             PopulatePlayerList(networkManagerClient.LobbyGame.PlayerList);
             UpdateNavigationButtons();
             networkManagerClient.OnSendLobbyGameChatMessage += HandleSendLobbyGameChatMessage;

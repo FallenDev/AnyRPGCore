@@ -7,23 +7,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterAbilityManager : AbilityManager, ICharacterRequestor {
 
-        //public event System.Action<IAbilityCaster, BaseAbilityProperties, float> OnCastTimeChanged = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnAttemptPerformAbility = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnPerformAbility = delegate { };
-        //public event System.Action OnUnlearnAbilities = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnLearnedCheckFail = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnCombatCheckFail = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnStealthCheckFail = delegate { };
-        //public event System.Action<AnimatedAbilityProperties> OnAnimatedAbilityCheckFail = delegate { };
-        //public event System.Action<BaseAbilityProperties, IAbilityCaster> OnPowerResourceCheckFail = delegate { };
-        //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
-        //public event System.Action<bool> OnUnlearnAbility = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnLearnAbility = delegate { };
-        //public event System.Action<BaseAbilityProperties> OnActivateTargetingMode = delegate { };
-        //public event System.Action<string> OnCombatMessage = delegate { };
-        //public event System.Action<string> OnMessageFeedMessage = delegate { };
-        //public event System.Action OnBeginAbilityCoolDown = delegate { };
-
         protected UnitController unitController;
 
         protected Dictionary<string, AbilityProperties> abilityList = new Dictionary<string, AbilityProperties>();
@@ -395,9 +378,18 @@ namespace AnyRPG {
 
         public override void PerformCastingAnimation(AbilityProperties baseAbility) {
             base.PerformCastingAnimation(baseAbility);
-            //if (animationClip != null) {
-                unitController.UnitAnimator.PerformCastingAbility(baseAbility);
-            //}
+
+            int clipIndex = 0;
+            List<AnimationClip> usedCastAnimationClips = baseAbility.GetAbilityCastClips(unitController);
+            if (usedCastAnimationClips == null || usedCastAnimationClips.Count == 0) {
+                return;
+            }
+            clipIndex = UnityEngine.Random.Range(0, usedCastAnimationClips.Count);
+            if (usedCastAnimationClips[clipIndex] == null) {
+                return;
+            }
+
+            unitController.UnitAnimator.PerformAbilityCast(baseAbility, clipIndex);
         }
 
         public override void AddTemporaryPet(UnitProfile unitProfile, UnitController unitController) {
@@ -480,7 +472,6 @@ namespace AnyRPG {
 
         public override bool IsTargetInRange(Interactable target, ITargetable targetable, AbilityEffectContext abilityEffectContext = null) {
             //Debug.Log(baseCharacter.gameObject.name + ".IsTargetInRange(" + (target == null ? "null" : target.DisplayName) + ")");
-            // if none of those is true, then we are casting on ourselves, so don't need to do range check
             TargetProps targetProps = targetable.GetTargetOptions(unitController);
             if (targetProps.UseMeleeRange) {
                 if (!IsTargetInMeleeRange(target)) {
@@ -519,7 +510,7 @@ namespace AnyRPG {
         }
 
         public override float PerformAbilityAction(AbilityProperties baseAbility, AnimationClip animationClip, int clipIndex, UnitController targetUnitController, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAnimatedAbility(" + animatedAbility.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.PerformAbilityAction({baseAbility.ResourceName})");
 
             // this type of ability is allowed to interrupt other types of animations, so clear them all
             // is this really necessary ?  shouldn't checks have been performed before we got there as to whether anything specific was happening, and then cancel it already ?
@@ -548,7 +539,7 @@ namespace AnyRPG {
             unitController.CharacterCombat.SwingTarget = targetUnitController;
             currentAbilityEffectContext = abilityEffectContext;
 
-            unitController.UnitAnimator.PerformAbility(baseAbility, clipIndex);
+            unitController.UnitAnimator.PerformAbilityAction(baseAbility, clipIndex);
 
             // wait for the attack to complete before allowing the character to attack again
             attackCoroutine = abilityCaster.StartCoroutine(WaitForAbilityActionToComplete(baseAbility, abilityEffectContext, targetUnitController, speedNormalizedAnimationLength));
@@ -1107,7 +1098,7 @@ namespace AnyRPG {
         }
 
         public bool LearnAbility(AbilityProperties newAbility) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.LearnAbility(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.LearnAbility(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
 
             if (newAbility == null) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.LearnAbility(): baseAbility is null");
@@ -1165,7 +1156,7 @@ namespace AnyRPG {
         /// <returns></returns>
         public IEnumerator PerformAbilityCast(AbilityProperties ability, Interactable target, AbilityEffectContext abilityEffectContext) {
             float startTime = Time.time;
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + ", " + (target == null ? "null" : target.name) + ") Enter Ienumerator with tag: " + startTime);
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.PerformAbilityCast({ability.ResourceName}, " + (target == null ? "null" : target.name) + ") Enter Ienumerator with tag: " + startTime);
 
             bool canCast = true;
 
@@ -1330,7 +1321,8 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="abilityName"></param>
         public override bool BeginAbility(string abilityName) {
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
+
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility != null) {
                 return BeginAbility(baseAbility.AbilityProperties);
@@ -1343,7 +1335,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="ability"></param>
         public bool BeginAbility(AbilityProperties ability, bool playerInitiated = false) {
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.BeginAbility(" + (ability == null ? "null" : ability.DisplayName) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName})");
 
             if (ability == null) {
                 //Debug.Log("CharacterAbilityManager.BeginAbility(): ability is null! Exiting!");
@@ -1351,11 +1343,11 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
             }
-            return BeginAbilityInternal(ability, unitController.Target, playerInitiated);
+            return BeginAbility(ability, unitController.Target, playerInitiated);
         }
 
         public bool BeginAbility(AbilityProperties ability, Interactable target, bool playerInitiated = false) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbility({ability.ResourceName})");
 
             unitController.UnitEventController.NotifyOnBeginAbility(ability, target, playerInitiated);
 
@@ -1369,6 +1361,7 @@ namespace AnyRPG {
         }
 
         public bool BeginAbilityInternal(AbilityProperties ability, Interactable target, bool playerInitiated) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName})");
 
             return BeginAbilityCommon(ability, target, playerInitiated);
         }
@@ -1456,7 +1449,7 @@ namespace AnyRPG {
         }
 
         protected bool BeginAbilityCommon(AbilityProperties ability, Interactable target, bool playerInitiated = false) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.gameObject.name) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, " + (target == null ? "null" : target.gameObject.name) + ")");
 
             if (ability == null) {
                 Debug.LogError("CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.name) + ") NO ABILITY FOUND");
@@ -1721,7 +1714,8 @@ namespace AnyRPG {
         /// <param name="ability"></param>
         /// <param name="target"></param>
         public void PerformAbility(AbilityProperties ability, Interactable target, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbility(" + ability.DisplayName + ", " + target.gameObject.name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.PerformAbility({ability.ResourceName})");
+
             if (abilityEffectContext == null) {
                 abilityEffectContext = new AbilityEffectContext(unitController);
                 abilityEffectContext.baseAbility = ability;

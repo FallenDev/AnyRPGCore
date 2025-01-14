@@ -76,7 +76,7 @@ namespace AnyRPG
                 ClientVersion = systemGameManager.SystemConfigurationManager.ClientVersion
             };
 
-            Debug.Log($"FishNetPasswordAuthenticator.ClientManager_OnClientConnectionState(): sending password broadcast: {pb.Username}, {pb.Password}");
+            //Debug.Log($"FishNetPasswordAuthenticator.ClientManager_OnClientConnectionState(): sending password broadcast: {pb.Username}, {pb.Password}");
             base.NetworkManager.ClientManager.Broadcast(pb);
         }
 
@@ -127,8 +127,7 @@ namespace AnyRPG
         /// Received on client after server sends an authentication response.
         /// </summary>
         /// <param name="rb"></param>
-        private void OnResponseBroadcast(ResponseBroadcast rb, Channel channel)
-        {
+        private void OnResponseBroadcast(ResponseBroadcast rb, Channel channel) {
             Debug.Log("FishNetPasswordAuthenticator.OnResponseBroadcast()");
 
             string result = (rb.AuthenticationPassed && rb.ClientPassed) ? "Authentication complete." : "Authentication failed.";

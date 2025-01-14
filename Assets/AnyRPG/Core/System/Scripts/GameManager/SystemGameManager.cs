@@ -343,7 +343,8 @@ namespace AnyRPG {
         }
 
         public void SetGameMode(GameMode gameMode) {
-            Debug.Log($"SystemGameManager.SetGameMode({gameMode})");
+            //Debug.Log($"SystemGameManager.SetGameMode({gameMode})");
+
             this.gameMode = gameMode;
             networkManagerServer.OnSetGameMode(gameMode);
         }

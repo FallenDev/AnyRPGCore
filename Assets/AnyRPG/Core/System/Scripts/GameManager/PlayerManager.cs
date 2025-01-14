@@ -442,7 +442,7 @@ namespace AnyRPG {
             //Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
 
             //if (OwnPlayer(unitController, characterRequestData) == true) {
-                SetUnitController(unitController);
+                //SetUnitController(unitController);
             //}
 
             if (levelManager.NavMeshAvailable == true && autoDetectNavMeshes) {
@@ -466,6 +466,8 @@ namespace AnyRPG {
         }
 
         public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
+            Debug.Log($"PlayerManager.PostInit({unitController.gameObject.name}");
+
             if (unitController.UnitModelController.ModelCreated == false) {
                 // do UMA spawn stuff to wait for UMA to spawn
                 SubscribeToModelReady();
@@ -481,7 +483,7 @@ namespace AnyRPG {
 
             SubscribeToPlayerInventoryEvents();
             unitController.BaseCharacter.Initialize();
-            SubscribeToPlayerEvents();
+            //SubscribeToPlayerEvents();
 
 
             if (PlayerPrefs.HasKey("ShowNewPlayerHints") == false) {
@@ -511,7 +513,7 @@ namespace AnyRPG {
                 playerUnitSpawned = false;
                 return;
             }
-
+            SubscribeToPlayerEvents();
             unitController.CharacterUnit.SetCharacterStatsCapabilities();
         }
 
@@ -599,6 +601,8 @@ namespace AnyRPG {
             playerConnectionSpawned = true;
             SystemEventManager.TriggerEvent("OnPlayerConnectionSpawn", new EventParamProperties());
 
+            // this goes here so action bars can get abilities on them when the player is initialized
+            //SubscribeToPlayerEvents();
         }
 
         public void DespawnPlayerConnection() {
@@ -632,6 +636,8 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerEvents() {
+            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie += HandleDie;
             unitController.UnitEventController.OnReviveBegin += HandleReviveBegin;
@@ -666,6 +672,8 @@ namespace AnyRPG {
         }
 
         public void UnsubscribeFromPlayerEvents() {
+            Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
+
             unitController.UnitEventController.OnImmuneToEffect -= HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie -= HandleDie;
             unitController.UnitEventController.OnReviveBegin -= HandleReviveBegin;
@@ -750,6 +758,8 @@ namespace AnyRPG {
         }
 
         public void HandleLearnAbility(AbilityProperties baseAbility) {
+            Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
+
             systemEventManager.NotifyOnAbilityListChanged(baseAbility);
             baseAbility.NotifyOnLearn();
         }

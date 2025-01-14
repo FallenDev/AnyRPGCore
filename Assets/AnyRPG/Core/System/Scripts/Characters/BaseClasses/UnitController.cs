@@ -845,9 +845,12 @@ namespace AnyRPG {
             this.unitControllerMode = unitControllerMode;
             
             // testing - do this in playerManager instead *after* the model has spawned
-            //if (unitControllerMode == UnitControllerMode.Player) {
-            //    ConfigurePlayer();
-            //}
+            // actually now doing it after base has spawned, but before model has spawned so we get action buttons
+            /*
+            if (unitControllerMode == UnitControllerMode.Player && isOwner) {
+                ConfigurePlayer();
+            }
+            */
         }
 
         public void ActivateUnitControllerMode() {

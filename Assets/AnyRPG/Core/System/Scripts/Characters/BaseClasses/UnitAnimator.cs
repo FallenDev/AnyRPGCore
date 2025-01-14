@@ -8,30 +8,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class UnitAnimator : ConfiguredClass {
 
-        // events
-        public event System.Action OnInitializeAnimator = delegate { };
-        public event System.Action<string> OnSetTrigger = delegate { };
-        public event System.Action OnReviveComplete = delegate { };
-        public event System.Action<bool> OnStartCasting = delegate { };
-        public event System.Action<bool> OnEndCasting = delegate { };
-        public event System.Action<bool> OnStartActing = delegate { };
-        public event System.Action<bool> OnEndActing = delegate { };
-        public event System.Action<bool> OnStartAttacking = delegate { };
-        public event System.Action<bool> OnEndAttacking = delegate { };
-        public event System.Action OnStartLevitated = delegate { };
-        public event System.Action<bool> OnEndLevitated = delegate { };
-        public event System.Action OnStartStunned = delegate { };
-        public event System.Action<bool> OnEndStunned = delegate { };
-        public event System.Action OnStartRevive = delegate { };
-        public event System.Action OnDeath = delegate { };
-        public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
-        public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
-        public event System.Action<AbilityProperties, int> OnPerformCastingAbilityAnimation = delegate { };
-        public event System.Action<AbilityProperties, int> OnPerformAbilityAnimation = delegate { };
-        public event System.Action OnClearAction = delegate { };
-        public event System.Action OnClearAnimatedAbility = delegate { };
-        public event System.Action OnClearCasting = delegate { };
-
         // components
         private Animator animator = null;
 
@@ -311,7 +287,7 @@ namespace AnyRPG {
 
             initialized = true;
 
-            OnInitializeAnimator();
+            unitController.UnitEventController.NotifyOnInitializeAnimator();
         }
 
         public void SetCorrectOverrideController(bool runUpdate = true) {
@@ -493,16 +469,16 @@ namespace AnyRPG {
         /// <param name="baseAbility"></param>
         /// <param name="targetCharacterUnit"></param>
         /// <returns></returns>
-        public void PerformAbility(AbilityProperties baseAbility, int clipIndex) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.HandleAbility(" + baseAbility.DisplayName + ")");
+        public void PerformAbilityAction(AbilityProperties baseAbility, int clipIndex) {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityAction({baseAbility.ResourceName})");
+
             /*
             if (animator == null) {
                 return 0f;
             }
             */
 
-            // THIS NEEDS TO BE FIXED TO GetAnimationClips()
-            List<AnimationClip> usedAnimationClips = baseAbility.GetCastClips(unitController);
+            List<AnimationClip> usedAnimationClips = baseAbility.GetAbilityActionClips(unitController);
 
             AnimationClip animationClip = usedAnimationClips[clipIndex];
             if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
@@ -512,7 +488,7 @@ namespace AnyRPG {
             }
 
             SetAnimationClipOverride(systemAnimations.AttackClips[0].name, animationClip);
-            OnPerformAbilityAnimation(baseAbility, clipIndex);
+            unitController.UnitEventController.NotifyOnPerformAbilityActionAnimation(baseAbility, clipIndex);
 
             // save animation length for weapon damage normalization
             lastAnimationLength = animationClip.length;
@@ -532,7 +508,8 @@ namespace AnyRPG {
         }
 
         // non melee ability (spell) cast
-        public void PerformCastingAbility(AbilityProperties baseAbility) {
+        /*
+        public void PerformAbilityCast(AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
             if (animator == null) {
                 return;
@@ -546,24 +523,26 @@ namespace AnyRPG {
                     return;
                 }
             }
-            PerformCastingAbility(baseAbility, clipIndex);
+            PerformAbilityCast(baseAbility, clipIndex);
         }
+        */
 
-        public void PerformCastingAbility(AbilityProperties baseAbility, int clipIndex) {
+        public void PerformAbilityCast(AbilityProperties baseAbility, int clipIndex) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
             if (animator == null) {
                 return;
             }
 
-            List<AnimationClip> usedCastAnimationClips = baseAbility.GetCastClips(unitController);
-            if (usedCastAnimationClips != null && usedCastAnimationClips.Count > 0) {
-                if (usedCastAnimationClips[clipIndex] == null) {
-                    return;
-                }
+            List<AnimationClip> usedCastAnimationClips = baseAbility.GetAbilityCastClips(unitController);
+            if (usedCastAnimationClips == null || usedCastAnimationClips.Count > 0) {
+                return;
+            }
+            if (usedCastAnimationClips[clipIndex] == null) {
+                return;
             }
 
             SetAnimationClipOverride(systemAnimations.CastClips[0].name, usedCastAnimationClips[clipIndex]);
-            OnPerformCastingAbilityAnimation(baseAbility, clipIndex);
+            unitController.UnitEventController.NotifyOnPerformAbilityCastAnimation(baseAbility, clipIndex);
 
             if (baseAbility.GetUnitAnimationProps(unitController)?.UseRootMotion == true) {
                 unitController.SetUseRootMotion(true);
@@ -587,7 +566,7 @@ namespace AnyRPG {
             }
 
             SetAnimationClipOverride(systemAnimations.ActionClips[0].name, animatedAction.ActionProperties.AnimationClip);
-            OnPerformAnimatedActionAnimation(animatedAction);
+            unitController.UnitEventController.NotifyOnPerformAnimatedActionAnimation(animatedAction);
 
             if (unitController.IsOwner) {
                 SetActing(true, true);
@@ -595,7 +574,7 @@ namespace AnyRPG {
         }
 
         public void SetAnimationClipOverride(string originalClipName, AnimationClip animationClip) {
-            OnSetAnimationClipOverride(originalClipName, animationClip);
+            unitController.UnitEventController.NotifyOnSetAnimationClipOverride(originalClipName, animationClip);
             
             overrideController[originalClipName] = animationClip;
         }
@@ -611,19 +590,25 @@ namespace AnyRPG {
         }
 
         public void ClearAnimatedAbility() {
-            OnClearAnimatedAbility();
-            SetAttacking(false);
+            unitController.UnitEventController.NotifyOnAnimatorClearAbilityAction();
+            if (unitController.IsOwner) {
+                SetAttacking(false);
+            }
         }
 
         public void ClearAction() {
-            OnClearAction();
-            SetActing(false);
+            unitController.UnitEventController.NotifyOnAnimatorClearAction();
+            if (unitController.IsOwner) {
+                SetActing(false);
+            }
         }
 
         public void ClearCasting() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.ClearCasting()");
-            OnClearCasting();
-            SetCasting(false);
+            unitController.UnitEventController.NotifyOnAnimatorClearAbilityCast();
+            if (unitController.IsOwner) {
+                SetCasting(false);
+            }
         }
 
         private bool ParameterExists(string parameterName) {
@@ -635,11 +620,13 @@ namespace AnyRPG {
             return false;
         }
 
-        public void HandleDie(CharacterStats characterStats) {
+        public void HandleDie() {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
-            OnDeath();
-
+            unitController.UnitEventController.NotifyOnAnimatorDeath();
+            if (unitController.IsOwner == false) {
+                return;
+            }
             // add these to prevent characters from dying floating or upright
             HandleUnLevitated(false);
             HandleUnStunned(false);
@@ -664,13 +651,13 @@ namespace AnyRPG {
             if (unitController != null && unitController.BaseCharacter != null && unitController.CharacterStats != null) {
                 unitController.CharacterStats.ReviveComplete();
             }
-            OnReviveComplete();
+            unitController.UnitEventController.NotifyOnAnimatorReviveComplete();
             SetCorrectOverrideController();
             resurrectionCoroutine = null;
         }
 
         public void HandleReviveBegin() {
-            OnStartRevive();
+            unitController.UnitEventController.NotifyOnAnimatorStartRevive();
             SetTrigger("ReviveTrigger");
             // add 1 to account for the transition
             if (systemConfigurationManager != null) {
@@ -691,18 +678,18 @@ namespace AnyRPG {
 
         public void HandleLevitated() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleDeath()");
-            OnStartLevitated();
+            unitController.UnitEventController.NotifyOnAnimatorStartLevitated();
             SetTrigger("LevitateTrigger");
             SetBool("Levitated", true);
         }
         public void HandleUnLevitated(bool swapAnimator = true) {
             SetBool("Levitated", false);
-            OnEndLevitated(swapAnimator);
+            unitController.UnitEventController.NotifyOnAnimatorEndLevitated(swapAnimator);
         }
 
         public void HandleStunned() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleStunned()");
-            OnStartStunned();
+            unitController.UnitEventController.NotifyOnAnimatorStartStunned();
             SetTrigger("StunTrigger");
             SetBool("Stunned", true);
         }
@@ -710,7 +697,7 @@ namespace AnyRPG {
         public void HandleUnStunned(bool swapAnimator = true) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleUnStunned()");
             SetBool("Stunned", false);
-            OnEndStunned(swapAnimator);
+            unitController.UnitEventController.NotifyOnAnimatorEndStunned(swapAnimator);
         }
 
         public void SetCasting(bool varValue, bool swapAnimator = true, float castingSpeed = 1f) {
@@ -719,7 +706,7 @@ namespace AnyRPG {
                 return;
             }
             if (varValue == true) {
-                OnStartCasting(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorStartCasting(swapAnimator);
             }
             SetAnimationSpeed(castingSpeed);
 
@@ -732,7 +719,7 @@ namespace AnyRPG {
             }
             if (varValue == false) {
                 unitController.SetUseRootMotion(false);
-                OnEndCasting(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorEndCasting(swapAnimator);
             }
 
         }
@@ -744,7 +731,7 @@ namespace AnyRPG {
                 return;
             }
             if (varValue == true) {
-                OnStartActing(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorStartActing(swapAnimator);
             }
             SetAnimationSpeed(animationSpeed);
 
@@ -756,7 +743,7 @@ namespace AnyRPG {
                 SetTrigger("ActionTrigger");
             }
             if (varValue == false) {
-                OnEndActing(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorEndActing(swapAnimator);
             }
 
         }
@@ -767,7 +754,7 @@ namespace AnyRPG {
                 return;
             }
             if (varValue == true) {
-                OnStartAttacking(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorStartAttacking(swapAnimator);
             }
             if (ParameterExists("Attacking")) {
                 animator.SetBool("Attacking", varValue);
@@ -780,7 +767,7 @@ namespace AnyRPG {
             }
 
             if (varValue == false) {
-                OnEndAttacking(swapAnimator);
+                unitController.UnitEventController.NotifyOnAnimatorEndAttacking(swapAnimator);
             }
         }
 
@@ -1074,7 +1061,7 @@ namespace AnyRPG {
             if (animator != null && ParameterExists(varName)) {
                 animator.ResetTrigger(varName);
                 animator.SetTrigger(varName);
-                OnSetTrigger(varName);
+                unitController.UnitEventController.NotifyOnAnimatorSetTrigger(varName);
             }
         }
 

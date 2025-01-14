@@ -1,6 +1,3 @@
-using AnyRPG;
-using MonoFN.Cecil;
-using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -348,8 +345,8 @@ namespace AnyRPG {
             if (useAnimationCastTime == false) {
                 return abilityCastingTime;
             } else {
-                if (GetCastClips(source).Count > 0) {
-                    return GetCastClips(source)[0].length;
+                if (GetAbilityCastClips(source).Count > 0) {
+                    return GetAbilityCastClips(source)[0].length;
                 }
                 return abilityCastingTime;
             }
@@ -760,7 +757,7 @@ namespace AnyRPG {
             return GetBaseAbilityCastingTime(abilityCaster);
         }
 
-        public List<AnimationClip> GetCastClips(IAbilityCaster sourceCharacter) {
+        public List<AnimationClip> GetAbilityCastClips(IAbilityCaster sourceCharacter) {
             List<AnimationClip> animationClips = new List<AnimationClip>();
             if (useUnitCastAnimations == true) {
                 animationClips = sourceCharacter.AbilityManager.GetUnitCastAnimations();
@@ -884,7 +881,7 @@ namespace AnyRPG {
             return AnimationHitAudioClip;
         }
 
-        public List<AnimationClip> GetActionClips(IAbilityCaster sourceCharacter) {
+        public List<AnimationClip> GetAbilityActionClips(IAbilityCaster sourceCharacter) {
             List<AnimationClip> animationClips = new List<AnimationClip>();
             if (useUnitAttackAnimations == true) {
                 animationClips = sourceCharacter.AbilityManager.GetUnitAttackAnimations();
@@ -974,7 +971,7 @@ namespace AnyRPG {
             List<AbilityEffectProperties> abilityEffectProperties = GetCastEndEffects(sourceCharacter);
             PerformAbilityEffects(sourceCharacter, target, abilityEffectContext, abilityEffectProperties);
 
-            List<AnimationClip> usedAnimationClips = GetActionClips(sourceCharacter);
+            List<AnimationClip> usedAnimationClips = GetAbilityActionClips(sourceCharacter);
             if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
                 //Debug.Log("AnimatedAbility.Cast(): animationClip is not null, setting animator");
 
@@ -1049,7 +1046,7 @@ namespace AnyRPG {
         public virtual void ProcessGCDAuto(IAbilityCaster sourceCharacter) {
             //Debug.Log(DisplayName + ".BaseAbility.ProcessGCDManual()");
 
-            if (GetActionClips(sourceCharacter).Count > 0) {
+            if (GetAbilityActionClips(sourceCharacter).Count > 0) {
                 // cooldown length will be based on action animation length
                 return;
             }

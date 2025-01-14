@@ -465,7 +465,8 @@ namespace AnyRPG {
         }
 
         public bool AddNewAbility(AbilityProperties newAbility) {
-            //Debug.Log("ActionBarManager.AddNewAbility(" + newAbility + ")");
+            Debug.Log($"ActionBarManager.AddNewAbility({ newAbility})");
+
             bool returnValue = false;
             bool foundSlot = false;
             if (AddGamepadSavedAbility(newAbility)) {
@@ -533,6 +534,7 @@ namespace AnyRPG {
 
         public void ClearActionBars(bool clearSavedUseables = false) {
             //Debug.Log("ActionBarManager.ClearActionBars()");
+
             foreach (ActionBarController actionBarController in actionBarControllers) {
                 //Debug.Log("ActionBarManager.AddNewAbility(): looping through a controller");
                 actionBarController.ClearActionBar(clearSavedUseables);
@@ -554,7 +556,8 @@ namespace AnyRPG {
 
 
         public void PopulateAbilityBars() {
-            //Debug.Log("ActionBarmanager.PopulateAbilityBars()");
+            Debug.Log("ActionBarmanager.PopulateAbilityBars()");
+
             if (abilityBarsPopulated) {
                 //Debug.Log("ActionBarmanager.PopulateAbilityBars(): bars are already populated.  Doing nothing!");
                 return;

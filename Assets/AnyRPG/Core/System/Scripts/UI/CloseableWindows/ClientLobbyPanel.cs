@@ -116,7 +116,7 @@ namespace AnyRPG {
         }
 
         public void RequestLobbyPlayerList() {
-            Debug.Log($"ClientLobbyPanelController.RequestLobbyPlayerList()");
+            //Debug.Log($"ClientLobbyPanelController.RequestLobbyPlayerList()");
 
             networkManagerClient.RequestLobbyPlayerList();
         }
@@ -172,7 +172,7 @@ namespace AnyRPG {
 
 
         public void RequestLobbyGameList() {
-            Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
+            //Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
 
             networkManagerClient.RequestLobbyGameList();
         }
@@ -182,7 +182,7 @@ namespace AnyRPG {
         }
 
         public void PopulateLobbyGameList(List<LobbyGame> lobbyGames) {
-            Debug.Log($"ClientLobbyPanelController.PopulateLobbyGameList()");
+            //Debug.Log($"ClientLobbyPanelController.PopulateLobbyGameList()");
 
             foreach (LobbyGame lobbyGame in lobbyGames) {
                 AddLobbyGameToList(lobbyGame.gameId, lobbyGame);
@@ -190,7 +190,7 @@ namespace AnyRPG {
         }
 
         public void AddLobbyGameToList(int gameId, LobbyGame lobbyGame) {
-            Debug.Log($"ClientLobbyPanelController.AddLobbyGameToList({gameId})");
+            //Debug.Log($"ClientLobbyPanelController.AddLobbyGameToList({gameId})");
 
             GameObject go = objectPooler.GetPooledObject(lobbyGameTemplate, lobbyGameContainer);
             ClientLobbyGameConnectionButtonController clientLobbyGameConnectionButtonController = go.GetComponent<ClientLobbyGameConnectionButtonController>();

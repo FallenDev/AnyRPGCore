@@ -195,7 +195,7 @@ namespace AnyRPG {
             unitController.UnitAnimator.HandleEquipmentChanged(newItem, oldItem, slotIndex);
 
             // now that all stats have been recalculated, it's safe to fire this event, so things that listen will show the correct values
-            unitController.UnitEventController.OnEquipmentChanged(newItem, oldItem, slotIndex);
+            unitController.UnitEventController.NotifyOnEquipmentChanged(newItem, oldItem, slotIndex);
         }
 
         /*

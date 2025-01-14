@@ -24,6 +24,7 @@ namespace AnyRPG {
         // game manager references
         private ObjectPooler objectPooler = null;
         private NetworkManagerClient networkManager = null;
+        private PlayerManager playerManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -33,6 +34,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             networkManager = systemGameManager.NetworkManagerClient;
+            playerManager = systemGameManager.PlayerManager;
         }
 
         public int GetSpawnRequestId() {
@@ -67,6 +69,7 @@ namespace AnyRPG {
                 return;
             }
 
+            // game mode is local, spawn locally
             SpawnCharacterPrefab(characterRequestData, parentTransform, position, forward);
         }
 
@@ -106,6 +109,11 @@ namespace AnyRPG {
             if (unitController == null) {
                 return null;
             }
+            /*
+            if (unitController.IsOwner && characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
+                playerManager.SetUnitController(unitController);
+            }
+            */
 
             if (characterRequestData.requestMode == GameMode.Network) {
                 // if this is being spawned over the network, the model is not spawned yet, so return and wait for it to spawn
@@ -123,7 +131,7 @@ namespace AnyRPG {
         }
 
         public void CompleteModelRequest(int spawnRequestId, UnitController unitController, bool isOwner) {
-            //Debug.Log($"CharacterManager.CompleteModelRequest({unitController.gameObject.name}, {isOwner})");
+            Debug.Log($"CharacterManager.CompleteModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner})");
 
             CharacterRequestData characterRequestData;
             if (isOwner && unitSpawnRequests.ContainsKey(spawnRequestId)) {
@@ -181,6 +189,9 @@ namespace AnyRPG {
                     //Debug.Log($"CharacterManager.ConfigureUnitController({unitProfile.ResourceName}, {prefabObject.name}) renaming gameobject from {unitController.gameObject.name}");
                     unitController.gameObject.name = characterRequestData.characterConfigurationRequest.unitProfile.ResourceName.Replace(" ", "") + systemGameManager.GetSpawnCount();
                     unitController.Configure(systemGameManager);
+                    if (isOwner && characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
+                        playerManager.SetUnitController(unitController);
+                    }
                     unitController.SetCharacterConfiguration(characterRequestData);
 
                 }

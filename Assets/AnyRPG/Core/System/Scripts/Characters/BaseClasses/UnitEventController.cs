@@ -56,7 +56,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
         public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
         public event System.Action<UnitController, float> OnKillEvent = delegate { };
-        public System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
+        public event System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
         public event System.Action<AbilityProperties> OnAbilityActionCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
         public event System.Action<string, bool> OnBeginAction = delegate { };
@@ -75,6 +75,30 @@ namespace AnyRPG {
         public event System.Action<AbilityProperties> OnPerformAbility = delegate { };
         public event System.Action<UnitController> OnDespawn = delegate { };
         public event System.Action<string> OnBeginChatMessage = delegate { };
+
+        public event System.Action OnInitializeAnimator = delegate { };
+        public event System.Action<string> OnAnimatorSetTrigger = delegate { };
+        public event System.Action OnAnimatorReviveComplete = delegate { };
+        public event System.Action<bool> OnAnimatorStartCasting = delegate { };
+        public event System.Action<bool> OnAnimatorEndCasting = delegate { };
+        public event System.Action<bool> OnAnimatorStartActing = delegate { };
+        public event System.Action<bool> OnAnimatorEndActing = delegate { };
+        public event System.Action<bool> OnAnimatorStartAttacking = delegate { };
+        public event System.Action<bool> OnAnimatorEndAttacking = delegate { };
+        public event System.Action OnAnimatorStartLevitated = delegate { };
+        public event System.Action<bool> OnAnimatorEndLevitated = delegate { };
+        public event System.Action OnAnimatorStartStunned = delegate { };
+        public event System.Action<bool> OnAnimatorEndStunned = delegate { };
+        public event System.Action OnAnimatorStartRevive = delegate { };
+        public event System.Action OnAnimatorDeath = delegate { };
+        public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
+        public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
+        public event System.Action<AbilityProperties, int> OnPerformAbilityCastAnimation = delegate { };
+        public event System.Action<AbilityProperties, int> OnPerformAbilityActionAnimation = delegate { };
+        public event System.Action OnAnimatorClearAction = delegate { };
+        public event System.Action OnAnimatorClearAbilityAction = delegate { };
+        public event System.Action OnAnimatorClearAbilityCast = delegate { };
+
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -126,6 +150,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnLearnAbility(AbilityProperties abilityProperties) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnLearnAbility({abilityProperties.ResourceName})");
+
             OnLearnAbility(abilityProperties);
         }
 
@@ -380,6 +406,95 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
             OnBeginChatMessage(message);
         }
+
+        public void NotifyOnInitializeAnimator() {
+            OnInitializeAnimator();
+        }
+
+        public void NotifyOnAnimatorSetTrigger(string triggerName) {
+            OnAnimatorSetTrigger(triggerName);
+        }
+
+        public void NotifyOnAnimatorReviveComplete(){
+            OnAnimatorReviveComplete();
+        }
+
+        public void NotifyOnAnimatorStartCasting(bool swapAnimator){
+            OnAnimatorStartCasting(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorEndCasting(bool swapAnimator) {
+            OnAnimatorEndCasting(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorStartActing(bool swapAnimator) {
+            OnAnimatorStartActing(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorEndActing(bool swapAnimator) {
+            OnAnimatorEndActing(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorStartAttacking(bool swapAnimator) {
+            OnAnimatorStartAttacking(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorEndAttacking(bool swapAnimator) {
+            OnAnimatorEndAttacking(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorStartLevitated() {
+            OnAnimatorStartLevitated();
+        }
+
+        public void NotifyOnAnimatorEndLevitated(bool swapAnimator) {
+            OnAnimatorEndLevitated(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorStartStunned() {
+            OnAnimatorStartStunned();
+        }
+
+        public void NotifyOnAnimatorEndStunned(bool swapAnimator) {
+            OnAnimatorEndStunned(swapAnimator);
+        }
+
+        public void NotifyOnAnimatorStartRevive() {
+            OnAnimatorStartRevive();
+        }
+
+        public void NotifyOnAnimatorDeath() {
+            OnAnimatorDeath();
+        }
+
+        public void NotifyOnSetAnimationClipOverride(string originalClipName, AnimationClip newAnimationClip) {
+            OnSetAnimationClipOverride(originalClipName, newAnimationClip);
+        }
+
+        public void NotifyOnPerformAnimatedActionAnimation(AnimatedAction animatedAction) {
+            OnPerformAnimatedActionAnimation(animatedAction);
+        }
+
+        public void NotifyOnPerformAbilityCastAnimation(AbilityProperties abilityProperties, int clipIndex) {
+            OnPerformAbilityCastAnimation(abilityProperties, clipIndex);
+        }
+
+        public void NotifyOnPerformAbilityActionAnimation(AbilityProperties abilityProperties, int clipIndex) {
+            OnPerformAbilityActionAnimation(abilityProperties, clipIndex);
+        }
+
+        public void NotifyOnAnimatorClearAction() {
+            OnAnimatorClearAction();
+        }
+
+        public void NotifyOnAnimatorClearAbilityAction() {
+            OnAnimatorClearAbilityAction();
+        }
+
+        public void NotifyOnAnimatorClearAbilityCast() {
+            OnAnimatorClearAbilityCast();
+        }
+
 
         #endregion
 

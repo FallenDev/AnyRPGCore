@@ -23,10 +23,10 @@ namespace AnyRPG {
             networkAnimator = GetComponent<NetworkAnimator>();
             unitController = GetComponentInParent<UnitController>();
             animator = GetComponent<Animator>();
-            unitController.UnitAnimator.OnInitializeAnimator += HandleInitializeAnimator;
+            unitController.UnitEventController.OnInitializeAnimator += HandleInitializeAnimator;
 
             if (base.IsOwner) {
-                unitController.UnitAnimator.OnSetTrigger += HandleSetTrigger;
+                unitController.UnitEventController.OnAnimatorSetTrigger += HandleSetTrigger;
             }
         }
 

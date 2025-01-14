@@ -193,7 +193,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginSuccess() {
-            Debug.Log($"NetworkManagerClient.ProcessLoginSuccess()");
+            //Debug.Log($"NetworkManagerClient.ProcessLoginSuccess()");
 
             // not doing this here because the connector has not spawned yet.
             //uIManager.ProcessLoginSuccess();

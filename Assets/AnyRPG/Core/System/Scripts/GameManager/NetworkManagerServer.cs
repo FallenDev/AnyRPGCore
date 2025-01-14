@@ -77,7 +77,7 @@ namespace AnyRPG {
         }
 
         public void OnSetGameMode(GameMode gameMode) {
-            Debug.Log($"NetworkManagerServer.OnSetGameMode({gameMode})");
+            //Debug.Log($"NetworkManagerServer.OnSetGameMode({gameMode})");
             
             if (gameMode == GameMode.Network) {
                 // create instance of GameServerClient

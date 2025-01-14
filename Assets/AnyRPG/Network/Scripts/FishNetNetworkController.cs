@@ -37,12 +37,13 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
-            Debug.Log("FishNetNetworkController.Configure()");
+            //Debug.Log("FishNetNetworkController.Configure()");
+
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
 
-                Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
+                //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
 
                 fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
                 fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
@@ -133,7 +134,7 @@ namespace AnyRPG {
         }
 
         private void HandleClientAuthenticated() {
-            Debug.Log($"FishNetNetworkController.HandleClientAuthenticated({fishNetNetworkManager.ClientManager.Connection.ClientId})");
+            //Debug.Log($"FishNetNetworkController.HandleClientAuthenticated({fishNetNetworkManager.ClientManager.Connection.ClientId})");
 
             networkManagerClient.SetClientId(fishNetNetworkManager.ClientManager.Connection.ClientId);
         }

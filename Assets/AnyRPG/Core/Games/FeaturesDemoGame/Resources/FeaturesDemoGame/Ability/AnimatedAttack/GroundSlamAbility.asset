@@ -10,28 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5425465c90235341be6700479165db0, type: 3}
-  m_Name: ShieldSlamAbility
+  m_Name: GroundSlamAbility
   m_EditorClassIdentifier: 
-  resourceName: Shield Slam
+  resourceName: Ground Slam
   displayName: 
-  icon: {fileID: 21300000, guid: 52df6ca7314170b40a048803bad931c2, type: 3}
+  icon: {fileID: 21300000, guid: d34e7697a381af94189a9642fd625caf, type: 3}
   iconBackgroundImage: {fileID: 0}
-  description: Slam your target with a shield, stunning them for 3 seconds
+  description: Slam the Ground
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
   abilityProperties:
     requireOutOfCombat: 0
     requireStealth: 0
-    weaponAffinityNames:
-    - Shield
+    weaponAffinityNames: []
     holdableObjectList: []
     despawnPrefabsOnCastEnd: 0
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
     animationClip: {fileID: 0}
-    animationProfileName: Shield Slam
+    animationProfileName: Ground Slam
     useUnitCastAnimations: 0
     isAutoAttack: 0
     useUnitAttackAnimations: 0
@@ -61,17 +60,17 @@ MonoBehaviour:
     useSpeedMultipliers: 1
     useAnimationCastTime: 1
     abilityCastingTime: 0
-    abilityCoolDown: 30
+    abilityCoolDown: 10
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
     targetOptions:
-      requireTarget: 1
+      requireTarget: 0
       requireLineOfSight: 0
-      requireLiveTarget: 1
+      requireLiveTarget: 0
       requireDeadTarget: 0
       canCastOnSelf: 0
-      canCastOnOthers: 1
-      canCastOnEnemy: 1
+      canCastOnOthers: 0
+      canCastOnEnemy: 0
       canCastOnNeutral: 0
       canCastOnFriendly: 0
       autoSelfCast: 0
@@ -88,48 +87,49 @@ MonoBehaviour:
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
     inlineAbilityEffects:
-    - rid: 3214878833861722222
-    abilityEffectNames: []
+    - rid: 3214878833861722210
+    castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:
     version: 2
     RefIds:
-    - rid: 3214878833861722222
-      type: {class: AttackEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
+    - rid: 3214878833861722210
+      type: {class: InstantEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         effectProperties:
           targetOptions:
-            requireTarget: 1
+            requireTarget: 0
             requireLineOfSight: 0
-            requireLiveTarget: 1
+            requireLiveTarget: 0
             requireDeadTarget: 0
             canCastOnSelf: 0
-            canCastOnOthers: 1
-            canCastOnEnemy: 1
+            canCastOnOthers: 0
+            canCastOnEnemy: 0
             canCastOnNeutral: 0
             canCastOnFriendly: 0
             autoSelfCast: 0
             unitTypeRestrictions: []
-            useMeleeRange: 1
+            useMeleeRange: 0
             maxRange: 0
             lineOfSightSourceLocation: 0
             targetRangeSourceLocation: 0
           chanceToCast: 100
           onHitAudioProfileNames:
-          - Chop
+          - Fire Spell Hit
           randomAudioProfiles: 0
           hitAbilityEffectNames:
-          - Stunned
+          - Ground Slam AOE
+          - Ground Slam Directional
           inputMultiplier: 0
           threatMultiplier: 1
           abilityPrefabSource: 1
           randomPrefabs: 0
           abilityObjectList:
-          - holdableObjectName: White Hit
+          - holdableObjectName: Red Brown Hit
             useUniversalAttachment: 0
             attachmentName: 
-          prefabSpawnLocation: 2
+          prefabSpawnLocation: 6
           prefabDestroyDelay: 0
           destroyOnEndCast: 0
           tickRate: 0
@@ -139,17 +139,3 @@ MonoBehaviour:
           randomTickAudioProfiles: 0
           completeAbilityEffectNames: []
           defaultPrefabLifetime: 10
-          allowCriticalStrike: 1
-          resourceAmounts:
-          - resourceName: Health
-            inputRemap: 
-            addPower: 1
-            minAmount: 0
-            baseAmount: 0
-            amountPerLevel: 0
-            maxAmount: 0
-            ignoreCastTime: 0
-          ignoreAccuracy: 0
-          weaponAttack: 0
-          damageType: 1
-          ignoreArmorPercent: 0

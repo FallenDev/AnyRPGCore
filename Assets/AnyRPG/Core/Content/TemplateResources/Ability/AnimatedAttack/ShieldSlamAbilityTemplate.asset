@@ -89,7 +89,7 @@ MonoBehaviour:
     channeledAbilityEffectnames: []
     inlineAbilityEffects:
     - rid: 3214878833861722224
-    abilityEffectNames: []
+    castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

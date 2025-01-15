@@ -240,6 +240,10 @@ namespace AnyRPG {
         [SerializeField]
         private bool useAbilityEffectTargetting = false;
 
+        [Tooltip("If Ability Effect Targetting is used, the first ability effect from this stage will be used.")]
+        [SerializeField]
+        private AbilityStage abilityEffectTargetStage = AbilityStage.CastEnd;
+
         [SerializeField]
         private AbilityTargetProps targetOptions = new AbilityTargetProps();
 
@@ -273,11 +277,12 @@ namespace AnyRPG {
         protected List<AbilityEffectConfig> inlineAbilityEffects = new List<AbilityEffectConfig>();
 
         [Tooltip("When casting is complete, these ability effects will be triggered.")]
+        [FormerlySerializedAs("abilityEffectNames")]
         [SerializeField]
         [ResourceSelector(resourceType = typeof(AbilityEffect))]
-        protected List<string> abilityEffectNames = new List<string>();
+        public List<string> castEndAbilityEffectNames = new List<string>();
 
-        private List<AbilityEffectProperties> abilityEffects = new List<AbilityEffectProperties>();
+        private List<AbilityEffectProperties> castEndAbilityEffects = new List<AbilityEffectProperties>();
 
 
         [Header("Action Hit Ability Effects")]
@@ -285,7 +290,7 @@ namespace AnyRPG {
         [Tooltip("In response to Hit events during the animation, these ability effects will be triggered.")]
         [SerializeField]
         [ResourceSelector(resourceType = typeof(AbilityEffect))]
-        protected List<string> actionHitAbilityEffectNames = new List<string>();
+        public List<string> actionHitAbilityEffectNames = new List<string>();
 
         private List<AbilityEffectProperties> actionHitAbilityEffects = new List<AbilityEffectProperties>();
 
@@ -385,7 +390,7 @@ namespace AnyRPG {
         
         public List<string> WeaponAffinityNames { get => weaponAffinityNames; set => weaponAffinityNames = value; }
         public bool RequireOutOfCombat { get => requireOutOfCombat; set => requireOutOfCombat = value; }
-        public List<string> AbilityEffectNames { get => abilityEffectNames; set => abilityEffectNames = value; }
+        public List<string> AbilityEffectNames { get => castEndAbilityEffectNames; set => castEndAbilityEffectNames = value; }
         /*
         public List<AbilityEffect> AbilityEffects {
             get {
@@ -697,8 +702,23 @@ namespace AnyRPG {
 
         public TargetProps GetTargetOptions(IAbilityCaster abilityCaster) {
             // FIX ME - action hits should be able to target by their effects
-            if (useAbilityEffectTargetting == true && GetCastEndEffects(abilityCaster).Count > 0) {
-                return GetCastEndEffects(abilityCaster)[0].GetTargetOptions(abilityCaster);
+            if (useAbilityEffectTargetting == true) {
+                List<AbilityEffectProperties> abilityEffects = null;
+                if (abilityEffectTargetStage == AbilityStage.CastChannel) {
+                    abilityEffects = channeledAbilityEffects;
+                }
+                if (abilityEffectTargetStage == AbilityStage.CastEnd) {
+                    abilityEffects = GetCastEndEffects(abilityCaster);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionHit) {
+                    abilityEffects = GetActionHitEffects(abilityCaster);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionEnd) {
+                    abilityEffects = GetActionEndEffects(abilityCaster);
+                }
+                if (abilityEffects.Count > 0) {
+                    return abilityEffects[0].GetTargetOptions(abilityCaster);
+                }
             }
             return targetOptions;
         }
@@ -712,7 +732,7 @@ namespace AnyRPG {
         }
 
         public virtual List<AbilityEffectProperties> GetCastEndEffects(IAbilityCaster abilityCaster) {
-            return abilityEffects;
+            return castEndAbilityEffects;
         }
 
         public virtual List<AbilityEffectProperties> GetActionHitEffects(IAbilityCaster abilityCaster) {
@@ -930,7 +950,20 @@ namespace AnyRPG {
             }
             if (useAbilityEffectTargetting) {
                 // FIX ME - this should take into account which of the ability effects (cast/hit/end) are used for targeting
-                List<AbilityEffectProperties> abilityEffects = GetCastEndEffects(sourceCharacter);
+                List<AbilityEffectProperties> abilityEffects = null;
+                if (abilityEffectTargetStage == AbilityStage.CastChannel) {
+                    abilityEffects = channeledAbilityEffects;
+                }
+                if (abilityEffectTargetStage == AbilityStage.CastEnd) {
+                    abilityEffects = GetCastEndEffects(sourceCharacter);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionHit) {
+                    abilityEffects = GetActionHitEffects(sourceCharacter);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionEnd) {
+                    abilityEffects = GetActionEndEffects(sourceCharacter);
+                }
+
                 if (abilityEffects != null && abilityEffects.Count > 0 && abilityEffects[0].CanCast() == false) {
                     return false;
                 }
@@ -1100,9 +1133,23 @@ namespace AnyRPG {
 
         // to be used at the end of ability hit because it doesn't perform in progress check
         public bool CanUseOnBase(Interactable target, IAbilityCaster sourceCharacter, bool performCooldownChecks = true, AbilityEffectContext abilityEffectContext = null, bool playerInitiated = false, bool performRangeCheck = true) {
-            if (useAbilityEffectTargetting == true
-                && GetCastEndEffects(sourceCharacter).Count > 0) {
-                return GetCastEndEffects(sourceCharacter)[0].CanUseOn(target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
+            if (useAbilityEffectTargetting == true) {
+                List<AbilityEffectProperties> abilityEffects = null;
+                if (abilityEffectTargetStage == AbilityStage.CastChannel) {
+                    abilityEffects = channeledAbilityEffects;
+                }
+                if (abilityEffectTargetStage == AbilityStage.CastEnd) {
+                    abilityEffects = GetCastEndEffects(sourceCharacter);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionHit) {
+                    abilityEffects = GetActionHitEffects(sourceCharacter);
+                }
+                if (abilityEffectTargetStage == AbilityStage.ActionEnd) {
+                    abilityEffects = GetActionEndEffects(sourceCharacter);
+                }
+                if (abilityEffects.Count > 0) {
+                    return abilityEffects[0].CanUseOn(target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
+                }
             }
 
             return targetOptions.CanUseOn(this, target, sourceCharacter, abilityEffectContext, playerInitiated, performRangeCheck);
@@ -1365,7 +1412,7 @@ namespace AnyRPG {
             foreach (AbilityEffectConfig abilityEffectConfig in inlineAbilityEffects) {
                 if (abilityEffectConfig != null) {
                     abilityEffectConfig.SetupScriptableObjects(systemGameManager, this);
-                    abilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
+                    castEndAbilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
                 } else {
                     Debug.LogWarning("Null inline AbilityEffect detected while initializing BaseAbility Properties for " + describable.ResourceName);
                 }
@@ -1376,7 +1423,7 @@ namespace AnyRPG {
                 foreach (string abilityEffectName in AbilityEffectNames) {
                     AbilityEffect abilityEffect = systemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
                     if (abilityEffect != null) {
-                        abilityEffects.Add(abilityEffect.AbilityEffectProperties);
+                        castEndAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
                     } else {
                         Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                     }

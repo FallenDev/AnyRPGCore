@@ -87,9 +87,9 @@ MonoBehaviour:
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
     inlineAbilityEffects: []
-    abilityEffectNames:
+    castEndAbilityEffectNames: []
+    actionHitAbilityEffectNames:
     - Attack
-    actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:
     version: 2

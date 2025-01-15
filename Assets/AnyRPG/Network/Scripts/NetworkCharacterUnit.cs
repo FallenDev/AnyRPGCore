@@ -4,6 +4,7 @@ using FishNet.Object.Synchronizing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 
@@ -136,6 +137,11 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnAnimatorDeath += HandleAnimatorDeathClient;
             unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChangedServer;
             unitController.UnitEventController.OnBeforeDie += HandleBeforeDieServer;
+            unitController.UnitEventController.OnEnterCombat += HandleEnterCombatServer;
+            unitController.UnitEventController.OnDropCombat += HandleDropCombat;
+            unitController.UnitEventController.OnSpawnAbilityObjects += HandleSpawnAbilityObjectsServer;
+            unitController.UnitEventController.OnDespawnAbilityObjects += HandleDespawnAbilityObjects;
+            unitController.UnitEventController.OnSpawnAbilityEffectPrefabs += HandleSpawnAbilityEffectPrefabsServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -152,7 +158,98 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnAnimatorDeath -= HandleAnimatorDeathClient;
             unitController.UnitEventController.OnResourceAmountChanged -= HandleResourceAmountChangedServer;
             unitController.UnitEventController.OnBeforeDie -= HandleBeforeDieServer;
+            unitController.UnitEventController.OnEnterCombat -= HandleEnterCombatServer;
+            unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
+            unitController.UnitEventController.OnSpawnAbilityObjects -= HandleSpawnAbilityObjectsServer;
+            unitController.UnitEventController.OnDespawnAbilityObjects -= HandleDespawnAbilityObjects;
+            unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
         }
+
+        public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityEffectPrefabsServer()");
+
+            NetworkInteractable networkTarget = null;
+            if (target != null) {
+                networkTarget = target.GetComponent<NetworkInteractable>();
+            }
+            NetworkInteractable networkOriginalTarget = null;
+            if (target != null) {
+                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+            }
+            //HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName, abilityEffectInput);
+            HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName);
+        }
+
+        [ObserversRpc]
+        //public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, AbilityEffectContext abilityEffectContext) {
+        public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
+
+            AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
+            LengthEffectProperties lengthEffectProperties = abilityEffect.AbilityEffectProperties as LengthEffectProperties;
+            if (abilityEffect == null || lengthEffectProperties == null) {
+                return;
+            }
+            Interactable target = null;
+            Interactable originalTarget = null;
+            if (networkTarget != null) {
+                target = networkTarget.interactable;
+            }
+            if (networkOriginalTarget != null) {
+                originalTarget = networkOriginalTarget.interactable;
+            }
+            unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, new AbilityEffectContext(unitController));
+        }
+
+        public void HandleSpawnAbilityObjectsServer(AbilityProperties ability, int index) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
+
+            HandleSpawnAbilityObjectsClient(ability.ResourceName, index);
+        }
+
+        [ObserversRpc]
+        public void HandleSpawnAbilityObjectsClient(string abilityName, int index) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
+
+            Ability ability = systemGameManager.SystemDataFactory.GetResource<Ability>(abilityName);
+            if (ability != null) {
+                unitController.CharacterAbilityManager.SpawnAbilityObjectsInternal(ability.abilityProperties, index);
+            }
+        }
+
+        [ObserversRpc]
+        public void HandleDespawnAbilityObjects() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjects()");
+
+            unitController.CharacterAbilityManager.DespawnAbilityObjects();
+        }
+
+        [ObserversRpc]
+        public void HandleDropCombat() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleEnterCombatClient()");
+
+            unitController.CharacterCombat.TryToDropCombat();
+        }
+
+        private void HandleEnterCombatServer(Interactable targetInteractable) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleEnterCombatServer(" + (targetInteractable == null ? "null" : targetInteractable.gameObject.name) + ")");
+
+            NetworkInteractable networkInteractable = null;
+            if (targetInteractable != null) {
+                networkInteractable = targetInteractable.GetComponent<NetworkInteractable>();
+            }
+            HandleEnterCombatClient(networkInteractable);
+        }
+
+        [ObserversRpc]
+        public void HandleEnterCombatClient(NetworkInteractable networkInteractable) {
+            Debug.Log($"{gameObject.name}.HandleEnterCombatClient()");
+            
+            if (networkInteractable != null) {
+                unitController.CharacterCombat.EnterCombat(networkInteractable.interactable);
+            }
+        }
+
 
         private void HandleBeforeDieServer(UnitController targetUnitController) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");

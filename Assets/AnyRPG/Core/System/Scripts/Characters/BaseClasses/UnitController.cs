@@ -421,6 +421,7 @@ namespace AnyRPG {
         public CharacterCombat CharacterCombat { get => characterCombat; }
         public CharacterAbilityManager CharacterAbilityManager { get => characterAbilityManager; }
         public IAbilityManager AbilityManager { get => characterAbilityManager; }
+        public MonoBehaviour MonoBehaviour { get => this; }
         public CharacterSkillManager CharacterSkillManager { get => characterSkillManager; }
         public CharacterFactionManager CharacterFactionManager { get => characterFactionManager; set => characterFactionManager = value; }
         public CharacterEquipmentManager CharacterEquipmentManager { get => characterEquipmentManager; set => characterEquipmentManager = value; }

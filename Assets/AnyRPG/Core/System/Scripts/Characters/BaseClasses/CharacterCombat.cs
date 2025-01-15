@@ -6,15 +6,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterCombat : ConfiguredClass {
 
-        //events
-        /*
-        public event System.Action<UnitController, float> OnKillEvent = delegate { };
-        public event System.Action<Interactable> OnEnterCombat = delegate { };
-        public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
-        public event System.Action OnCombatUpdate = delegate { };
-        public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
-        */
-
         protected bool eventSubscriptionsInitialized = false;
 
         private bool autoAttackActive = false;

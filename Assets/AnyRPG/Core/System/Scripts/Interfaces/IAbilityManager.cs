@@ -314,7 +314,7 @@ namespace AnyRPG {
         /// pass a message to be emitted as an event
         /// </summary>
         void ReceiveMessageFeedMessage(string messageText);
-
+        Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput);
     }
 
 }

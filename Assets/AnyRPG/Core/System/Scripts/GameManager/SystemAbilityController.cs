@@ -12,6 +12,7 @@ namespace AnyRPG {
         ObjectPooler objectPooler = null;
 
         public IAbilityManager AbilityManager { get => abilityManager; }
+        public MonoBehaviour MonoBehaviour { get => this; }
 
         public override  void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);

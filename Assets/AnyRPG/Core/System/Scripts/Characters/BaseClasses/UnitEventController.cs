@@ -98,6 +98,9 @@ namespace AnyRPG {
         public event System.Action OnAnimatorClearAction = delegate { };
         public event System.Action OnAnimatorClearAbilityAction = delegate { };
         public event System.Action OnAnimatorClearAbilityCast = delegate { };
+        public event System.Action<AbilityProperties, int> OnSpawnAbilityObjects = delegate { };
+        public event System.Action OnDespawnAbilityObjects = delegate { };
+        public event System.Action<Interactable, Interactable, LengthEffectProperties, AbilityEffectContext> OnSpawnAbilityEffectPrefabs = delegate { };
 
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
@@ -495,6 +498,17 @@ namespace AnyRPG {
             OnAnimatorClearAbilityCast();
         }
 
+        public void NotifyOnSpawnAbilityObjects(AbilityProperties abilityProperties, int index) {
+            OnSpawnAbilityObjects(abilityProperties, index);
+        }
+
+        public void NotifyOnDespawnAbilityObjects() {
+            OnDespawnAbilityObjects();
+        }
+
+        public void NotifyOnSpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+            OnSpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
+        }
 
         #endregion
 

@@ -231,6 +231,46 @@ namespace AnyRPG {
             }
         }
 
+        public void SpawnAbilityObjects(int indexValue = -1) {
+            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects(" + indexValue + ")");
+            AbilityProperties usedBaseAbility = null;
+            if (currentAbilityEffectContext != null) {
+                usedBaseAbility = currentAbilityEffectContext.baseAbility;
+            }
+            if (usedBaseAbility == null) {
+                usedBaseAbility = currentCastAbility;
+            }
+
+            if (unitController != null &&
+                unitController.CharacterEquipmentManager != null &&
+                usedBaseAbility != null &&
+                usedBaseAbility.GetHoldableObjectList(unitController).Count != 0) {
+                //if (baseCharacter != null && baseCharacter.MyCharacterEquipmentManager != null && ability.MyAbilityCastingTime > 0f && ability.MyHoldableObjectNames.Count != 0) {
+                //Debug.Log($"{gameObject.name}.CharacterAbilityManager.PerformAbilityCast(): spawning ability objects");
+                if (usedBaseAbility.AnimatorCreatePrefabs) {
+                    SpawnAbilityObjectsInternal(usedBaseAbility, indexValue);
+                }
+            }
+        }
+
+        public void SpawnAbilityObjects(AbilityProperties usedBaseAbility) {
+            SpawnAbilityObjectsInternal(usedBaseAbility, -1);
+        }
+
+        public void SpawnAbilityObjectsInternal(AbilityProperties ability, int index) {
+            //ability.abilityProperties.GetHoldableObjectList(unitController)
+            if (index == -1) {
+                SpawnAbilityObjects(ability.GetHoldableObjectList(unitController));
+            } else {
+                List<AbilityAttachmentNode> passList = new List<AbilityAttachmentNode>();
+                passList.Add(ability.GetHoldableObjectList(unitController)[index - 1]);
+                SpawnAbilityObjects(passList);
+            }
+            
+            unitController.UnitEventController.NotifyOnSpawnAbilityObjects(ability, index);
+
+        }
+
         public void SpawnAbilityObjects(List<AbilityAttachmentNode> abilityAttachmentNodes) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.SpawnAbilityObjects()");
 
@@ -303,6 +343,7 @@ namespace AnyRPG {
                 }
             }
             abilityObjects.Clear();
+            UnitController.UnitEventController.NotifyOnDespawnAbilityObjects();
         }
 
         public override void GeneratePower(AbilityProperties ability) {
@@ -429,11 +470,11 @@ namespace AnyRPG {
                 return true;
             }
 
-            Vector3 sourcePosition = abilityCaster.transform.position;
+            Vector3 sourcePosition = abilityCasterMonoBehaviour.transform.position;
             // get initial positions in case of no collider
             if (targetable.GetTargetOptions(unitController).LineOfSightSourceLocation == LineOfSightSourceLocation.Caster) {
-                sourcePosition = abilityCaster.transform.position;
-                Collider sourceCollider = abilityCaster.GetComponent<Collider>();
+                sourcePosition = abilityCasterMonoBehaviour.transform.position;
+                Collider sourceCollider = abilityCasterMonoBehaviour.GetComponent<Collider>();
                 if (sourceCollider != null) {
                     sourcePosition = sourceCollider.bounds.center;
                 }
@@ -542,7 +583,7 @@ namespace AnyRPG {
             unitController.UnitAnimator.PerformAbilityAction(baseAbility, clipIndex);
 
             // wait for the attack to complete before allowing the character to attack again
-            attackCoroutine = abilityCaster.StartCoroutine(WaitForAbilityActionToComplete(baseAbility, abilityEffectContext, targetUnitController, speedNormalizedAnimationLength));
+            attackCoroutine = abilityCasterMonoBehaviour.StartCoroutine(WaitForAbilityActionToComplete(baseAbility, abilityEffectContext, targetUnitController, speedNormalizedAnimationLength));
 
             return speedNormalizedAnimationLength;
         }
@@ -623,16 +664,16 @@ namespace AnyRPG {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.CleanupCoroutines()");
             base.CleanupCoroutines();
             if (currentCastCoroutine != null) {
-                abilityCaster.StopCoroutine(currentCastCoroutine);
+                abilityCasterMonoBehaviour.StopCoroutine(currentCastCoroutine);
                 EndCastCleanup();
             }
             CleanupCoolDownRoutines();
 
             if (globalCoolDownCoroutine != null) {
-                abilityCaster.StopCoroutine(globalCoolDownCoroutine);
+                abilityCasterMonoBehaviour.StopCoroutine(globalCoolDownCoroutine);
                 globalCoolDownCoroutine = null;
             }
-            abilityCaster.StopAllCoroutines();
+            abilityCasterMonoBehaviour.StopAllCoroutines();
         }
 
         /// <summary>
@@ -711,7 +752,7 @@ namespace AnyRPG {
             }
 
             // ordering important.  don't start till after its in the dictionary or it will fail to remove itself from the dictionary, then add it self
-            Coroutine coroutine = abilityCaster.StartCoroutine(PerformAbilityCoolDown(baseAbility.DisplayName));
+            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(baseAbility.DisplayName));
             abilityCoolDownNode.Coroutine = coroutine;
 
             unitController.UnitEventController.NotifyOnBeginAbilityCoolDown();
@@ -749,7 +790,7 @@ namespace AnyRPG {
             }
 
             // ordering important.  don't start till after its in the dictionary or it will fail to remove itself from the dictionary, then add it self
-            Coroutine coroutine = abilityCaster.StartCoroutine(PerformAbilityCoolDown(useable.DisplayName));
+            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(useable.DisplayName));
             abilityCoolDownNode.Coroutine = coroutine;
 
             unitController.UnitEventController.NotifyOnBeginAbilityCoolDown();
@@ -1191,7 +1232,7 @@ namespace AnyRPG {
                 if (unitController != null && ability.GetHoldableObjectList(unitController).Count != 0) {
                     //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "): spawning ability objects");
                     if (!ability.AnimatorCreatePrefabs) {
-                        SpawnAbilityObjects(ability.GetHoldableObjectList(unitController));
+                        SpawnAbilityObjects(ability);
                     }
                 }
                 if (ability.CastingAudioClip != null) {
@@ -1263,35 +1304,6 @@ namespace AnyRPG {
 
         public void NotifyOnCastComplete() {
             unitController.UnitEventController.NotifyOnCastComplete();
-        }
-
-        public void SpawnAbilityObjects(int indexValue = -1) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects(" + indexValue + ")");
-            AbilityProperties usedBaseAbility = null;
-            if (currentAbilityEffectContext != null) {
-                usedBaseAbility = currentAbilityEffectContext.baseAbility;
-            }
-            if (usedBaseAbility == null) {
-                usedBaseAbility = currentCastAbility;
-            }
-
-            if (unitController != null &&
-                unitController.CharacterEquipmentManager != null &&
-                usedBaseAbility != null &&
-                usedBaseAbility.GetHoldableObjectList(unitController).Count != 0) {
-                //if (baseCharacter != null && baseCharacter.MyCharacterEquipmentManager != null && ability.MyAbilityCastingTime > 0f && ability.MyHoldableObjectNames.Count != 0) {
-                //Debug.Log($"{gameObject.name}.CharacterAbilityManager.PerformAbilityCast(): spawning ability objects");
-                if (usedBaseAbility.AnimatorCreatePrefabs) {
-                    if (indexValue == -1) {
-                        SpawnAbilityObjects(usedBaseAbility.GetHoldableObjectList(unitController));
-                    } else {
-                        List<AbilityAttachmentNode> passList = new List<AbilityAttachmentNode>();
-                        passList.Add(usedBaseAbility.GetHoldableObjectList(unitController)[indexValue - 1]);
-                        SpawnAbilityObjects(passList);
-                    }
-                }
-            }
-
         }
 
         public override void EndCastCleanup() {
@@ -1536,7 +1548,7 @@ namespace AnyRPG {
                     //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + usedAbility + "): setting currentCastAbility");
                     // currentCastAbility must be set before starting the coroutine because for animated events, the cast time is zero and the variable will be cleared in the coroutine
                     currentCastAbility = ability;
-                    currentCastCoroutine = abilityCaster.StartCoroutine(PerformAbilityCast(ability, finalTarget, abilityEffectContext));
+                    currentCastCoroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCast(ability, finalTarget, abilityEffectContext));
                 } else {
                     // return false so that items in the inventory don't get used if this came from a castable item
                     return false;
@@ -1732,7 +1744,7 @@ namespace AnyRPG {
                 //abilityEffectContext.AddResourceAmount(ability.PowerResource.DisplayName, ability.GetResourceCost(baseCharacter));
                 abilityEffectContext.SetResourceAmount(ability.PowerResource.ResourceName, ability.GetResourceCost(unitController));
                 // intentionally not keeping track of this coroutine.  many of these could be in progress at once.
-                abilityCaster.StartCoroutine(UsePowerResourceDelay(ability.PowerResource, (int)ability.GetResourceCost(unitController), ability.SpendDelay));
+                abilityCasterMonoBehaviour.StartCoroutine(UsePowerResourceDelay(ability.PowerResource, (int)ability.GetResourceCost(unitController), ability.SpendDelay));
             }
 
             ability.Cast(unitController, finalTarget, abilityEffectContext);
@@ -1817,7 +1829,7 @@ namespace AnyRPG {
         private void StopAnimatedAbility() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.StopAnimatedAbility()");
 
-            abilityCaster.StopCoroutine(attackCoroutine);
+            abilityCasterMonoBehaviour.StopCoroutine(attackCoroutine);
 
             ProcessAbilityActionEnd();
 
@@ -1840,7 +1852,7 @@ namespace AnyRPG {
         private void StopCasting() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.StopCasting()");
 
-            abilityCaster.StopCoroutine(currentCastCoroutine);
+            abilityCasterMonoBehaviour.StopCoroutine(currentCastCoroutine);
             currentCastCoroutine = null;
             unitController.UnitAnimator.ClearCasting();
             DespawnAbilityObjects();
@@ -1914,7 +1926,7 @@ namespace AnyRPG {
             base.InitiateGlobalCooldown(coolDownToUse);
             if (globalCoolDownCoroutine == null) {
                 // set global cooldown length to animation length so we don't end up in situation where cast bars look fine, but we can't actually cast
-                globalCoolDownCoroutine = abilityCaster.StartCoroutine(BeginGlobalCoolDown(coolDownToUse));
+                globalCoolDownCoroutine = abilityCasterMonoBehaviour.StartCoroutine(BeginGlobalCoolDown(coolDownToUse));
             } else {
                 Debug.Log("CharacterAbilityManager.InitiateGlobalCooldown(): INVESTIGATE: GCD COROUTINE WAS NOT NULL");
             }
@@ -1945,6 +1957,12 @@ namespace AnyRPG {
 
             baseAbility.ProcessGCDManual(unitController, Mathf.Min(animationLength, abilityCoolDown));
             BeginAbilityCoolDown(baseAbility, Mathf.Max(animationLength, abilityCoolDown));
+        }
+
+        public override Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+            //Dictionary<PrefabProfile, List<GameObject>> returnList = new Dictionary<PrefabProfile, List<GameObject>>();
+            unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
+            return base.SpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
         }
 
     }

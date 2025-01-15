@@ -34,7 +34,7 @@ namespace AnyRPG {
             systemAbilityController = systemGameManager.SystemAbilityController;
         }
 
-        protected override void BeginMonitoring(Dictionary<PrefabProfile, List<GameObject>> abilityEffectObjects, IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectInput) {
+        public override void BeginMonitoring(Dictionary<PrefabProfile, List<GameObject>> abilityEffectObjects, IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectInput) {
             //Debug.Log(DisplayName + ".FixedLengthEffect.BeginMonitoring(" + (abilityEffectObjects == null ? "null" : abilityEffectObjects.Count.ToString()) + ", " + (target == null ? "null" : target.name) + ")");
             base.BeginMonitoring(abilityEffectObjects, source, target, abilityEffectInput);
             //Debug.Log("FixedLengthEffect.BeginMonitoring(); source: " + source.name);

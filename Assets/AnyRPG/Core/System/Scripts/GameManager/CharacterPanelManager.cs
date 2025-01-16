@@ -122,7 +122,7 @@ namespace AnyRPG {
         }
 
         public void HandleLevelChanged(int newLevel) {
-            unitController.CharacterStats.SetLevel(newLevel);
+            unitController.CharacterStats.SetLevelInternal(newLevel);
         }
 
         public void HandleEquipmentChanged(Equipment newEquipment, Equipment oldEquipment) {

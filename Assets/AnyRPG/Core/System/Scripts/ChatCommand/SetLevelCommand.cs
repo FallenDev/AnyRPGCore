@@ -21,12 +21,12 @@ namespace AnyRPG {
         private int levelNumber = 0;
 
 
-        public override void ExecuteCommand(string commandParameters) {
+        public override void ExecuteCommand(string commandParameters, int clientId) {
             //Debug.Log("SetLevelCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             // add a fixed experience amount
             if (fixedLevel == true) {
-                SetLevel(levelNumber);
+                SetLevel(levelNumber, clientId);
                 return;
             }
 
@@ -40,20 +40,14 @@ namespace AnyRPG {
             int i = 0;
             bool result = int.TryParse(commandParameters, out i);
             if (result == true) {
-                SetLevel(i);
+                SetLevel(i, clientId);
             }
 
         }
 
-        private void SetLevel(int newLevel) {
+        private void SetLevel(int newLevel, int clientId) {
             //Debug.Log("SetLevelCommand.SetLevel(" + newLevel + ")");
-
-            newLevel = Mathf.Clamp(newLevel, playerManager.UnitController.CharacterStats.Level, systemConfigurationManager.MaxLevel);
-            if (newLevel > playerManager.UnitController.CharacterStats.Level) {
-                while (playerManager.UnitController.CharacterStats.Level < newLevel) {
-                    playerManager.UnitController.CharacterStats.GainLevel();
-                }
-            }
+            playerManagerServer.SetLevel(newLevel, clientId);
         }
 
     }

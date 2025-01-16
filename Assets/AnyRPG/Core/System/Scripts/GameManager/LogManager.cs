@@ -39,6 +39,9 @@ namespace AnyRPG {
         // game manager references
         SystemEventManager systemEventManager = null;
         PlayerManager playerManager = null;
+        NetworkManagerClient networkManagerClient = null;
+        ChatCommandManager chatCommandManager = null;
+        NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             //Debug.Log("CombatLogUI.Awake()");
@@ -46,6 +49,9 @@ namespace AnyRPG {
 
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
+            chatCommandManager = systemGameManager.ChatCommandManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
 
             SetWelcomeString();
             ClearLog();
@@ -62,11 +68,32 @@ namespace AnyRPG {
                     completeWelcomeString += string.Format(" {0}", systemConfigurationManager.GameVersion);
                 }
             }
-
         }
 
-        public void WriteChatMessage(string newMessage) {
+        public void WriteChatMessageClient(string newMessage) {
             OnWriteChatMessage(newMessage);
+        }
+
+        public void WriteChatMessageServer(int clientId, string newMessage) {
+            if (newMessage.StartsWith("/") == true) {
+                chatCommandManager.ParseChatCommand(newMessage.Substring(1), clientId);
+                return;
+            }
+
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerServer.AdvertiseSceneChatMessage(newMessage, clientId);
+            } else {
+                WriteChatMessageClient(newMessage);
+            }
+        }
+
+        public void RequestChatMessageClient(string newMessage) {
+
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.SendSceneChatMessage(newMessage);
+            } else {
+                WriteChatMessageServer(0, newMessage);
+            }
         }
 
         public void WriteCombatMessage(string newMessage) {
@@ -147,7 +174,7 @@ namespace AnyRPG {
         public void PrintWelcomeMessages() {
             //Debug.Log("CombatLogUI.PrintWelcomeMessages()");
 
-            WriteChatMessage(completeWelcomeString);
+            WriteChatMessageClient(completeWelcomeString);
             WriteCombatMessage(completeWelcomeString);
             WriteSystemMessage(completeWelcomeString);
 

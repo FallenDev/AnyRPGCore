@@ -515,7 +515,8 @@ namespace AnyRPG {
             }
 
             // xp reward
-            playerManager.UnitController.CharacterStats.GainXP(LevelEquations.GetXPAmountForQuest(playerManager.UnitController.CharacterStats.Level, currentQuest, systemConfigurationManager));
+            // FIX ME - TAKE ALL THIS LOGIC OUT OF THE UI AND SEND THE COMPLETEQUEST COMMAND OVER THE NETWORK SO WE DON'T NEED THIS CALL HERE
+            //playerManager.GainXP(LevelEquations.GetXPAmountForQuest(playerManager.UnitController.CharacterStats.Level, currentQuest, systemConfigurationManager));
 
             UpdateButtons(currentQuest);
 

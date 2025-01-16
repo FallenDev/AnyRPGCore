@@ -155,7 +155,7 @@ namespace AnyRPG {
                 // update capabilities based on the difference between old and new snapshots
                 ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot);
                 // this will reset the stats
-                unitController.CharacterStats.SetLevel(unitController.CharacterStats.Level);
+                unitController.CharacterStats.SetLevelInternal(unitController.CharacterStats.Level);
                 unitController.UnitEventController.NotifyOnFactionChange(newFaction, oldFaction);
             }
         }
@@ -181,7 +181,7 @@ namespace AnyRPG {
                 // update capabilities based on the difference between old and new snapshots
                 ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot);
                 // this will reset the stats
-                unitController.CharacterStats.SetLevel(unitController.CharacterStats.Level);
+                unitController.CharacterStats.SetLevelInternal(unitController.CharacterStats.Level);
                 unitController.UnitEventController.NotifyOnSpecializationChange(newClassSpecialization, oldClassSpecialization);
             }
         }
@@ -214,7 +214,7 @@ namespace AnyRPG {
                 ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot, true);
                 // this will reset the stats
                 unitController.UnitEventController.NotifyOnClassChange(newCharacterClass, oldCharacterClass);
-                unitController.CharacterStats.SetLevel(unitController.CharacterStats.Level);
+                unitController.CharacterStats.SetLevelInternal(unitController.CharacterStats.Level);
             }
         }
 
@@ -242,7 +242,7 @@ namespace AnyRPG {
                 // update capabilities based on the difference between old and new snapshots
                 ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot, true);
                 unitController.UnitEventController.NotifyOnRaceChange(newCharacterRace, oldCharacterRace);
-                unitController.CharacterStats.SetLevel(unitController.CharacterStats.Level);
+                unitController.CharacterStats.SetLevelInternal(unitController.CharacterStats.Level);
             }
         }
 
@@ -269,7 +269,7 @@ namespace AnyRPG {
                 // update capabilities based on the difference between old and new snapshots
                 ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot, true);
                 unitController.UnitEventController.NotifyOnUnitTypeChange(newUnitType, oldSnapshot.UnitType);
-                unitController.CharacterStats.SetLevel(unitController.CharacterStats.Level);
+                unitController.CharacterStats.SetLevelInternal(unitController.CharacterStats.Level);
             }
         }
 

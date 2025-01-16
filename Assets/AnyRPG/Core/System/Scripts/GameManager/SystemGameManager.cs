@@ -71,6 +71,9 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
 
         [SerializeField]
+        private PlayerManagerServer playerManagerServer = null;
+
+        [SerializeField]
         private SystemItemManager systemItemManager = null;
 
         [SerializeField]
@@ -203,6 +206,7 @@ namespace AnyRPG {
         public LevelManager LevelManager { get => levelManager; set => levelManager = value; }
         public InventoryManager InventoryManager { get => inventoryManager; set => inventoryManager = value; }
         public PlayerManager PlayerManager { get => playerManager; set => playerManager = value; }
+        public PlayerManagerServer PlayerManagerServer { get => playerManagerServer; set => playerManagerServer = value; }
         public SystemItemManager SystemItemManager { get => systemItemManager; set => systemItemManager = value; }
         public LogManager LogManager { get => logManager; set => logManager = value; }
         public ObjectPooler ObjectPooler { get => objectPooler; set => objectPooler = value; }
@@ -281,6 +285,7 @@ namespace AnyRPG {
             levelManager.Configure(this);
             inventoryManager.Configure(this);
             playerManager.Configure(this);
+            playerManagerServer.Configure(this);
             systemItemManager.Configure(this);
             systemAchievementManager.Configure(this);
             logManager.Configure(this);

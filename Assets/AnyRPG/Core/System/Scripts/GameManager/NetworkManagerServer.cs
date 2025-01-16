@@ -51,6 +51,9 @@ namespace AnyRPG {
 
         // game manager references
         private SaveManager saveManager = null;
+        private ChatCommandManager chatCommandManager = null;
+        private LogManager logManager = null;
+        private PlayerManagerServer playerManagerServer = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -63,6 +66,9 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             saveManager = systemGameManager.SaveManager;
+            chatCommandManager = systemGameManager.ChatCommandManager;
+            logManager = systemGameManager.LogManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
 
             networkController?.Configure(systemGameManager);
 
@@ -110,11 +116,13 @@ namespace AnyRPG {
                     // can't do anything without a token
                     return;
                 }
-                gameServerClient.SavePlayerCharacter(
-                    playerCharacterMonitor.clientId,
-                    loggedInAccounts[playerCharacterMonitor.clientId].token,
-                    playerCharacterMonitor.playerCharacterSaveData.PlayerCharacterId,
-                    playerCharacterMonitor.playerCharacterSaveData.SaveData);
+                if (clientMode == NetworkClientMode.MMO) {
+                    gameServerClient.SavePlayerCharacter(
+                        playerCharacterMonitor.clientId,
+                        loggedInAccounts[playerCharacterMonitor.clientId].token,
+                        playerCharacterMonitor.playerCharacterSaveData.PlayerCharacterId,
+                        playerCharacterMonitor.playerCharacterSaveData.SaveData);
+                }
             }
         }
 
@@ -248,18 +256,22 @@ namespace AnyRPG {
             );
             activePlayerCharacters.Add(playerCharacterSaveData.PlayerCharacterId, playerCharacterMonitor);
             activePlayerCharactersByClient.Add(clientId, playerCharacterMonitor);
+            playerManagerServer.AddActivePlayer(clientId, unitController);
         }
 
         public void StopMonitoringPlayerUnit(int playerCharacterId) {
             //Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({playerCharacterId})");
 
             if (activePlayerCharacters.ContainsKey(playerCharacterId)) {
+                playerManagerServer.RemoveActivePlayer(activePlayerCharacters[playerCharacterId].clientId);
+
                 activePlayerCharacters[playerCharacterId].StopMonitoring();
                 // flush data to database before stop monitoring
                 SavePlayerCharacter(activePlayerCharacters[playerCharacterId]);
                 activePlayerCharactersByClient.Remove(activePlayerCharacters[playerCharacterId].clientId);
                 activePlayerCharacters.Remove(playerCharacterId);
             }
+
         }
 
         public void ProcessLoadCharacterListResponse(int clientId, List<PlayerCharacterData> playerCharacters) {
@@ -483,18 +495,24 @@ namespace AnyRPG {
             if (loggedInAccounts.ContainsKey(clientId) == false) {
                 return;
             }
-            string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
+            logManager.WriteChatMessageServer(clientId, messageText);
+        }
 
-            networkController.AdvertiseSendSceneChatMessage(addedText, clientId);
+        public void AdvertiseSceneChatMessage(string messageText, int clientId) {
+            networkController.AdvertiseSendSceneChatMessage(messageText, clientId);
 
             if (activePlayerCharactersByClient.ContainsKey(clientId) == false) {
                 // no unit logged in
                 return;
             }
+            string addedText = $"{loggedInAccounts[clientId].username}: {messageText}\n";
 
-            activePlayerCharactersByClient[clientId].unitController.UnitEventController.NotifyOnBeginChatMessage(messageText);
+            activePlayerCharactersByClient[clientId].unitController.UnitEventController.NotifyOnBeginChatMessage(addedText);
         }
 
+        public void AdvertiseLoadScene(string sceneName, int clientId) {
+            networkController.AdvertiseLoadScene(sceneName, clientId);
+        }
 
         public static string ShortenStringOnNewline(string message, int messageLength) {
             // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
@@ -507,6 +525,7 @@ namespace AnyRPG {
         public int GetServerPort() {
             return networkController.GetServerPort();
         }
+
     }
 
 

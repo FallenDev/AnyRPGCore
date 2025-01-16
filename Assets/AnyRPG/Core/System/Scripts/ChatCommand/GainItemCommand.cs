@@ -30,12 +30,12 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
         }
 
-        public override void ExecuteCommand(string commandParameters) {
+        public override void ExecuteCommand(string commandParameters, int clientId) {
             //Debug.Log("GainItemCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             // add a fixed item
             if (fixedItem == true) {
-                AddItem(itemName);
+                AddItem(itemName, clientId);
                 return;
             }
 
@@ -45,14 +45,11 @@ namespace AnyRPG {
             }
 
             // add an item from parameters
-            AddItem(commandParameters);
+            AddItem(commandParameters, clientId);
         }
 
-        private void AddItem(string itemName) {
-            Item tmpItem = systemItemManager.GetNewResource(itemName);
-            if (tmpItem != null) {
-                playerManager.UnitController.CharacterInventoryManager.AddItem(tmpItem, false);
-            }
+        private void AddItem(string itemName, int clientId) {
+            playerManagerServer.AddItem(itemName, clientId);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

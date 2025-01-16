@@ -1063,7 +1063,7 @@ namespace AnyRPG {
         }
 
         public void HandleAbilityListChanged(AbilityProperties newAbility) {
-            Debug.Log("UIManager.HandleAbilityListChanged(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
+            //Debug.Log("UIManager.HandleAbilityListChanged(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
 
             // loop through ability bars and try to add ability
             if (actionBarManager != null) {

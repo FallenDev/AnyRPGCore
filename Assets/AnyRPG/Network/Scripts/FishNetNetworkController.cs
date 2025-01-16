@@ -291,7 +291,7 @@ namespace AnyRPG {
 
 
         public override GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId}, {parentTransform.gameObject.name})");
+            //Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId}, {parentTransform.gameObject.name})");
 
             clientConnector.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
             return null;
@@ -474,6 +474,10 @@ namespace AnyRPG {
 
         public override int GetServerPort() {
             return fishNetNetworkManager.TransportManager.Transport.GetPort();
+        }
+
+        public override void AdvertiseLoadScene(string sceneName, int clientId) {
+            clientConnector.AdvertiseLoadSceneServer(sceneName, clientId);
         }
 
         #endregion

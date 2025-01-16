@@ -6577,6 +6577,7 @@ GameObject:
   - component: {fileID: 3998034025469170594}
   - component: {fileID: 11118596274410494}
   - component: {fileID: 8065635434469254371}
+  - component: {fileID: 6522840028641832261}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6927,6 +6928,7 @@ MonoBehaviour:
   levelManager: {fileID: 1360646683156884458}
   inventoryManager: {fileID: 6961095826997836342}
   playerManager: {fileID: 5684895214070870786}
+  playerManagerServer: {fileID: 6522840028641832261}
   systemItemManager: {fileID: 3463012749454617670}
   systemAchievementManager: {fileID: 7942343010086851192}
   logManager: {fileID: 5686319901837456897}
@@ -7488,6 +7490,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkController: {fileID: 0}
+--- !u!114 &6522840028641832261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5684895214070870814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dc96cbb686c2574487b9f4d139847d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5742173228335772782
 GameObject:
   m_ObjectHideFlags: 0

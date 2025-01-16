@@ -142,6 +142,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityObjects += HandleSpawnAbilityObjectsServer;
             unitController.UnitEventController.OnDespawnAbilityObjects += HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs += HandleSpawnAbilityEffectPrefabsServer;
+            unitController.UnitEventController.OnGainXP += HandleGainXPServer;
+            unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -163,6 +165,23 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityObjects -= HandleSpawnAbilityObjectsServer;
             unitController.UnitEventController.OnDespawnAbilityObjects -= HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
+            unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
+            unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
+        }
+
+        [ObserversRpc]
+        private void HandleLevelChanged(int newLevel) {
+            unitController.CharacterStats.SetLevel(newLevel);
+        }
+
+        public void HandleGainXPServer(UnitController controller, int gainedXP, int currentXP) {
+            HandleGainXP(gainedXP, currentXP);
+        }
+
+        [ObserversRpc]
+        private void HandleGainXP(int gainedXP, int currentXP) {
+            unitController.CharacterStats.SetXP(currentXP);
+            unitController.UnitEventController.NotifyOnGainXP(gainedXP, currentXP);
         }
 
         public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {

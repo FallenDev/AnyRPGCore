@@ -465,7 +465,7 @@ namespace AnyRPG {
         }
 
         public bool AddNewAbility(AbilityProperties newAbility) {
-            Debug.Log($"ActionBarManager.AddNewAbility({ newAbility})");
+            //Debug.Log($"ActionBarManager.AddNewAbility({ newAbility})");
 
             bool returnValue = false;
             bool foundSlot = false;

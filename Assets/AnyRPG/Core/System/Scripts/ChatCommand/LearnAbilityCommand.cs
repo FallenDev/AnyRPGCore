@@ -27,12 +27,12 @@ namespace AnyRPG {
             //systemItemManager = systemGameManager.SystemItemManager;
         }
 
-        public override void ExecuteCommand(string commandParameters) {
+        public override void ExecuteCommand(string commandParameters, int clientId) {
             //Debug.Log("GainItemCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             // add a fixed item
             if (fixedAbility == true) {
-                LearnAbility(abilityName);
+                LearnAbility(abilityName, clientId);
                 return;
             }
 
@@ -42,14 +42,11 @@ namespace AnyRPG {
             }
 
             // add an item from parameters
-            LearnAbility(commandParameters);
+            LearnAbility(commandParameters, clientId);
         }
 
-        private void LearnAbility(string abilityName) {
-            Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
-            if (tmpAbility != null) {
-                playerManager.UnitController.CharacterAbilityManager.LearnAbility(tmpAbility.AbilityProperties);
-            }
+        private void LearnAbility(string abilityName, int clientId) {
+            playerManagerServer.LearnAbility(abilityName, clientId);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

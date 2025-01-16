@@ -44,7 +44,7 @@ namespace AnyRPG {
         public event System.Action<UnitController> OnBeginCastOnEnemy = delegate { };
         public event System.Action<float, float, float, float> OnCalculateRunSpeed = delegate { };
         public event System.Action<AbilityEffectContext> OnImmuneToEffect = delegate { };
-        public event System.Action<int> OnGainXP = delegate { };
+        public event System.Action<UnitController, int, int> OnGainXP = delegate { };
         public event System.Action<PowerResource, int> OnRecoverResource = delegate { };
         public event System.Action<int, int> OnPrimaryResourceAmountChanged = delegate { };
         public event System.Action OnEnterStealth = delegate { };
@@ -55,7 +55,7 @@ namespace AnyRPG {
         public event System.Action<Interactable> OnEnterCombat = delegate { };
         public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
         public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
-        public event System.Action<UnitController, float> OnKillEvent = delegate { };
+        public event System.Action<UnitController, UnitController, float> OnKillEvent = delegate { };
         public event System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
         public event System.Action<AbilityProperties> OnAbilityActionCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
@@ -190,8 +190,8 @@ namespace AnyRPG {
             OnEquipmentChanged(newEquipment, oldEquipment, slotIndex);
         }
 
-        public void NotifyOnKillEvent(UnitController sourceCharacter, float creditPercent) {
-            OnKillEvent(sourceCharacter, creditPercent);
+        public void NotifyOnKillEvent(UnitController killedCharacter, float creditPercent) {
+            OnKillEvent(unitController, killedCharacter, creditPercent);
         }
 
         public void NotifyOnReceiveCombatMiss(Interactable target, AbilityEffectContext abilityEffectContext) {
@@ -234,8 +234,8 @@ namespace AnyRPG {
             OnRecoverResource(powerResource, amount);
         }
 
-        public void NotifyOnGainXP(int xp) {
-            OnGainXP(xp);
+        public void NotifyOnGainXP(int gainedXP, int currentXP) {
+            OnGainXP(unitController, gainedXP, currentXP);
         }
 
         public void NotifyOnImmuneToEffect(AbilityEffectContext abilityEffectContext) {

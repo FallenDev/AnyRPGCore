@@ -1,0 +1,187 @@
+using AnyRPG;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace AnyRPG {
+    public class PlayerManagerServer : ConfiguredMonoBehaviour {
+
+        // clientId, UnitController
+        private Dictionary<int, UnitController> activePlayers = new Dictionary<int, UnitController>();
+        private Dictionary<UnitController, int> activePlayerLookup = new Dictionary<UnitController, int>();
+
+        protected bool eventSubscriptionsInitialized = false;
+
+        // game manager references
+        protected SaveManager saveManager = null;
+        protected SystemItemManager systemItemManager = null;
+        protected SystemDataFactory systemDataFactory = null;
+        protected NetworkManagerServer networkManagerServer = null;
+        protected LevelManager levelManager = null;
+
+        public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
+
+        public override void Configure(SystemGameManager systemGameManager) {
+            base.Configure(systemGameManager);
+
+            CreateEventSubscriptions();
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            saveManager = systemGameManager.SaveManager;
+            systemItemManager = systemGameManager.SystemItemManager;
+            systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            levelManager = systemGameManager.LevelManager;
+        }
+
+
+        private void CreateEventSubscriptions() {
+            //Debug.Log("PlayerManager.CreateEventSubscriptions()");
+            if (eventSubscriptionsInitialized) {
+                return;
+            }
+            eventSubscriptionsInitialized = true;
+        }
+
+        private void CleanupEventSubscriptions() {
+            //Debug.Log("PlayerManager.CleanupEventSubscriptions()");
+            if (!eventSubscriptionsInitialized) {
+                return;
+            }
+            /*
+            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelChanged -= PlayLevelUpEffects;
+            SystemEventManager.StopListening("OnPlayerDeath", HandlePlayerDeath);
+            */
+            eventSubscriptionsInitialized = false;
+        }
+
+        public void OnDisable() {
+            //Debug.Log("PlayerManager.OnDisable()");
+            if (SystemGameManager.IsShuttingDown) {
+                return;
+            }
+            CleanupEventSubscriptions();
+        }
+
+        public void AddActivePlayer(int clientId, UnitController unitController) {
+            Debug.Log($"PlayerManagerServer.AddActivePlayer({clientId})");
+
+            activePlayers.Add(clientId, unitController);
+            activePlayerLookup.Add(unitController, clientId);
+        }
+
+        public void MonitorPlayer(UnitController unitController) {
+            if (activePlayerLookup.ContainsKey(unitController) == false) {
+                return;
+            }
+            SubscribeToPlayerEvents(unitController);
+        }
+
+        public void RemoveActivePlayer(int clientId) {
+            if (ActivePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            UnsubscribeFromPlayerEvents(activePlayers[clientId]);
+            activePlayerLookup.Remove(activePlayers[clientId]);
+            activePlayers.Remove(clientId);
+        }
+
+        public void SubscribeToPlayerEvents(UnitController unitController) {
+            Debug.Log("PlayerManagerServer.SubscribeToPlayerEvents()");
+            unitController.UnitEventController.OnKillEvent += HandleKillEvent;
+        }
+
+        public void UnsubscribeFromPlayerEvents(UnitController unitController) {
+            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+            unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
+        }
+
+        public void HandleKillEvent(UnitController unitController, UnitController killedUnitController, float creditPercent) {
+            if (creditPercent == 0) {
+                return;
+            }
+            //Debug.Log($"{gameObject.name}: About to gain xp from kill with creditPercent: " + creditPercent);
+            GainXP(unitController, (int)(LevelEquations.GetXPAmountForKill(unitController.CharacterStats.Level, killedUnitController, systemConfigurationManager) * creditPercent));
+        }
+
+        public void GainXP(int amount, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == true) {
+                GainXP(activePlayers[clientId], amount);
+            }
+        }
+
+        public void GainXP(UnitController unitController, int amount) {
+            unitController.CharacterStats.GainXP(amount);
+        }
+
+        public void AddCurrency(Currency currency, int amount, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].CharacterCurrencyManager.AddCurrency(currency, amount);
+
+        }
+
+        public void AddItem(string itemName, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+
+            Item tmpItem = systemItemManager.GetNewResource(itemName);
+            if (tmpItem != null) {
+                activePlayers[clientId].CharacterInventoryManager.AddItem(tmpItem, false);
+            }
+        }
+
+        public void BeginAction(AnimatedAction animatedAction, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].UnitActionManager.BeginAction(animatedAction);
+
+        }
+
+        public void LearnAbility(string abilityName, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
+            if (tmpAbility != null) {
+                activePlayers[clientId].CharacterAbilityManager.LearnAbility(tmpAbility.AbilityProperties);
+            }
+
+        }
+
+        public void SetLevel(int newLevel, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            CharacterStats characterStats = activePlayers[clientId].CharacterStats;
+            newLevel = Mathf.Clamp(newLevel, characterStats.Level, systemConfigurationManager.MaxLevel);
+            if (newLevel > characterStats.Level) {
+                while (characterStats.Level < newLevel) {
+                    characterStats.GainLevel();
+                }
+            }
+        }
+
+        public void LoadScene(string sceneName, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            if (systemGameManager.GameMode == GameMode.Local) {
+                levelManager.LoadLevel(sceneName);
+            } else if (networkManagerServer.ServerModeActive) {
+                networkManagerServer.AdvertiseLoadScene(sceneName, clientId);
+            }
+        }
+    }
+
+}

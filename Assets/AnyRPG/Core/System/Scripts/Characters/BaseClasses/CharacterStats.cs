@@ -1025,24 +1025,37 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}: GainXP(" + xp + ")");
             currentXP += xp;
             int overflowXP = 0;
-            while (currentXP - LevelEquations.GetXPNeededForLevel(currentLevel, systemConfigurationManager) >= 0) {
-                overflowXP = currentXP - LevelEquations.GetXPNeededForLevel(currentLevel, systemConfigurationManager);
-                GainLevel();
+            int initialLevel = currentLevel;
+            int levelGains = 0;
+            //adjust current xp before sending notification
+            while (currentXP - LevelEquations.GetXPNeededForLevel(initialLevel + levelGains, systemConfigurationManager) >= 0) {
+                overflowXP = currentXP - LevelEquations.GetXPNeededForLevel(initialLevel + levelGains, systemConfigurationManager);
+                levelGains++;
                 currentXP = overflowXP;
             }
-            unitController.UnitEventController.NotifyOnGainXP(xp);
+            unitController.UnitEventController.NotifyOnGainXP(xp, currentXP);
+            while (levelGains > 0) {
+                GainLevel();
+                levelGains--;
+            }
+        }
+
+        public void SetXP(int xp) {
+            currentXP = xp;
         }
 
         public void GainLevel() {
             // make gain level sound and graphic
-            SetLevel(currentLevel + 1);
-            //unitController.CharacterSkillManager.UpdateSkillList(currentLevel);
-            //unitController.CharacterAbilityManager.UpdateAbilityList(currentLevel);
-            //unitController.CharacterRecipeManager.UpdateRecipeList(currentLevel);
+            SetLevelInternal(currentLevel + 1);
             unitController.UnitEventController.NotifyOnLevelChanged(currentLevel);
         }
 
         public void SetLevel(int newLevel) {
+            SetLevelInternal(newLevel);
+            unitController.UnitEventController.NotifyOnLevelChanged(currentLevel);
+        }
+
+        public void SetLevelInternal(int newLevel) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.SetLevel(" + newLevel + ")");
 
             Dictionary<string, float> multiplierValues = new Dictionary<string, float>();

@@ -340,6 +340,7 @@ namespace AnyRPG {
 
         public void ParseChatMessage(string chatMessage) {
             textInput.text = "";
+            /*
             if (chatMessage.StartsWith("/") == true ) {
                 chatCommandManager.ParseChatCommand(chatMessage.Substring(1));
                 return;
@@ -349,7 +350,10 @@ namespace AnyRPG {
                 networkManagerClient.SendSceneChatMessage(chatMessage);
             } else {
                 HandleWriteChatMessage(chatMessage);
+                logManager.WriteChatMessage(chatMessage);
             }
+            */
+            logManager.RequestChatMessageClient(chatMessage);
         }
 
         public override void ReceiveClosedWindowNotification() {

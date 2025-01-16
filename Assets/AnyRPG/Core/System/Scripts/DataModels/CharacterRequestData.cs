@@ -6,6 +6,7 @@ namespace AnyRPG {
     public class CharacterRequestData {
 
         public int spawnRequestId;
+        public int clientId;
         public ICharacterRequestor characterRequestor;
         public GameMode requestMode;
         //public UnitProfile unitProfile;

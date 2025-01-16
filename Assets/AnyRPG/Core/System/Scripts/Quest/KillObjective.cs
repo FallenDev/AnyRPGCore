@@ -21,7 +21,7 @@ namespace AnyRPG {
             }
         }
 
-        public void UpdateKillCount(UnitController unitController, float creditPercent) {
+        public void UpdateKillCount(UnitController unitController, UnitController killedUnitController, float creditPercent) {
             //Debug.Log("KillObjective.UpdateKillCount()");
 
             bool completeBefore = IsComplete;
@@ -30,7 +30,7 @@ namespace AnyRPG {
             }
 
             // INVESTIGATE IF STRING MATCH CAN BE REPLACED WITH TYPE.GETTYPE DIRECT MATCH
-            if (unitController.GetType() == Type.GetType(targetName) || SystemDataUtility.MatchResource(unitController.BaseCharacter.CharacterName, targetName) || SystemDataUtility.MatchResource(unitController.BaseCharacter.Faction.ResourceName, targetName)) {
+            if (killedUnitController.GetType() == Type.GetType(targetName) || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.CharacterName, targetName) || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.Faction.ResourceName, targetName)) {
                 CurrentAmount++;
                 questBase.CheckCompletion();
                 if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount != 0) {

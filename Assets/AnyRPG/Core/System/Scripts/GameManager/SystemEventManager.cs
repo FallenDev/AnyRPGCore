@@ -109,7 +109,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAbilityListChanged(AbilityProperties newAbility) {
-            Debug.Log($"SystemEventManager.NotifyOnAbilityListChanged({newAbility})");
+            //Debug.Log($"SystemEventManager.NotifyOnAbilityListChanged({newAbility})");
 
             OnAbilityListChanged(newAbility);
             //OnPrerequisiteUpdated();

@@ -25,6 +25,8 @@ namespace AnyRPG {
         private ObjectPooler objectPooler = null;
         private NetworkManagerClient networkManager = null;
         private PlayerManager playerManager = null;
+        private NetworkManagerServer networkManagerServer = null;
+        private PlayerManagerServer playerManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -35,6 +37,8 @@ namespace AnyRPG {
             objectPooler = systemGameManager.ObjectPooler;
             networkManager = systemGameManager.NetworkManagerClient;
             playerManager = systemGameManager.PlayerManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public int GetSpawnRequestId() {
@@ -131,7 +135,7 @@ namespace AnyRPG {
         }
 
         public void CompleteModelRequest(int spawnRequestId, UnitController unitController, bool isOwner) {
-            Debug.Log($"CharacterManager.CompleteModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner})");
+            //Debug.Log($"CharacterManager.CompleteModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner})");
 
             CharacterRequestData characterRequestData;
             if (isOwner && unitSpawnRequests.ContainsKey(spawnRequestId)) {
@@ -189,8 +193,14 @@ namespace AnyRPG {
                     //Debug.Log($"CharacterManager.ConfigureUnitController({unitProfile.ResourceName}, {prefabObject.name}) renaming gameobject from {unitController.gameObject.name}");
                     unitController.gameObject.name = characterRequestData.characterConfigurationRequest.unitProfile.ResourceName.Replace(" ", "") + systemGameManager.GetSpawnCount();
                     unitController.Configure(systemGameManager);
-                    if (isOwner && characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
-                        playerManager.SetUnitController(unitController);
+                    if (characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
+                        if (isOwner) {
+                            playerManager.SetUnitController(unitController);
+                            playerManagerServer.AddActivePlayer(0, unitController);
+                            playerManagerServer.MonitorPlayer(unitController);
+                        } else if (networkManagerServer.ServerModeActive) {
+                            playerManagerServer.MonitorPlayer(unitController);
+                        }
                     }
                     unitController.SetCharacterConfiguration(characterRequestData);
 

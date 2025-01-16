@@ -30,12 +30,12 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override void ExecuteCommand(string commandParameters) {
+        public override void ExecuteCommand(string commandParameters, int clientId) {
             //Debug.Log("LoadSceneCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             // load a fixed scene
             if (fixedScene == true) {
-                levelManager.LoadLevel(sceneName);
+                LoadScene(sceneName, clientId);
                 return;
             }
 
@@ -45,11 +45,12 @@ namespace AnyRPG {
             }
 
             // load a scene from parameters
-            LoadScene(commandParameters);
+            LoadScene(commandParameters, clientId);
         }
 
-        private void LoadScene(string sceneName) {
-            levelManager.LoadLevel(sceneName);
+        private void LoadScene(string sceneName, int clientId) {
+            
+            playerManagerServer.LoadScene(sceneName, clientId);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

@@ -292,7 +292,7 @@ namespace AnyRPG {
 
         public void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
             OnSendSceneChatMessage(messageText, clientId);
-            logManager.WriteChatMessage(messageText);
+            logManager.WriteChatMessageClient(messageText);
         }
 
         public void AdvertiseLobbyLogin(int clientId, string userName) {
@@ -375,6 +375,9 @@ namespace AnyRPG {
             OnSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
 
+        public void AdvertiseLoadSceneClient(string sceneName) {
+            levelManager.LoadLevel(sceneName);
+        }
     }
 
     public enum NetworkClientMode { Lobby, MMO }

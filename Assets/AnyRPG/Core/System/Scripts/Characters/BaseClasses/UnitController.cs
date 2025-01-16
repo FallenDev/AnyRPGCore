@@ -701,7 +701,7 @@ namespace AnyRPG {
             SetUnitControllerMode(UnitControllerMode.Pet);
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
             if (masterUnitController != null) {
-                characterStats.SetLevel(masterUnitController.CharacterStats.Level);
+                characterStats.SetLevelInternal(masterUnitController.CharacterStats.Level);
                 ApplyControlEffects(masterUnitController);
                 if (enableMode == true) {
                     ChangeState(new IdleState());
@@ -1152,7 +1152,7 @@ namespace AnyRPG {
             baseCharacter.CapabilityConsumerProcessor.UpdateCapabilityProviderList();
             baseCharacter.UpdateStatProviderList();
 
-            characterStats.SetLevel(characterConfigurationRequest.unitLevel);
+            characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
 
             footstepType = unitProfile.FootstepType;
 

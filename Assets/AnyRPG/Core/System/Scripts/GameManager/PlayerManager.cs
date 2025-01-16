@@ -62,6 +62,9 @@ namespace AnyRPG {
         // a reference to the active unit.  This could change in cases of both mind control and mounted states
         private UnitController activeUnitController = null;
 
+        // for network mode
+        private List<UnitController> activePlayers = new List<UnitController>();
+
         // track if subscription to target ready should happen
         // only used when loading new level or respawning
         private bool subscribeToTargetReady = false;
@@ -90,6 +93,7 @@ namespace AnyRPG {
         protected CharacterManager characterManager = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected PlayerManagerServer playerManagerServer = null;
 
         public GameObject PlayerConnectionObject { get => playerConnectionObject; set => playerConnectionObject = value; }
         public float MaxMovementSpeed { get => maxMovementSpeed; set => maxMovementSpeed = value; }
@@ -133,6 +137,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public void PerformRequiredPropertyChecks() {
@@ -510,11 +515,13 @@ namespace AnyRPG {
             activeUnitController = unitController;
 
             if (unitController == null) {
+                playerManagerServer.RemoveActivePlayer(0);
                 playerUnitSpawned = false;
                 return;
             }
             SubscribeToPlayerEvents();
             unitController.CharacterUnit.SetCharacterStatsCapabilities();
+            //playerManagerServer.AddActivePlayer(0, unitController);
         }
 
         public void HandleModelReady() {
@@ -648,7 +655,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRecoverResource += HandleRecoverResource;
             unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChanged;
             unitController.UnitEventController.OnCalculateRunSpeed += HandleCalculateRunSpeed;
-            unitController.UnitEventController.OnKillEvent += HandleKillEvent;
             unitController.UnitEventController.OnEnterCombat += HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
@@ -684,7 +690,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRecoverResource -= HandleRecoverResource;
             unitController.UnitEventController.OnResourceAmountChanged -= HandleResourceAmountChanged;
             unitController.UnitEventController.OnCalculateRunSpeed -= HandleCalculateRunSpeed;
-            unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
             unitController.UnitEventController.OnEnterCombat -= HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
@@ -860,15 +865,6 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleKillEvent(UnitController sourceCharacter, float creditPercent) {
-            if (creditPercent == 0) {
-                return;
-            }
-            //Debug.Log($"{gameObject.name}: About to gain xp from kill with creditPercent: " + creditPercent);
-            UnitController.CharacterStats.GainXP((int)(LevelEquations.GetXPAmountForKill(unitController.CharacterStats.Level, sourceCharacter, systemConfigurationManager) * creditPercent));
-        }
-
-
         public void HandleRecoverResource(PowerResource powerResource, int amount) {
             if (logManager != null) {
                 logManager.WriteCombatMessage("You gain " + amount + " " + powerResource.DisplayName);
@@ -895,13 +891,13 @@ namespace AnyRPG {
             statusEffectNode.StatusEffect.NotifyOnApply();
         }
 
-        public void HandleGainXP(int xp) {
+        public void HandleGainXP(UnitController unitController, int gainedXP, int currentXP) {
             if (logManager != null) {
-                logManager.WriteSystemMessage("You gain " + xp + " experience");
+                logManager.WriteSystemMessage("You gain " + gainedXP + " experience");
             }
             if (activeUnitController != null) {
                 if (combatTextManager != null) {
-                    combatTextManager.SpawnCombatText(activeUnitController, xp, CombatTextType.gainXP, CombatMagnitude.normal, null);
+                    combatTextManager.SpawnCombatText(activeUnitController, gainedXP, CombatTextType.gainXP, CombatMagnitude.normal, null);
                 }
             }
             SystemEventManager.TriggerEvent("OnXPGained", new EventParamProperties());

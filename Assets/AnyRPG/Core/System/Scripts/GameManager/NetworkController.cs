@@ -61,6 +61,7 @@ namespace AnyRPG {
         public abstract void AdvertiseStartLobbyGame(int gameId, string sceneName);
         public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready);
         public abstract int GetServerPort();
+        public abstract void AdvertiseLoadScene(string sceneName, int clientId);
     }
 
 }

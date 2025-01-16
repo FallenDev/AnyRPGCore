@@ -517,6 +517,14 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
         }
 
+        public void AdvertiseLoadSceneServer(string sceneName, int clientId) {
+            AdvertiseLoadSceneClient(fishNetNetworkManager.ServerManager.Clients[clientId], sceneName);
+        }
+
+        [TargetRpc]
+        public void AdvertiseLoadSceneClient(NetworkConnection networkConnection, string sceneName) {
+            networkManagerClient.AdvertiseLoadSceneClient(sceneName);
+        }
 
         /*
         public override void OnStartServer() {

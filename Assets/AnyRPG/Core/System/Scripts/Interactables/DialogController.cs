@@ -105,7 +105,7 @@ namespace AnyRPG {
                             }
                         }
                         if (writeMessage && logManager != null) {
-                            logManager.WriteChatMessage(dialogNode.Description);
+                            logManager.RequestChatMessageClient(dialogNode.Description);
                         }
 
                         dialogNode.Shown = true;

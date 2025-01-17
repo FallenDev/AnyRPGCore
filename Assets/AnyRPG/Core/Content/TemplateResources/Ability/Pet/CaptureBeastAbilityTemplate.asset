@@ -64,6 +64,7 @@ MonoBehaviour:
     abilityCoolDown: 0
     coolDownOnCast: 0
     useAbilityEffectTargetting: 1
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 0
@@ -87,10 +88,12 @@ MonoBehaviour:
     tickRate: 1
     inlineChannelingEffects:
     - rid: 3214878833861722328
-    channeledAbilityEffectnames: []
+    channeledAbilityEffectnames:
+    - Capture Beast Instant
     inlineAbilityEffects:
     - rid: 3214878833861722329
-    abilityEffectNames: []
+    castEndAbilityEffectNames:
+    - Capture Beast CapturePet
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

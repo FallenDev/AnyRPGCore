@@ -123,7 +123,7 @@ namespace AnyRPG {
             ability.AbilityPrefabSource = AbilityPrefabSource.Ability;
             ability.HoldableObjectList = holdableObjectList;
             ability.AnimationProfileName = animationProfileName;
-            ability.CastingAnimationClip = animationClip;
+            //ability.CastingAnimationClip = animationClip;
             ability.UseAnimationCastTime = true;
             ability.CastingAudioClip = castingAudioClip;
             ability.CastingAudioProfileName = castingAudioProfileName;

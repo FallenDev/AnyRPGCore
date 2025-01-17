@@ -64,6 +64,7 @@ MonoBehaviour:
     abilityCoolDown: 10
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 0
@@ -85,69 +86,8 @@ MonoBehaviour:
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
     tickRate: 1
-    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    inlineAbilityEffects:
-    - rid: 3214878833861722230
-    abilityEffectNames: []
-    actionHitAbilityEffectNames: []
+    castEndAbilityEffectNames: []
+    actionHitAbilityEffectNames:
+    - Sneak Attack Attack
     actionEndAbilityEffectNames: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 3214878833861722230
-      type: {class: AttackEffectConfig, ns: AnyRPG, asm: Assembly-CSharp}
-      data:
-        effectProperties:
-          targetOptions:
-            requireTarget: 1
-            requireLineOfSight: 0
-            requireLiveTarget: 1
-            requireDeadTarget: 0
-            canCastOnSelf: 0
-            canCastOnOthers: 1
-            canCastOnEnemy: 1
-            canCastOnNeutral: 0
-            canCastOnFriendly: 0
-            autoSelfCast: 0
-            unitTypeRestrictions: []
-            useMeleeRange: 1
-            maxRange: 0
-            lineOfSightSourceLocation: 0
-            targetRangeSourceLocation: 0
-          chanceToCast: 100
-          onHitAudioProfileNames: []
-          randomAudioProfiles: 0
-          hitAbilityEffectNames: []
-          inputMultiplier: 1
-          threatMultiplier: 1
-          abilityPrefabSource: 1
-          randomPrefabs: 0
-          abilityObjectList:
-          - holdableObjectName: Blue Hit
-            useUniversalAttachment: 0
-            attachmentName: 
-          prefabSpawnLocation: 2
-          prefabDestroyDelay: 0
-          destroyOnEndCast: 0
-          tickRate: 0
-          castZeroTick: 0
-          tickAbilityEffectNames: []
-          onTickAudioProfileNames: []
-          randomTickAudioProfiles: 0
-          completeAbilityEffectNames: []
-          defaultPrefabLifetime: 10
-          allowCriticalStrike: 1
-          resourceAmounts:
-          - resourceName: Health
-            inputRemap: 
-            addPower: 1
-            minAmount: 0
-            baseAmount: 0
-            amountPerLevel: 5
-            maxAmount: 0
-            ignoreCastTime: 0
-          ignoreAccuracy: 0
-          weaponAttack: 1
-          damageType: 1
-          ignoreArmorPercent: 0

@@ -10,7 +10,7 @@ namespace AnyRPG {
     public class StatusEffect : AbilityEffect /*, ILearnable*/ {
 
         [SerializeField]
-        private StatusEffectProperties statusEffectProperties = new StatusEffectProperties();
+        public StatusEffectProperties statusEffectProperties = new StatusEffectProperties();
 
         public override AbilityEffectProperties AbilityEffectProperties { get => statusEffectProperties; }
 

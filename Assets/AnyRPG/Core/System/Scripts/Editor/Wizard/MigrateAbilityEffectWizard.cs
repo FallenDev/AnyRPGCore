@@ -15,7 +15,7 @@ namespace AnyRPG {
         public List<Ability> abilities = new List<Ability>();
         //public List<GameObject> abilityObjects = new List<GameObject>();
 
-        [MenuItem("Tools/AnyRPG/Wizard/Utility/Migrate Ability Effect Wizard")]
+        //[MenuItem("Tools/AnyRPG/Wizard/Utility/Migrate Ability Effect Wizard")]
         public static void CreateWizard() {
             ScriptableWizard.DisplayWizard<MigrateAbilityEffectWizard>("New Migrate Ability Effect Wizard", "Convert");
         }

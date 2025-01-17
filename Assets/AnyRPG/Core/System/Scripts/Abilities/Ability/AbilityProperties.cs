@@ -59,9 +59,9 @@ namespace AnyRPG {
 
         [Header("Animation")]
 
-        [Tooltip("The animation clip the character will perform while casting")]
-        [SerializeField]
-        protected AnimationClip animationClip = null;
+        //[Tooltip("The animation clip the character will perform while casting")]
+        //[SerializeField]
+        //protected AnimationClip animationClip = null;
 
         [Tooltip("The name of an animation profile to get animations for the character to perform while casting this ability")]
         [SerializeField]
@@ -256,25 +256,29 @@ namespace AnyRPG {
 
         [Header("Chanelling Effects")]
 
+        /*
         [Tooltip("During casting, these ability effects will be triggered on every tick.")]
         [SerializeReference]
         [SerializeReferenceButton]
-        protected List<AbilityEffectConfig> inlineChannelingEffects = new List<AbilityEffectConfig>();
+        public List<AbilityEffectConfig> inlineChannelingEffects = new List<AbilityEffectConfig>();
+        */
 
         [Tooltip("During casting, these ability effects will be triggered on every tick.")]
         [SerializeField]
         [ResourceSelector(resourceType = typeof(AbilityEffect))]
-        protected List<string> channeledAbilityEffectnames = new List<string>();
+        public List<string> channeledAbilityEffectnames = new List<string>();
 
         protected List<AbilityEffectProperties> channeledAbilityEffects = new List<AbilityEffectProperties>();
 
 
         [Header("Cast Complete Ability Effects")]
 
+        /*
         [Tooltip("When casting is complete, these ability effects will be triggered.")]
         [SerializeReference]
         [SerializeReferenceButton]
-        protected List<AbilityEffectConfig> inlineAbilityEffects = new List<AbilityEffectConfig>();
+        public List<AbilityEffectConfig> inlineAbilityEffects = new List<AbilityEffectConfig>();
+        */
 
         [Tooltip("When casting is complete, these ability effects will be triggered.")]
         [FormerlySerializedAs("abilityEffectNames")]
@@ -321,9 +325,8 @@ namespace AnyRPG {
         public bool UseWeaponSkillAttackVoiceSetting { get => useWeaponSkillAttackVoiceSetting; set => useWeaponSkillAttackVoiceSetting = value; }
 
 
-
+        /*
         public AnimationClip CastingAnimationClip {
-            /*
             get {
                 if (animationClip != null) {
                     return animationClip;
@@ -334,11 +337,11 @@ namespace AnyRPG {
                 }
                 return null;
             }
-            */
             set {
                 animationClip = value;
             }
         }
+*/
         public int RequiredLevel { get => requiredLevel; }
         public bool AutoAddToBars { get => autoAddToBars; }
         public bool UseableWithoutLearning { get => useableWithoutLearning; set => useableWithoutLearning = value; }
@@ -378,9 +381,11 @@ namespace AnyRPG {
         
         public List<AnimationClip> CastClips {
             get {
+                /*
                 if (animationClip != null) {
                     return new List<AnimationClip>() { animationClip };
                 }
+                */
                 if (animationProfile != null) {
                     return animationProfile.AnimationProps.CastClips;
                 }
@@ -1389,12 +1394,13 @@ namespace AnyRPG {
             }
 
 
-
+            /*
             // add inline channeled effects
             foreach (AbilityEffectConfig abilityEffectConfig in inlineChannelingEffects) {
                 abilityEffectConfig.SetupScriptableObjects(systemGameManager, this);
                 channeledAbilityEffects.Add(abilityEffectConfig.AbilityEffectProperties);
             }
+            */
 
             // add named channeled effects
             if (channeledAbilityEffectnames != null) {
@@ -1408,6 +1414,7 @@ namespace AnyRPG {
                 }
             }
 
+            /*
             // add inline cast end effects
             foreach (AbilityEffectConfig abilityEffectConfig in inlineAbilityEffects) {
                 if (abilityEffectConfig != null) {
@@ -1417,6 +1424,7 @@ namespace AnyRPG {
                     Debug.LogWarning("Null inline AbilityEffect detected while initializing BaseAbility Properties for " + describable.ResourceName);
                 }
             }
+            */
 
             // add named cast end effects
             if (AbilityEffectNames != null) {

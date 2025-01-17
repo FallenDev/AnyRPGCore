@@ -439,6 +439,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleClearCastingClient() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearCastingClient()");
+
             unitController.UnitAnimator.ClearCasting();
         }
 

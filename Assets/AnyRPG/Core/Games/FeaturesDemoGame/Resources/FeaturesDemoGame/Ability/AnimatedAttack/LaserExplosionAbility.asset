@@ -63,6 +63,7 @@ MonoBehaviour:
     abilityCoolDown: 6
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 1

@@ -66,6 +66,7 @@ MonoBehaviour:
     abilityCoolDown: 0
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 0
       requireLineOfSight: 0
@@ -91,7 +92,8 @@ MonoBehaviour:
     channeledAbilityEffectnames: []
     inlineAbilityEffects:
     - rid: 3214878833861722255
-    abilityEffectNames: []
+    castEndAbilityEffectNames:
+    - Meteor Shower Rain
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

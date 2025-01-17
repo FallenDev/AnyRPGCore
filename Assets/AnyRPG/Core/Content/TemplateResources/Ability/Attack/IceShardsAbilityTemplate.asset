@@ -69,6 +69,7 @@ MonoBehaviour:
     abilityCoolDown: 0
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 0
       requireLineOfSight: 0
@@ -92,9 +93,10 @@ MonoBehaviour:
     tickRate: 0.5
     inlineChannelingEffects:
     - rid: 3214878833861722339
-    channeledAbilityEffectnames: []
+    channeledAbilityEffectnames:
+    - Ice Shards AOE
     inlineAbilityEffects: []
-    abilityEffectNames: []
+    castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

@@ -528,7 +528,8 @@ namespace AnyRPG {
         */
 
         public void PerformAbilityCast(AbilityProperties baseAbility, int clipIndex) {
-            //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.PerformAbilityCast({baseAbility.ResourceName})");
+
             if (animator == null) {
                 return;
             }
@@ -604,7 +605,8 @@ namespace AnyRPG {
         }
 
         public void ClearCasting() {
-            //Debug.Log($"{gameObject.name}.CharacterAnimator.ClearCasting()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.ClearCasting()");
+
             unitController.UnitEventController.NotifyOnAnimatorClearAbilityCast();
             if (unitController.IsOwner) {
                 SetCasting(false);

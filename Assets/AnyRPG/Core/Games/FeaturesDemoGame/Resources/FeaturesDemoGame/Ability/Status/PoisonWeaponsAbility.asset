@@ -64,6 +64,7 @@ MonoBehaviour:
     abilityCoolDown: 0
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 0
@@ -88,7 +89,7 @@ MonoBehaviour:
     inlineChannelingEffects: []
     channeledAbilityEffectnames: []
     inlineAbilityEffects: []
-    abilityEffectNames:
+    castEndAbilityEffectNames:
     - Poison Weapons
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []

@@ -66,6 +66,7 @@ MonoBehaviour:
     abilityCoolDown: 10
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 0
@@ -89,9 +90,10 @@ MonoBehaviour:
     tickRate: 0.5
     inlineChannelingEffects:
     - rid: 3214878833861722334
-    channeledAbilityEffectnames: []
+    channeledAbilityEffectnames:
+    - Dragon Breath AOE
     inlineAbilityEffects: []
-    abilityEffectNames: []
+    castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

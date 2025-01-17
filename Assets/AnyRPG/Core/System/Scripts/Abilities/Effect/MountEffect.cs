@@ -13,7 +13,7 @@ namespace AnyRPG {
     public class MountEffect : AbilityEffect {
 
         [SerializeField]
-        private MountEffectProperties mountEffectProperties = new MountEffectProperties();
+        public MountEffectProperties mountEffectProperties = new MountEffectProperties();
 
         public override AbilityEffectProperties AbilityEffectProperties { get => mountEffectProperties; }
 

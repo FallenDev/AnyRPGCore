@@ -66,6 +66,7 @@ MonoBehaviour:
     abilityCoolDown: 0
     coolDownOnCast: 0
     useAbilityEffectTargetting: 0
+    abilityEffectTargetStage: 1
     targetOptions:
       requireTarget: 1
       requireLineOfSight: 0
@@ -89,9 +90,10 @@ MonoBehaviour:
     tickRate: 1
     inlineChannelingEffects:
     - rid: 3214878833861722340
-    channeledAbilityEffectnames: []
+    channeledAbilityEffectnames:
+    - Life Drain Channeled
     inlineAbilityEffects: []
-    abilityEffectNames: []
+    castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
   references:

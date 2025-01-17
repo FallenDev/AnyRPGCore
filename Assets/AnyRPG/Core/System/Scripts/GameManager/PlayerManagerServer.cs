@@ -99,7 +99,7 @@ namespace AnyRPG {
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
-            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+            Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
         }
 
@@ -181,6 +181,52 @@ namespace AnyRPG {
             } else if (networkManagerServer.ServerModeActive) {
                 networkManagerServer.AdvertiseLoadScene(sceneName, clientId);
             }
+        }
+
+        public void Teleport(UnitController unitController, TeleportEffectProperties teleportEffectProperties) {
+            StartCoroutine(TeleportDelay(unitController, teleportEffectProperties));
+        }
+
+
+        // delay the teleport by one frame so abilities can finish up without the source character becoming null
+        public IEnumerator TeleportDelay (UnitController unitController, TeleportEffectProperties teleportEffectProperties) {
+            yield return null;
+            if (unitController != null) {
+                TeleportInternal(unitController, teleportEffectProperties);
+            }
+        }
+
+        private void TeleportInternal(UnitController unitController, TeleportEffectProperties teleportEffectProperties) {
+            if (networkManagerServer.ServerModeActive == true) {
+                if (activePlayerLookup.ContainsKey(unitController) == false) {
+                    return;
+                }
+                networkManagerServer.AdvertiseTeleport(activePlayerLookup[unitController], teleportEffectProperties);
+                return;
+            }
+
+            // local mode active, continue with teleport
+            if (teleportEffectProperties.levelName != null) {
+                if (teleportEffectProperties.overrideSpawnDirection == true) {
+                    levelManager.SetSpawnRotationOverride(teleportEffectProperties.spawnForwardDirection);
+                }
+                if (teleportEffectProperties.overrideSpawnLocation == true) {
+                    levelManager.LoadLevel(teleportEffectProperties.levelName, teleportEffectProperties.spawnLocation);
+                } else {
+                    if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
+                        levelManager.OverrideSpawnLocationTag = teleportEffectProperties.locationTag;
+                    }
+                    levelManager.LoadLevel(teleportEffectProperties.levelName);
+                }
+            }
+        }
+
+        public void DespawnPlayerUnit(int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].Despawn(0, false, true);
+            RemoveActivePlayer(clientId);
         }
     }
 

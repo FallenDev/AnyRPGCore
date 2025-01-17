@@ -117,6 +117,8 @@ namespace AnyRPG {
         #region EventNotifications
 
         public void NotifyOnDespawn(UnitController despawnController) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawn()");
+
             OnDespawn(despawnController);
         }
 
@@ -491,6 +493,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityAction() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
+
             OnAnimatorClearAbilityAction();
         }
 

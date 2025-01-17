@@ -54,6 +54,7 @@ namespace AnyRPG {
         private ChatCommandManager chatCommandManager = null;
         private LogManager logManager = null;
         private PlayerManagerServer playerManagerServer = null;
+        private CharacterManager characterManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -69,6 +70,7 @@ namespace AnyRPG {
             chatCommandManager = systemGameManager.ChatCommandManager;
             logManager = systemGameManager.LogManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
+            characterManager = systemGameManager.CharacterManager;
 
             networkController?.Configure(systemGameManager);
 
@@ -186,17 +188,19 @@ namespace AnyRPG {
             gameServerClient.DeletePlayerCharacter(clientId, loggedInAccounts[clientId].token, playerCharacterId);
         }
 
-        public void ProcessStopServer(UnitController unitController) {
+        public void ProcessStopNetworkUnitServer(UnitController unitController) {
             Debug.Log($"NetworkManagerServer.ProcessStopServer({unitController.gameObject.name})");
 
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
 
+            characterManager.ProcessStopNetworkUnit(unitController);
+
             foreach (int playerCharacterId in activePlayerCharacters.Keys) {
                 if (activePlayerCharacters[playerCharacterId].unitController == unitController) {
                     StopMonitoringPlayerUnit(playerCharacterId);
-                    unitController.Despawn(0f, false, true);
+                    //unitController.Despawn(0f, false, true);
                     break;
                 }
             }
@@ -511,6 +515,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseLoadScene(string sceneName, int clientId) {
+            playerManagerServer.DespawnPlayerUnit(clientId);
             networkController.AdvertiseLoadScene(sceneName, clientId);
         }
 
@@ -526,6 +531,14 @@ namespace AnyRPG {
             return networkController.GetServerPort();
         }
 
+        public void AdvertiseTeleport(int clientId, TeleportEffectProperties teleportEffectProperties) {
+            playerManagerServer.DespawnPlayerUnit(clientId);
+            networkController.AdvertiseLoadScene(teleportEffectProperties.LevelName, clientId);
+        }
+
+        public void ReturnObjectToPool(GameObject returnedObject) {
+            networkController.ReturnObjectToPool(returnedObject);
+        }
     }
 
 

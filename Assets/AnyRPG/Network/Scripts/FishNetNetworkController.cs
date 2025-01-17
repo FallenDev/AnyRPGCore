@@ -480,6 +480,10 @@ namespace AnyRPG {
             clientConnector.AdvertiseLoadSceneServer(sceneName, clientId);
         }
 
+        public override void ReturnObjectToPool(GameObject returnedObject) {
+            clientConnector.ReturnObjectToPool(returnedObject);
+        }
+
         #endregion
 
     }

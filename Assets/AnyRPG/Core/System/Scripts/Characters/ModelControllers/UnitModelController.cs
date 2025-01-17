@@ -33,6 +33,9 @@ namespace AnyRPG {
         // game manager references
         private ObjectPooler objectPooler = null;
         private UIManager uIManager = null;
+        private NetworkManagerServer networkManagerServer = null;
+        private PlayerManager playerManager = null;
+        private CharacterManager characterManager = null;
 
         public ModelAppearanceController ModelAppearanceController { get => modelAppearanceController; }
         public MecanimModelController MecanimModelController { get => mecanimModelController; }
@@ -52,6 +55,9 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             uIManager = systemGameManager.UIManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            playerManager = systemGameManager.PlayerManager;
+            characterManager = systemGameManager.CharacterManager;
         }
 
         public void Initialize() {
@@ -268,7 +274,19 @@ namespace AnyRPG {
             mecanimModelController.DespawnModel();
             modelAppearanceController.DespawnModel();
             if (unitController.UnitProfile?.UnitPrefabProps?.ModelPrefab != null) {
-                objectPooler.ReturnObjectToPool(unitModel);
+                if (networkManagerServer.ServerModeActive == true) {
+                    // this is happening on the server, return the object to the pool
+                    networkManagerServer.ReturnObjectToPool(unitModel);
+                } else {
+                    // this is happening on the client
+                    if (characterManager.LocalUnits.Contains(unitController)) {
+                        // this unit was requested in a local game, pool it
+                        objectPooler.ReturnObjectToPool(unitModel);
+                    } else {
+                        // this unit was requested in a network game, deactivate it and let it wait for the network pooler to claim it
+                        unitModel.SetActive(false);
+                    }
+                }
             }
         }
 

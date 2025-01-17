@@ -28,6 +28,8 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
         private PlayerManagerServer playerManagerServer = null;
 
+        public List<UnitController> LocalUnits { get => localUnits; }
+
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
         }
@@ -93,11 +95,16 @@ namespace AnyRPG {
         }
 
 
-        public void ProcessStopClient(UnitController unitController) {
+        public void ProcessStopNetworkUnit(UnitController unitController) {
             Debug.Log($"CharacterManager.ProcessStopClient({unitController.gameObject.name})");
-            networkOwnedUnits.Remove(unitController);
-            networkUnownedUnits.Remove(unitController);
-            unitController.Despawn(0f, false, true);
+            if (unitController.IsOwner == true && networkOwnedUnits.Contains(unitController)) {
+                //HandleNetworkOwnedUnitDespawn(unitController);
+                unitController.Despawn(0f, false, true);
+            }
+            if (unitController.IsOwner == false && networkUnownedUnits.Contains(unitController)) {
+                //HandleNetworkUnownedUnitDespawn(unitController);
+                unitController.Despawn(0f, false, true);
+            }
         }
 
         public void CompleteCharacterRequest(GameObject characterGameObject, int spawnRequestId, bool isOwner) {
@@ -179,20 +186,25 @@ namespace AnyRPG {
                     //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name}) adding {unitController.gameObject.name} to modelSpawnRequests");
                     modelSpawnRequests.Add(unitController, characterRequestData);
 
-                    if (characterRequestData.requestMode == GameMode.Local) {
-                        localUnits.Add(unitController);
-                    } else {
-                        if (isOwner) {
-                            networkOwnedUnits.Add(unitController);
-                        } else {
-                            networkUnownedUnits.Add(unitController);
-                        }
-                    }
 
                     // give this unit a unique name
                     //Debug.Log($"CharacterManager.ConfigureUnitController({unitProfile.ResourceName}, {prefabObject.name}) renaming gameobject from {unitController.gameObject.name}");
                     unitController.gameObject.name = characterRequestData.characterConfigurationRequest.unitProfile.ResourceName.Replace(" ", "") + systemGameManager.GetSpawnCount();
                     unitController.Configure(systemGameManager);
+
+                    if (characterRequestData.requestMode == GameMode.Local) {
+                        localUnits.Add(unitController);
+                        unitController.UnitEventController.OnDespawn += HandleLocalUnitDespawn;
+                    } else {
+                        if (isOwner) {
+                            networkOwnedUnits.Add(unitController);
+                            unitController.UnitEventController.OnDespawn += HandleNetworkOwnedUnitDespawn;
+                        } else {
+                            networkUnownedUnits.Add(unitController);
+                            unitController.UnitEventController.OnDespawn += HandleNetworkUnownedUnitDespawn;
+                        }
+                    }
+
                     if (characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
                         if (isOwner) {
                             playerManager.SetUnitController(unitController);
@@ -208,6 +220,21 @@ namespace AnyRPG {
             }
 
             return unitController;
+        }
+
+        private void HandleLocalUnitDespawn(UnitController unitController) {
+            unitController.UnitEventController.OnDespawn -= HandleLocalUnitDespawn;
+            localUnits.Remove(unitController);
+        }
+
+        private void HandleNetworkOwnedUnitDespawn(UnitController unitController) {
+            unitController.UnitEventController.OnDespawn -= HandleNetworkOwnedUnitDespawn;
+            networkOwnedUnits.Remove(unitController);
+        }
+
+        private void HandleNetworkUnownedUnitDespawn(UnitController unitController) {
+            unitController.UnitEventController.OnDespawn -= HandleNetworkUnownedUnitDespawn;
+            networkUnownedUnits.Remove(unitController);
         }
 
         private GameObject LocalSpawnPrefab(GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
@@ -290,7 +317,19 @@ namespace AnyRPG {
                 objectPooler.ReturnObjectToPool(unitController.gameObject);
                 return;
             }
-            // in network case do nothing because the network manager is handling the pooling
+            if (networkManagerServer.ServerModeActive == true) {
+                // this is happening on the server, return the object to the pool
+                networkManagerServer.ReturnObjectToPool(unitController.gameObject);
+            } else {
+                // this is happening on the client
+                if (localUnits.Contains(unitController)) {
+                    // this unit was requested in a local game, pool it
+                    objectPooler.ReturnObjectToPool(unitController.gameObject);
+                } else {
+                    // this unit was requested in a network game, deactivate it and let it wait for the network pooler to claim it
+                    unitController.gameObject.SetActive(false);
+                }
+            }
         }
     }
 

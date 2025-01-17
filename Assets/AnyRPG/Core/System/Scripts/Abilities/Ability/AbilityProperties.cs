@@ -83,7 +83,7 @@ namespace AnyRPG {
 
         [Tooltip("If true, a random animation from the unit attack animations will be used")]
         [SerializeField]
-        private bool useUnitAttackAnimations = true;
+        private bool useUnitAttackAnimations = false;
 
         [Tooltip("This option is only valid if this is not an auto attack ability.  If true, it will use the current auto-attack animations so it looks good with any weapon.")]
         [SerializeField]

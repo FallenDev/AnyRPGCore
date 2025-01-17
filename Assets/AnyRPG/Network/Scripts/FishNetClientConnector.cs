@@ -526,6 +526,10 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseLoadSceneClient(sceneName);
         }
 
+        public void ReturnObjectToPool(GameObject returnedObject) {
+            fishNetNetworkManager.ServerManager.Despawn(returnedObject);
+        }
+
         /*
         public override void OnStartServer() {
             base.OnStartServer();

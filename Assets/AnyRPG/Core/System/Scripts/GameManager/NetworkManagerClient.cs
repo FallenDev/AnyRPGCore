@@ -142,11 +142,11 @@ namespace AnyRPG {
             return networkController.OwnPlayer(unitController);
         }
 
-        public void ProcessStopClient(UnitController unitController) {
+        public void ProcessStopNetworkUnitClient(UnitController unitController) {
             if (playerManager.UnitController == unitController) {
                 playerManager.ProcessStopClient();
             } else {
-                characterManager.ProcessStopClient(unitController);
+                characterManager.ProcessStopNetworkUnit(unitController);
             }
         }
 

@@ -25,7 +25,7 @@ namespace AnyRPG {
             string newScriptableObjectName = ability.resourceName.Replace(" ", "") + $"{effectType}Effect";
             string scriptableObjectPath = pathName + "/" + newScriptableObjectName + "2.asset";
             Debug.Log($"New Asset Path: {scriptableObjectPath}");
-            AssetDatabase.CreateAsset(newAbilityEffect, scriptableObjectPath);
+            //AssetDatabase.CreateAsset(newAbilityEffect, scriptableObjectPath);
 
             return $"{ability.resourceName} {effectType}";
         }

@@ -70,7 +70,7 @@ namespace AnyRPG {
             }
 
             UnsubscribeFromClientUnitEvents();
-            systemGameManager.NetworkManagerClient.ProcessStopClient(unitController);
+            systemGameManager.NetworkManagerClient.ProcessStopNetworkUnitClient(unitController);
         }
 
         public override void OnStartServer() {
@@ -92,7 +92,7 @@ namespace AnyRPG {
                 return;
             }
             UnsubscribeFromServerUnitEvents();
-            systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
+            systemGameManager.NetworkManagerServer.ProcessStopNetworkUnitServer(unitController);
         }
 
         public void SubscribeToClientUnitEvents() {
@@ -107,6 +107,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnSetTarget += HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
             }
+            //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
 
         public void UnsubscribeFromClientUnitEvents() {
@@ -119,6 +120,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
             }
+            //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
 
         public void SubscribeToServerUnitEvents() {
@@ -144,6 +146,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs += HandleSpawnAbilityEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP += HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
+            unitController.UnitEventController.OnDespawn += HandleDespawn;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -167,10 +170,27 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
+            unitController.UnitEventController.OnDespawn -= HandleDespawn;
+        }
+
+        /*
+        public void HandleDespawnClient(UnitController controller) {
+        }
+        */
+
+
+        public void HandleDespawn(UnitController controller) {
+            HandleDespawnClient();
         }
 
         [ObserversRpc]
-        private void HandleLevelChanged(int newLevel) {
+        public void HandleDespawnClient() {
+            unitController.Despawn(0, false, true);
+        }
+
+
+        [ObserversRpc]
+        public void HandleLevelChanged(int newLevel) {
             unitController.CharacterStats.SetLevel(newLevel);
         }
 

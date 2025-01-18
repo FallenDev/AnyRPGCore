@@ -772,6 +772,8 @@ namespace AnyRPG {
         }
 
         public List<AnimationClip> GetAbilityCastClips(IAbilityCaster sourceCharacter) {
+            Debug.Log($"{ResourceName}.AbilityProperties.GetAbilityCastClips()");
+
             if (useUnitCastAnimations == true) {
                 return sourceCharacter.AbilityManager.GetUnitCastAnimations();
             } else {

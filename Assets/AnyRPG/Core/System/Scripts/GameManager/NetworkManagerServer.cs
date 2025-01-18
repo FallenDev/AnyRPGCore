@@ -515,6 +515,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseLoadScene(string sceneName, int clientId) {
+            Debug.Log($"NetworkManagerServer.AdvertiseLoadScene({sceneName}, {clientId})");
+            
             playerManagerServer.DespawnPlayerUnit(clientId);
             networkController.AdvertiseLoadScene(sceneName, clientId);
         }

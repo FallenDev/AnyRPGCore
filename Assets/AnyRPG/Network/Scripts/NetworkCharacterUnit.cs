@@ -306,18 +306,23 @@ namespace AnyRPG {
         private void HandleClearTargetClient(Interactable oldTarget) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
 
+            /*
             NetworkInteractable networkInteractable = null;
             if (oldTarget != null) {
                 networkInteractable = oldTarget.GetComponent<NetworkInteractable>();
             }
             HandleClearTargetServer(networkInteractable);
+            */
+            HandleClearTargetServer();
         }
 
         [ServerRpc]
-        private void HandleClearTargetServer(NetworkInteractable networkInteractable) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
-
-            unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
+        private void HandleClearTargetServer(/*NetworkInteractable networkInteractable*/) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+            
+            //unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
+            
+            unitController.ClearTarget();
         }
 
 
@@ -409,6 +414,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandlePerformAbilityCastAnimationClient(string abilityName, int clipIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;

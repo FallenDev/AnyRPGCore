@@ -646,7 +646,8 @@ namespace AnyRPG {
             Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffect;
-            unitController.UnitEventController.OnBeforeDie += HandleDie;
+            unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;
+            //unitController.UnitEventController.OnAfterDie += HandleAfterDie;
             unitController.UnitEventController.OnReviveBegin += HandleReviveBegin;
             unitController.UnitEventController.OnReviveComplete += HandleReviveComplete;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
@@ -681,7 +682,8 @@ namespace AnyRPG {
             Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect -= HandleImmuneToEffect;
-            unitController.UnitEventController.OnBeforeDie -= HandleDie;
+            unitController.UnitEventController.OnBeforeDie -= HandleBeforeDie;
+            //unitController.UnitEventController.OnAfterDie -= HandleAfterDie;
             unitController.UnitEventController.OnReviveBegin -= HandleReviveBegin;
             unitController.UnitEventController.OnReviveComplete -= HandleReviveComplete;
             unitController.UnitEventController.OnLevelChanged -= HandleLevelChanged;
@@ -919,10 +921,13 @@ namespace AnyRPG {
             playerController.HandleReviveBegin();
         }
 
-        public void HandleDie(UnitController deadUnitController) {
+        public void HandleBeforeDie(UnitController deadUnitController) {
             playerController.HandleDie();
             uIManager.PlayerDeathHandler(deadUnitController);
             SystemEventManager.TriggerEvent("OnPlayerDeath", new EventParamProperties());
+        }
+
+        public void HandleAfterDie(CharacterStats deadCharacterStats) {
         }
 
         public void HandleImmuneToEffect(AbilityEffectContext abilityEffectContext) {

@@ -481,7 +481,7 @@ namespace AnyRPG {
             List<AnimationClip> usedAnimationClips = baseAbility.GetAbilityActionClips(unitController);
 
             AnimationClip animationClip = usedAnimationClips[clipIndex];
-            if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
+            if (usedAnimationClips.Count > 0) {
                 if (usedAnimationClips[clipIndex] == null) {
                     return;
                 }
@@ -515,7 +515,7 @@ namespace AnyRPG {
             }
 
             List<AnimationClip> usedCastAnimationClips = baseAbility.GetAbilityCastClips(unitController);
-            if (usedCastAnimationClips == null || usedCastAnimationClips.Count > 0) {
+            if (usedCastAnimationClips.Count == 0) {
                 return;
             }
             if (usedCastAnimationClips[clipIndex] == null) {

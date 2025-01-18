@@ -194,7 +194,7 @@ namespace AnyRPG {
 
                     if (characterRequestData.requestMode == GameMode.Local) {
                         localUnits.Add(unitController);
-                        unitController.UnitEventController.OnDespawn += HandleLocalUnitDespawn;
+                        SubscribeToLocalOwnedUnitsEvents(unitController);
                     } else {
                         if (isOwner) {
                             networkOwnedUnits.Add(unitController);
@@ -222,8 +222,21 @@ namespace AnyRPG {
             return unitController;
         }
 
+        private void SubscribeToLocalOwnedUnitsEvents(UnitController unitController) {
+            
+            unitController.UnitEventController.OnDespawn += HandleLocalUnitDespawn;
+            unitController.UnitEventController.OnAfterDie += HandleAfterDie;
+        }
+
+        public void HandleAfterDie(CharacterStats deadCharacterStats) {
+            if (deadCharacterStats.UnitController.GetCurrentInteractables().Count == 0) {
+                deadCharacterStats.UnitController.OutlineController.TurnOffOutline();
+            }
+        }
+
         private void HandleLocalUnitDespawn(UnitController unitController) {
             unitController.UnitEventController.OnDespawn -= HandleLocalUnitDespawn;
+            unitController.UnitEventController.OnAfterDie -= HandleAfterDie;
             localUnits.Remove(unitController);
         }
 

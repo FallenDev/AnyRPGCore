@@ -392,8 +392,10 @@ namespace AnyRPG {
         }
 
         public override List<AnimationClip> GetUnitCastAnimations() {
-            //Debug.Log($"{gameObject.name}.GetDefaultAttackAnimations()");
+            Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations()");
+
             if (unitController.UnitAnimator.CurrentAnimations != null) {
+                Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations() returning {unitController.UnitAnimator.CurrentAnimations.CastClips.Count}");
                 return unitController.UnitAnimator.CurrentAnimations.CastClips;
             }
             return base.GetUnitCastAnimations();
@@ -1347,7 +1349,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="ability"></param>
         public bool BeginAbility(AbilityProperties ability, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName}, {playerInitiated})");
 
             if (ability == null) {
                 //Debug.Log("CharacterAbilityManager.BeginAbility(): ability is null! Exiting!");

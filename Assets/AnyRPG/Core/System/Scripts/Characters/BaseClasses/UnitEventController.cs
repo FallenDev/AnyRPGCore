@@ -19,6 +19,7 @@ namespace AnyRPG {
         public event System.Action OnReputationChange = delegate { };
         public event System.Action OnReviveComplete = delegate { };
         public event System.Action<UnitController> OnBeforeDie = delegate { };
+        public event System.Action<CharacterStats> OnAfterDie = delegate { };
         public event System.Action<int> OnLevelChanged = delegate { };
         public event System.Action<UnitType, UnitType> OnUnitTypeChange = delegate { };
         public event System.Action<CharacterRace, CharacterRace> OnRaceChange = delegate { };
@@ -343,9 +344,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAfterDie(CharacterStats characterStats) {
-            if (unitController.GetCurrentInteractables().Count == 0) {
-                unitController.OutlineController.TurnOffOutline();
-            }
+            OnAfterDie(characterStats);
         }
 
         public void NotifyOnReviveComplete() {
@@ -481,6 +480,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnPerformAbilityCastAnimation(AbilityProperties abilityProperties, int clipIndex) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnPerformAbilityCastAnimation()");
+
             OnPerformAbilityCastAnimation(abilityProperties, clipIndex);
         }
 

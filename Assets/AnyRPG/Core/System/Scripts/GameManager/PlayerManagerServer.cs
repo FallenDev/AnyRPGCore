@@ -173,6 +173,8 @@ namespace AnyRPG {
         }
 
         public void LoadScene(string sceneName, int clientId) {
+            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {clientId})");
+            
             if (activePlayers.ContainsKey(clientId) == false) {
                 return;
             }

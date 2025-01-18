@@ -68,7 +68,7 @@ namespace AnyRPG {
         [ResourceSelector(resourceType = typeof(AnimationProfile))]
         protected string animationProfileName = string.Empty;
 
-        protected AnimationProfile animationProfile;
+        protected AnimationProfile animationProfile = null;
 
         [Tooltip("If true, the ability will use the casting animations from the caster.")]
         [SerializeField]
@@ -310,6 +310,8 @@ namespace AnyRPG {
 
 
         protected IDescribable describableData = null;
+        protected List<AnimationClip> actionClips = null;
+        protected List<AnimationClip> castClips = null;
 
         // game manager references
         protected PlayerManager playerManager = null;
@@ -377,21 +379,8 @@ namespace AnyRPG {
         }
         public AudioClip AnimationHitAudioClip { get => animationHitAudioProfile?.RandomAudioClip; }
         public bool AnimatorCreatePrefabs { get => animatorCreatePrefabs; set => animatorCreatePrefabs = value; }
-        public List<AnimationClip> AttackClips { get => (animationProfile != null ? animationProfile.AnimationProps.AttackClips : null); }
-        
-        public List<AnimationClip> CastClips {
-            get {
-                /*
-                if (animationClip != null) {
-                    return new List<AnimationClip>() { animationClip };
-                }
-                */
-                if (animationProfile != null) {
-                    return animationProfile.AnimationProps.CastClips;
-                }
-                return new List<AnimationClip>();
-            }
-        }
+        public List<AnimationClip> ActionClips { get => actionClips; }
+        public List<AnimationClip> CastClips { get => castClips; }
         
         public List<string> WeaponAffinityNames { get => weaponAffinityNames; set => weaponAffinityNames = value; }
         public bool RequireOutOfCombat { get => requireOutOfCombat; set => requireOutOfCombat = value; }
@@ -783,13 +772,11 @@ namespace AnyRPG {
         }
 
         public List<AnimationClip> GetAbilityCastClips(IAbilityCaster sourceCharacter) {
-            List<AnimationClip> animationClips = new List<AnimationClip>();
             if (useUnitCastAnimations == true) {
-                animationClips = sourceCharacter.AbilityManager.GetUnitCastAnimations();
+                return sourceCharacter.AbilityManager.GetUnitCastAnimations();
             } else {
-                animationClips = CastClips;
+                return CastClips;
             }
-            return animationClips;
         }
 
         public AnimationProps GetUnitAnimationProps(IAbilityCaster sourceCharacter) {
@@ -907,15 +894,13 @@ namespace AnyRPG {
         }
 
         public List<AnimationClip> GetAbilityActionClips(IAbilityCaster sourceCharacter) {
-            List<AnimationClip> animationClips = new List<AnimationClip>();
             if (useUnitAttackAnimations == true) {
-                animationClips = sourceCharacter.AbilityManager.GetUnitAttackAnimations();
+                return sourceCharacter.AbilityManager.GetUnitAttackAnimations();
             } else if (useAutoAttackAnimations == true) {
-                animationClips = sourceCharacter.AbilityManager.GetDefaultAttackAnimations();
+                return sourceCharacter.AbilityManager.GetDefaultAttackAnimations();
             } else {
-                animationClips = AttackClips;
+                return ActionClips;
             }
-            return animationClips;
         }
 
         public virtual AudioClip GetHitSound(IAbilityCaster abilityCaster) {
@@ -993,7 +978,8 @@ namespace AnyRPG {
         }
 
         public virtual bool Cast(IAbilityCaster sourceCharacter, Interactable target, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log(resourceName + ".BaseAbility.Cast(" + sourceCharacter.AbilityManager.Name + ", " + (target == null ? "null" : target.name) + ")");
+            Debug.Log($"{ResourceName}.BaseAbility.Cast(" + (sourceCharacter == null ? "null" : sourceCharacter.AbilityManager.Name) + ", " + (target == null ? "null" : target.name) + ")");
+            
             if (!CanCast(sourceCharacter)) {
                 //Debug.Log(resourceName + ".BaseAbility.Cast(" + sourceCharacter.AbilityManager.Name + ", " + (target == null ? "null" : target.name) + " CAN'T CAST!!!");
                 return false;
@@ -1010,7 +996,7 @@ namespace AnyRPG {
             PerformAbilityEffects(sourceCharacter, target, abilityEffectContext, abilityEffectProperties);
 
             List<AnimationClip> usedAnimationClips = GetAbilityActionClips(sourceCharacter);
-            if (usedAnimationClips != null && usedAnimationClips.Count > 0) {
+            if (usedAnimationClips.Count > 0) {
                 //Debug.Log("AnimatedAbility.Cast(): animationClip is not null, setting animator");
 
                 CharacterUnit targetCharacterUnit = null;
@@ -1030,8 +1016,6 @@ namespace AnyRPG {
                     sourceCharacter.AbilityManager.ProcessAbilityCoolDowns(this, animationLength, abilityCoolDown);
                 }
 
-            } else {
-                Debug.LogError(DisplayName + ".AnimatedAbility.Cast(): no animation clips returned");
             }
             return true;
             // notify subscribers
@@ -1082,7 +1066,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="sourceCharacter"></param>
         public virtual void ProcessGCDAuto(IAbilityCaster sourceCharacter) {
-            //Debug.Log(DisplayName + ".BaseAbility.ProcessGCDManual()");
+            Debug.Log($"{ResourceName}.AbilityProperties.ProcessGCDAuto(" + (sourceCharacter == null ? "null" : sourceCharacter.gameObject.name) + ")");
 
             if (GetAbilityActionClips(sourceCharacter).Count > 0) {
                 // cooldown length will be based on action animation length
@@ -1363,14 +1347,15 @@ namespace AnyRPG {
                 }
             }
 
-            animationProfile = null;
             if (animationProfileName != null && animationProfileName != string.Empty) {
-                AnimationProfile tmpAnimationProfile = systemDataFactory.GetResource<AnimationProfile>(animationProfileName);
-                if (tmpAnimationProfile != null) {
-                    animationProfile = tmpAnimationProfile;
-                } else {
+                animationProfile = systemDataFactory.GetResource<AnimationProfile>(animationProfileName);
+                if (animationProfile == null) {
                     Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find animation profile: " + animationProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }
+            }
+            if (animationProfile == null) {
+                actionClips = new List<AnimationClip>();
+                castClips = new List<AnimationClip>();
             }
 
             powerResource = null;

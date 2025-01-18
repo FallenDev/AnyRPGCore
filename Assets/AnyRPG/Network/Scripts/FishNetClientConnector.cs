@@ -226,7 +226,8 @@ namespace AnyRPG {
             }
 
             //NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, true);
-            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, position, Quaternion.identity, true);
+
+            NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, position, Quaternion.LookRotation(forward), true);
             //NetworkObject nob = fishNetNetworkManager.GetPooledInstantiated(networkPrefab, position, Quaternion.identity, parentTransform, true);
             //nob.transform.SetPositionAndRotation(position, rotation);
             
@@ -241,7 +242,7 @@ namespace AnyRPG {
             }
             
             //nob.transform.position = position;
-            nob.transform.forward = forward;
+            //nob.transform.forward = forward;
 
             SpawnedNetworkObject spawnedNetworkObject = nob.gameObject.GetComponent<SpawnedNetworkObject>();
             if (spawnedNetworkObject != null) {

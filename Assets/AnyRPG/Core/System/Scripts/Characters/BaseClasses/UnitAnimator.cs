@@ -504,31 +504,11 @@ namespace AnyRPG {
             // there were 2 pieces of code that were setting animation speed.  One was using 1f / and one was not.  Not sure which one is correct?!!!
             //SetAttacking(true, true, 1f / (unitController.CharacterStats.GetSpeedModifiers() / 100f));
 
-            //return speedNormalizedAnimationLength;
         }
 
-        // non melee ability (spell) cast
-        /*
-        public void PerformAbilityCast(AbilityProperties baseAbility) {
-            //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleCastingAbility()");
-            if (animator == null) {
-                return;
-            }
-
-            int clipIndex = 0;
-            List<AnimationClip> usedCastAnimationClips = baseAbility.GetCastClips(unitController);
-            if (usedCastAnimationClips != null && usedCastAnimationClips.Count > 0) {
-                clipIndex = UnityEngine.Random.Range(0, usedCastAnimationClips.Count);
-                if (usedCastAnimationClips[clipIndex] == null) {
-                    return;
-                }
-            }
-            PerformAbilityCast(baseAbility, clipIndex);
-        }
-        */
 
         public void PerformAbilityCast(AbilityProperties baseAbility, int clipIndex) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.PerformAbilityCast({baseAbility.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityCast({baseAbility.ResourceName}, {clipIndex})");
 
             if (animator == null) {
                 return;

@@ -362,7 +362,7 @@ namespace AnyRPG {
         public override List<AnimationClip> GetDefaultAttackAnimations() {
             //Debug.Log($"{gameObject.name}.GetDefaultAttackAnimations()");
             if (AutoAttackAbility != null) {
-                return AutoAttackAbility.AttackClips;
+                return AutoAttackAbility.ActionClips;
             }
             return base.GetDefaultAttackAnimations();
         }

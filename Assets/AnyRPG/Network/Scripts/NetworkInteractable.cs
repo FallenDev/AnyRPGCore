@@ -10,14 +10,16 @@ using UnityEngine;
 namespace AnyRPG {
     public class NetworkInteractable : SpawnedNetworkObject {
 
-        public Interactable interactable = null;
+        private Interactable interactable = null;
 
         // game manager references
         protected SystemGameManager systemGameManager = null;
         protected SystemDataFactory systemDataFactory = null;
 
+        public Interactable Interactable { get => interactable; }
+
         protected virtual void Awake() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.Awake() position: { gameObject.transform.position}");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.Awake() position: { gameObject.transform.position}");
         }
 
         protected virtual void Configure() {

@@ -22,7 +22,7 @@ namespace AnyRPG {
             nameChangeManager = systemGameManager.NameChangeManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.NameChangeInteractable.Interact()");
             
             base.Interact(source, optionIndex);

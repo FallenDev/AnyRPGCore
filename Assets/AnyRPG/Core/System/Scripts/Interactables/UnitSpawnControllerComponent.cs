@@ -26,7 +26,7 @@ namespace AnyRPG {
             unitSpawnManager = systemGameManager.UnitSpawnManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             base.Interact(source, optionIndex);
             unitSpawnManager.SetProps(Props, this);
             uIManager.unitSpawnWindow.OpenWindow();

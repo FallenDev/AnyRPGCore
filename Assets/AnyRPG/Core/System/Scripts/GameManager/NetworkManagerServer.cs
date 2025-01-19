@@ -55,6 +55,7 @@ namespace AnyRPG {
         private LogManager logManager = null;
         private PlayerManagerServer playerManagerServer = null;
         private CharacterManager characterManager = null;
+        private InteractionManager interactionManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -541,8 +542,16 @@ namespace AnyRPG {
         public void ReturnObjectToPool(GameObject returnedObject) {
             networkController.ReturnObjectToPool(returnedObject);
         }
+
+        public void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, UnitController sourceUnitController) {
+            if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
+                networkController.AdvertiseInteractWithQuestGiver(interactable, optionIndex, playerManagerServer.ActivePlayerLookup[sourceUnitController]);
+            }
+        }
+
+        public void InteractWithOption(UnitController sourceUnitController, Interactable interactable, int componentIndex) {
+            interactionManager.InteractWithOptionServer(sourceUnitController, interactable, componentIndex);
+        }
     }
-
-
 
 }

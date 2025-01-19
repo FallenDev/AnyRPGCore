@@ -44,7 +44,7 @@ namespace AnyRPG {
             }
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
             base.Interact(source, optionIndex);
 

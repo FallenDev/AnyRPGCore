@@ -2,6 +2,7 @@ using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,12 +19,20 @@ namespace AnyRPG {
 
         // game manager references
         SystemDataFactory systemDataFactory = null;
+        NetworkManagerServer networkManagerServer = null;
+        InteractionManager interactionManager = null;
+        UIManager uIManager = null;
+        DialogManager dialogManager = null;
 
         public Dictionary<string, Quest> Quests { get => quests; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            interactionManager = systemGameManager.InteractionManager;
+            uIManager = systemGameManager.UIManager;
+            dialogManager = systemGameManager.DialogManager;
         }
 
         public void AcceptQuest(QuestSaveData questSaveData) {
@@ -150,6 +159,46 @@ namespace AnyRPG {
             }
             return returnList;
         }
+
+        public void InteractWithQuestGiver(QuestGiverComponent questGiverComponent, int optionIndex, UnitController sourceUnitController) {
+            if (networkManagerServer.ServerModeActive) {
+                networkManagerServer.AdvertiseInteractWithQuestGiver(questGiverComponent.Interactable, optionIndex, sourceUnitController);
+                return;
+            }
+
+            // this is running locally.  Interact directly
+            InteractWithQuestGiverInternal(questGiverComponent, optionIndex, sourceUnitController);
+        }
+
+        public void InteractWithQuestGiverClient(Interactable interactable, int optionIndex, UnitController sourceUnitController) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(0);
+            if ((currentInteractables[optionIndex] as QuestGiverComponent) is QuestGiverComponent) {
+                InteractWithQuestGiverInternal(currentInteractables[optionIndex] as QuestGiverComponent, optionIndex, sourceUnitController);
+            }
+        }
+
+        public void InteractWithQuestGiverInternal(QuestGiverComponent questGiverComponent, int optionIndex, UnitController sourceUnitController) {
+            // this is running locally
+            if (GetCompleteQuests(questGiverComponent.Props.Quests, true).Count + GetAvailableQuests(questGiverComponent.Props.Quests).Count > 1) {
+                interactionManager.OpenInteractionWindow(questGiverComponent.Interactable);
+                return;
+            } else if (GetAvailableQuests(questGiverComponent.Props.Quests).Count == 1 && GetCompleteQuests(questGiverComponent.Props.Quests).Count == 0) {
+                if (GetAvailableQuests(questGiverComponent.Props.Quests)[0].HasOpeningDialog == true && GetAvailableQuests(questGiverComponent.Props.Quests)[0].OpeningDialog.TurnedIn == false) {
+                    dialogManager.SetQuestDialog(GetAvailableQuests(questGiverComponent.Props.Quests)[0], questGiverComponent.Interactable, questGiverComponent);
+                    uIManager.dialogWindow.OpenWindow();
+                    return;
+                } else {
+                    // do nothing will skip to below and open questlog to the available quest
+                }
+            }
+            // we got here: we only have a single complete quest, or a single available quest with the opening dialog competed already
+            if (!uIManager.questGiverWindow.IsOpen) {
+                //Debug.Log(source + " interacting with " + gameObject.name);
+                ShowQuestGiverDescription(GetAvailableQuests(questGiverComponent.Props.Quests).Union(GetCompleteQuests(questGiverComponent.Props.Quests)).ToList()[0], questGiverComponent);
+                return;
+            }
+        }
+    
     }
 
 }

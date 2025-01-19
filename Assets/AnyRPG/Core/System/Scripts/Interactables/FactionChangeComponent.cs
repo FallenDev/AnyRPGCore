@@ -43,7 +43,7 @@ namespace AnyRPG {
             HandlePrerequisiteUpdates();
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".FactionChangeInteractable.Interact()");
 
             base.Interact(source, optionIndex);

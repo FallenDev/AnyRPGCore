@@ -264,7 +264,7 @@ namespace AnyRPG {
             return currencyNode;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".LootableCharacter.Interact()");
             uIManager.interactionWindow.CloseWindow();
             if (!characterUnit.UnitController.CharacterStats.IsAlive) {

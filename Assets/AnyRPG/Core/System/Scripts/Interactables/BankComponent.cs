@@ -10,7 +10,7 @@ namespace AnyRPG {
             interactableOptionProps.InteractionPanelTitle = "Bank";
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.Bank.Interact(" + (source == null ? "null" : source.name) +")");
             base.Interact(source, optionIndex);
             uIManager.interactionWindow.CloseWindow();

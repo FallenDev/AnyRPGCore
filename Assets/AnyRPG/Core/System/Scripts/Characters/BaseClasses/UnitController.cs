@@ -581,26 +581,17 @@ namespace AnyRPG {
 
         }
 
-        public override bool Interact(CharacterUnit source, bool processRangeCheck = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.Interact(" + processRangeCheck + ")");
+        public override void InteractWithPlayer(UnitController sourceUnitController, float factionValue) {
+            //Debug.Log($"{gameObject.name}.UnitController.InteractWithPlayer({factionValue})");
 
-            bool returnValue = base.Interact(source, processRangeCheck);
-
-            if (returnValue == true
-                && Faction.RelationWith(source.UnitController, this) >= 0f
+            if (factionValue >= 0f
                 && characterStats.IsAlive == true
-                && source == playerManager.UnitController.CharacterUnit
                 && unitControllerMode == UnitControllerMode.AI) {
 
-                // notify on interact
-                //UnitEventController.NotifyOnStartInteract();
-
                 if (unitProfile != null && unitProfile.FaceInteractionTarget == true) {
-                    unitMotor.FaceTarget(source.Interactable);
+                    unitMotor.FaceTarget(sourceUnitController);
                 }
             }
-
-            return returnValue;
         }
 
         public override void ProcessStartInteract() {
@@ -1205,13 +1196,13 @@ namespace AnyRPG {
             foreach (InteractableOptionProps interactableOption in unitProfile.InteractableOptionConfigs) {
                 if (interactableOption != null) {
                     InteractableOptionComponent interactableOptionComponent = interactableOption.GetInteractableOption(this);
-                    interactables.Add(interactableOptionComponent);
+                    AddInteractable(interactableOptionComponent);
                     //interactableOptionComponent.HandlePrerequisiteUpdates();
                 }
             }
 
             // this will cause the minimap to be instantiated so it should be done after all interactables are added so the layers can be created properly
-            foreach (InteractableOptionComponent interactableOptionComponent in interactables) {
+            foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
                 interactableOptionComponent.HandlePrerequisiteUpdates();
             }
 

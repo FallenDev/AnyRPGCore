@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace AnyRPG {
 
@@ -102,6 +103,7 @@ namespace AnyRPG {
         public event System.Action<AbilityProperties, int> OnSpawnAbilityObjects = delegate { };
         public event System.Action OnDespawnAbilityObjects = delegate { };
         public event System.Action<Interactable, Interactable, LengthEffectProperties, AbilityEffectContext> OnSpawnAbilityEffectPrefabs = delegate { };
+        public event System.Action<UnitController, Interactable> OnEnterInteractableTrigger = delegate { };
 
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
@@ -156,7 +158,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnLearnAbility(AbilityProperties abilityProperties) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnLearnAbility({abilityProperties.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnLearnAbility({abilityProperties.ResourceName})");
 
             OnLearnAbility(abilityProperties);
         }
@@ -513,6 +515,18 @@ namespace AnyRPG {
 
         public void NotifyOnSpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
             OnSpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
+        }
+
+        public void NotifyOnEnterInteractableTrigger(Interactable interactable) {
+            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnEnterInteractableTrigger({interactable.gameObject.name})");
+
+            OnEnterInteractableTrigger(unitController, interactable);
+        }
+
+        public void NotifyOnExitInteractableTrigger(Interactable interactable) {
+            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnExitInteractableTrigger({interactable.gameObject.name})");
+
+            OnEnterInteractableTrigger(unitController, interactable);
         }
 
         #endregion

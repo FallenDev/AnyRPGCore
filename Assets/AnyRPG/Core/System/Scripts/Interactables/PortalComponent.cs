@@ -21,8 +21,9 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
-            //Debug.Log($"{gameObject.name}.PortalInteractable.Interact()");
+        public override bool Interact(CharacterUnit source, int optionIndex) {
+            Debug.Log($"{interactable.gameObject.name}.PortalComponent.Interact({source.UnitController.gameObject.name})");
+
             base.Interact(source, optionIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             uIManager.interactionWindow.CloseWindow();

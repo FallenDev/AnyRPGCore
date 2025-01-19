@@ -28,7 +28,7 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
             //List<BehaviorProfile> currentList = GetCurrentOptionList();
             /*
@@ -42,10 +42,6 @@ namespace AnyRPG {
             }
             base.Interact(source, optionIndex);
             interactable.CloseInteractionWindow();
-            //}/* else {
-
-            interactable.OpenInteractionWindow();
-            //}*/
             return true;
         }
 

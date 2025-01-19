@@ -36,7 +36,7 @@ namespace AnyRPG {
             }
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
             //if (coroutine != null) {
                 //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(): coroutine is not null, exiting");

@@ -155,7 +155,7 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public virtual bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public virtual bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
             //source.CancelMountEffects();
             systemEventManager.NotifyOnInteractionWithOptionStarted(this);

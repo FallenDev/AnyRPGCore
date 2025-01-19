@@ -111,33 +111,12 @@ namespace AnyRPG {
             */
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".QuestGiver.Interact()");
             base.Interact(source, optionIndex);
-            if (questLog.GetCompleteQuests(Props.Quests, true).Count + questLog.GetAvailableQuests(Props.Quests).Count > 1) {
-                interactable.OpenInteractionWindow();
-                return true;
-            } else if (questLog.GetAvailableQuests(Props.Quests).Count == 1 && questLog.GetCompleteQuests(Props.Quests).Count == 0) {
-                if (questLog.GetAvailableQuests(Props.Quests)[0].HasOpeningDialog == true && questLog.GetAvailableQuests(Props.Quests)[0].OpeningDialog.TurnedIn == false) {
-                    dialogManager.SetQuestDialog(questLog.GetAvailableQuests(Props.Quests)[0], interactable, this);
-                    uIManager.dialogWindow.OpenWindow();
-                    return true;
-                } else {
-                    // do nothing will skip to below and open questlog to the available quest
-                    /*
-                    interactable.OpenInteractionWindow();
-                    return true;
-                    */
-                }
-            }
-            // we got here: we only have a single complete quest, or a single available quest with the opening dialog competed already
-            if (!uIManager.questGiverWindow.IsOpen) {
-                //Debug.Log(source + " interacting with " + gameObject.name);
-                //uIManager.questGiverWindow.OpenWindow();
-                questLog.ShowQuestGiverDescription(questLog.GetAvailableQuests(Props.Quests).Union(questLog.GetCompleteQuests(Props.Quests)).ToList()[0], this);
-                return true;
-            }
-            return false;
+            questLog.InteractWithQuestGiver(this, optionIndex, source.UnitController);
+            
+            return true;
         }
 
         public override void StopInteract() {

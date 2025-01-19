@@ -73,6 +73,7 @@ namespace AnyRPG {
 
         public void PlayOnlineMenu() {
             //Debug.Log("MainMenuController.PlayOnlineMenu()");
+            uIManager.playMenuWindow.CloseWindow();
             uIManager.exitMenuWindow.CloseWindow();
             uIManager.deleteGameMenuWindow.CloseWindow();
             uIManager.settingsMenuWindow.CloseWindow();

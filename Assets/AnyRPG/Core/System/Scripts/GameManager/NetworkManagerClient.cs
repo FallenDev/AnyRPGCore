@@ -49,6 +49,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private LevelManager levelManager = null;
         private LogManager logManager = null;
+        private QuestLog questLog = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -377,6 +378,14 @@ namespace AnyRPG {
 
         public void AdvertiseLoadSceneClient(string sceneName) {
             levelManager.LoadLevel(sceneName);
+        }
+
+        public void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex) {
+            questLog.InteractWithQuestGiverClient(interactable, optionIndex, playerManager.UnitController);
+        }
+
+        public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
+            networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex);
         }
     }
 

@@ -92,14 +92,14 @@ namespace AnyRPG {
                 }
             }
 
-            List<InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
+            Dictionary<int, InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
 
             int currentInteractableCount = currentInteractables.Count;
             //Debug.Log($"{gameObject.name}.Interactable.UpdateDialogStatus(): currentInteractableCount: " + currentInteractableCount);
 
             // determine if one of our current interactables is a questgiver
             bool questGiverCurrent = false;
-            foreach (InteractableOptionComponent interactableOption in currentInteractables) {
+            foreach (InteractableOptionComponent interactableOption in currentInteractables.Values) {
                 if (interactableOption is QuestGiverComponent) {
                     questGiverCurrent = true;
                     (interactableOption as QuestGiverComponent).UpdateQuestStatus();

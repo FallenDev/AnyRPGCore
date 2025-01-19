@@ -68,6 +68,7 @@ namespace AnyRPG {
         protected ActionBarManager actionBarManager = null;
         protected CastTargettingManager castTargettingManager = null;
         protected SaveManager saveManager = null;
+        protected InteractionManager interactionManager = null;
 
         public List<Interactable> Interactables { get => interactables; }
         public RaycastHit MouseOverhit { get => mouseOverhit; set => mouseOverhit = value; }
@@ -88,6 +89,7 @@ namespace AnyRPG {
             actionBarManager = uIManager.ActionBarManager;
             castTargettingManager = systemGameManager.CastTargettingManager;
             saveManager = systemGameManager.SaveManager;
+            interactionManager = systemGameManager.InteractionManager;
         }
 
         public void AddInteractable(Interactable interactable) {
@@ -638,18 +640,8 @@ namespace AnyRPG {
                 return false;
             }
             //if (IsTargetInHitBox(target)) {
-            // get reference to name now since interactable could change scene and then target reference is lost
-            string targetDisplayName = target.DisplayName;
-            if (target.Interact(playerManager.ActiveUnitController.CharacterUnit, true)) {
-                //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
-                systemEventManager.NotifyOnInteractionStarted(targetDisplayName);
-                return true;
-            }
-            //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): returning false");
 
-            return false;
-            //}
-            //return false;
+            return interactionManager.Interact(target);
         }
 
         private void RegisterTab() {
@@ -909,9 +901,10 @@ namespace AnyRPG {
             }
         }
 
-        public void InterActWithInteractableOption(Interactable interactable, InteractableOptionComponent interactableOption) {
+        // not currently in use - this is for when click to move is enabled
+        public void InterActWithInteractableOption(Interactable interactable, InteractableOptionComponent interactableOption, int optionIndex) {
             playerManager.UnitController.SetTarget(interactable);
-            if (InteractionWithOptionSucceeded(interactableOption)) {
+            if (InteractionWithOptionSucceeded(interactableOption, optionIndex)) {
                 // not actually stopping interacting.  just clearing target if this was a trigger interaction and we are not interacting with a focus
                 StopInteract();
             } else {
@@ -925,10 +918,10 @@ namespace AnyRPG {
             }
         }
 
-        private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption) {
+        private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption, int optionIndex) {
             //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded()");
             //if (IsTargetInHitBox(target)) {
-            if (interactableOption.Interact(playerManager.ActiveUnitController.CharacterUnit)) {
+            if (interactableOption.Interact(playerManager.ActiveUnitController.CharacterUnit, optionIndex)) {
                 //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
                 systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController.Target.DisplayName);
                 systemEventManager.NotifyOnInteractionWithOptionStarted(interactableOption);

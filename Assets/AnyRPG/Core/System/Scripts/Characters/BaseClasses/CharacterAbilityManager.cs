@@ -1141,7 +1141,7 @@ namespace AnyRPG {
         }
 
         public bool LearnAbility(AbilityProperties newAbility) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.LearnAbility(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.LearnAbility(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
 
             if (newAbility == null) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.LearnAbility(): baseAbility is null");

@@ -207,7 +207,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void SpawnModelPrefab(int clientSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
+            //Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
 
             int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
             //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
@@ -217,7 +217,7 @@ namespace AnyRPG {
 
 
         private NetworkObject GetSpawnablePrefab(NetworkConnection networkConnection, int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}, {position}, {forward})");
+            //Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}, {position}, {forward})");
 
             NetworkObject networkPrefab = prefab.GetComponent<NetworkObject>();
             if (networkPrefab == null) {
@@ -246,7 +246,7 @@ namespace AnyRPG {
 
             SpawnedNetworkObject spawnedNetworkObject = nob.gameObject.GetComponent<SpawnedNetworkObject>();
             if (spawnedNetworkObject != null) {
-                Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}) setting spawnRequestId on gameobject");
+                //Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}) setting spawnRequestId on gameobject");
                 spawnedNetworkObject.clientSpawnRequestId.Value = clientSpawnRequestId;
                 spawnedNetworkObject.serverRequestId.Value = serverSpawnRequestId;
             }
@@ -529,6 +529,43 @@ namespace AnyRPG {
 
         public void ReturnObjectToPool(GameObject returnedObject) {
             fishNetNetworkManager.ServerManager.Despawn(returnedObject);
+        }
+
+        public void AdvertiseInteractWithQuestGiver(NetworkInteractable networkInteractable, int optionIndex, int clientId) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
+                AdvertiseInteractWithQuestGiverClient(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseInteractWithQuestGiverClient(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
+
+            networkManagerClient.AdvertiseInteractWithQuestGiver(networkInteractable.Interactable, optionIndex);
+        }
+
+        public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
+            NetworkCharacterUnit networkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                networkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+            }
+            NetworkInteractable networkInteractable = null;
+            if (targetInteractable != null) {
+                networkInteractable = targetInteractable.GetComponent<NetworkInteractable>();
+            }
+            InteractWithOptionServer(networkCharacterUnit, networkInteractable, componentIndex);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void InteractWithOptionServer(NetworkCharacterUnit sourceNetworkCharacterUnit, NetworkInteractable targetNetworkInteractable, int componentIndex) {
+            UnitController sourceUnitController = null;
+            if (sourceNetworkCharacterUnit != null) {
+                sourceUnitController = sourceNetworkCharacterUnit.UnitController;
+            }
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex);
         }
 
         /*

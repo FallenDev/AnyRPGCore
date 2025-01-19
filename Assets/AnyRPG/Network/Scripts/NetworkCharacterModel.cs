@@ -67,7 +67,7 @@ namespace AnyRPG {
 
         public override void OnStartServer() {
             base.OnStartClient();
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.OnStartServer()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.OnStartServer()");
 
             FindGameManager();
             if (systemGameManager == null) {

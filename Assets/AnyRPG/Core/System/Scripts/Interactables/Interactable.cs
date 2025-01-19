@@ -2,6 +2,7 @@ using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -85,7 +86,8 @@ namespace AnyRPG {
         [SerializeField]
         protected UnitComponentController unitComponentController = null;
 
-        protected List<InteractableOptionComponent> interactables = new List<InteractableOptionComponent>();
+        protected Dictionary<int, InteractableOptionComponent> interactables = new Dictionary<int, InteractableOptionComponent>();
+        protected int interactableOptionCount = 0;
 
         // state
         protected bool isInteracting = false;
@@ -110,10 +112,11 @@ namespace AnyRPG {
         protected MiniMapManager miniMapManager = null;
         protected MainMapManager mainMapManager = null;
         protected InteractionManager interactionManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         // properties
         public bool IsInteracting { get => isInteracting; }
-        public List<InteractableOptionComponent> Interactables { get => interactables; set => interactables = value; }
+        public Dictionary<int, InteractableOptionComponent> Interactables { get => interactables; set => interactables = value; }
 
         public Sprite Icon { get => interactableIcon; }
 
@@ -188,6 +191,7 @@ namespace AnyRPG {
         public string InteractionTooltipText { get => interactionTooltipText; set => interactionTooltipText = value; }
         public OutlineController OutlineController { get => outlineController; }
         public ObjectMaterialController ObjectMaterialController { get => objectMaterialController; }
+        public bool SuppressInteractionWindow { get => suppressInteractionWindow; set => suppressInteractionWindow = value; }
 
         /*
         public override void Configure(SystemGameManager systemGameManager) {
@@ -197,7 +201,7 @@ namespace AnyRPG {
         */
 
         protected override void LateConfigure() {
-            DisableInteraction();
+            //DisableInteraction();
         }
 
         protected override void ConfigureComponents() {
@@ -232,6 +236,7 @@ namespace AnyRPG {
             miniMapManager = uIManager.MiniMapManager;
             mainMapManager = uIManager.MainMapManager;
             interactionManager = systemGameManager.InteractionManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public override void GetComponentReferences() {
@@ -249,7 +254,7 @@ namespace AnyRPG {
             foreach (InteractableOption interactableOption in interactableOptionMonoList) {
                 if (interactableOption.InteractableOptionProps != null) {
                     interactableOption.SetupScriptableObjects(systemGameManager);
-                    interactables.Add(interactableOption.InteractableOptionProps.GetInteractableOption(this, interactableOption));
+                    AddInteractable(interactableOption.InteractableOptionProps.GetInteractableOption(this, interactableOption));
                 }
             }
         }
@@ -283,12 +288,12 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public List<InteractableOptionComponent> GetInteractableOptionList(Type type) {
-            List<InteractableOptionComponent> returnList = new List<InteractableOptionComponent>();
+        public Dictionary<int, InteractableOptionComponent> GetInteractableOptionList(Type type) {
+            Dictionary<int, InteractableOptionComponent> returnList = new Dictionary<int, InteractableOptionComponent>();
 
-            foreach (InteractableOptionComponent interactableOption in interactables) {
-                if (interactableOption.GetType() == type) {
-                    returnList.Add(interactableOption);
+            foreach (KeyValuePair<int, InteractableOptionComponent> row in interactables) {
+                if (row.Key.GetType() == type) {
+                    returnList.Add(row.Key, row.Value);
                 }
             }
 
@@ -302,7 +307,7 @@ namespace AnyRPG {
         /// <returns></returns>
         public InteractableOptionComponent GetFirstInteractableOption(Type type) {
 
-            foreach (InteractableOptionComponent interactableOption in interactables) {
+            foreach (InteractableOptionComponent interactableOption in interactables.Values) {
                 if (interactableOption.GetType() == type) {
                     return interactableOption;
                 }
@@ -313,7 +318,8 @@ namespace AnyRPG {
 
         public void AddInteractable(InteractableOptionComponent interactableOption) {
             //Debug.Log($"{gameObject.name}.Interactable.AddInteractable()");
-            interactables.Add(interactableOption);
+            interactables.Add(interactableOptionCount, interactableOption);
+            interactableOptionCount++;
         }
 
         
@@ -346,11 +352,11 @@ namespace AnyRPG {
         public override bool UpdateOnPlayerUnitSpawn() {
             //Debug.Log($"{gameObject.name}.Interactable.UpdateOnPlayerUnitSpawn()");
 
-            foreach (InteractableOptionComponent _interactable in interactables) {
+            foreach (InteractableOptionComponent _interactable in interactables.Values) {
                 _interactable.HandlePlayerUnitSpawn();
             }
             bool preRequisitesUpdated = false;
-            foreach (InteractableOptionComponent _interactable in interactables) {
+            foreach (InteractableOptionComponent _interactable in interactables.Values) {
                 if (_interactable.PrerequisitesMet == true) {
                     preRequisitesUpdated = true;
                 }
@@ -438,7 +444,7 @@ namespace AnyRPG {
                 return false;
             }
 
-            List<InteractableOptionComponent> validInteractables = GetValidInteractables();
+            Dictionary<int, InteractableOptionComponent> validInteractables = GetValidInteractables();
             if (validInteractables.Count == 0) {
                 //if (GetValidInteractables(playerManager.UnitController.MyCharacterUnit).Count == 0) {
                 //Debug.Log($"{gameObject.name}.Interactable.InstantiateMiniMapIndicator(): No valid Interactables.  Not spawning indicator.");
@@ -496,12 +502,6 @@ namespace AnyRPG {
         }
         */
 
-        public void OpenInteractionWindow() {
-            //Debug.Log($"{gameObject.name}.Interactable.OpenInteractionWindow");
-            interactionManager.BeginInteraction(this);
-            uIManager.craftingWindow.CloseWindow();
-            uIManager.interactionWindow.OpenWindow();
-        }
 
         public void CloseInteractionWindow() {
             interactionManager.SetInteractable(null);
@@ -517,7 +517,7 @@ namespace AnyRPG {
             if (playerManager == null || playerManager.PlayerUnitSpawned == false) {
                 return false;
             }
-            List<InteractableOptionComponent> validInteractables = GetValidInteractables();
+            Dictionary<int, InteractableOptionComponent> validInteractables = GetValidInteractables();
             //List<InteractableOptionComponent> validInteractables = GetValidInteractables(playerManager.UnitController.MyCharacterUnit);
             if (validInteractables.Count > 0) {
                 return true;
@@ -530,73 +530,30 @@ namespace AnyRPG {
         /// Return true if the object trying to interact is in the trigger list (it is inside the collider and allowed to interact)
         /// </summary>
         /// <returns></returns>
-        public virtual bool Interact(CharacterUnit source, bool processRangeCheck = false) {
-            //Debug.Log($"{gameObject.name}.Interactable.Interact(" + source.DisplayName + ", " + processRangeCheck + ")");
+        public virtual bool Interact() {
+            Debug.Log($"{gameObject.name}.Interactable.Interact()");
 
             if (notInteractable == true) {
                 return false;
             }
 
-            // perform range check
-            bool passedRangeCheck = false;
-            if (processRangeCheck) {
-                Collider[] colliders = new Collider[0];
-                int playerMask = 1 << LayerMask.NameToLayer("Player");
-                int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
-                int interactableMask = 1 << LayerMask.NameToLayer("Interactable");
-                int triggerMask = 1 << LayerMask.NameToLayer("Triggers");
-                int validMask = (playerMask | characterMask | interactableMask | triggerMask);
-                Vector3 bottomPoint = new Vector3(source.Interactable.Collider.bounds.center.x,
-                    source.Interactable.Collider.bounds.center.y - source.Interactable.Collider.bounds.extents.y,
-                    source.Interactable.Collider.bounds.center.z);
-                Vector3 topPoint = new Vector3(source.Interactable.Collider.bounds.center.x,
-                    source.Interactable.Collider.bounds.center.y + source.Interactable.Collider.bounds.extents.y,
-                    source.Interactable.Collider.bounds.center.z);
-                colliders = Physics.OverlapCapsule(bottomPoint, topPoint, InteractionMaxRange, validMask);
-                foreach (Collider collider in colliders) {
-                    if (collider.gameObject == gameObject) {
-                        passedRangeCheck = true;
-                        break;
-                    }
-                }
-            }
-
-            float factionValue = PerformFactionCheck(source.UnitController);
-
             // get a list of valid interactables to determine if there is an action we can treat as default
-            List<InteractableOptionComponent> validInteractables = GetCurrentInteractables(source.UnitController, true, factionValue);
-            List<InteractableOptionComponent> finalInteractables = new List<InteractableOptionComponent>();
-            if (processRangeCheck) {
-                foreach (InteractableOptionComponent validInteractable in validInteractables) {
-                    //Debug.Log($"{gameObject.name}.Interactable.Interact(" + source.name + "): valid interactable name: " + validInteractable);
-                    if (validInteractable.CanInteract(processRangeCheck, passedRangeCheck, factionValue)) {
-                        finalInteractables.Add(validInteractable);
-                    }
-                }
-            } else {
-                finalInteractables = validInteractables;
-            }
-            // perform default interaction or open a window if there are multiple valid interactions
-            //Debug.Log($"{gameObject.name}.Interactable.Interact(): validInteractables.Count: " + validInteractables.Count);
-            // changed code, window will always be opened, and it will decide if to pop another one or not
-            if (finalInteractables.Count > 0) {
-                if (suppressInteractionWindow == true || validInteractables.Count == 1) {
-                    if (validInteractables[0].GetCurrentOptionCount() > 1) {
-                        OpenInteractionWindow();
-                    } else {
-                        validInteractables[0].Interact(playerManager.ActiveUnitController.CharacterUnit);
-                    }
-                } else {
-                    OpenInteractionWindow();
-                }
+            Dictionary<int, InteractableOptionComponent> validInteractables = GetCurrentInteractables(0f);
+            if (validInteractables.Count > 0) {
+                int key = validInteractables.Take(1).Select(d => d.Key).First();
+                validInteractables[key].Interact(null, key);
                 return true;
             }
-            if (validInteractables.Count > 0 && finalInteractables.Count == 0) {
-                if (processRangeCheck == true && passedRangeCheck == false) {
-                    source.UnitController.UnitEventController.NotifyOnMessageFeed(DisplayName + " is out of range");
-                }
-            }
+
             return false;
+        }
+
+        /// <summary>
+        /// give the interactable a chance to face the player
+        /// </summary>
+        /// <param name="unitController"></param>
+        /// <param name="factionValue"></param>
+        public virtual void InteractWithPlayer(UnitController unitController, float factionValue) {
         }
 
         public virtual void ProcessStartInteract() {
@@ -615,10 +572,10 @@ namespace AnyRPG {
             // do something in inherited class
         }
 
-        public List<InteractableOptionComponent> GetValidInteractables() {
+        public Dictionary<int, InteractableOptionComponent> GetValidInteractables() {
             //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(" + processRangeCheck + ", " + passedRangeCheck + ")");
 
-            List<InteractableOptionComponent> validInteractables = new List<InteractableOptionComponent>();
+            Dictionary<int, InteractableOptionComponent> validInteractables = new Dictionary<int, InteractableOptionComponent>();
 
             if (notInteractable == true) {
                 return validInteractables;
@@ -629,10 +586,10 @@ namespace AnyRPG {
                 return validInteractables;
             }
 
-            foreach (InteractableOptionComponent _interactable in interactables) {
-                if (_interactable != null && !_interactable.Equals(null)) {
-                    if (_interactable.GetValidOptionCount() > 0
-                        && _interactable.PrerequisitesMet
+            foreach (KeyValuePair<int, InteractableOptionComponent> interactableOption in interactables) {
+                if (interactableOption.Value != null && !interactableOption.Equals(null)) {
+                    if (interactableOption.Value.GetValidOptionCount() > 0
+                        && interactableOption.Value.PrerequisitesMet
                         //&& (processRangeCheck == false || _interactable.CanInteract())
                         ) {
 
@@ -640,7 +597,7 @@ namespace AnyRPG {
                         //if (_interactable.CanInteract(source) && _interactable.GetValidOptionCount() > 0 && _interactable.MyPrerequisitesMet) {
 
                         //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): Adding valid interactable: " + _interactable.ToString());
-                        validInteractables.Add(_interactable);
+                        validInteractables.Add(interactableOption.Key, interactableOption.Value);
                     }
                 }
             }
@@ -653,34 +610,18 @@ namespace AnyRPG {
             return 0;
         }
 
-        public List<InteractableOptionComponent> GetCurrentInteractables(UnitController sourceUnitController = null, bool overrideFactionValue = false, float factionValue = 0f) {
+        public Dictionary<int, InteractableOptionComponent> GetCurrentInteractables(float factionValue = 0f) {
             //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables()");
 
-            if (sourceUnitController == null) {
-                if (playerManager.UnitController == null) {
-                    Debug.LogWarning($"{gameObject.name}.Interactable.GetCurrentInteractables(): playerManager.ActiveCharacter is null");
-                }
-                sourceUnitController = playerManager.UnitController;
-            }
-
-            if (overrideFactionValue == false) {
-                factionValue = PerformFactionCheck(sourceUnitController);
-            }
-
             if (notInteractable == true) {
-                return new List<InteractableOptionComponent>();
+                return new Dictionary<int, InteractableOptionComponent>();
             }
 
-            if (interactables == null) {
-                //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): interactables is null.  returning null!");
-                return new List<InteractableOptionComponent>();
-            }
-
-            List<InteractableOptionComponent> currentInteractables = new List<InteractableOptionComponent>();
-            foreach (InteractableOptionComponent _interactable in interactables) {
-                if (_interactable.CanInteract(false, false, factionValue)) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = new Dictionary<int, InteractableOptionComponent>();
+            foreach (KeyValuePair<int, InteractableOptionComponent> interactableOption in interactables) {
+                if (interactableOption.Value.CanInteract(false, false, factionValue)) {
                     //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables(): Adding interactable: " + _interactable.ToString());
-                    currentInteractables.Add(_interactable);
+                    currentInteractables.Add(interactableOption.Key, interactableOption.Value);
                 } else {
                     //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): invalid interactable: " + _interactable.ToString());
                 }
@@ -826,7 +767,7 @@ namespace AnyRPG {
         /// </summary>
         public virtual void StopInteract() {
             //Debug.Log($"{gameObject.name}.Interactable.StopInteract()");
-            foreach (InteractableOptionComponent interactable in interactables) {
+            foreach (InteractableOptionComponent interactable in interactables.Values) {
                 interactable.StopInteract();
             }
             CloseInteractionWindow();
@@ -835,42 +776,45 @@ namespace AnyRPG {
         }
 
         public void OnTriggerEnter(Collider other) {
-            //Debug.Log($"{gameObject.name}.Interactable.OnTriggerEnter(" + other.gameObject.name + ")");
+            Debug.Log($"{gameObject.name}.Interactable.OnTriggerEnter({other.gameObject.name})");
 
             if (notInteractable == true) {
                 return;
             }
 
             if (isTrigger) {
-                UnitController unitController = other.gameObject.GetComponent<UnitController>();
-                // ensure ai don't accidentally trigger interactions
-                if (unitController != null && unitController == playerManager.ActiveUnitController) {
-                    //Debug.Log($"{gameObject.name}.Interactable.OnTriggerEnter(): triggered by player");
+                if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                    // triggers are server authoritative
+                    return;
+                }
 
-                    // don't clear target on interaction with trigger since it could be a door switch or cutscene switch
-                    playerManager.PlayerController.InterActWithTarget(this, false);
-                    //Interact(otherCharacterUnit);
-                } else if (interactWithAny && playerManager.ActiveUnitController.CharacterUnit != null) {
-                    Interact(playerManager.ActiveUnitController.CharacterUnit);
+                UnitController unitController = other.gameObject.GetComponent<UnitController>();
+                if (unitController != null) {
+                    unitController.UnitEventController.NotifyOnEnterInteractableTrigger(this);
+                } else if (interactWithAny) {
+                    Interact();
                 }
             }
         }
 
         public void OnTriggerExit(Collider other) {
+            Debug.Log($"{gameObject.name}.Interactable.OnTriggerExit({other.gameObject.name})");
+
             if (notInteractable == true) {
                 return;
             }
 
             if (isTrigger == true && interactOnExit == true) {
+                if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false ) {
+                    // triggers are server authoritative
+                    return;
+                }
                 UnitController unitController = other.gameObject.GetComponent<UnitController>();
                 // ensure ai don't accidentally trigger interactions
-                if (unitController != null && unitController == playerManager.ActiveUnitController) {
-                    //Debug.Log($"{gameObject.name}.Interactable.OnTriggerEnter(): triggered by player");
-                    // don't clear target on interaction with trigger since it could be a door switch or cutscene switch
-                    playerManager.PlayerController.InterActWithTarget(this, false);
-                    //Interact(otherCharacterUnit);
-                } else if (interactWithAny && playerManager.ActiveUnitController.CharacterUnit != null) {
-                    Interact(playerManager.ActiveUnitController.CharacterUnit);
+                if (unitController != null) {
+                    unitController.UnitEventController.NotifyOnEnterInteractableTrigger(this);
+                } else if (interactWithAny) {
+                    Interact();
                 }
             }
 
@@ -920,11 +864,11 @@ namespace AnyRPG {
 
             // switched this to current interactables so that we don't see mouseover options that we can't current interact with
             //List<InteractableOptionComponent> validInteractables = GetValidInteractables(playerManager.UnitController.MyCharacterUnit);
-            List<InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
+            Dictionary<int, InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
 
             // perform default interaction or open a window if there are multiple valid interactions
             List<string> returnStrings = new List<string>();
-            foreach (InteractableOptionComponent _interactable in currentInteractables) {
+            foreach (InteractableOptionComponent _interactable in currentInteractables.Values) {
                 //if (!(_interactable is INamePlateUnit)) {
                 // we already put the character name in the description so skip it here
                 returnStrings.Add(_interactable.GetSummary());
@@ -950,8 +894,8 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessStatusIndicatorSourceInit() {
-            List<InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
-            foreach (InteractableOptionComponent _interactable in currentInteractables) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
+            foreach (InteractableOptionComponent _interactable in currentInteractables.Values) {
                 //if (!(_interactable is INamePlateUnit)) {
                 // we already put the character name in the description so skip it here
                 _interactable.ProcessStatusIndicatorSourceInit();
@@ -977,7 +921,7 @@ namespace AnyRPG {
         }
 
         public override void ResetSettings() {
-            foreach (InteractableOptionComponent interactableOptionComponent in interactables) {
+            foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
                 //Debug.Log($"{gameObject.name}.Interactable.Awake(): Found InteractableOptionComponent: " + interactable.ToString());
                 if (interactableOptionComponent != null) {
                     // in rare cases where a script is missing or has been made abstract, but not updated, this can return a null interactable option
@@ -987,8 +931,8 @@ namespace AnyRPG {
             CleanupMiniMapIndicator();
             OnInteractableDisable();
 
-            interactables = new List<InteractableOptionComponent>();
-
+            interactables = new Dictionary<int, InteractableOptionComponent>();
+            interactableOptionCount = 0;
             isInteracting = false;
             miniMapIndicatorReady = false;
             isMouseOverUnit = false;

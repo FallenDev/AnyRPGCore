@@ -63,7 +63,7 @@ namespace AnyRPG {
             return ((playerManager.UnitController.CharacterAbilityManager.HasAbility(Props.Ability) == true) ? 1 : 0);
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             base.Interact(source, optionIndex);
 
             if (Props == null || Props.Ability == null) {

@@ -58,7 +58,7 @@ namespace AnyRPG {
             ClearLootTables();
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.LootableNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");

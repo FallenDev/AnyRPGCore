@@ -75,7 +75,7 @@ namespace AnyRPG {
             return false;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".CharacterUnit.Interact(" + source.DisplayName + ")");
 
             float relationValue = interactable.PerformFactionCheck(playerManager.UnitController);

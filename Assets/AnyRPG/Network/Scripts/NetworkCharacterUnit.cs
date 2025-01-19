@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace AnyRPG {
@@ -27,8 +28,10 @@ namespace AnyRPG {
         private UnitProfile unitProfile = null;
         private UnitController unitController = null;
 
+        public UnitController UnitController { get => unitController; }
+
         protected override void Awake() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
             base.Awake();
 
             /*
@@ -147,6 +150,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnGainXP += HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
+            //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -171,6 +175,27 @@ namespace AnyRPG {
             unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
+            //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
+
+        }
+
+        /*
+        private void HandleEnterInteractableTriggerServer(Interactable triggerInteractable) {
+            NetworkInteractable networkTarget = null;
+            if (triggerInteractable != null) {
+                networkTarget = triggerInteractable.GetComponent<NetworkInteractable>();
+            }
+
+        }
+        */
+
+        [ObserversRpc]
+        public void HandleEnterInteractableTriggerClient(NetworkInteractable networkInteractable) {
+            Interactable triggerInteractable = null;
+            if (networkInteractable != null) {
+                triggerInteractable = networkInteractable.Interactable;
+            }
+            unitController.UnitEventController.NotifyOnEnterInteractableTrigger(triggerInteractable);
         }
 
         /*
@@ -232,10 +257,10 @@ namespace AnyRPG {
             Interactable target = null;
             Interactable originalTarget = null;
             if (networkTarget != null) {
-                target = networkTarget.interactable;
+                target = networkTarget.Interactable;
             }
             if (networkOriginalTarget != null) {
-                originalTarget = networkOriginalTarget.interactable;
+                originalTarget = networkOriginalTarget.Interactable;
             }
             unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, new AbilityEffectContext(unitController));
         }
@@ -285,7 +310,7 @@ namespace AnyRPG {
             Debug.Log($"{gameObject.name}.HandleEnterCombatClient()");
             
             if (networkInteractable != null) {
-                unitController.CharacterCombat.EnterCombat(networkInteractable.interactable);
+                unitController.CharacterCombat.EnterCombat(networkInteractable.Interactable);
             }
         }
 
@@ -340,7 +365,7 @@ namespace AnyRPG {
         private void HandleSetTargetServer(NetworkInteractable networkInteractable) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
 
-            unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
+            unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
         }
 
         private void HandleUnitNameChange(string characterName) {
@@ -351,13 +376,13 @@ namespace AnyRPG {
 
         [ServerRpc]
         private void HandleUnitNameChangeServer(string characterName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChangeServer({characterName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChangeServer({characterName})");
 
             this.characterName.Value = characterName;
         }
 
         private void HandleNameSync(string oldValue, string newValue, bool asServer) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleNameSync({oldValue}, {newValue}, {asServer})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleNameSync({oldValue}, {newValue}, {asServer})");
 
             unitController.BaseCharacter.ChangeCharacterName(newValue);
         }

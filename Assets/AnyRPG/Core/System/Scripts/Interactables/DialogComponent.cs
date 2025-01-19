@@ -54,7 +54,7 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".DialogInteractable.Interact()");
             List<Dialog> currentList = GetCurrentOptionList();
             if (currentList.Count == 0) {

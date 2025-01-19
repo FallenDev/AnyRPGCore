@@ -114,7 +114,7 @@ namespace AnyRPG {
         }
 
         public UnitController CompleteCharacterRequest(GameObject characterGameObject, CharacterRequestData characterRequestData, bool isOwner) {
-            Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {isOwner})");
+            //Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {isOwner})");
 
             UnitController unitController = ConfigureUnitController(characterRequestData, characterGameObject, isOwner);
             if (unitController == null) {
@@ -299,7 +299,7 @@ namespace AnyRPG {
         /// <param name="settingsTransform"></param>
         /// <returns></returns>
         public GameObject SpawnModelPrefab(UnitController unitController, UnitProfile unitProfile, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
+            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
 
             if (modelSpawnRequests.ContainsKey(unitController) == false) {
                 return null;

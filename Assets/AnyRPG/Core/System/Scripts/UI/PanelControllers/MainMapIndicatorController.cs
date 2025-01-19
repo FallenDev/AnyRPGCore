@@ -42,7 +42,7 @@ namespace AnyRPG {
             if (interactable == null) {
                 return;
             }
-            foreach (InteractableOptionComponent interactableOptionComponent in interactable.Interactables) {
+            foreach (InteractableOptionComponent interactableOptionComponent in interactable.Interactables.Values) {
                 //Debug.Log((interactable == null ? "null" : interactable.name) + ".MainMapIndicatorController.SetupMainMap(): checking " + _interactable.ToString());
 
                 // prioritize images - DICTIONARY DOESN'T CURRENTLY SUPPORT BOTH

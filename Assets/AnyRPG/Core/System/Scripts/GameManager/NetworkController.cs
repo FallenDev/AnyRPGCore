@@ -63,6 +63,8 @@ namespace AnyRPG {
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
+        public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
+        public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
     }
 
 }

@@ -26,7 +26,7 @@ namespace AnyRPG {
             return searchInteractable.GetFirstInteractableOption(typeof(BehaviorComponent)) as BehaviorComponent;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
             List<BehaviorProfile> currentList = GetCurrentOptionList();
             if (currentList.Count == 0) {

@@ -20,7 +20,7 @@ namespace AnyRPG {
             interactableOptionProps.InteractionPanelTitle = "Interactable";
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".ControlSwitchComponent.Interact()");
             uIManager.interactionWindow.CloseWindow();
             if (Props.ActivationLimit > 0 && activationCount >= Props.ActivationLimit) {

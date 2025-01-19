@@ -31,7 +31,7 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(CharacterUnit source, int optionIndex = 0) {
+        public override bool Interact(CharacterUnit source, int optionIndex) {
             base.Interact(source, optionIndex);
             //Debug.Log(source + " attempting to interact with " + gameObject.name);
             if (!uIManager.vendorWindow.IsOpen) {

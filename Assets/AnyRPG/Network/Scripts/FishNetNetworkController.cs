@@ -188,7 +188,7 @@ namespace AnyRPG {
 
 
         private void HandleLoadPercentChange(SceneLoadPercentEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
+            //Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
 
         }
 
@@ -390,6 +390,11 @@ namespace AnyRPG {
             clientConnector.ToggleLobbyGameReadyStatus(gameId);
         }
 
+        public override void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
+            clientConnector.InteractWithOptionClient(sourceUnitController, targetInteractable, componentIndex);
+        }
+
+
         #endregion
 
         #region server functions
@@ -483,6 +488,16 @@ namespace AnyRPG {
         public override void ReturnObjectToPool(GameObject returnedObject) {
             clientConnector.ReturnObjectToPool(returnedObject);
         }
+
+        public override void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId) {
+
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            clientConnector.AdvertiseInteractWithQuestGiver(networkInteractable, optionIndex, clientId);
+        }
+
 
         #endregion
 

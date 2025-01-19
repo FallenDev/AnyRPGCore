@@ -20,8 +20,10 @@ namespace AnyRPG {
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected LevelManager levelManager = null;
+        protected InteractionManager interactionManager = null;
 
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
+        public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -37,6 +39,7 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             levelManager = systemGameManager.LevelManager;
+            interactionManager = systemGameManager.InteractionManager;
         }
 
 
@@ -94,13 +97,26 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerEvents(UnitController unitController) {
-            Debug.Log("PlayerManagerServer.SubscribeToPlayerEvents()");
+            Debug.Log($"PlayerManagerServer.SubscribeToPlayerEvents({unitController.gameObject.name})");
+
             unitController.UnitEventController.OnKillEvent += HandleKillEvent;
+            unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTrigger;
+
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
-            Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
+            Debug.Log($"PlayerManagerServer.UnsubscribeFromPlayerEvents({unitController.gameObject.name})");
+
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
+            unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTrigger;
+        }
+
+        private void HandleEnterInteractableTrigger(UnitController unitController, Interactable interactable) {
+            Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
+
+            if (networkManagerServer.ServerModeActive || systemGameManager.GameMode == GameMode.Local) {
+                interactionManager.InteractWithTrigger(unitController, interactable);
+            }
         }
 
         public void HandleKillEvent(UnitController unitController, UnitController killedUnitController, float creditPercent) {
@@ -169,6 +185,14 @@ namespace AnyRPG {
                 while (characterStats.Level < newLevel) {
                     characterStats.GainLevel();
                 }
+            }
+        }
+
+        public void LoadScene(string sceneName, CharacterUnit characterUnit) {
+            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {characterUnit.UnitController.gameObject.name})");
+
+            if (activePlayerLookup.ContainsKey(characterUnit.UnitController)) {
+                LoadScene(sceneName, activePlayerLookup[characterUnit.UnitController]);
             }
         }
 

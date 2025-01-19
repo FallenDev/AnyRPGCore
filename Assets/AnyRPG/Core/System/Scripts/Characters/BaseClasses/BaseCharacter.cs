@@ -111,7 +111,7 @@ namespace AnyRPG {
         }
 
         public void ChangeCharacterName(string newName) {
-            Debug.Log($"{unitController.gameObject.name}.BaseCharacter.ChangeCharactername({newName})");
+            //Debug.Log($"{unitController.gameObject.name}.BaseCharacter.ChangeCharactername({newName})");
 
             SetCharacterName(newName);
             unitController.UnitEventController.NotifyOnNameChange(newName);

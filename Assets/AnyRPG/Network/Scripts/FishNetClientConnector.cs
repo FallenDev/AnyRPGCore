@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
     public class FishNetClientConnector : ConfiguredNetworkBehaviour {
@@ -234,9 +235,9 @@ namespace AnyRPG {
             if (parentTransform != null) {
                 NetworkObject nob2 = parentTransform.GetComponent<NetworkObject>();
                 if (nob2 == null) {
-                    Debug.Log($"FishNetNetworkConnector.SpawnPrefab() could not find network object on {parentTransform.gameObject.name}");
+                    //Debug.Log($"FishNetNetworkConnector.SpawnPrefab() could not find network object on {parentTransform.gameObject.name}");
                 } else {
-                    Debug.Log($"FishNetNetworkConnector.SpawnPrefab() found a network object on {parentTransform.gameObject.name}");
+                    //Debug.Log($"FishNetNetworkConnector.SpawnPrefab() found a network object on {parentTransform.gameObject.name}");
                     nob.SetParent(nob2);
                 }
             }
@@ -265,6 +266,7 @@ namespace AnyRPG {
 
             SceneLoadData sceneLoadData = new SceneLoadData(sceneName);
             sceneLoadData.ReplaceScenes = ReplaceOption.All;
+            sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
             //sceneLoadData.PreferredActiveScene = sceneLoadData.SceneLookupDatas[0];
             sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(sceneName));
             fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);

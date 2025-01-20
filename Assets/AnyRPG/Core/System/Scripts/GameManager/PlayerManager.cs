@@ -263,14 +263,14 @@ namespace AnyRPG {
                 }
             }
 
+            // server does not spawn players
             if (systemGameManager.GameMode == GameMode.Network  && networkManagerServer.ServerModeActive == true) {
                 return;
             }
 
-            Vector3 spawnRotation = levelManager.GetSpawnRotation();
-            Vector3 spawnLocation = SpawnPlayerUnit();
+            LoadSceneRequest spawnSettings = SpawnPlayerUnit();
             //cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, activeUnitController.transform.forward);
-            cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, spawnRotation);
+            cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
         }
 
         public void PlayLevelUpEffects(int newLevel) {
@@ -376,39 +376,30 @@ namespace AnyRPG {
             }
         }
 
-        public Vector3 SpawnPlayerUnit() {
+        public LoadSceneRequest SpawnPlayerUnit() {
             //Debug.Log("PlayerManager.SpawnPlayerUnit()");
 
             cameraManager.HidePlayers();
             subscribeToTargetReady = true;
-            Vector3 spawnLocation = levelManager.GetSpawnLocation();
-            SpawnPlayerUnit(spawnLocation);
-            return spawnLocation;
+            return SpawnPlayerUnit(networkManagerClient.ClientId);
         }
 
-        public void SpawnPlayerUnit(Vector3 spawnLocation) {
-            Debug.Log($"PlayerManager.SpawnPlayerUnit({spawnLocation}");
+        public LoadSceneRequest SpawnPlayerUnit(int clientId) {
+            Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId}");
 
             if (activeUnitController != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
-                return;
+                return null;
             }
-
-            /*
-            if (playerConnectionObject == null) {
-                //Debug.Log("PlayerManager.SpawnPlayerUnit(): playerConnectionObject is null, instantiating connection!");
-                SpawnPlayerConnection();
-            }
-            */
 
             // spawn the player unit and set references
-            Vector3 spawnRotation = levelManager.GetSpawnRotation();
+            LoadSceneRequest loadSceneRequest = levelManager.GetLoadSceneSettings(clientId);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
                 // load lobby player
                 UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerClient.LobbyGame.PlayerList[networkManagerClient.ClientId].unitProfileName);
                 if (unitProfile == null) {
-                    return;
+                    return null;
                 }
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
@@ -416,7 +407,7 @@ namespace AnyRPG {
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
-                characterManager.SpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, spawnLocation, spawnRotation);
+                characterManager.SpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
             } else {
                 // load MMO or local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
@@ -425,9 +416,9 @@ namespace AnyRPG {
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
-                characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, spawnLocation, spawnRotation);
+                characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
             }
-
+            return loadSceneRequest;
         }
 
         private bool OwnPlayer(UnitController unitController, CharacterRequestData characterRequestData) {

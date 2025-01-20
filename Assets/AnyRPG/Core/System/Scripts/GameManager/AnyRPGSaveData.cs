@@ -25,6 +25,7 @@ namespace AnyRPG {
         public float PlayerRotationX;
         public float PlayerRotationY;
         public float PlayerRotationZ;
+        public string OverrideLocationTag = string.Empty;
         public string appearanceString = string.Empty;
         public string CurrentScene = string.Empty;
         public string DataCreatedOn = string.Empty;

@@ -10,6 +10,7 @@ namespace AnyRPG {
 
         // game manager references
         protected LevelManager levelManager = null;
+        protected PlayerManagerServer playerManagerServer = null;
 
         public PortalProps Props { get => interactableOptionProps as PortalProps; }
 
@@ -19,6 +20,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             levelManager = systemGameManager.LevelManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public override bool Interact(CharacterUnit source, int optionIndex) {
@@ -28,16 +30,20 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             uIManager.interactionWindow.CloseWindow();
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
+            LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
             if (Props.OverrideSpawnDirection == true) {
-                levelManager.SetSpawnRotationOverride(Props.SpawnForwardDirection);
+                loadSceneRequest.overrideSpawnDirection = true;
+                loadSceneRequest.spawnForwardDirection = Props.SpawnForwardDirection;
             }
             if (Props.OverrideSpawnLocation == true) {
-                levelManager.SetSpawnLocationOverride(Props.SpawnLocation);
+                loadSceneRequest.overrideSpawnLocation = true;
+                loadSceneRequest.spawnLocation = Props.SpawnLocation;
             } else {
                 if (Props.LocationTag != null && Props.LocationTag != string.Empty) {
-                    levelManager.OverrideSpawnLocationTag = Props.LocationTag;
+                    loadSceneRequest.locationTag = Props.LocationTag;
                 }
             }
+            playerManagerServer.AddSpawnRequest(source.UnitController, loadSceneRequest);
             return true;
         }
 

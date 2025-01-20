@@ -40,6 +40,7 @@ namespace AnyRPG {
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
         public abstract void StartLobbyGame(int gameId);
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
+        public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
 
         // server functions
         public abstract void StartServer();
@@ -64,7 +65,7 @@ namespace AnyRPG {
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
         public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
-        public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
+        public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
     }
 
 }

@@ -575,7 +575,7 @@ namespace AnyRPG {
                 playerCharacterSaveData.SaveData.CurrentScene = systemConfigurationManager.DefaultStartingZone;
             }
             if (faction != null) {
-                levelManager.OverrideSpawnLocationTag = faction.DefaultStartingLocationTag;
+                playerCharacterSaveData.SaveData.OverrideLocationTag = faction.DefaultStartingLocationTag;
             }
 
             OnSetFaction(newFaction);
@@ -608,6 +608,8 @@ namespace AnyRPG {
 
             playerCharacterSaveData.SaveData.characterRace = characterRace.ResourceName;
 
+            // this code seems like a copy and paste that was never removed.  Monitor for breakage.
+            /*
             if (faction != null && faction.DefaultStartingZone != string.Empty) {
                 playerCharacterSaveData.SaveData.CurrentScene = faction.DefaultStartingZone;
             } else {
@@ -616,6 +618,7 @@ namespace AnyRPG {
             if (faction != null) {
                 levelManager.OverrideSpawnLocationTag = faction.DefaultStartingLocationTag;
             }
+            */
 
             OnSetCharacterRace(characterRace);
         }

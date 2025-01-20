@@ -8,18 +8,9 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class LoadSceneComponent : PortalComponent {
 
-        // game manager references
-        private PlayerManagerServer playerManagerServer = null;
-
         public LoadSceneProps LoadSceneProps { get => interactableOptionProps as LoadSceneProps; }
 
         public LoadSceneComponent(Interactable interactable, LoadSceneProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-        }
-
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public override bool Interact(CharacterUnit source, int optionIndex) {

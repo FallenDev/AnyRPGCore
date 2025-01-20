@@ -498,6 +498,10 @@ namespace AnyRPG {
             clientConnector.AdvertiseInteractWithQuestGiver(networkInteractable, optionIndex, clientId);
         }
 
+        public override void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
+            clientConnector.AdvertiseAddSpawnRequestServer(clientId, loadSceneRequest);
+        }
+
 
         #endregion
 

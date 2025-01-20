@@ -23,7 +23,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private SystemAchievementManager systemAchievementManager = null;
         private NewGameManager newGameManager = null;
-        private NetworkManagerClient networkManager = null;
+        private NetworkManagerClient networkManagerClient = null;
         private LoadGameManager loadGameManager = null;
 
         private string jsonSavePath = string.Empty;
@@ -84,7 +84,7 @@ namespace AnyRPG {
             messageFeedManager = uIManager.MessageFeedManager;
             actionBarManager = uIManager.ActionBarManager;
             newGameManager = systemGameManager.NewGameManager;
-            networkManager = systemGameManager.NetworkManagerClient;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
             loadGameManager = systemGameManager.LoadGameManager;
         }
 
@@ -1175,7 +1175,7 @@ namespace AnyRPG {
         private void CreateNetworkGame(PlayerCharacterSaveData playerCharacterSaveData) {
             Debug.Log("Savemanager.CreateNetworkGame(AnyRPGSaveData)");
 
-            networkManager.CreatePlayerCharacter(playerCharacterSaveData.SaveData);
+            networkManagerClient.CreatePlayerCharacter(playerCharacterSaveData.SaveData);
         }
 
         private void CreateLocalGame(PlayerCharacterSaveData playerCharacterSaveData) {
@@ -1370,13 +1370,17 @@ namespace AnyRPG {
 
             uIManager.loadGameWindow.CloseWindow();
 
+            LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
             // configure location and rotation overrides
             if (playerCharacterSaveData.SaveData.OverrideLocation == true) {
-                levelManager.SetSpawnLocationOverride(playerLocation);
+                loadSceneRequest.overrideSpawnLocation = true;
+                loadSceneRequest.spawnLocation = playerLocation;
             }
             if (playerCharacterSaveData.SaveData.OverrideRotation == true) {
-                levelManager.SetSpawnRotationOverride(playerRotation);
+                loadSceneRequest.overrideSpawnDirection = true;
+                loadSceneRequest.spawnForwardDirection = playerRotation;
             }
+            levelManager.AddSpawnRequest(networkManagerClient.ClientId, loadSceneRequest);
             //levelManager.LoadLevel(anyRPGSaveData.CurrentScene, playerLocation, playerRotation);
             // load the proper level now that everything should be setup
             levelManager.LoadLevel(playerCharacterSaveData.SaveData.CurrentScene);

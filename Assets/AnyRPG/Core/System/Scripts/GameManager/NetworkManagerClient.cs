@@ -387,6 +387,10 @@ namespace AnyRPG {
         public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
             networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex);
         }
+
+        public void AdvertiseAddSpawnRequest(LoadSceneRequest loadSceneRequest) {
+            levelManager.AddSpawnRequest(ClientId, loadSceneRequest);
+        }
     }
 
     public enum NetworkClientMode { Lobby, MMO }

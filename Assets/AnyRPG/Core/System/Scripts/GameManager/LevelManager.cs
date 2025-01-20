@@ -15,10 +15,6 @@ namespace AnyRPG {
         public TextMeshProUGUI finishedLoadingText;
 
         private bool navMeshAvailable;
-        private bool overrideSpawnLocation = false;
-        private Vector3 spawnLocationOverride = Vector3.zero;
-        private bool overrideSpawnRotation = false;
-        private Vector3 spawnRotationOverride = Vector3.zero;
         private string returnSceneName = string.Empty;
         private Bounds sceneBounds;
 
@@ -34,10 +30,10 @@ namespace AnyRPG {
 
         private string defaultSpawnLocationTag = "DefaultSpawnLocation";
 
-        private string overrideSpawnLocationTag = string.Empty;
-
         // dictionary of scene file names to scene nodes for quick lookup at runtime
         private Dictionary<string, SceneNode> sceneDictionary = new Dictionary<string, SceneNode>();
+
+        private Dictionary<int, LoadSceneRequest> spawnRequests = new Dictionary<int, LoadSceneRequest>();
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
@@ -53,7 +49,6 @@ namespace AnyRPG {
         //public Vector3 SpawnRotationOverride { get => spawnRotationOverride; set => spawnRotationOverride = value; }
         //public Vector3 SpawnLocationOverride { get => spawnLocationOverride; set => spawnLocationOverride = value; }
         public string ReturnSceneName { get => returnSceneName; set => returnSceneName = value; }
-        public string OverrideSpawnLocationTag { get => overrideSpawnLocationTag; set => overrideSpawnLocationTag = value; }
         public bool LoadingLevel { get => loadingLevel; set => loadingLevel = value; }
         public string ActiveSceneName { get => activeSceneName; set => activeSceneName = value; }
         public Bounds SceneBounds { get => sceneBounds; }
@@ -139,76 +134,56 @@ namespace AnyRPG {
             return activeSceneNode;
         }
 
-        public void SetSpawnRotationOverride(Vector3 spawnRotation) {
-            //Debug.Log("LevelManager.SetSpawnRotationOverride(" + spawnRotation + ")");
-            overrideSpawnRotation = true;
-            spawnRotationOverride = spawnRotation;
-        }
-
-        public void SetSpawnLocationOverride(Vector3 spawnLocation) {
-            //Debug.Log("LevelManager.SetSpawnLocationOverride(" + spawnLocation + ")");
-            overrideSpawnLocation = true;
-            spawnLocationOverride = spawnLocation;
-        }
-
-        public Vector3 GetSpawnLocation() {
-            //Debug.Log("LevelManager.GetSpawnLocation(): scene is: " + SceneManager.GetActiveScene().name);
-            // test : disable this, it was preventing games with no scene nodes from recalling save position
-            //if (activeSceneNode != null) {
-            if (overrideSpawnLocation == true) {
-                //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
-                Vector3 returnValue = spawnLocationOverride;
-
-                // reset to default so the next level loaded will not attempt to use this spawn location override
-                overrideSpawnLocation = false;
-                spawnLocationOverride = Vector3.zero;
-
-                // return original value
-                return returnValue;
+        public void AddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
+            if (spawnRequests.ContainsKey(clientId)) {
+                spawnRequests[clientId] = loadSceneRequest;
             } else {
-                string usedTag = defaultSpawnLocationTag;
-                if (overrideSpawnLocationTag != null && overrideSpawnLocationTag != string.Empty) {
-                    usedTag = overrideSpawnLocationTag;
-                }
-                //Debug.Log("Levelmanager.GetSpawnLocation(). usedTag: " + usedTag);
-                GameObject spawnLocationMarker = GameObject.FindWithTag(usedTag);
-                overrideSpawnLocationTag = string.Empty;
-
-                // if the prefered tag was found, us it, otherwise fall back to the default tag
-                if (spawnLocationMarker != null) {
-                    //Debug.Log("Levelmanager.GetSpawnLocation(). Found an object tagged " + usedTag + ". returning " + defaultspawnLocationMarker.transform.position);
-                    if (overrideSpawnRotation == false) {
-                        SetSpawnRotationOverride(spawnLocationMarker.transform.forward);
-                    }
-                    return spawnLocationMarker.transform.position;
-                }
+                spawnRequests.Add(clientId, loadSceneRequest);
             }
-            //}
-
-            // no override was set.  fall back to default
-            GameObject defaultspawnLocationMarker = GameObject.FindWithTag(defaultSpawnLocationTag);
-            if (defaultspawnLocationMarker != null) {
-                //Debug.Log("Levelmanager.GetSpawnLocation(). Found an object tagged " + defaultSpawnLocationTag + ". returning " + defaultspawnLocationMarker.transform.position);
-                if (overrideSpawnRotation == false) {
-                    SetSpawnRotationOverride(defaultspawnLocationMarker.transform.forward);
-                }
-                return defaultspawnLocationMarker.transform.position;
-            }
-
-            //Debug.Log("LevelManager.GetSpawnLocation(): Could not find level in configured list.  Return default(0,0,0)");
-            return Vector3.zero;
         }
 
-        public Vector3 GetSpawnRotation() {
-            //Debug.Log("Levelmanager.GetSpawnRotation() " + spawnRotationOverride);
-            Vector3 returnValue = spawnRotationOverride;
+        public void RemoveSpawnRequest(int clientId) {
+            spawnRequests.Remove(clientId);
+        }
 
-            // reset to default so the next level loaded will not attempt to use this spawn location override
-            overrideSpawnRotation = false;
-            spawnRotationOverride = Vector3.zero;
 
-            // return original value
-            return returnValue;
+        public LoadSceneRequest GetLoadSceneSettings(int clientId) {
+            //Debug.Log("LevelManager.GetSpawnLocation(): scene is: " + SceneManager.GetActiveScene().name);
+            LoadSceneRequest inputLoadSceneRequest = null;
+            LoadSceneRequest outputLoadSceneRequest = new LoadSceneRequest();
+
+            if (spawnRequests.ContainsKey(clientId)) {
+                inputLoadSceneRequest = spawnRequests[clientId];
+            } else {
+                inputLoadSceneRequest = new LoadSceneRequest();
+            }
+
+            if (inputLoadSceneRequest.overrideSpawnLocation == true) {
+                //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
+                outputLoadSceneRequest.spawnLocation = inputLoadSceneRequest.spawnLocation;
+            } else {
+                GameObject spawnLocationMarker = null;
+                if (inputLoadSceneRequest.locationTag != string.Empty) {
+                    spawnLocationMarker = GameObject.FindWithTag(inputLoadSceneRequest.locationTag);
+                    if (spawnLocationMarker != null) {
+                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
+                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
+                    }
+                }
+                if (spawnLocationMarker == null) {
+                    spawnLocationMarker = GameObject.FindWithTag(defaultSpawnLocationTag);
+                    if (spawnLocationMarker != null) {
+                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
+                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
+                    }
+                }
+            }
+            
+            if (inputLoadSceneRequest.overrideSpawnDirection == true) {
+                outputLoadSceneRequest.spawnForwardDirection = inputLoadSceneRequest.spawnForwardDirection;
+            }
+
+            return outputLoadSceneRequest;
         }
 
         private void DetectNavMesh() {
@@ -397,8 +372,13 @@ namespace AnyRPG {
         public void LoadCutScene(Cutscene cutscene) {
             //Debug.Log("LevelManager.LoadCutScene(" + sceneName + ")");
             if (playerManager.ActiveUnitController != null) {
-                SetSpawnRotationOverride(playerManager.ActiveUnitController.transform.forward);
-                SetSpawnLocationOverride(playerManager.ActiveUnitController.transform.position);
+                LoadSceneRequest loadSceneRequest = new LoadSceneRequest() {
+                    overrideSpawnDirection = true,
+                    spawnForwardDirection = playerManager.ActiveUnitController.transform.forward,
+                    overrideSpawnLocation = true,
+                    spawnLocation = playerManager.ActiveUnitController.transform.position
+                };
+                AddSpawnRequest(networkManagerClient.ClientId, loadSceneRequest);
             }
             returnSceneName = activeSceneNode.ResourceName;
             uIManager.CutSceneBarController.AssignCutScene(cutscene);
@@ -426,18 +406,6 @@ namespace AnyRPG {
                 cameraManager.DisableCutsceneCamera();
                 cameraManager.ActivateMainCamera();
             }
-        }
-
-        public void LoadLevel(string levelName, Vector3 spawnLocationOverride, Vector3 spawnRotationOverride) {
-            //Debug.Log("LevelManager.LoadLevel(" + levelName + ")");
-            SetSpawnRotationOverride(spawnRotationOverride);
-            LoadLevel(levelName, spawnLocationOverride);
-        }
-
-        public void LoadLevel(string levelName, Vector3 spawnLocation) {
-            //Debug.Log("LevelManager.LoadLevel(" + levelName + ")");
-            SetSpawnLocationOverride(spawnLocation);
-            LoadLevel(levelName);
         }
 
         /// <summary>

@@ -570,6 +570,17 @@ namespace AnyRPG {
             networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex);
         }
 
+        public void AdvertiseAddSpawnRequestServer(int clientId, LoadSceneRequest loadSceneRequest) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
+                AdvertiseAddSpawnRequestClient(fishNetNetworkManager.ServerManager.Clients[clientId], loadSceneRequest);
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, LoadSceneRequest loadSceneRequest) {
+            networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
+        }
+
         /*
         public override void OnStartServer() {
             base.OnStartServer();

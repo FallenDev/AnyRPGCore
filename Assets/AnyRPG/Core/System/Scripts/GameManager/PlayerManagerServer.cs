@@ -233,17 +233,20 @@ namespace AnyRPG {
 
             // local mode active, continue with teleport
             if (teleportEffectProperties.levelName != null) {
+                LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
                 if (teleportEffectProperties.overrideSpawnDirection == true) {
-                    levelManager.SetSpawnRotationOverride(teleportEffectProperties.spawnForwardDirection);
+                    loadSceneRequest.overrideSpawnDirection = true;
+                    loadSceneRequest.spawnForwardDirection = teleportEffectProperties.spawnForwardDirection;
                 }
                 if (teleportEffectProperties.overrideSpawnLocation == true) {
-                    levelManager.LoadLevel(teleportEffectProperties.levelName, teleportEffectProperties.spawnLocation);
-                } else {
-                    if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
-                        levelManager.OverrideSpawnLocationTag = teleportEffectProperties.locationTag;
-                    }
-                    levelManager.LoadLevel(teleportEffectProperties.levelName);
+                    loadSceneRequest.overrideSpawnLocation = true;
+                    loadSceneRequest.spawnLocation = teleportEffectProperties.spawnLocation;
                 }
+                if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
+                    loadSceneRequest.locationTag = teleportEffectProperties.locationTag;
+                }
+                levelManager.AddSpawnRequest(activePlayerLookup[unitController] , loadSceneRequest);
+                levelManager.LoadLevel(teleportEffectProperties.levelName);
             }
         }
 
@@ -253,6 +256,16 @@ namespace AnyRPG {
             }
             activePlayers[clientId].Despawn(0, false, true);
             RemoveActivePlayer(clientId);
+        }
+
+        public void AddSpawnRequest(UnitController unitController, LoadSceneRequest loadSceneRequest) {
+            if (activePlayerLookup.ContainsKey(unitController)) {
+                if (networkManagerServer.ServerModeActive == true) {
+                    networkManagerServer.AdvertiseAddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+                } else {
+                    levelManager.AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+                }
+            }
         }
     }
 

@@ -48,6 +48,7 @@ namespace AnyRPG {
         protected CharacterCreatorInteractableManager characterCreatorInteractableManager = null;
         protected ObjectPooler objectPooler = null;
         protected SystemDataFactory systemDataFactory = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public UnitProfile UnitProfile { get => unitProfile; set => unitProfile = value; }
         public UnitType UnitType { get => unitType; set => unitType = value; }
@@ -79,6 +80,7 @@ namespace AnyRPG {
             characterCreatorInteractableManager = systemGameManager.CharacterCreatorInteractableManager;
             objectPooler = systemGameManager.ObjectPooler;
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         private void AddDefaultAppearancePanel() {
@@ -252,11 +254,16 @@ namespace AnyRPG {
             }
 
             // Always despawn units if their appearance changes.
-            Vector3 currentPlayerLocation = playerManager.ActiveUnitController.transform.position;
-            levelManager.SetSpawnRotationOverride(playerManager.ActiveUnitController.transform.forward);
+            LoadSceneRequest loadSceneRequest = new LoadSceneRequest() {
+                overrideSpawnDirection = true,
+                spawnForwardDirection = playerManager.ActiveUnitController.transform.forward,
+                overrideSpawnLocation = true,
+                spawnLocation = playerManager.ActiveUnitController.transform.position
+            };
+            levelManager.AddSpawnRequest(networkManagerClient.ClientId, loadSceneRequest);
             playerManager.DespawnPlayerUnit();
             playerManager.PlayerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
-            playerManager.SpawnPlayerUnit(currentPlayerLocation);
+            playerManager.SpawnPlayerUnit();
             if (playerManager.UnitController.CharacterAbilityManager != null) {
                 playerManager.UnitController.CharacterAbilityManager.LearnDefaultAutoAttackAbility();
             }

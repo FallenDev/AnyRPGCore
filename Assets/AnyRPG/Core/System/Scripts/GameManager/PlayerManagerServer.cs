@@ -1,9 +1,6 @@
-using AnyRPG;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace AnyRPG {
     public class PlayerManagerServer : ConfiguredMonoBehaviour {
@@ -21,6 +18,7 @@ namespace AnyRPG {
         protected NetworkManagerServer networkManagerServer = null;
         protected LevelManager levelManager = null;
         protected InteractionManager interactionManager = null;
+        protected PlayerManager playerManager = null;
 
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
@@ -266,6 +264,17 @@ namespace AnyRPG {
                     levelManager.AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
                 }
             }
+        }
+
+        public void InteractWithClassChangeComponent(UnitController unitController, ClassChangeComponent classChangeComponent, int optionIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                interactionManager.InteractWithClassChangeComponent(classChangeComponent);
+            } else if (networkManagerServer.ServerModeActive) {
+                if (activePlayerLookup.ContainsKey(unitController)) {
+                    networkManagerServer.InteractWithClassChangeComponent(activePlayerLookup[unitController], classChangeComponent.Interactable, optionIndex);
+                }
+            }
+
         }
     }
 

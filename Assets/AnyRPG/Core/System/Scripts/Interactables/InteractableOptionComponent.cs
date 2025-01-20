@@ -16,6 +16,7 @@ namespace AnyRPG {
         // game manager references
         protected SystemEventManager systemEventManager = null;
         protected PlayerManager playerManager = null;
+        protected PlayerManagerServer playerManagerServer = null;
         protected UIManager uIManager = null;
 
         public Interactable Interactable { get => interactable; set => interactable = value; }
@@ -61,6 +62,7 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
             uIManager = systemGameManager.UIManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         /*

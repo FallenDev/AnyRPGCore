@@ -120,6 +120,7 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private SystemDataFactory systemDataFactory = null;
         private CharacterManager characterManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
@@ -154,6 +155,10 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
             base.Configure(systemGameManager);
 
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                gameObject.SetActive(false);
+                return;
+            }
             SetupScriptableObjects();
         }
 
@@ -163,6 +168,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
             characterManager = systemGameManager.CharacterManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         protected virtual void Start() {
@@ -172,6 +178,11 @@ namespace AnyRPG {
                 SpawnWithDelay();
             }
             CreateEventSubscriptions();
+
+            if (networkManagerServer.ServerModeActive) {
+                // server does not respond to player spawn
+                CheckPrerequisites();
+            }
         }
 
         private void CreateEventSubscriptions() {

@@ -26,8 +26,14 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
+    networkUnitPrefab: {fileID: 4649811912837811180, guid: 12c19dd49d989d944a7cfa426bb86594,
+      type: 3}
     modelPrefab: {fileID: 6954704190252621995, guid: aee242495df737442a6f4c531e848358,
       type: 3}
+    networkModelPrefab: {fileID: 6954704190252621995, guid: 5d716654f7bcb944d8161b345801e9a6,
+      type: 3}
+    modelProvider:
+      rid: -2
     animationProfileName: 
     useInlineAnimationProps: 0
     animationProps:
@@ -137,7 +143,6 @@ MonoBehaviour:
     floatHeight: 1.4
     addFloatHeightToTransform: 0
     floatTransform: 
-  isUMAUnit: 0
   isPet: 0
   flightCapable: 0
   glideCapable: 0
@@ -210,10 +215,12 @@ MonoBehaviour:
   saveOnLevelUnload: 0
   saveOnGameSave: 0
   overwriteUnitUUID: 0
-  m_UUID: 1ff96451-7f2d-4baf-8ca2-ea87a1647da4
+  m_UUID: 5bb94e4c-4242-43b1-ae86-1a5a9d982c8e
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 0
       type: {class: ClassChangeProps, ns: AnyRPG, asm: Assembly-CSharp}
       data:

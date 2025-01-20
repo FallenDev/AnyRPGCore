@@ -21,6 +21,8 @@ namespace AnyRPG {
         private UIManager uiManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private NetworkManagerClient networkManagerClient = null;
+        private ClassChangeManager classChangeManager = null;
+        private UIManager uIManager = null;
 
         /*
         public Interactable CurrentInteractable {
@@ -40,6 +42,7 @@ namespace AnyRPG {
             uiManager = systemGameManager.UIManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
+            classChangeManager = systemGameManager.ClassChangeManager;
         }
 
         public bool Interact(Interactable target) {
@@ -177,6 +180,21 @@ namespace AnyRPG {
             currentInteractableOptionComponent = interactableOptionComponent;
             SetInteractable(interactableOptionComponent.Interactable);
         }
+
+        public void InteractWithClassChangeComponent(Interactable interactable, int optionIndex) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables();
+            if (currentInteractables.ContainsKey(optionIndex)) {
+                if (currentInteractables[optionIndex] is ClassChangeComponent) {
+                    InteractWithClassChangeComponent(currentInteractables[optionIndex] as ClassChangeComponent);
+                }
+            }
+        }
+
+        public void InteractWithClassChangeComponent(ClassChangeComponent classChangeComponent) {
+            classChangeManager.SetDisplayClass(classChangeComponent.Props.CharacterClass, classChangeComponent);
+            uIManager.classChangeWindow.OpenWindow();
+        }
+
 
         //public void SetInteractableOptionManager(InteractableOptionManager interactableOptionManager) {
         //}

@@ -552,6 +552,10 @@ namespace AnyRPG {
         public void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
             networkController.AdvertiseAddSpawnRequest(clientId, loadSceneRequest);
         }
+
+        public void InteractWithClassChangeComponent(int clientId, Interactable interactable, int optionIndex) {
+            networkController.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        }
     }
 
 }

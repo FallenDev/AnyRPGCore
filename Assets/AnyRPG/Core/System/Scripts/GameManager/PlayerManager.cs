@@ -80,6 +80,7 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected CameraManager cameraManager = null;
         protected SystemAbilityController systemAbilityController = null;
+        protected ClassChangeManager classChangeManager = null;
 
         protected LogManager logManager = null;
         protected CastTargettingManager castTargettingManager = null;

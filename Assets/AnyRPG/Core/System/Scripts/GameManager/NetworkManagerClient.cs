@@ -47,6 +47,7 @@ namespace AnyRPG {
         private LevelManager levelManager = null;
         private LogManager logManager = null;
         private QuestLog questLog = null;
+        private InteractionManager interactionManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -67,6 +68,7 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             uIManager = systemGameManager.UIManager;
             logManager = systemGameManager.LogManager;
+            interactionManager = systemGameManager.InteractionManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -395,6 +397,10 @@ namespace AnyRPG {
 
         public void HandleSceneLoadPercentageChange(float percent) {
             levelManager.SetLoadingProgress(percent);
+        }
+
+        public void AdvertiseInteractWithClassChangeComponent(Interactable interactable, int optionIndex) {
+            interactionManager.InteractWithClassChangeComponent(interactable, optionIndex);
         }
     }
 

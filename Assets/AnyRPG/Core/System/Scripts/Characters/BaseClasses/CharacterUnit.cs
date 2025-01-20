@@ -85,7 +85,7 @@ namespace AnyRPG {
                 // attempt to put the caster in combat so it can unsheath bows, wands, etc
                 source.UnitController.CharacterCombat.Attack(unitController, true);
 
-                uIManager.interactionWindow.CloseWindow();
+                //uIManager.interactionWindow.CloseWindow();
                 return true;
             }
             //return true;

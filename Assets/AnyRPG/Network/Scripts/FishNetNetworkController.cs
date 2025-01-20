@@ -502,6 +502,9 @@ namespace AnyRPG {
             clientConnector.AdvertiseAddSpawnRequestServer(clientId, loadSceneRequest);
         }
 
+        public override void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            clientConnector.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        }
 
         #endregion
 

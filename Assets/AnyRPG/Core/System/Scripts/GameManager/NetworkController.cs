@@ -63,6 +63,7 @@ namespace AnyRPG {
         public abstract void ReturnObjectToPool(GameObject returnedObject);
         public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
+        public abstract void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
     }
 
 }

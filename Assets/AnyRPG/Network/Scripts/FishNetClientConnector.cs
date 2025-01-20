@@ -609,6 +609,25 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
         }
 
+        public void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
+                NetworkInteractable networkInteractable = null;
+                if (interactable != null) {
+                    networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                }
+                AdvertiseInteractWithClassChangeComponent(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseInteractWithClassChangeComponent(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
+            Interactable interactable = null;
+            if (networkInteractable != null) {
+                interactable = networkInteractable.Interactable;
+            }
+            networkManagerClient.AdvertiseInteractWithClassChangeComponent(interactable, optionIndex);
+        }
+
         /*
         public override void OnStartServer() {
             base.OnStartServer();

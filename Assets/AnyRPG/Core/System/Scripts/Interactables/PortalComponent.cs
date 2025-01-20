@@ -10,7 +10,6 @@ namespace AnyRPG {
 
         // game manager references
         protected LevelManager levelManager = null;
-        protected PlayerManagerServer playerManagerServer = null;
 
         public PortalProps Props { get => interactableOptionProps as PortalProps; }
 
@@ -20,7 +19,6 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             levelManager = systemGameManager.LevelManager;
-            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public override bool Interact(CharacterUnit source, int optionIndex) {

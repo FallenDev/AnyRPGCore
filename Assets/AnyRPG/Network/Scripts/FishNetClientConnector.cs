@@ -43,6 +43,41 @@ namespace AnyRPG {
             this.fishNetNetworkManager = networkManager;
         }
 
+        public override void OnStartClient() {
+            base.OnStartClient();
+            //Debug.Log($"FishNetNetworkConnector.OnStartClient() ClientId: {networkManager.ClientManager.Connection.ClientId}");
+
+            //systemGameManager.NetworkManager.ProcessLoginSuccess();
+            systemGameManager.UIManager.ProcessLoginSuccess();
+            SubscribeToClientEvents();
+        }
+
+        public override void OnStopClient() {
+            base.OnStopClient();
+
+            UnsubscribeFromClientEvents();
+        }
+
+        public void SubscribeToClientEvents() {
+            fishNetNetworkManager.SceneManager.OnLoadStart += HandleLoadStart;
+            fishNetNetworkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
+        }
+
+
+        public void UnsubscribeFromClientEvents() {
+            fishNetNetworkManager.SceneManager.OnLoadStart += HandleLoadStart;
+            fishNetNetworkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
+        }
+
+        public void HandleLoadStart(SceneLoadStartEventArgs args) {
+            networkManagerClient.HandleSceneLoadStart(args.QueueData.SceneLoadData.GetFirstLookupScene().name);
+        }
+
+        public void HandleLoadPercentChange(SceneLoadPercentEventArgs args) {
+            networkManagerClient.HandleSceneLoadPercentageChange(args.Percent);
+        }
+
+
         [ServerRpc(RequireOwnership = false)]
         public void SpawnPlayer(int clientSpawnRequestId, int playerCharacterId, Transform parentTransform, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.SpawnPlayer({clientSpawnRequestId}, {playerCharacterId})");
@@ -361,13 +396,6 @@ namespace AnyRPG {
             systemGameManager.LoadGameManager.SetCharacterList(playerCharacterSaveDataList);
         }
 
-        public override void OnStartClient() {
-            base.OnStartClient();
-            //Debug.Log($"FishNetNetworkConnector.OnStartClient() ClientId: {networkManager.ClientManager.Connection.ClientId}");
-
-            //systemGameManager.NetworkManager.ProcessLoginSuccess();
-            systemGameManager.UIManager.ProcessLoginSuccess();
-        }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestLobbyGameList(NetworkConnection networkConnection = null) {

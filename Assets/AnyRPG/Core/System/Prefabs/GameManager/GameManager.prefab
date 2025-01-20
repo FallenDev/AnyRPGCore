@@ -1031,6 +1031,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2590770383825699775}
+  - component: {fileID: 8563987440013030426}
+  - component: {fileID: 2310559591653891464}
   m_Layer: 5
   m_Name: LoadingScreen
   m_TagString: Untagged
@@ -1060,6 +1062,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8563987440013030426
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141706936954150413}
+  m_CullTransparentMesh: 1
+--- !u!114 &2310559591653891464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141706936954150413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1149392307594235776
 GameObject:
   m_ObjectHideFlags: 0
@@ -6997,8 +7037,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50759cbb8c6e47c449be3bfc820c4732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadBar: {fileID: 8647269751378741284}
-  finishedLoadingText: {fileID: 0}
 --- !u!114 &5291358111946708745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7927,6 +7965,7 @@ GameObject:
   - component: {fileID: 3310018683127147123}
   - component: {fileID: 3478581543287038846}
   - component: {fileID: 3967016110867567331}
+  - component: {fileID: 8319894954810843342}
   m_Layer: 0
   m_Name: UIManagers
   m_TagString: Untagged
@@ -7969,6 +8008,7 @@ MonoBehaviour:
   mainMapManager: {fileID: 3310018683127147123}
   miniMapManager: {fileID: 3478581543287038846}
   onScreenKeyboardManager: {fileID: 3967016110867567331}
+  loadScreenManager: {fileID: 8319894954810843342}
   inGameUI: {fileID: 6164211477587951780}
   playerUI: {fileID: 8069897384845375058}
   systemMenuUI: {fileID: 3065418867268533194}
@@ -8185,6 +8225,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6767c9f21f4e026418608fb91b28c64c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8319894954810843342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6302109279012613667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22c51eec790145a49a6e6783ac240c93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadBar: {fileID: 8647269751378741284}
+  finishedLoadingText: {fileID: 3709255656516705278}
+  backgroundImage: {fileID: 2310559591653891464}
 --- !u!1 &6420953126111558378
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,9 +10,8 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class LevelManager : ConfiguredMonoBehaviour {
 
-        [Header("Loading Screen")]
-        public Slider loadBar;
-        public TextMeshProUGUI finishedLoadingText;
+        public event System.Action<float> OnSetLoadingProgress = delegate { };
+        public event System.Action<string> OnBeginLoadingLevel = delegate { };
 
         private bool navMeshAvailable;
         private string returnSceneName = string.Empty;
@@ -20,11 +19,13 @@ namespace AnyRPG {
 
         private Coroutine loadCutSceneCoroutine = null;
         private bool loadingLevel = false;
+        private float loadingProgress = 0f;
 
         private bool levelManagerInitialized = false;
 
         private SceneNode activeSceneNode = null;
         private string activeSceneName = string.Empty;
+        private SceneNode loadingSceneNode = null;
 
         private TerrainDetector terrainDetector = null;
 
@@ -52,6 +53,7 @@ namespace AnyRPG {
         public bool LoadingLevel { get => loadingLevel; set => loadingLevel = value; }
         public string ActiveSceneName { get => activeSceneName; set => activeSceneName = value; }
         public Bounds SceneBounds { get => sceneBounds; }
+        public SceneNode LoadingSceneNode { get => loadingSceneNode; set => loadingSceneNode = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -430,10 +432,11 @@ namespace AnyRPG {
             uIManager.DeactivateInGameUI();
             uIManager.DeactivateSystemMenuUI();
 
-            SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
-            if (sceneNode != null) {
-                StartLoadAsync(sceneNode.SceneFile);
+            loadingSceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
+            if (loadingSceneNode != null) {
+                StartLoadAsync(loadingSceneNode.SceneFile);
             } else {
+
                 StartLoadAsync(levelName);
                 //Debug.LogError("LevelManager.LoadLevel(" + levelName + "): could not find scene node with that name!");
             }
@@ -475,13 +478,18 @@ namespace AnyRPG {
             //}
         }
 
+        public void SetLoadingProgress(float newProgress) {
+            loadingProgress = newProgress;
+            OnSetLoadingProgress(newProgress);
+        }
 
         IEnumerator LoadAsynchronously(string sceneName) { // scene name is just the name of the current scene being loaded
             //Debug.Log("LevelManager.LoadAsynchronously(" + sceneName + ")");
 
-            uIManager.ActivateLoadingUI();
+            NotifyOnBeginLoadingLevel(sceneName);
+
             // try initial value
-            loadBar.value = 0.1f;
+            SetLoadingProgress(0.1f);
             AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
             if (operation == null) {
                 //Debug.Log("LevelManager.LoadAsynchronously(" + sceneName + "): Could not create load operation!");
@@ -492,7 +500,7 @@ namespace AnyRPG {
 
                 while (!operation.isDone) {
                     float progress = Mathf.Clamp01(operation.progress / .9f);
-                    loadBar.value = progress;
+                    SetLoadingProgress(progress);
 
                     /*
                     if (operation.progress >= 0.9f) {
@@ -509,6 +517,10 @@ namespace AnyRPG {
                 // deactivate loading menu
                 //uIManager.DeactivateLoadingUI();
             }
+        }
+
+        public void NotifyOnBeginLoadingLevel(string sceneName) {
+            OnBeginLoadingLevel(sceneName);
         }
 
 

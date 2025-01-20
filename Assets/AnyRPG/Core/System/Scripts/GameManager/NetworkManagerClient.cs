@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace AnyRPG {
     public class NetworkManagerClient : ConfiguredMonoBehaviour {
@@ -390,6 +387,14 @@ namespace AnyRPG {
 
         public void AdvertiseAddSpawnRequest(LoadSceneRequest loadSceneRequest) {
             levelManager.AddSpawnRequest(ClientId, loadSceneRequest);
+        }
+
+        public void HandleSceneLoadStart(string sceneName) {
+            levelManager.NotifyOnBeginLoadingLevel(sceneName);
+        }
+
+        public void HandleSceneLoadPercentageChange(float percent) {
+            levelManager.SetLoadingProgress(percent);
         }
     }
 

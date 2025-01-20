@@ -38,6 +38,9 @@ namespace AnyRPG {
         [SerializeField]
         private OnScreenKeyboardManager onScreenKeyboardManager = null;
 
+        [SerializeField]
+        private LoadScreenManager loadScreenManager = null;
+
         [Header("UI Elements")]
 
         [SerializeField]
@@ -323,6 +326,7 @@ namespace AnyRPG {
         public CloseableWindow FloatingCastBarWindow { get => floatingCastBarWindow; }
         public CloseableWindow XPBarWindow { get => xpBarWindow; }
         public CloseableWindow GamepadWindow { get => gamepadWindow; set => gamepadWindow = value; }
+        public LoadScreenManager LoadScreenManager { get => loadScreenManager; set => loadScreenManager = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -336,7 +340,7 @@ namespace AnyRPG {
             mainMapManager.Configure(systemGameManager);
             miniMapManager.Configure(systemGameManager);
             onScreenKeyboardManager.Configure(systemGameManager);
-
+            loadScreenManager.Configure(systemGameManager);
 
             // initialize ui elements
             cutSceneBarController.Configure(systemGameManager);

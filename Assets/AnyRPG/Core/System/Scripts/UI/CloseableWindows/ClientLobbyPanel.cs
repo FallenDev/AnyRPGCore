@@ -127,7 +127,7 @@ namespace AnyRPG {
 
 
         public void PopulatePlayerList(Dictionary<int, string> userNames) {
-            Debug.Log($"ClientLobbyPanelController.PopulatePlayerList()");
+            //Debug.Log($"ClientLobbyPanelController.PopulatePlayerList()");
 
             foreach (KeyValuePair<int, string> loggedInAccount in userNames) {
                 AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value);
@@ -135,7 +135,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int clientId, string userName) {
-            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({userName})");
+            //Debug.Log($"ClientLobbyPanelController.AddPlayerToList({userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyConnectionButton clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButton>();
@@ -146,7 +146,7 @@ namespace AnyRPG {
         }
 
         public void RemovePlayerFromList(int clientId) {
-            Debug.Log($"ClientLobbyPanelController.RemovePlayerFromList({clientId})");
+            //Debug.Log($"ClientLobbyPanelController.RemovePlayerFromList({clientId})");
 
             if (playerButtons.ContainsKey(clientId)) {
                 //uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);

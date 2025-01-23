@@ -39,7 +39,7 @@ namespace AnyRPG {
         }
 
         public void SetReadyStatus(bool ready) {
-            Debug.Log($"ClientPlayerLobbyGameConnectionButton.SetReadyStatus({ready})");
+            //Debug.Log($"ClientPlayerLobbyGameConnectionButton.SetReadyStatus({ready})");
             if (ready) {
                 readyText.text = "Ready";
             } else {

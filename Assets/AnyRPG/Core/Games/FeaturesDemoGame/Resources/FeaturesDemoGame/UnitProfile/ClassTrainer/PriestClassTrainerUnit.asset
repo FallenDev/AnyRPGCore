@@ -30,7 +30,7 @@ MonoBehaviour:
       type: 3}
     modelPrefab: {fileID: 6954704190252621995, guid: aee242495df737442a6f4c531e848358,
       type: 3}
-    networkModelPrefab: {fileID: 6954704190252621995, guid: 5d716654f7bcb944d8161b345801e9a6,
+    networkModelPrefab: {fileID: 5363964578825517284, guid: 91351623174c98e4bb3603225a7c263c,
       type: 3}
     modelProvider:
       rid: -2

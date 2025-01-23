@@ -183,7 +183,7 @@ namespace AnyRPG {
         }
 
         public void PopulatePlayerList(Dictionary<int, LobbyGamePlayerInfo> userNames) {
-            Debug.Log($"ClientLobbyGamePanel.PopulatePlayerList({userNames.Count})");
+            //Debug.Log($"ClientLobbyGamePanel.PopulatePlayerList({userNames.Count})");
 
             foreach (KeyValuePair<int, LobbyGamePlayerInfo> loggedInAccount in userNames) {
                 AddPlayerToList(loggedInAccount.Key, loggedInAccount.Value.userName, loggedInAccount.Value.unitProfileName);
@@ -194,7 +194,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int clientId, string userName, string unitProfileName) {
-            Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({clientId}, {userName})");
+            //Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({clientId}, {userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton = go.GetComponent<ClientPlayerLobbyGameConnectionButton>();
@@ -252,7 +252,7 @@ namespace AnyRPG {
         }
 
         public void HandleSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
+            //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
 
             if (networkManagerClient.LobbyGame.gameId != gameId) {
                 return;

@@ -363,13 +363,13 @@ namespace AnyRPG {
 
         [ServerRpc]
         private void HandleSetTargetServer(NetworkInteractable networkInteractable) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
 
             unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
         }
 
         private void HandleUnitNameChange(string characterName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChange({characterName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChange({characterName})");
 
             HandleUnitNameChangeServer(characterName);
         }
@@ -388,13 +388,21 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+
+            if (base.Owner != null ) {
+                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner clientId: {base.Owner.ClientId} {base.OwnerId}");
+            }
 
             unitProfile = systemGameManager.SystemDataFactory.GetResource<UnitProfile>(unitProfileName.Value);
             CharacterConfigurationRequest characterConfigurationRequest;
             if (isOwner && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value)) {
                 systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
+            } else if (base.OwnerId == -1 && networkManagerServer.ServerModeActive == true && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value) == true) {
+                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner is -1");
+                systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
             } else {
+                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) falling back to creating new config request");
                 characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
                 characterConfigurationRequest.characterName = characterName.Value;
                 characterConfigurationRequest.unitLevel = unitLevel.Value;

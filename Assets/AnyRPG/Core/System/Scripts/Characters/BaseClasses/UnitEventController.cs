@@ -120,7 +120,7 @@ namespace AnyRPG {
         #region EventNotifications
 
         public void NotifyOnDespawn(UnitController despawnController) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawn()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawn()");
 
             OnDespawn(despawnController);
         }

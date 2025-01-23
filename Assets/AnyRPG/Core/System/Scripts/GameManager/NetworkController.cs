@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
 
@@ -64,6 +65,8 @@ namespace AnyRPG {
         public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
         public abstract void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
+        public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
+        public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
     }
 
 }

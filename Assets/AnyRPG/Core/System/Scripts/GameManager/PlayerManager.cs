@@ -386,7 +386,7 @@ namespace AnyRPG {
         }
 
         public LoadSceneRequest SpawnPlayerUnit(int clientId) {
-            Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId}");
+            Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId})");
 
             if (activeUnitController != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
@@ -463,7 +463,7 @@ namespace AnyRPG {
         }
 
         public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
-            Debug.Log($"PlayerManager.PostInit({unitController.gameObject.name}");
+            //Debug.Log($"PlayerManager.PostInit({unitController.gameObject.name})");
 
             if (unitController.UnitModelController.ModelCreated == false) {
                 // do UMA spawn stuff to wait for UMA to spawn
@@ -635,7 +635,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerEvents() {
-            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+            //Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;
@@ -757,7 +757,7 @@ namespace AnyRPG {
         }
 
         public void HandleLearnAbility(AbilityProperties baseAbility) {
-            Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
+            //Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
 
             systemEventManager.NotifyOnAbilityListChanged(baseAbility);
             baseAbility.NotifyOnLearn();

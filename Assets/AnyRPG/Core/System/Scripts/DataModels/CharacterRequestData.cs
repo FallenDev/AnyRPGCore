@@ -14,6 +14,7 @@ namespace AnyRPG {
         public int unitLevel;
         public UnitController unitController;
         public CharacterConfigurationRequest characterConfigurationRequest;
+        public bool isServerOwned = false;
         public bool isServer = false;
         public bool isOwner = false;
 

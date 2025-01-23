@@ -7,6 +7,7 @@ using FishNet.Transporting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,28 +38,20 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
-            //Debug.Log("FishNetNetworkController.Configure()");
+            Debug.Log("FishNetNetworkController.Configure()");
 
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
-
                 //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
 
                 fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
-                fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
-                fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
-                fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+                //fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
                 fishNetNetworkManager.ServerManager.OnServerConnectionState += HandleServerConnectionState;
-                fishNetNetworkManager.ClientManager.OnAuthenticated += HandleClientAuthenticated;
                 
                 // stuff that was previously done only on active connection
                 fishNetNetworkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
-                fishNetNetworkManager.SceneManager.OnLoadStart += HandleLoadStart;
-                fishNetNetworkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
-                fishNetNetworkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
                 fishNetNetworkManager.SceneManager.OnUnloadStart += HandleUnloadStart;
-                fishNetNetworkManager.SceneManager.OnUnloadEnd += HandleUnloadEnd;
 
             } else {
                 Debug.Log("FishNetNetworkController.Configure() Could not find FishNet NetworkManager");
@@ -70,6 +63,72 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
+        }
+
+        private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
+            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+
+            serverState = obj.ConnectionState;
+            if (serverState == LocalConnectionState.Started) {
+                //Debug.Log("FishNetNetworkController.HandleServerConnectionState() Server connection started.  Activating Server Mode.");
+                systemGameManager.SetGameMode(GameMode.Network);
+                networkManagerServer.ActivateServerMode();
+                SubscribeToServerEvents();
+                InstantiateNetworkConnector();
+            } else if (serverState == LocalConnectionState.Stopping) {
+                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopping");
+            } else if (serverState == LocalConnectionState.Stopped) {
+                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopped");
+                systemGameManager.SetGameMode(GameMode.Local);
+                networkManagerServer.DeactivateServerMode();
+                UnsubscribeFromServerEvents();
+            }
+        }
+
+        public void SubscribeToServerEvents() {
+            fishNetNetworkManager.SceneManager.OnLoadEnd += HandleSceneLoadEndServer;
+            fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
+            fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+            fishNetNetworkManager.SceneManager.OnUnloadEnd += HandleUnloadEndServer;
+        }
+
+        public void UnsubscribeFromServerEvents() {
+            fishNetNetworkManager.SceneManager.OnLoadEnd -= HandleSceneLoadEndServer;
+            fishNetNetworkManager.ServerManager.OnClientKick -= HandleClientKick;
+            fishNetNetworkManager.ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
+            fishNetNetworkManager.SceneManager.OnUnloadEnd -= HandleUnloadEndServer;
+        }
+
+        private void HandleClientConnectionState(ClientConnectionStateArgs obj) {
+            Debug.Log($"HandleClientConnectionState() {obj.ConnectionState.ToString()}");
+
+            clientState = obj.ConnectionState;
+            if (clientState == LocalConnectionState.Starting) {
+                SubscribeToClientEvents();
+            } else if (clientState == LocalConnectionState.Started) {
+                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Connection Successful. Setting mode to network");
+                systemGameManager.SetGameMode(GameMode.Network);
+            } else if (clientState == LocalConnectionState.Stopping) {
+                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
+            } else if (clientState == LocalConnectionState.Stopped) {
+                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Setting mode to local");
+                systemGameManager.NetworkManagerClient.ProcessStopConnection();
+                UnsubscribeFromClientEvents();
+            }
+        }
+
+        public void SubscribeToClientEvents() {
+            fishNetNetworkManager.ClientManager.OnAuthenticated += HandleClientAuthenticated;
+            fishNetNetworkManager.SceneManager.OnLoadStart += HandleLoadStartClient;
+            fishNetNetworkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChangeClient;
+            fishNetNetworkManager.SceneManager.OnLoadEnd += HandleLoadEndClient;
+        }
+
+        public void UnsubscribeFromClientEvents() {
+            fishNetNetworkManager.ClientManager.OnAuthenticated -= HandleClientAuthenticated;
+            fishNetNetworkManager.SceneManager.OnLoadStart -= HandleLoadStartClient;
+            fishNetNetworkManager.SceneManager.OnLoadPercentChange -= HandleLoadPercentChangeClient;
+            fishNetNetworkManager.SceneManager.OnLoadEnd -= HandleLoadEndClient;
         }
 
         #region client functions
@@ -122,11 +181,10 @@ namespace AnyRPG {
             bool connectionResult = fishNetNetworkManager.ClientManager.StopConnection();
             Debug.Log($"FishNetNetworkController.Login() Result of disconnection attempt: {connectionResult}");
         }
-
-        
+       
 
         private void HandleRemoteConnectionState(NetworkConnection networkConnection, RemoteConnectionStateArgs args) {
-            Debug.Log($"FishNetNetworkController.HandleRemoteConnectionState({args.ConnectionState.ToString()})");
+            //Debug.Log($"FishNetNetworkController.HandleRemoteConnectionState({args.ConnectionState.ToString()})");
 
             if (args.ConnectionState == RemoteConnectionState.Stopped) {
                 networkManagerServer.ProcessClientDisconnect(networkConnection.ClientId);
@@ -143,72 +201,24 @@ namespace AnyRPG {
             Debug.Log($"FishNetNetworkController.HandleClientKick({kickReason.ToString()})");
         }
 
+        /*
         private void HandleClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer) {
             //Debug.Log("FishNetNetworkController.HandleClientLoadedStartScenes()");
             //networkManager.SceneManager.AddConnectionToScene(networkConnection, UnityEngine.SceneManagement.SceneManager.GetSceneByName("DontDestroyOnLoad"));
             //networkManager.SceneManager.AddConnectionToScene(networkConnection, UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         }
+        */
 
-        private void HandleClientConnectionState(ClientConnectionStateArgs obj) {
-            //Debug.Log($"OnClientConnectionState() {obj.ConnectionState.ToString()}");
-            clientState = obj.ConnectionState;
-            if (clientState == LocalConnectionState.Started) {
-                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Connection Successful. Setting mode to network");
-                systemGameManager.SetGameMode(GameMode.Network);
-                //networkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
-                //networkManager.SceneManager.OnLoadStart += HandleLoadStart;
-                //networkManager.SceneManager.OnLoadPercentChange += HandleLoadPercentChange;
-                //networkManager.SceneManager.OnLoadEnd += HandleLoadEnd;
-                //InstantiateNetworkConnector();
-            } else if (clientState == LocalConnectionState.Stopping) {
-                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
-            } else if (clientState == LocalConnectionState.Stopped) {
-                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Setting mode to local");
-                systemGameManager.NetworkManagerClient.ProcessStopConnection();
-            }
+        public void HandleLoadStartClient(SceneLoadStartEventArgs args) {
+            networkManagerClient.HandleSceneLoadStart(args.QueueData.SceneLoadData.GetFirstLookupScene().name);
         }
 
-        private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
-
-            serverState = obj.ConnectionState;
-            if (serverState == LocalConnectionState.Started) {
-                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Server connection started.  Activating Server Mode.");
-                systemGameManager.SetGameMode(GameMode.Network);
-                networkManagerServer.ActivateServerMode();
-                InstantiateNetworkConnector();
-            } else if (serverState == LocalConnectionState.Stopping) {
-                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopping");
-            } else if (serverState == LocalConnectionState.Stopped) {
-                Debug.Log("FishNetNetworkController.HandleServerConnectionState() Stopped");
-                systemGameManager.SetGameMode(GameMode.Local);
-                networkManagerServer.DeactivateServerMode();
-            }
+        public void HandleLoadPercentChangeClient(SceneLoadPercentEventArgs args) {
+            networkManagerClient.HandleSceneLoadPercentageChange(args.Percent);
         }
 
-
-        private void HandleLoadPercentChange(SceneLoadPercentEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadPercentChange() percent: {obj.Percent} AsServer: {obj.QueueData.AsServer}");
-
-        }
-
-        private void HandleLoadStart(SceneLoadStartEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadStart() name: {obj.QueueData.SceneLoadData.SceneLookupDatas[0].Name} AsServer: {obj.QueueData.AsServer}");
-        }
-
-        private void HandleLoadEnd(SceneLoadEndEventArgs obj) {
+        private void HandleLoadEndClient(SceneLoadEndEventArgs obj) {
             Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
-            //foreach (Scene scene in obj.LoadedScenes) {
-            //    Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
-            //}
-            //Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
-
-            // the level loading code should only be processed on the client
-            /*
-            if (obj.QueueData.AsServer == true) {
-                return;
-            }
-            */
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 levelManager.ProcessLevelLoad();
@@ -224,12 +234,13 @@ namespace AnyRPG {
             //}
         }
 
-        private void HandleUnloadEnd(SceneUnloadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleUnloadEnd({obj.QueueData.SceneUnloadData.SceneLookupDatas[0].Name})");
+        private void HandleUnloadEndServer(SceneUnloadEndEventArgs obj) {
+            Debug.Log($"FishNetNetworkController.HandleUnloadEnd()");
 
-            //foreach (Scene scene in obj.UnloadedScenes) {
-            //    Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.name}");
-            //}
+            foreach (UnloadedScene scene in obj.UnloadedScenesV2) {
+                Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.Name}");
+                networkManagerServer.HandleSceneUnloadEnd(scene.Name);
+            }
         }
 
         private void HandleUnloadStart(SceneUnloadStartEventArgs obj) {
@@ -254,7 +265,7 @@ namespace AnyRPG {
         /// Instantiate the network connector on the server that will spawn on every client, allowing them to issue requests to the server
         /// </summary>
         public void InstantiateNetworkConnector() {
-            Debug.Log("FishNetNetworkController.InstantiateNetworkConnector()");
+            //Debug.Log("FishNetNetworkController.InstantiateNetworkConnector()");
 
             networkConnectorSpawnReference = GameObject.Instantiate(networkConnectorSpawnPrefab);
             clientConnector = networkConnectorSpawnReference.gameObject.GetComponentInChildren<FishNetClientConnector>();
@@ -399,8 +410,21 @@ namespace AnyRPG {
 
         #region server functions
 
+        private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
+            Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+            if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
+                return;
+            }
+            foreach (Scene scene in obj.LoadedScenes) {
+                Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
+                networkManagerServer.HandleSceneLoadEnd(scene);
+            }
+            Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
+
+        }
+
         public override void StartServer() {
-            Debug.Log($"FishNetNetworkController.StartServer()");
+            //Debug.Log($"FishNetNetworkController.StartServer()");
 
             fishNetNetworkManager.ServerManager.StartConnection();
         }
@@ -505,6 +529,18 @@ namespace AnyRPG {
         public override void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
             clientConnector.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
         }
+
+        public override UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
+            return clientConnector.SpawnCharacterUnit(characterRequestData, parentTransform, position, forward, scene);
+        }
+
+        public override GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            Debug.Log($"FishNetNetworkController.SpawnModelPrefabServer({spawnRequestId}, {parentTransform.gameObject.name})");
+
+            clientConnector.SpawnModelPrefabServer(spawnRequestId, prefab, parentTransform, position, forward);
+            return null;
+        }
+
 
         #endregion
 

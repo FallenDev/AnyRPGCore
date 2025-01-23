@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
     public class NetworkManagerServer : ConfiguredMonoBehaviour {
@@ -52,6 +53,7 @@ namespace AnyRPG {
         private PlayerManagerServer playerManagerServer = null;
         private CharacterManager characterManager = null;
         private InteractionManager interactionManager = null;
+        private LevelManagerServer levelManagerServer = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -68,6 +70,7 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             characterManager = systemGameManager.CharacterManager;
+            levelManagerServer = systemGameManager.LevelManagerServer;
 
             networkController?.Configure(systemGameManager);
 
@@ -126,7 +129,7 @@ namespace AnyRPG {
         }
 
         public void GetLoginToken(int clientId, string username, string password) {
-            Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
+            //Debug.Log($"NetworkManagerServer.GetLoginToken({clientId}, {username}, {password})");
 
             loginRequests.Add(clientId, username);
             //(bool correctPassword, string token) = gameServerClient.Login(clientId, username, password);
@@ -139,7 +142,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginResponse(int clientId, bool correctPassword, string token) {
-            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
+            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token})");
 
             if (correctPassword == true) {
                 SetClientToken(clientId, token);
@@ -151,7 +154,7 @@ namespace AnyRPG {
                 return;
             }
 
-            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token}) {loggedInAccounts[clientId].username} logged in.");
+            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {correctPassword}, {token}) {loggedInAccounts[clientId].username} logged in.");
 
             OnLobbyLogin(clientId);
             networkController.AdvertiseLobbyLogin(clientId, loggedInAccounts[clientId].username);
@@ -334,7 +337,7 @@ namespace AnyRPG {
         }
 
         public void ActivateServerMode() {
-            Debug.Log($"NetworkManagerServer.ActivateServerMode()");
+            //Debug.Log($"NetworkManagerServer.ActivateServerMode()");
 
             serverModeActive = true;
             OnStartServer();
@@ -354,7 +357,7 @@ namespace AnyRPG {
 
 
         public void StartServer() {
-            Debug.Log($"NetworkManagerServer.StartServer()");
+            //Debug.Log($"NetworkManagerServer.StartServer()");
 
             if (serverModeActive == true) {
                 return;
@@ -555,6 +558,24 @@ namespace AnyRPG {
 
         public void InteractWithClassChangeComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        }
+
+        public void HandleSceneLoadEnd(Scene scene) {
+            levelManagerServer.AddLoadedScene(scene);
+            levelManagerServer.ProcessLevelLoad(scene.name);
+        }
+
+        public void HandleSceneUnloadEnd(string sceneName) {
+            levelManagerServer.RemoveLoadedScene(sceneName);
+        }
+
+        public UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
+            return networkController.SpawnCharacterPrefab(characterRequestData, parentTransform, position, forward, scene);
+        }
+
+        public GameObject SpawnModelPrefab(int spawnRequestId, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            Debug.Log($"NetworkManagerServer.SpawnModelPrefab({spawnRequestId})");
+            return networkController.SpawnModelPrefabServer(spawnRequestId, spawnPrefab, parentTransform, position, forward);
         }
     }
 

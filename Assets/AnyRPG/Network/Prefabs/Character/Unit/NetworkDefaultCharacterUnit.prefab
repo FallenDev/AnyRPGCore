@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -2928320751916093757, guid: ba09f14eb0109ba459f4520b82c3fadc,
@@ -15,7 +16,7 @@ PrefabInstance:
     - target: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
       propertyPath: m_Name
-      value: DefaultNetworkCharacterUnit
+      value: NetworkDefaultCharacterUnit
       objectReference: {fileID: 0}
     - target: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
@@ -88,6 +89,21 @@ PrefabInstance:
       value: f04636ea-f8c9-4cbc-9516-bb7e3e829814
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -429084771394341867}
+    - targetCorrespondingSourceObject: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 184589603481072904}
+    - targetCorrespondingSourceObject: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8873413205694323065}
   m_SourcePrefab: {fileID: 100100000, guid: ba09f14eb0109ba459f4520b82c3fadc, type: 3}
 --- !u!1 &4649811912837811180 stripped
 GameObject:
@@ -122,7 +138,6 @@ MonoBehaviour:
   _teleportThreshold: 1
   _clientAuthoritative: 1
   _sendToOwner: 1
-  _enableNetworkLod: 1
   _interval: 1
   _synchronizePosition: 1
   _positionSnapping:
@@ -154,15 +169,6 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8873413205694323065}
   _networkObjectCache: {fileID: 8873413205694323065}
-  clientSpawnRequestId: 0
-  serverRequestId: 0
-  unitProfileName: 
-  unitLevel: 0
-  unitControllerMode: 0
-  characterAppearanceData:
-    appearanceString: 
-    swappableMeshSaveDataList: []
-  characterName: 
 --- !u!114 &8873413205694323065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,22 +184,41 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
+  <PredictedOwner>k__BackingField: {fileID: 0}
+  NetworkBehaviours:
   - {fileID: -429084771394341867}
   - {fileID: 184589603481072904}
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
+  InitializedParentNetworkBehaviour: {fileID: 0}
+  InitializedNestedNetworkObjects: []
+  RuntimeParentNetworkBehaviour: {fileID: 0}
+  RuntimeChildNetworkBehaviours: []
+  _isNetworked: 1
+  _isSpawnable: 1
+  _isGlobal: 0
+  _initializeOrder: -1
+  _preventDespawnOnDisconnect: 0
+  _defaultDespawnType: 0
+  _initializedValusSet: 1
+  NetworkObserver: {fileID: 0}
+  _enablePrediction: 0
+  _predictionType: 0
+  _graphicalObject: {fileID: 0}
+  _detachGraphicalObject: 0
+  _enableStateForwarding: 1
+  _networkTransform: {fileID: 0}
+  _ownerInterpolation: 1
+  _ownerSmoothedProperties: 255
+  _adaptiveInterpolation: 3
+  _spectatorSmoothedProperties: 255
+  _spectatorInterpolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  <PrefabId>k__BackingField: 7
+  <SpawnableCollectionId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 14664067542336233831
+  <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
-  _isNetworked: 1
-  _isGlobal: 0
-  _initializeOrder: -1
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 1636328252640607343
+    Scale: {x: 1, y: 1, z: 1}
+    IsValid: 1

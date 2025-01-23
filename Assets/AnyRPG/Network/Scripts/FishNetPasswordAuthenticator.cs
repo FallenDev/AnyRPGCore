@@ -86,9 +86,8 @@ namespace AnyRPG
         /// </summary>
         /// <param name="conn">Connection sending broadcast.</param>
         /// <param name="pb"></param>
-        private void OnPasswordBroadcast(NetworkConnection conn, PasswordBroadcast pb, Channel channel)
-        {
-            Debug.Log("FishNetPasswordAuthenticator.OnPasswordBroadcst()");
+        private void OnPasswordBroadcast(NetworkConnection conn, PasswordBroadcast pb, Channel channel) {
+            //Debug.Log("FishNetPasswordAuthenticator.OnPasswordBroadcst()");
 
             /* If client is already authenticated this could be an attack. Connections
              * are removed when a client disconnects so there is no reason they should
@@ -109,7 +108,8 @@ namespace AnyRPG
         }
 
         public void HandleAuthenticationResult(int clientId, bool clientPassed, bool authenticationPassed) {
-            Debug.Log($"FishNetPasswordAuthenticator.HandleAuthenticationResult({clientId}, {authenticationPassed})");
+            //Debug.Log($"FishNetPasswordAuthenticator.HandleAuthenticationResult({clientId}, {authenticationPassed})");
+
             if (base.NetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
                 //if (base.NetworkManager.ClientManager.Clients.ContainsKey(clientId) == false) {
                 Debug.Log($"FishNetPasswordAuthenticator.HandleAuthenticationResult({clientId}, {authenticationPassed}) COULD NOT FIND CONNECTION FOR CLIENT ID");
@@ -149,9 +149,8 @@ namespace AnyRPG
         /// <summary>
         /// Sends an authentication result to a connection.
         /// </summary>
-        private void SendAuthenticationResponse(NetworkConnection conn, bool clientPassed, bool authenticated)
-        {
-            Debug.Log($"FishNetPasswordAuthenticator.SendAuthenticationResponse({authenticated})");
+        private void SendAuthenticationResponse(NetworkConnection conn, bool clientPassed, bool authenticated) {
+            //Debug.Log($"FishNetPasswordAuthenticator.SendAuthenticationResponse({authenticated})");
 
             /* Tell client if they authenticated or not. This is
             * entirely optional but does demonstrate that you can send

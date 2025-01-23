@@ -53,7 +53,7 @@ namespace AnyRPG {
 
 
         public void PopulatePlayerList() {
-            Debug.Log($"HostServerPanelController.PopulatePlayerList()");
+            //Debug.Log($"HostServerPanelController.PopulatePlayerList()");
 
             foreach (KeyValuePair<int, LoggedInAccount> loggedInAccount in networkManagerServer.LoggedInAccounts) {
                 AddPlayerToList(loggedInAccount.Value.clientId, loggedInAccount.Value.username);
@@ -61,7 +61,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int clientId, string userName) {
-            Debug.Log($"HostServerPanelController.AddPlayerToList({userName})");
+            //Debug.Log($"HostServerPanelController.AddPlayerToList({userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             PlayerConnectionButtonController playerConnectionButtonController = go.GetComponent<PlayerConnectionButtonController>();
@@ -101,14 +101,14 @@ namespace AnyRPG {
         }
 
         public void StartServer() {
-            Debug.Log($"HostServerPanelController.StartServer()");
+            //Debug.Log($"HostServerPanelController.StartServer()");
 
             networkManagerServer.ClientMode = NetworkClientMode.Lobby;
             networkManagerServer.StartServer();
         }
 
         public void StopServer() {
-            Debug.Log($"HostServerPanelController.StopServer()");
+            //Debug.Log($"HostServerPanelController.StopServer()");
 
             networkManagerServer.StopServer();
         }
@@ -127,7 +127,7 @@ namespace AnyRPG {
         }
 
         public void HandleLobbyLogin(int clientId) {
-            Debug.Log($"HostServerPanelController.HandleLobbyLogin({clientId})");
+            //Debug.Log($"HostServerPanelController.HandleLobbyLogin({clientId})");
 
             AddPlayerToList(clientId, networkManagerServer.LoggedInAccounts[clientId].username);
         }

@@ -65,6 +65,9 @@ namespace AnyRPG {
         private LevelManager levelManager = null;
 
         [SerializeField]
+        private LevelManagerServer levelManagerServer = null;
+
+        [SerializeField]
         private InventoryManager inventoryManager = null;
 
         [SerializeField]
@@ -204,6 +207,7 @@ namespace AnyRPG {
         public CastTargettingManager CastTargettingManager { get => castTargettingManager; set => castTargettingManager = value; }
         public InputManager InputManager { get => inputManager; set => inputManager = value; }
         public LevelManager LevelManager { get => levelManager; set => levelManager = value; }
+        public LevelManagerServer LevelManagerServer { get => levelManagerServer; set => levelManagerServer = value; }
         public InventoryManager InventoryManager { get => inventoryManager; set => inventoryManager = value; }
         public PlayerManager PlayerManager { get => playerManager; set => playerManager = value; }
         public PlayerManagerServer PlayerManagerServer { get => playerManagerServer; set => playerManagerServer = value; }
@@ -283,6 +287,7 @@ namespace AnyRPG {
             castTargettingManager.Configure(this);
             inputManager.Configure(this);
             levelManager.Configure(this);
+            levelManagerServer.Configure(this);
             inventoryManager.Configure(this);
             playerManager.Configure(this);
             playerManagerServer.Configure(this);
@@ -357,11 +362,13 @@ namespace AnyRPG {
         /// <summary>
         /// configure all classes of type AutoConfiguredMonoBehavior in the scene
         /// </summary>
-        public void AutoConfigureMonoBehaviours() {
-            //Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
+        public void AutoConfigureMonoBehaviours(string sceneName) {
+            Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
 
             foreach (AutoConfiguredMonoBehaviour autoConfiguredMonoBehaviour in GameObject.FindObjectsByType<AutoConfiguredMonoBehaviour>(FindObjectsSortMode.None)) {
-                autoConfiguredMonoBehaviour.AutoConfigure(this);
+                if (autoConfiguredMonoBehaviour.gameObject.scene.name == sceneName) {
+                    autoConfiguredMonoBehaviour.AutoConfigure(this);
+                }
             }
         }
 

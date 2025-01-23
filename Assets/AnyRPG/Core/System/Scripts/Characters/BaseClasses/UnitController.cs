@@ -145,6 +145,7 @@ namespace AnyRPG {
         // network state
         private bool isOwner = false;
         private bool isServer = false;
+        private bool isServerOwned = false;
 
 
         // game manager references
@@ -431,6 +432,7 @@ namespace AnyRPG {
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
         public bool IsOwner { get => isOwner; set => isOwner = value; }
         public bool IsServer { get => isServer; set => isServer = value; }
+        public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -919,7 +921,7 @@ namespace AnyRPG {
         }
 
         private void DespawnImmediate() {
-            Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
+            //Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
 
             despawning = true;
             unitEventController.NotifyOnDespawn(this);
@@ -955,7 +957,7 @@ namespace AnyRPG {
         /// reset all variables to default values for object pooling
         /// </summary>
         public override void ResetSettings() {
-            Debug.Log($"{gameObject.name}.UnitController.ResetSettings()");
+            //Debug.Log($"{gameObject.name}.UnitController.ResetSettings()");
 
             // agents should be disabled so when pool and re-activated they don't throw errors if they are a preview unit
             DisableAgent();
@@ -1096,12 +1098,13 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="unitProfile"></param>
         public void SetCharacterConfiguration(CharacterRequestData characterRequestData) {
-            //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration()");
+            Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
 
             CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
 
             isServer = characterRequestData.isServer;
             isOwner = characterRequestData.isOwner;
+            isServerOwned = characterRequestData.isServerOwned;
 
             unitModelController.LoadInitialSavedAppearance(characterConfigurationRequest.characterAppearanceData);
 
@@ -1170,10 +1173,10 @@ namespace AnyRPG {
 
             unitModelController.Initialize();
 
-            unitModelController.SpawnUnitModel();
-
             // get the unit model controller to fetch the appearance controller from the unit profile
             unitModelController.SetAppearanceController(unitProfile);
+
+            unitModelController.SpawnUnitModel();
 
             SetUnitProfileInteractables();
 

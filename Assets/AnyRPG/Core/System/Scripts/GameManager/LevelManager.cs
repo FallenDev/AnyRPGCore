@@ -54,6 +54,7 @@ namespace AnyRPG {
         public string ActiveSceneName { get => activeSceneName; set => activeSceneName = value; }
         public Bounds SceneBounds { get => sceneBounds; }
         public SceneNode LoadingSceneNode { get => loadingSceneNode; set => loadingSceneNode = value; }
+        public Dictionary<string, SceneNode> SceneDictionary { get => sceneDictionary; set => sceneDictionary = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -207,7 +208,7 @@ namespace AnyRPG {
         /// <param name="newScene"></param>
         /// <param name="loadSceneMode"></param>
         public void HandleLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
-            //Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             if (!levelManagerInitialized) {
                 //Debug.Log("Levelmanager.OnLoadLevel(): Start has not run yet, returning!");
@@ -219,7 +220,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLevelLoad() {
-            //Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
+            Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
 
             PerformLevelLoadActivities();
             NavMesh.pathfindingIterationsPerFrame = 500;
@@ -266,11 +267,11 @@ namespace AnyRPG {
         }
 
         public void PerformLevelLoadActivities() {
-            //Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             loadingLevel = false;
             SetActiveSceneNode();
-            systemGameManager.AutoConfigureMonoBehaviours();
+            systemGameManager.AutoConfigureMonoBehaviours(activeSceneName);
 
             // determine if this is the game manager loading scene
             if (IsInitializationScene()) {
@@ -299,8 +300,6 @@ namespace AnyRPG {
                 PlayLevelSounds();
                 // activate the correct camera
                 ActivateSceneCamera();
-            } else {
-                cameraManager.ActivateMainCamera();
             }
 
             // send messages to subscribers

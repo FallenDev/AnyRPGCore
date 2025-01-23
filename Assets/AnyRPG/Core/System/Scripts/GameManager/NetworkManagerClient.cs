@@ -326,7 +326,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
-            Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {clientId}, {unitProfileName})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {clientId}, {unitProfileName})");
 
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // game does not exist
@@ -365,7 +365,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            Debug.Log($"NetworkManagerClient.AdvertiseSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
 
             if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
                 // game does not exist or player is not in game

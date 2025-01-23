@@ -15,6 +15,7 @@ namespace AnyRPG {
         // game manager references
         protected SystemGameManager systemGameManager = null;
         protected SystemDataFactory systemDataFactory = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public Interactable Interactable { get => interactable; }
 
@@ -26,6 +27,7 @@ namespace AnyRPG {
             // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
             
             interactable = GetComponent<Interactable>();
         }

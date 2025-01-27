@@ -81,6 +81,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private PlayerManager playerManager = null;
         private CameraManager cameraManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -88,6 +89,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             playerManager = systemGameManager.PlayerManager;
             cameraManager = systemGameManager.CameraManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         private void OnEnable() {
@@ -105,7 +107,7 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             //if (playerManager.MyPlayerUnitSpawned) {
             ProcessPlayerUnitSpawn();
@@ -119,7 +121,7 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
 
             eventSubscriptionsInitialized = false;
@@ -147,7 +149,7 @@ namespace AnyRPG {
             CleanupPlayerEventSubscriptions();
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{unitNamePlateController.UnitDisplayName}.NamePlateController.HandlePlayerUnitSpawn() instanceId: {GetInstanceID()}");
 
             ProcessPlayerUnitSpawn();

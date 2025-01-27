@@ -90,7 +90,7 @@ namespace AnyRPG {
         }
 
         public void ShowScene(SceneButton sceneButton) {
-            Debug.Log($"CreateLobbyGamePanel.ShowScene({sceneButton.SceneNode.SceneName})");
+            //Debug.Log($"CreateLobbyGamePanel.ShowScene({sceneButton.SceneNode.SceneName})");
 
             selectedSceneButton = sceneButton;
 

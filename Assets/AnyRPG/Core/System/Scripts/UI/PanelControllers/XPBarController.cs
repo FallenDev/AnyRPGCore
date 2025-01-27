@@ -37,7 +37,7 @@ namespace AnyRPG {
             base.ProcessCreateEventSubscriptions();
             SystemEventManager.StartListening("OnXPGained", HandleXPGained);
             systemEventManager.OnLevelChanged += UpdateXPBar;
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             if (playerManager.PlayerUnitSpawned == true) {
                 ProcessPlayerUnitSpawn();
             }
@@ -47,7 +47,7 @@ namespace AnyRPG {
             //Debug.Log("XPBarController.CleanupEventSubscriptions()");
             SystemEventManager.StopListening("OnXPGained", HandleXPGained);
             systemEventManager.OnLevelChanged -= UpdateXPBar;
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
         }
 
         public void HandleXPGained(string eventName, EventParamProperties eventParamProperties) {
@@ -55,7 +55,7 @@ namespace AnyRPG {
             UpdateXP();
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
             ProcessPlayerUnitSpawn();
         }

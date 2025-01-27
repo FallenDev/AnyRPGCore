@@ -23,12 +23,14 @@ namespace AnyRPG {
         // game manager references
         protected PlayerManager playerManager = null;
         protected ObjectPooler objectPooler = null;
+        protected SystemEventManager systemEventManager = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         protected override void ProcessCreateEventSubscriptions() {
@@ -37,7 +39,7 @@ namespace AnyRPG {
 
             SystemEventManager.StartListening("OnQuestObjectiveStatusUpdated", HandleQuestObjectiveStatusUpdated);
             SystemEventManager.StartListening("OnAfterQuestStatusUpdated", HandleAfterQuestStatusUpdated);
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             if (playerManager.PlayerUnitSpawned == true) {
                 ShowQuests();
             }
@@ -48,7 +50,7 @@ namespace AnyRPG {
             base.ProcessCleanupEventSubscriptions();
             SystemEventManager.StopListening("OnQuestObjectiveStatusUpdated", HandleQuestObjectiveStatusUpdated);
             SystemEventManager.StopListening("OnAfterQuestStatusUpdated", HandleAfterQuestStatusUpdated);
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
         }
 
         public void HandleQuestObjectiveStatusUpdated(string eventName, EventParamProperties eventParamProperties) {
@@ -59,7 +61,7 @@ namespace AnyRPG {
             ShowQuests();
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
             ProcessPlayerUnitSpawn();
         }

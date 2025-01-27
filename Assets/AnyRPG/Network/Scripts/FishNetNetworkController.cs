@@ -294,7 +294,7 @@ namespace AnyRPG {
         }
 
         public override void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             clientConnector.SpawnLobbyGamePlayer(characterRequestData.spawnRequestId, gameId, parentTransform, position, forward);
             //return null;

@@ -78,7 +78,7 @@ namespace AnyRPG {
         public virtual Quest QuestTemplate { get => questTemplate; set => questTemplate = value; }
 
         public bool TurnedIn(UnitController sourceUnitController) {
-            Debug.Log($"{ResourceName}.QuestBase.TurnedIn({sourceUnitController.gameObject.name})");
+            //Debug.Log($"{ResourceName}.QuestBase.TurnedIn({sourceUnitController.gameObject.name})");
 
             return GetSaveData(sourceUnitController).turnedIn;
         }

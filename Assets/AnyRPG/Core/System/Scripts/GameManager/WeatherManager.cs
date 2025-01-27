@@ -35,6 +35,7 @@ namespace AnyRPG {
         protected CameraManager cameraManager = null;
         protected TimeOfDayManager timeOfDayManager = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected SystemEventManager systemEventManager = null;
 
         public AudioClip CurrentAmbientSound { get => currentAmbientSound; set => currentAmbientSound = value; }
 
@@ -43,7 +44,7 @@ namespace AnyRPG {
 
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
             SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
         }
 
         public override void SetGameManagerReferences() {
@@ -57,6 +58,7 @@ namespace AnyRPG {
             cameraManager = systemGameManager.CameraManager;
             timeOfDayManager = systemGameManager.TimeOfDayManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
@@ -86,7 +88,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             // the weather may have spawned before the player.  If so, the weather needs to be set to follow the player now that it is spawned
 
             if (currentWeather == null) {

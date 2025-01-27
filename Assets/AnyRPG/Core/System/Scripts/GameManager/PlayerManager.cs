@@ -390,7 +390,7 @@ namespace AnyRPG {
         }
 
         public LoadSceneRequest SpawnPlayerUnit(int clientId) {
-            Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId})");
+            //Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId})");
 
             if (activeUnitController != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
@@ -505,7 +505,7 @@ namespace AnyRPG {
         }
 
         public void SetUnitController(UnitController unitController) {
-            //Debug.Log("PlayerManager.SetUnitController(" + (unitController == null ? "null" : unitController.gameObject.name) + ")");
+            Debug.Log("PlayerManager.SetUnitController(" + (unitController == null ? "null" : unitController.gameObject.name) + ")");
 
             this.unitController = unitController;
             activeUnitController = unitController;
@@ -639,7 +639,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerEvents() {
-            //Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;

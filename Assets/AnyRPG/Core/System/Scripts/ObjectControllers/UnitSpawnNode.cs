@@ -122,6 +122,7 @@ namespace AnyRPG {
         private SystemDataFactory systemDataFactory = null;
         private CharacterManager characterManager = null;
         private NetworkManagerServer networkManagerServer = null;
+        private SystemEventManager systemEventManager = null;
 
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
@@ -196,7 +197,7 @@ namespace AnyRPG {
                 Debug.LogError(gameObject.name + ".UnitSpawnNode.CreateEventSubscriptions(): systemGameManager not found.  Is the GameManager in the scene?");
                 return;
             }
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
             if (playerManager.PlayerUnitSpawned == true) {
                 //Debug.Log($"{gameObject.name}.UnitSpawnNode.CreateEventSubscriptions(): player unit already spawned.  Handling player unit spawn");
@@ -211,7 +212,7 @@ namespace AnyRPG {
                 return;
             }
 
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
 
             eventSubscriptionsInitialized = false;
@@ -242,9 +243,9 @@ namespace AnyRPG {
         }
 
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
-            ProcessPlayerUnitSpawn(playerManager.UnitController);
+            ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {

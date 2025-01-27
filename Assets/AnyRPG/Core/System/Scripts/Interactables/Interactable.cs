@@ -638,7 +638,7 @@ namespace AnyRPG {
         /// called manually after mouse enters nameplate or interactable
         /// </summary>
         public void OnMouseIn() {
-            Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
+            //Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
 
             if (!isActiveAndEnabled) {
                 // this interactable is inactive, there is no reason to do anything
@@ -967,7 +967,7 @@ namespace AnyRPG {
 
         public virtual void ProcessCreateEventSubscriptions() {
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
-            //SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            //systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
         }
 
         public void CleanupEventSubscriptions() {
@@ -981,7 +981,7 @@ namespace AnyRPG {
 
         public virtual void ProcessCleanupEventSubscriptions() {
             SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
-            //SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            //systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
         }
 
 

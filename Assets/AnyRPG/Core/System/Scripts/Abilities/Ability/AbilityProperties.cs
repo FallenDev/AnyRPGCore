@@ -310,8 +310,8 @@ namespace AnyRPG {
 
 
         protected IDescribable describableData = null;
-        protected List<AnimationClip> actionClips = null;
-        protected List<AnimationClip> castClips = null;
+        protected List<AnimationClip> actionClips = new List<AnimationClip>();
+        protected List<AnimationClip> castClips = new List<AnimationClip>();
 
         // game manager references
         protected PlayerManager playerManager = null;

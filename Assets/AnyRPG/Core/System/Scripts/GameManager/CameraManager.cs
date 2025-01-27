@@ -57,6 +57,7 @@ namespace AnyRPG {
         // game manager references
         LevelManager levelManager = null;
         PlayerManager playerManager = null;
+        SystemEventManager systemEventManager = null;
 
         public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
         public GameObject MainCameraGameObject { get => mainCameraGameObject; }
@@ -89,8 +90,6 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             //Debug.Log("CameraManager.Awake()");
             base.Configure(systemGameManager);
-            levelManager = systemGameManager.LevelManager;
-            playerManager = systemGameManager.PlayerManager;
 
             CheckConfiguration();
 
@@ -119,6 +118,13 @@ namespace AnyRPG {
             playerLayer = LayerMask.NameToLayer("Player");
             equipmentLayer = LayerMask.NameToLayer("Equipment");
             hideLayers = (1 << playerLayer | 1 << equipmentLayer);
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            levelManager = systemGameManager.LevelManager;
+            playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void HidePlayers() {
@@ -246,7 +252,7 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             eventSubscriptionsInitialized = true;
         }
@@ -256,7 +262,7 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             eventSubscriptionsInitialized = false;
         }
@@ -269,7 +275,7 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.CameraManager.HandlePlayerUnitSpawn()");
             ProcessPlayerUnitSpawn();
         }

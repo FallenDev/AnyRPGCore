@@ -18,7 +18,6 @@ namespace AnyRPG {
 
         private PlayerManager playerManager = null;
         private SystemEventManager systemEventManager = null;
-        private UIManager uiManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private NetworkManagerClient networkManagerClient = null;
         private ClassChangeManager classChangeManager = null;
@@ -37,10 +36,12 @@ namespace AnyRPG {
         */
 
         public override void SetGameManagerReferences() {
+            Debug.Log($"InteractionManager.SetGameManagerReferences()");
+
             base.SetGameManagerReferences();
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
-            uiManager = systemGameManager.UIManager;
+            uIManager = systemGameManager.UIManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             classChangeManager = systemGameManager.ClassChangeManager;
@@ -61,7 +62,7 @@ namespace AnyRPG {
         }
 
         public bool InteractWithInteractable(UnitController sourceUnitController, Interactable targetInteractable) {
-            Debug.Log("InteractionManager.InteractWithInteractable");
+            Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
 
             // perform range check
             bool passedRangeCheck = false;
@@ -157,8 +158,8 @@ namespace AnyRPG {
         public void OpenInteractionWindow(Interactable targetInteractable) {
             //Debug.Log($"{gameObject.name}.Interactable.OpenInteractionWindow");
             BeginInteraction(targetInteractable);
-            uiManager.craftingWindow.CloseWindow();
-            uiManager.interactionWindow.OpenWindow();
+            uIManager.craftingWindow.CloseWindow();
+            uIManager.interactionWindow.OpenWindow();
         }
 
 
@@ -184,6 +185,8 @@ namespace AnyRPG {
         }
 
         public void InteractWithClassChangeComponentClient(Interactable interactable, int optionIndex) {
+            Debug.Log($"InteractionManager.InteractWithClassChangeComponentClient({interactable.gameObject.name}, {optionIndex})");
+
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(playerManager.UnitController);
             if (currentInteractables.ContainsKey(optionIndex)) {
                 if (currentInteractables[optionIndex] is ClassChangeComponent) {
@@ -193,7 +196,15 @@ namespace AnyRPG {
         }
 
         public void InteractWithClassChangeComponentClient(ClassChangeComponent classChangeComponent) {
+            Debug.Log($"InteractionManager.InteractWithClassChangeComponentClient()");
+            
             classChangeManager.SetDisplayClass(classChangeComponent.Props.CharacterClass, classChangeComponent);
+            if (uIManager == null) {
+                Debug.Log("uimanager is null");
+            }
+            if (uIManager.classChangeWindow == null) {
+                Debug.Log("classchangewindow is null");
+            }
             uIManager.classChangeWindow.OpenWindow();
         }
 

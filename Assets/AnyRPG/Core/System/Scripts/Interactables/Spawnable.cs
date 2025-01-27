@@ -42,6 +42,7 @@ namespace AnyRPG {
         protected PlayerManager playerManager = null;
         protected SystemDataFactory systemDataFactory = null;
         protected ObjectPooler objectPooler = null;
+        protected SystemEventManager systemEventManager = null;
 
         public GameObject SpawnReference { get => spawnReference; set => spawnReference = value; }
         public PrefabProfile PrefabProfile { get => prefabProfile; set => prefabProfile = value; }
@@ -83,6 +84,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
             objectPooler = systemGameManager.ObjectPooler;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         protected override void PostConfigure() {
@@ -118,7 +120,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCreateEventSubscriptions() {
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
         }
 
         public void CleanupEventSubscriptions() {
@@ -131,12 +133,12 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupEventSubscriptions() {
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
-            ProcessPlayerUnitSpawn(playerManager.UnitController);
+            ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public virtual void OnDestroy() {

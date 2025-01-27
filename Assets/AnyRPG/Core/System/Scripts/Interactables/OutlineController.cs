@@ -54,7 +54,7 @@ namespace AnyRPG {
         }
 
         public void SendRequestToCameraHighlighter() {
-            Debug.Log($"{interactable.gameObject.name}.OutlineController.SendRequestToCameraHighlighter()");
+            //Debug.Log($"{interactable.gameObject.name}.OutlineController.SendRequestToCameraHighlighter()");
 
             outlineColor = interactable.GetGlowColor();
 

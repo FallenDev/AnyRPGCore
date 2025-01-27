@@ -94,7 +94,7 @@ namespace AnyRPG {
         protected override void ProcessCreateEventSubscriptions() {
             //Debug.Log("CharacterPanel.CreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             if (playerManager.PlayerUnitSpawned == true) {
                 ProcessPlayerUnitSpawn();
@@ -104,11 +104,11 @@ namespace AnyRPG {
         protected override void ProcessCleanupEventSubscriptions() {
             //Debug.Log("PlayerCombat.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
         }
 
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
             ProcessPlayerUnitSpawn();
         }

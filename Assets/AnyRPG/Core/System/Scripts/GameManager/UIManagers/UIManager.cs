@@ -630,7 +630,7 @@ namespace AnyRPG {
                 return;
             }
             SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
-            SystemEventManager.StartListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             SystemEventManager.StartListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
@@ -643,7 +643,7 @@ namespace AnyRPG {
                 return;
             }
             SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
-            SystemEventManager.StopListening("OnPlayerUnitSpawn", HandlePlayerUnitSpawn);
+            systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             //SystemEventManager.StopListening("OnPlayerUnitSpawn", HandleMainCamera);
             SystemEventManager.StopListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
@@ -920,7 +920,7 @@ namespace AnyRPG {
         }
 
         
-        public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UIManager.HandlePlayerUnitSpawn()");
             ProcessPlayerUnitSpawn();
         }
@@ -949,6 +949,7 @@ namespace AnyRPG {
 
         public void ActivatePlayerUI() {
             //Debug.Log("UIManager.ActivatePlayerUI()");
+
             playerUI.SetActive(true);
 
             // canvases need to be activated because a cutscene could have deactivated them
@@ -1033,6 +1034,7 @@ namespace AnyRPG {
 
         public void ProcessPlayerUnitSpawn() {
             //Debug.Log("UIManager.HandlePlayerUnitSpawn()");
+            
             ActivatePlayerUI();
 
             // some visuals can be dependent on zone restrictions so visuals should be updated

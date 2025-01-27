@@ -11,7 +11,7 @@ namespace AnyRPG {
     [CreateAssetMenu(fileName = "New Behavior Profile", menuName = "AnyRPG/BehaviorProfile")]
     public class BehaviorProfile : DescribableResource, IPrerequisiteOwner {
 
-        public event System.Action OnPrerequisiteUpdates = delegate { };
+        public event System.Action<UnitController> OnPrerequisiteUpdates = delegate { };
 
         [Header("Behavior")]
 
@@ -45,16 +45,14 @@ namespace AnyRPG {
         // game manager references
         protected SaveManager saveManager = null;
 
-        public bool PrerequisitesMet {
-            get {
+        public bool PrerequisitesMet(UnitController sourceUnitController) {
                 foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
-                    if (!prerequisiteCondition.IsMet()) {
+                    if (!prerequisiteCondition.IsMet(sourceUnitController)) {
                         return false;
                     }
                 }
                 // there are no prerequisites, or all prerequisites are complete
                 return true;
-            }
         }
 
         public List<BehaviorNode> BehaviorNodes { get => behaviorNodes; set => behaviorNodes = value; }
@@ -81,9 +79,9 @@ namespace AnyRPG {
             saveManager = systemGameManager.SaveManager;
         }
 
-        public void HandlePrerequisiteUpdates() {
+        public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             // call back to owner
-            OnPrerequisiteUpdates();
+            OnPrerequisiteUpdates(sourceUnitController);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
@@ -108,11 +106,11 @@ namespace AnyRPG {
             }
         }
 
-        public void UpdatePrerequisites(bool notify = true) {
+        public void UpdatePrerequisites(UnitController sourceUnitController, bool notify = true) {
             if (prerequisiteConditions != null) {
                 foreach (PrerequisiteConditions tmpPrerequisiteConditions in prerequisiteConditions) {
                     if (tmpPrerequisiteConditions != null) {
-                        tmpPrerequisiteConditions.UpdatePrerequisites(notify);
+                        tmpPrerequisiteConditions.UpdatePrerequisites(sourceUnitController, notify);
                     }
                 }
             }

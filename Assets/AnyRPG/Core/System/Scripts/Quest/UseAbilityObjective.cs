@@ -23,30 +23,30 @@ namespace AnyRPG {
 
         private AbilityProperties baseAbility;
 
-        public void UpdateCastCount() {
-            bool completeBefore = IsComplete;
-                CurrentAmount++;
-            questBase.CheckCompletion();
-                if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount, Amount));
+        public void UpdateCastCount(UnitController sourceUnitController) {
+            bool completeBefore = IsComplete(sourceUnitController);
+                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+            questBase.CheckCompletion(sourceUnitController);
+                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
+                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
                 }
-                if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount, baseAbility.DisplayName));
+                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
+                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), baseAbility.DisplayName));
                 }
         }
 
-        public override void OnAcceptQuest(QuestBase quest, bool printMessages = true) {
-            base.OnAcceptQuest(quest, printMessages);
+        public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
+            base.OnAcceptQuest(sourceUnitController, quest, printMessages);
             baseAbility.OnAbilityUsed += UpdateCastCount;
         }
 
-        public override void OnAbandonQuest() {
-            base.OnAbandonQuest();
+        public override void OnAbandonQuest(UnitController sourceUnitController) {
+            base.OnAbandonQuest(sourceUnitController);
             baseAbility.OnAbilityUsed -= UpdateCastCount;
         }
 
-        public override string GetUnformattedStatus() {
-            return "Use " + DisplayName + ": " + Mathf.Clamp(CurrentAmount, 0, Amount) + "/" + Amount;
+        public override string GetUnformattedStatus(UnitController sourceUnitController) {
+            return "Use " + DisplayName + ": " + Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount) + "/" + Amount;
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {

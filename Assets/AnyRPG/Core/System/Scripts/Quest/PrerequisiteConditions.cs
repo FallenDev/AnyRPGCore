@@ -55,7 +55,7 @@ namespace AnyRPG {
             get => reverseMatch;
         }
 
-        public void HandlePrerequisiteUpdates() {
+        public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             //Debug.Log("PrerequisiteConditions.HandlePrerequisiteUpdates()");
             /*
             if ((prerequisiteOwner as MonoBehaviour) is MonoBehaviour) {
@@ -63,23 +63,23 @@ namespace AnyRPG {
             }
             */
             bool oldResult = lastResult;
-            if (IsMet()) {
+            if (IsMet(sourceUnitController)) {
                 // do callback to the owning object
                 //Debug.Log("PrerequisiteConditions.HandlePrerequisiteUpdates(): calling prerequisiteOwner.HandlePrerequisiteUpdates()");
-                SendPrerequisiteUpdates();
+                SendPrerequisiteUpdates(sourceUnitController);
             } else {
                 if (oldResult != lastResult) {
                     //Debug.Log("PrerequisiteConditions.HandlePrerequisiteUpdates(): ismet: " + IsMet() + "; prerequisiteOwner: " + (prerequisiteOwner == null ? "null" : "set") + "; RESULT CHANGED!");
-                    SendPrerequisiteUpdates();
+                    SendPrerequisiteUpdates(sourceUnitController);
                 }
                 //Debug.Log("PrerequisiteConditions.HandlePrerequisiteUpdates(): ismet: " + IsMet() + "; prerequisiteOwner: " + (prerequisiteOwner == null ? "null" : "set"));
             }
         }
 
-        private void SendPrerequisiteUpdates() {
+        private void SendPrerequisiteUpdates(UnitController sourceUnitController) {
             foreach (IPrerequisiteOwner prerequisiteOwner in prerequisiteOwners) {
                 if (prerequisiteOwner != null) {
-                    prerequisiteOwner.HandlePrerequisiteUpdates();
+                    prerequisiteOwner.HandlePrerequisiteUpdates(sourceUnitController);
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace AnyRPG {
             }
         }
 
-        public virtual bool IsMet() {
+        public virtual bool IsMet(UnitController sourceUnitController) {
             //Debug.Log("PrerequisiteConditions.IsMet()");
             bool returnValue = false;
             int prerequisiteCount = 0;
@@ -108,7 +108,7 @@ namespace AnyRPG {
                 tempCount = 0;
                 foreach (IPrerequisite prerequisite in prerequisiteList) {
                     prerequisiteCount++;
-                    bool checkResult = prerequisite.IsMet(playerManager.UnitController.BaseCharacter);
+                    bool checkResult = prerequisite.IsMet(sourceUnitController);
                     if (requireAny && checkResult == true) {
                         returnValue = true;
                         break;
@@ -295,10 +295,10 @@ namespace AnyRPG {
         }
 
         // force prerequisite status update outside normal event notification
-        public void UpdatePrerequisites(bool notify = true) {
+        public void UpdatePrerequisites(UnitController sourceUnitController, bool notify = true) {
             foreach (List<IPrerequisite> prerequisiteList in allPrerequisites) {
                 foreach (IPrerequisite prerequisite in prerequisiteList) {
-                    prerequisite.UpdateStatus(notify);
+                    prerequisite.UpdateStatus(sourceUnitController, notify);
                 }
             }
             /*

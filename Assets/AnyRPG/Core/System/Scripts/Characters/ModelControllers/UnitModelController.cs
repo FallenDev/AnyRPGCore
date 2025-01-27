@@ -85,7 +85,7 @@ namespace AnyRPG {
         }
 
         public void SetAppearanceController(UnitProfile unitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAppearanceController(" + (unitProfile == null ? "null" : unitProfile.ResourceName) + ")");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAppearanceController(" + (unitProfile == null ? "null" : unitProfile.ResourceName) + ")");
 
             if (unitProfile?.UnitPrefabProps.ModelProvider != null) {
                 modelAppearanceController = unitProfile.UnitPrefabProps.ModelProvider.GetAppearanceController(unitController, this, systemGameManager);
@@ -110,7 +110,7 @@ namespace AnyRPG {
         }
 
         public void SpawnUnitModel() {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SpawnUnitModel()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SpawnUnitModel()");
 
             if (unitController.UnitProfile?.UnitPrefabProps?.ModelPrefab != null) {
                 unitModel = systemGameManager.CharacterManager.SpawnModelPrefab(unitController, unitController.UnitProfile, unitController.transform, unitController.transform.position, unitController.transform.forward);
@@ -158,7 +158,7 @@ namespace AnyRPG {
         }
 
         public void SetAnimatorOverrideController(AnimatorOverrideController animatorOverrideController) {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAnimatorOverrideController()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAnimatorOverrideController()");
             if (modelAppearanceController == null) {
                 Debug.Log("Null model appearance controller!");
             }
@@ -237,7 +237,7 @@ namespace AnyRPG {
         }
 
         public void SetInitialSavedAppearance() {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetInitialSavedAppearance()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetInitialSavedAppearance()");
 
             if (characterAppearanceData == null) {
                 // in empty game mode, this can be null

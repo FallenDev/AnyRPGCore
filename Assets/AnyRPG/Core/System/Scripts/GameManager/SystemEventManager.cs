@@ -9,20 +9,22 @@ namespace AnyRPG {
 
         private static Dictionary<string, Action<string, EventParamProperties>> singleEventDictionary = new Dictionary<string, Action<string, EventParamProperties>>();
 
-
-        public event System.Action<AbilityProperties> OnAbilityUsed = delegate { };
-        public event System.Action<AbilityProperties> OnAbilityListChanged = delegate { };
-        public event System.Action<Skill> OnSkillListChanged = delegate { };
-        public event System.Action<int> OnLevelChanged = delegate { };
-        public event System.Action<CharacterClass, CharacterClass> OnClassChange = delegate { };
-
-        public event System.Action<string> OnInteractionStarted = delegate { };
-        public event System.Action<InteractableOptionComponent> OnInteractionWithOptionStarted = delegate { };
-        public event System.Action<Interactable> OnInteractionCompleted = delegate { };
-        public event System.Action<InteractableOptionComponent> OnInteractionWithOptionCompleted = delegate { };
-        public event System.Action<Item> OnItemCountChanged = delegate { };
-        public event System.Action<Dialog> OnDialogCompleted = delegate { };
+        public event System.Action<UnitController> OnPlayerUnitSpawn = delegate { };
+        public event System.Action<UnitController> OnPlayerUnitDespawn = delegate { };
+        public event System.Action<UnitController, AbilityProperties> OnAbilityUsed = delegate { };
+        public event System.Action<UnitController, AbilityProperties> OnAbilityListChanged = delegate { };
+        public event System.Action<UnitController, Skill> OnSkillListChanged = delegate { };
+        public event System.Action<UnitController, int> OnLevelChanged = delegate { };
+        public event System.Action<UnitController, CharacterClass, CharacterClass> OnClassChange = delegate { };
+        public event System.Action<UnitController, ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
+        public event System.Action<UnitController, string> OnInteractionStarted = delegate { };
+        public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionStarted = delegate { };
+        public event System.Action<UnitController, Interactable> OnInteractionCompleted = delegate { };
+        public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionCompleted = delegate { };
+        public event System.Action<UnitController, Item> OnItemCountChanged = delegate { };
+        public event System.Action<UnitController, Dialog> OnDialogCompleted = delegate { };
         public event System.Action<IAbilityCaster, CharacterUnit, int, string> OnTakeDamage = delegate { };
+        public event System.Action<UnitController> OnReputationChange = delegate { };
 
         // equipment manager
         public System.Action<Equipment, Equipment> OnEquipmentChanged = delegate { };
@@ -67,67 +69,82 @@ namespace AnyRPG {
             }
         }
 
+        public void NotifyOnReputationChange(UnitController sourceUnitController) {
+            OnReputationChange(sourceUnitController);
+        }
+
+        public void NotifyOnPlayerUnitSpawn(UnitController unitController) {
+            OnPlayerUnitSpawn(unitController);
+        }
+
+        public void NotifyOnPlayerUnitDespawn(UnitController unitController) {
+            OnPlayerUnitDespawn(unitController);
+        }
+
         public void NotifyOnEquipmentChanged(Equipment newEquipment, Equipment oldEquipment) {
             OnEquipmentChanged(newEquipment, oldEquipment);
         }
 
-        public void NotifyOnClassChange(CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
-            OnClassChange(newCharacterClass, oldCharacterClass);
+        public void NotifyOnClassChange(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
+            OnClassChange(sourceUnitController, newCharacterClass, oldCharacterClass);
+        }
+
+        public void NotifyOnSpecializationChange(UnitController sourceUnitController, ClassSpecialization newClassSpecialization, ClassSpecialization oldClassSpecialization) {
+            OnSpecializationChange(sourceUnitController, newClassSpecialization, oldClassSpecialization);
         }
 
         public void NotifyOnTakeDamage(IAbilityCaster source, CharacterUnit target, int damage, string abilityName) {
             OnTakeDamage(source, target, damage, abilityName);
         }
 
-        public void NotifyOnDialogCompleted(Dialog dialog) {
-            OnDialogCompleted(dialog);
+        public void NotifyOnDialogCompleted(UnitController sourceUnitController, Dialog dialog) {
+            OnDialogCompleted(sourceUnitController, dialog);
             //OnPrerequisiteUpdated();
-
         }
 
-        public void NotifyOnInteractionStarted(string interactableName) {
+        public void NotifyOnInteractionStarted(UnitController sourceUnitController, string interactableName) {
             //Debug.Log("SystemEventManager.NotifyOnInteractionStarted(" + interactableName + ")");
-            OnInteractionStarted(interactableName);
+            OnInteractionStarted(sourceUnitController, interactableName);
         }
 
-        public void NotifyOnInteractionWithOptionStarted(InteractableOptionComponent interactableOption) {
+        public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
             //Debug.Log("SystemEventManager.NotifyOnInteractionWithOptionStarted(" + interactableOption.DisplayName + ")");
-            OnInteractionWithOptionStarted(interactableOption);
+            OnInteractionWithOptionStarted(sourceUnitController, interactableOption);
         }
 
-        public void NotifyOnInteractionCompleted(Interactable interactable) {
-            OnInteractionCompleted(interactable);
+        public void NotifyOnInteractionCompleted(UnitController sourceUnitController, Interactable interactable) {
+            OnInteractionCompleted(sourceUnitController, interactable);
         }
 
-        public void NotifyOnInteractionWithOptionCompleted(InteractableOptionComponent interactableOption) {
-            OnInteractionWithOptionCompleted(interactableOption);
+        public void NotifyOnInteractionWithOptionCompleted(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
+            OnInteractionWithOptionCompleted(sourceUnitController, interactableOption);
         }
 
-        public void NotifyOnLevelChanged(int newLevel) {
-            OnLevelChanged(newLevel);
+        public void NotifyOnLevelChanged(UnitController sourceUnitController, int newLevel) {
+            OnLevelChanged(sourceUnitController, newLevel);
             //OnPrerequisiteUpdated();
         }
 
-        public void NotifyOnAbilityListChanged(AbilityProperties newAbility) {
+        public void NotifyOnAbilityListChanged(UnitController sourceUnitController, AbilityProperties newAbility) {
             //Debug.Log($"SystemEventManager.NotifyOnAbilityListChanged({newAbility})");
 
-            OnAbilityListChanged(newAbility);
+            OnAbilityListChanged(sourceUnitController, newAbility);
             //OnPrerequisiteUpdated();
         }
         
 
-        public void NotifyOnAbilityUsed(AbilityProperties ability) {
+        public void NotifyOnAbilityUsed(UnitController sourceUnitController, AbilityProperties ability) {
             //Debug.Log("SystemEventManager.NotifyAbilityused(" + ability.DisplayName + ")");
-            OnAbilityUsed(ability);
+            OnAbilityUsed(sourceUnitController, ability);
         }
 
-        public void NotifyOnSkillListChanged(Skill skill) {
-            OnSkillListChanged(skill);
+        public void NotifyOnSkillListChanged(UnitController sourceUnitController, Skill skill) {
+            OnSkillListChanged(sourceUnitController, skill);
             //OnPrerequisiteUpdated();
         }
 
-        public void NotifyOnItemCountChanged(Item item) {
-            OnItemCountChanged(item);
+        public void NotifyOnItemCountChanged(UnitController sourceUnitController, Item item) {
+            OnItemCountChanged(sourceUnitController, item);
         }
 
     }

@@ -163,16 +163,16 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
         }
 
-        public void GiveReward() {
+        public void GiveReward(UnitController sourceUnitController) {
             Item newItem = systemItemManager.GetNewResource(ResourceName);
             if (newItem != null) {
                 //Debug.Log("RewardButton.CompleteQuest(): newItem is not null, adding to inventory");
-                newItem.DropLevel = playerManager.UnitController.CharacterStats.Level;
-                playerManager.UnitController.CharacterInventoryManager.AddItem(newItem, false);
+                newItem.DropLevel = sourceUnitController.CharacterStats.Level;
+                sourceUnitController.CharacterInventoryManager.AddItem(newItem, false);
             }
         }
 
-        public bool HasReward() {
+        public bool HasReward(UnitController sourceUnitController) {
             // this is not actually checked anywhere, but may need to be changed in the future
             // if anything actually needs to query through IRewardable to see if the character has the item
             return false;
@@ -327,8 +327,8 @@ namespace AnyRPG {
             return systemDataFactory.GetResource<Item>(ResourceName);
         }
 
-        public bool ActionButtonUse() {
-            List<Item> itemList = playerManager.UnitController.CharacterInventoryManager?.GetItems(ResourceName, 1);
+        public bool ActionButtonUse(UnitController sourceUnitController) {
+            List<Item> itemList = sourceUnitController.CharacterInventoryManager?.GetItems(ResourceName, 1);
             if (itemList == null || itemList.Count == 0) {
                 return false;
             }
@@ -336,10 +336,10 @@ namespace AnyRPG {
             if (newItem == null) {
                 return false;
             }
-            return newItem.Use();
+            return newItem.Use(sourceUnitController);
         }
 
-        public virtual bool IsUseableStale() {
+        public virtual bool IsUseableStale(UnitController sourceUnitController) {
             // items are never stale
             // they should stay on action buttons in case the player picks up more
             return false;
@@ -349,14 +349,14 @@ namespace AnyRPG {
             return null;
         }
 
-        public virtual bool Use() {
+        public virtual bool Use(UnitController sourceUnitController) {
             //Debug.Log("Base item class: using " + itemName);
-            if (!CharacterClassRequirementIsMet(playerManager.UnitController.BaseCharacter)) {
+            if (!CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
                 messageFeedManager.WriteMessage("You are not the right character class to use " + DisplayName);
                 return false;
             }
             //if (GetItemLevel(playerManager.UnitController.CharacterStats.Level) > playerManager.UnitController.CharacterStats.Level) {
-            if (useLevel > playerManager.UnitController.CharacterStats.Level) {
+            if (useLevel > sourceUnitController.CharacterStats.Level) {
                 messageFeedManager.WriteMessage("You are too low level use " + DisplayName);
                 return false;
             }
@@ -380,13 +380,13 @@ namespace AnyRPG {
             return true;
         }
 
-        public virtual bool RequirementsAreMet() {
+        public virtual bool RequirementsAreMet(UnitController sourceUnitController) {
             //Debug.Log(DisplayName + ".Item.RequirementsAreMet()");
 
             // NOTE : currently this is only called from places that apply to characters (quest and loot)
             // if in the future this function is called from somewhere an npc or preview character is used, it would be better to accept the
             // character as a parameter, rather than hard coding to the player
-            if (!CharacterClassRequirementIsMet(playerManager.UnitController.BaseCharacter)) {
+            if (!CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
                 //Debug.Log(DisplayName + ".Item.RequirementsAreMet(): return false");
                 return false;
             }

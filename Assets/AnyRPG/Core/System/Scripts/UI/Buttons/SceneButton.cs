@@ -57,7 +57,7 @@ namespace AnyRPG {
         }
 
         public void CommonSelect() {
-            Debug.Log($"{gameObject.name}.SceneButton.CommonSelect()");
+            //Debug.Log($"{gameObject.name}.SceneButton.CommonSelect()");
 
             if (createLobbyGamePanel.SelectedSceneButton != null && createLobbyGamePanel.SelectedSceneButton != this) {
                 createLobbyGamePanel.SelectedSceneButton.DeSelect();

@@ -17,15 +17,15 @@ namespace AnyRPG {
         public event System.Action OnInteract = delegate { };
         public event System.Action OnManualMovement = delegate { };
         public event System.Action OnJump = delegate { };
-        public event System.Action OnReputationChange = delegate { };
-        public event System.Action OnReviveComplete = delegate { };
+        public event System.Action<UnitController> OnReputationChange = delegate { };
+        public event System.Action<UnitController> OnReviveComplete = delegate { };
         public event System.Action<UnitController> OnBeforeDie = delegate { };
         public event System.Action<CharacterStats> OnAfterDie = delegate { };
         public event System.Action<int> OnLevelChanged = delegate { };
         public event System.Action<UnitType, UnitType> OnUnitTypeChange = delegate { };
         public event System.Action<CharacterRace, CharacterRace> OnRaceChange = delegate { };
-        public event System.Action<CharacterClass, CharacterClass> OnClassChange = delegate { };
-        public event System.Action<ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
+        public event System.Action<UnitController, CharacterClass, CharacterClass> OnClassChange = delegate { };
+        public event System.Action<UnitController, ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
         public event System.Action<Faction, Faction> OnFactionChange = delegate { };
         public event System.Action<string> OnNameChange = delegate { };
         public event System.Action<string> OnTitleChange = delegate { };
@@ -66,7 +66,7 @@ namespace AnyRPG {
         public event System.Action OnBeginAbilityCoolDown = delegate { };
         public event System.Action OnUnlearnAbilities = delegate { };
         public event System.Action<AbilityProperties> OnActivateTargetingMode = delegate { };
-        public event System.Action<AbilityProperties> OnLearnAbility = delegate { };
+        public event System.Action<UnitController, AbilityProperties> OnLearnAbility = delegate { };
         public event System.Action<bool> OnUnlearnAbility = delegate { };
         public event System.Action<AbilityProperties> OnAttemptPerformAbility = delegate { };
         public event System.Action<string> OnMessageFeedMessage = delegate { };
@@ -104,6 +104,9 @@ namespace AnyRPG {
         public event System.Action OnDespawnAbilityObjects = delegate { };
         public event System.Action<Interactable, Interactable, LengthEffectProperties, AbilityEffectContext> OnSpawnAbilityEffectPrefabs = delegate { };
         public event System.Action<UnitController, Interactable> OnEnterInteractableTrigger = delegate { };
+        public event System.Action<UnitController, Interactable> OnExitInteractableTrigger = delegate { };
+        public event System.Action<UnitController, Interactable> OnEnterInteractableRange = delegate { };
+        public event System.Action<UnitController, Interactable> OnExitInteractableRange = delegate { };
 
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
@@ -160,7 +163,7 @@ namespace AnyRPG {
         public void NotifyOnLearnAbility(AbilityProperties abilityProperties) {
             //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnLearnAbility({abilityProperties.ResourceName})");
 
-            OnLearnAbility(abilityProperties);
+            OnLearnAbility(unitController, abilityProperties);
         }
 
         public void NotifyOnActivateTargetingMode(AbilityProperties abilityProperties) {
@@ -334,7 +337,7 @@ namespace AnyRPG {
                 return;
             }
             unitController.CharacterUnit.CallMiniMapStatusUpdateHandler();
-            OnReputationChange();
+            OnReputationChange(unitController);
             unitController.UnitComponentController.HighlightController.UpdateColors();
         }
 
@@ -354,7 +357,7 @@ namespace AnyRPG {
             unitController.InitializeNamePlate();
             unitController.CharacterUnit.HandleReviveComplete();
             unitController.UnitComponentController.HighlightController.UpdateColors();
-            OnReviveComplete();
+            OnReviveComplete(unitController);
         }
 
         public void NotifyOnLevelChanged(int newLevel) {
@@ -368,10 +371,10 @@ namespace AnyRPG {
             OnRaceChange(newCharacterRace, oldCharacterRace);
         }
         public void NotifyOnClassChange(CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
-            OnClassChange(newCharacterClass, oldCharacterClass);
+            OnClassChange(unitController, newCharacterClass, oldCharacterClass);
         }
         public void NotifyOnSpecializationChange(ClassSpecialization newClassSpecialization, ClassSpecialization oldClassSpecialization) {
-            OnSpecializationChange(newClassSpecialization, oldClassSpecialization);
+            OnSpecializationChange(unitController, newClassSpecialization, oldClassSpecialization);
         }
         public void NotifyOnFactionChange(Faction newFaction, Faction oldFaction) {
             OnFactionChange(newFaction, oldFaction);
@@ -526,7 +529,15 @@ namespace AnyRPG {
         public void NotifyOnExitInteractableTrigger(Interactable interactable) {
             Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnExitInteractableTrigger({interactable.gameObject.name})");
 
-            OnEnterInteractableTrigger(unitController, interactable);
+            OnExitInteractableTrigger(unitController, interactable);
+        }
+
+        public void NotifyOnEnterInteractableRange(Interactable interactable) {
+            OnEnterInteractableRange(unitController, interactable);
+        }
+
+        public void NotifyOnExitInteractableRange(Interactable interactable) {
+            OnExitInteractableRange(unitController, interactable);
         }
 
         #endregion

@@ -7,7 +7,7 @@ namespace AnyRPG {
     [System.Serializable]
     public class CharacterClassPrerequisite : ConfiguredClass, IPrerequisite {
 
-        public event System.Action OnStatusUpdated = delegate { };
+        public event System.Action<UnitController> OnStatusUpdated = delegate { };
 
         [SerializeField]
         [ResourceSelector(resourceType = typeof(CharacterClass))]
@@ -24,25 +24,25 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private SystemEventManager systemEventManager = null;
 
-        public void UpdateStatus(bool notify = true) {
+        public void UpdateStatus(UnitController unitController, bool notify = true) {
             bool originalResult = prerequisiteMet;
-            bool checkResult = (playerManager.UnitController.BaseCharacter.CharacterClass == prerequisiteCharacterClass);
+            bool checkResult = (unitController.BaseCharacter.CharacterClass == prerequisiteCharacterClass);
             if (checkResult != originalResult) {
                 prerequisiteMet = checkResult;
                 if (notify == true) {
-                    OnStatusUpdated();
+                    OnStatusUpdated(unitController);
                 }
             }
         }
 
 
-        public void HandleClassChange(CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
             //Debug.Log("CharacterClassPrerequisite.HandleClassChange()");
-            UpdateStatus();
+            UpdateStatus(sourceUnitController);
         }
 
 
-        public virtual bool IsMet(BaseCharacter baseCharacter) {
+        public virtual bool IsMet(UnitController sourceUnitController) {
             //Debug.Log("LevelPrerequisite.IsMet()");
             return prerequisiteMet;
         }

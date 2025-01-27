@@ -38,15 +38,15 @@ namespace AnyRPG {
             systemEventManager.OnClassChange -= HandleClassChange;
         }
 
-        public void HandleClassChange(CharacterClass oldCharacterClass, CharacterClass newCharacterClass) {
-            HandlePrerequisiteUpdates();
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass oldCharacterClass, CharacterClass newCharacterClass) {
+            HandlePrerequisiteUpdates(sourceUnitController);
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, optionIndex);
 
-            playerManagerServer.InteractWithClassChangeComponent(source.UnitController, this, optionIndex);
+            playerManagerServer.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
 
             return true;
         }
@@ -56,19 +56,17 @@ namespace AnyRPG {
             uIManager.classChangeWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.CharacterCreatorInteractable.GetCurrentOptionCount()");
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
         // character class is a special type of prerequisite
-        public override bool PrerequisitesMet {
-            get {
-                if (playerManager.UnitController.BaseCharacter.CharacterClass == Props.CharacterClass) {
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+                if (sourceUnitController.BaseCharacter.CharacterClass == Props.CharacterClass) {
                     return false;
                 }
-                return base.PrerequisitesMet;
-            }
+                return base.PrerequisitesMet(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

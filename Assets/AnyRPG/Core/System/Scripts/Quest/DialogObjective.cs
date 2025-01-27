@@ -23,44 +23,44 @@ namespace AnyRPG {
         }
 
         // NEW (HOPEFULLY) SAFE COMPLETION CHECK CODE THAT SHOULDN'T RESULT IN RUNAWAY STACK OVERFLOW ETC
-        public void CheckCompletionCount(Dialog dialog) {
-            bool completeBefore = IsComplete;
+        public void CheckCompletionCount(UnitController sourceUnitController, Dialog dialog) {
+            bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
                 return;
             }
 
             if (SystemDataUtility.MatchResource(dialogName, dialog.ResourceName)) {
-                CurrentAmount++;
-                questBase.CheckCompletion();
-                if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount != 0) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount, 0, Amount), Amount));
+                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+                questBase.CheckCompletion(sourceUnitController);
+                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount(sourceUnitController) != 0) {
+                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
                 }
-                if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages) {
+                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
                     messageFeedManager.WriteMessage(string.Format("{0}: Objective Complete", DisplayName));
                 }
             }
         }
 
-        public override void UpdateCompletionCount(bool printMessages = true) {
-            base.UpdateCompletionCount(printMessages);
+        public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
+            base.UpdateCompletionCount(sourceUnitController, printMessages);
             Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogName);
-            if (dialog != null && dialog.TurnedIn == true) {
-                CurrentAmount++;
+            if (dialog != null && dialog.TurnedIn(sourceUnitController) == true) {
+                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
             }
         }
 
-        public override void OnAcceptQuest(QuestBase quest, bool printMessages = true) {
+        public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             //Debug.Log("UseInteractableObjective.OnAcceptQuest()");
-            base.OnAcceptQuest(quest, printMessages);
+            base.OnAcceptQuest(sourceUnitController, quest, printMessages);
 
             // don't forget to remove these later
             systemEventManager.OnDialogCompleted += CheckCompletionCount;
-            UpdateCompletionCount(printMessages);
+            UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public override void OnAbandonQuest() {
+        public override void OnAbandonQuest(UnitController sourceUnitController) {
             //Debug.Log("UseInteractableObjective.OnAbandonQuest()");
-            base.OnAbandonQuest();
+            base.OnAbandonQuest(sourceUnitController);
             systemEventManager.OnDialogCompleted -= CheckCompletionCount;
         }
 

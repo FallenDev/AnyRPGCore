@@ -32,7 +32,7 @@ namespace AnyRPG {
         public void ChangePlayerFaction() {
             playerManager.SetPlayerFaction(faction);
             
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
         public override void EndInteraction() {

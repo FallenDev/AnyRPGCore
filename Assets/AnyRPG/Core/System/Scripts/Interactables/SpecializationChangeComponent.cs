@@ -30,7 +30,7 @@ namespace AnyRPG {
             base.ProcessCreateEventSubscriptions();
 
             // because the class is a special type of prerequisite, we need to be notified when it changes
-            SystemEventManager.StartListening("OnSpecializationChange", HandleSpecializationChange);
+            systemEventManager.OnSpecializationChange += HandleSpecializationChange;
             systemEventManager.OnClassChange += HandleClassChange;
         }
 
@@ -38,13 +38,13 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
 
-            SystemEventManager.StopListening("OnSpecializationChange", HandleSpecializationChange);
             if (systemEventManager != null) {
+                systemEventManager.OnSpecializationChange -= HandleSpecializationChange;
                 systemEventManager.OnClassChange -= HandleClassChange;
             }
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
             base.Interact(source, optionIndex);
 
@@ -59,30 +59,28 @@ namespace AnyRPG {
             uIManager.specializationChangeWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.CharacterCreatorInteractable.GetCurrentOptionCount()");
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
-        public void HandleSpecializationChange(string eventName, EventParamProperties eventParamProperties) {
-            HandlePrerequisiteUpdates();
+        public void HandleSpecializationChange(UnitController sourceUnitController, ClassSpecialization newClassSpecialization, ClassSpecialization oldClassSpecialization) {
+            HandlePrerequisiteUpdates(sourceUnitController);
         }
 
-        public void HandleClassChange(CharacterClass oldCharacterClass, CharacterClass newCharacterClass) {
-            HandlePrerequisiteUpdates();
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass oldCharacterClass, CharacterClass newCharacterClass) {
+            HandlePrerequisiteUpdates(sourceUnitController);
         }
 
         // specialization is a special type of prerequisite
-        public override bool PrerequisitesMet {
-            get {
-                if (playerManager.UnitController.BaseCharacter.ClassSpecialization == Props.ClassSpecialization) {
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+                if (sourceUnitController.BaseCharacter.ClassSpecialization == Props.ClassSpecialization) {
                     return false;
                 }
-                if (Props.ClassSpecialization.CharacterClasses.Contains(playerManager.UnitController.BaseCharacter.CharacterClass) == false) {
+                if (Props.ClassSpecialization.CharacterClasses.Contains(sourceUnitController.BaseCharacter.CharacterClass) == false) {
                     return false;
                 }
-                return base.PrerequisitesMet;
-            }
+                return base.PrerequisitesMet(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

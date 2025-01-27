@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -47,13 +48,16 @@ namespace AnyRPG {
             craftingManager.TriggerCraftAmountUpdated();
         }
 
-        
+      
 
         protected override void SetDescribableCommon(IDescribable describable) {
             base.SetDescribableCommon(describable);
             systemEventManager.OnItemCountChanged += UpdateVisual;
         }
 
+        private void UpdateVisual(UnitController controller, Item item) {
+            UpdateVisual();
+        }
 
         public override void OnDisable() {
             if (SystemGameManager.IsShuttingDown) {

@@ -376,14 +376,14 @@ namespace AnyRPG {
             previewCamera.enabled = false;
         }
 
-        public void HandleReviveComplete() {
-            HandleReputationChange();
+        public void HandleReviveComplete(UnitController sourceUnitController) {
+            HandleReputationChange(sourceUnitController);
         }
 
         private void InitializeStats() {
             //Debug.Log($"{gameObject.name}.UnitFrameController.InitializeStats()");
 
-            HandleReputationChange();
+            HandleReputationChange(playerManager.UnitController);
             //Debug.Log("Charcter name is " + baseCharacter.MyCharacterName);
             unitNameText.text = namePlateController.UnitDisplayName;
 
@@ -418,7 +418,7 @@ namespace AnyRPG {
             HandleLevelChanged(namePlateController.Level);
         }
 
-        public void HandleClassChange(CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
             CalculateResourceColors();
         }
 
@@ -586,7 +586,7 @@ namespace AnyRPG {
 
         }
 
-        public void HandleReputationChange() {
+        public void HandleReputationChange(UnitController sourceUnitController) {
             if (playerManager == null || playerManager.PlayerUnitSpawned == false) {
                 return;
             }

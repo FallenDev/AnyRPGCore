@@ -12,7 +12,7 @@ namespace AnyRPG {
     [System.Serializable]
     public class SceneNode : DescribableResource {
 
-        public event System.Action OnVisitZone = delegate { };
+        public event System.Action<UnitController> OnVisitZone = delegate { };
 
         [Header("Loading Screen")]
 
@@ -243,15 +243,13 @@ namespace AnyRPG {
         public AudioProfile MovementHitProfile { get => movementHitProfile; set => movementHitProfile = value; }
         public string SceneFile { get => sceneFile; set => sceneFile = value; }
 
-        public bool Visited {
-            get {
-                return saveManager.GetSceneNodeSaveData(this).visited;
-            }
-            set {
-                SceneNodeSaveData saveData = saveManager.GetSceneNodeSaveData(this);
-                saveData.visited = value;
-                saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
-            }
+        public bool Visited(UnitController sourceUnitController) {
+            return saveManager.GetSceneNodeSaveData(this).visited;
+        }
+        public void SetVisited(UnitController sourceUnitController, bool value) {
+            SceneNodeSaveData saveData = saveManager.GetSceneNodeSaveData(this);
+            saveData.visited = value;
+            saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
         }
 
         public bool AllowMount { get => allowMount; set => allowMount = value; }
@@ -309,11 +307,11 @@ namespace AnyRPG {
             return new PersistentObjectSaveData();
         }
 
-        public void Visit() {
-            if (Visited == false) {
-                Visited = true;
+        public void Visit(UnitController sourceUnitController) {
+            if (Visited(sourceUnitController) == false) {
+                SetVisited(sourceUnitController, true);
             }
-            OnVisitZone();
+            OnVisitZone(sourceUnitController);
         }
 
         public void PreloadFootStepAudio() {

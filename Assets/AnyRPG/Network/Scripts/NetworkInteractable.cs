@@ -78,7 +78,7 @@ namespace AnyRPG {
         }
 
         public override void OnStopClient() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.OnStopClient()");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.OnStopClient()");
 
             base.OnStopClient();
             if (SystemGameManager.IsShuttingDown == true) {
@@ -90,7 +90,7 @@ namespace AnyRPG {
         }
 
         public override void OnStartServer() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
 
             base.OnStartServer();
 

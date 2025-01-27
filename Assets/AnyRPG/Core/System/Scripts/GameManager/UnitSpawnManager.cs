@@ -12,6 +12,14 @@ namespace AnyRPG {
 
         public UnitSpawnControllerProps UnitSpawnControllerProps { get => unitSpawnControllerProps; set => unitSpawnControllerProps = value; }
 
+        // game manager references
+        PlayerManager playerManager = null;
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            playerManager = systemGameManager.PlayerManager;
+        }
 
         public void SetProps(UnitSpawnControllerProps unitSpawnControllerProps, InteractableOptionComponent interactableOptionComponent) {
             //Debug.Log("UnitSpawnManager.SetProps()");
@@ -26,7 +34,7 @@ namespace AnyRPG {
                     unitSpawnNode.ManualSpawn(unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness);
                 }
             }
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
         public override void EndInteraction() {

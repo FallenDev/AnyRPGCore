@@ -24,9 +24,18 @@ namespace AnyRPG {
 
         protected LootDrop lootDrop = null;
 
+        // game manager references
+        protected PlayerManager playerManager = null;
+
         public TextMeshProUGUI Title { get => title; }
         public Image Icon { get => icon; }
         public LootDrop LootDrop { get => lootDrop; }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            playerManager = systemGameManager.PlayerManager;
+        }
 
         public void SetLootDrop(LootDrop lootDrop) {
             //Debug.Log($"{gameObject.name}.LootButton.SetLootDrop(" + lootDrop.DisplayName + ")");
@@ -56,7 +65,7 @@ namespace AnyRPG {
                 return;
             }
 
-            LootDrop.TakeLoot();
+            LootDrop.TakeLoot(playerManager.UnitController);
         }
 
         public override void OnPointerEnter(PointerEventData eventData) {

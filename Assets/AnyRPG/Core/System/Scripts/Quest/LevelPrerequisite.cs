@@ -7,7 +7,7 @@ namespace AnyRPG {
     [System.Serializable]
     public class LevelPrerequisite : ConfiguredClass, IPrerequisite {
 
-        public event System.Action OnStatusUpdated = delegate { };
+        public event System.Action<UnitController> OnStatusUpdated = delegate { };
 
         [SerializeField]
         private int requiredLevel = 1;
@@ -22,24 +22,22 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private SystemEventManager systemEventManager = null;
 
-        public void UpdateStatus(bool notify = true) {
+        public void UpdateStatus(UnitController sourceUnitController, bool notify = true) {
             bool originalResult = prerequisiteMet;
-            bool checkResult = (playerManager.UnitController.CharacterStats.Level >= requiredLevel);
+            bool checkResult = (sourceUnitController.CharacterStats.Level >= requiredLevel);
             if (checkResult != originalResult) {
                 prerequisiteMet = checkResult;
                 if (notify == true) {
-                    OnStatusUpdated();
+                    OnStatusUpdated(sourceUnitController);
                 }
             }
         }
 
-
-        public void HandleLevelChanged(int newLevel) {
-            UpdateStatus();
+        public void HandleLevelChanged(UnitController unitController, int newLevel) {
+            UpdateStatus(unitController);
         }
 
-
-        public virtual bool IsMet(BaseCharacter baseCharacter) {
+        public virtual bool IsMet(UnitController sourceUnitController) {
             //Debug.Log("LevelPrerequisite.IsMet()");
 
             return prerequisiteMet;

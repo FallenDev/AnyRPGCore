@@ -58,19 +58,19 @@ namespace AnyRPG {
             }
         }
 
-        public void TakeAllLoot() {
+        public void TakeAllLoot(UnitController sourceUnitController) {
             //Debug.Log("LootManager.TakeAllLoot()");
 
             // added emptyslotcount to prevent game from freezup when no bag space left and takeall button pressed
             int maximumLoopCount = droppedLoot.Count;
             int currentLoopCount = 0;
-            while (droppedLoot.Count > 0 && playerManager.UnitController.CharacterInventoryManager.EmptySlotCount() > 0 && currentLoopCount < maximumLoopCount) {
-                droppedLoot[0].TakeLoot();
+            while (droppedLoot.Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() > 0 && currentLoopCount < maximumLoopCount) {
+                droppedLoot[0].TakeLoot(sourceUnitController);
                 currentLoopCount++;
             }
 
-            if (droppedLoot.Count > 0 && playerManager.UnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
-                if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
+            if (droppedLoot.Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
+                if (sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
                     //Debug.Log("No space left in inventory");
                 }
                 messageFeedManager.WriteMessage("Inventory is full!");
@@ -93,12 +93,12 @@ namespace AnyRPG {
             }
         }
 
-        public bool CanDropUniqueItem(Item item) {
+        public bool CanDropUniqueItem(UnitController sourceUnitController, Item item) {
             //Debug.Log("LootManager.CanDropUniqueItem(" + item.DisplayName + ")");
-            if (playerManager.UnitController.CharacterInventoryManager.GetItemCount(item.ResourceName) > 0) {
+            if (sourceUnitController.CharacterInventoryManager.GetItemCount(item.ResourceName) > 0) {
                 return false;
             }
-            if (playerManager.UnitController.CharacterEquipmentManager.HasEquipment(item.ResourceName) == true) {
+            if (sourceUnitController.CharacterEquipmentManager.HasEquipment(item.ResourceName) == true) {
                 return false;
             }
             foreach (LootTableState lootTableState in lootTableStates) {

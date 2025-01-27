@@ -116,8 +116,7 @@ namespace AnyRPG {
             //Debug.Log("PlayerController.ShowHideInteractionPopup() count: " + interactables.Count);
 
             if (interactables.Count > 0
-                && interactables[interactables.Count - 1].SpawnPrerequisitesMet == true
-                && interactables[interactables.Count - 1].GetCurrentInteractables().Count > 0) {
+                && interactables[interactables.Count - 1].GetCurrentInteractables(playerManager.UnitController).Count > 0) {
                 uIManager.ShowInteractionTooltip(interactables[interactables.Count - 1]);
             } else {
                 uIManager.HideInteractionToolTip();
@@ -641,7 +640,7 @@ namespace AnyRPG {
             }
             //if (IsTargetInHitBox(target)) {
 
-            return interactionManager.Interact(target);
+            return interactionManager.Interact(playerManager.UnitController, target);
         }
 
         private void RegisterTab() {
@@ -921,10 +920,10 @@ namespace AnyRPG {
         private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption, int optionIndex) {
             //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded()");
             //if (IsTargetInHitBox(target)) {
-            if (interactableOption.Interact(playerManager.ActiveUnitController.CharacterUnit, optionIndex)) {
+            if (interactableOption.Interact(playerManager.ActiveUnitController, optionIndex)) {
                 //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
-                systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController.Target.DisplayName);
-                systemEventManager.NotifyOnInteractionWithOptionStarted(interactableOption);
+                systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController, playerManager.UnitController.Target.DisplayName);
+                systemEventManager.NotifyOnInteractionWithOptionStarted(playerManager.UnitController, interactableOption);
                 // no longer needed since targeting is changed and we don't want to lose target in the middle of attacking
                 //playerManager.ActiveUnitController.SetTarget(null);
                 return true;
@@ -1218,13 +1217,13 @@ namespace AnyRPG {
             messageFeedManager.WriteMessage("Changed faction to " + newFaction.DisplayName);
         }
 
-        public void HandleClassChange(CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
-            systemEventManager.NotifyOnClassChange(newCharacterClass, oldCharacterClass);
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
+            systemEventManager.NotifyOnClassChange(sourceUnitController, newCharacterClass, oldCharacterClass);
             messageFeedManager.WriteMessage("Changed class to " + newCharacterClass.DisplayName);
         }
 
-        public void HandleSpecializationChange(ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
-            SystemEventManager.TriggerEvent("OnSpecializationChange", new EventParamProperties());
+        public void HandleSpecializationChange(UnitController sourceUnitController, ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
+            systemEventManager.NotifyOnSpecializationChange(sourceUnitController, newSpecialization, oldSpecialization);
             if (newSpecialization != null) {
                 messageFeedManager.WriteMessage("Changed specialization to " + newSpecialization.DisplayName);
             }

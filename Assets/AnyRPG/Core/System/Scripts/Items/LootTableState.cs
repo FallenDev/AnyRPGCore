@@ -47,7 +47,7 @@ namespace AnyRPG {
             droppedItems.AddRange(itemLootDrops);
         }
 
-        private void RollLoot(LootTable lootTable) {
+        private void RollLoot(UnitController sourceUnitController, LootTable lootTable) {
             //Debug.Log($"{gameObject.name}.LootTable.RollLoot()");
             int lootTableRemainingDrops = lootTable.DropLimit;
             bool lootTableUnlimitedDrops = (lootTable.DropLimit == 0);
@@ -70,8 +70,8 @@ namespace AnyRPG {
                     // get list of loot that is currenly valid to be rolled so that weights can be properly calculated based on only valid loot
                     List<Loot> validLoot = new List<Loot>();
                     foreach (Loot loot in lootGroup.Loot) {
-                        if (loot.PrerequisitesMet == true &&
-                            (loot.Item.UniqueItem == false || lootManager.CanDropUniqueItem(loot.Item) == true)) {
+                        if (loot.PrerequisitesMet(sourceUnitController) == true &&
+                            (loot.Item.UniqueItem == false || lootManager.CanDropUniqueItem(sourceUnitController, loot.Item) == true)) {
                             validLoot.Add(loot);
                         }
                     }
@@ -118,14 +118,14 @@ namespace AnyRPG {
                             }
                         }
                         foreach (int randomItemIndex in randomItemIndexes) {
-                            AddDroppedItems(GetLootDrop(validLoot[randomItemIndex], lootGroupUnlimitedDrops, ignoreDropLimit, lootTableUnlimitedDrops, ref lootGroupRemainingDrops));
+                            AddDroppedItems(GetLootDrop(sourceUnitController, validLoot[randomItemIndex], lootGroupUnlimitedDrops, ignoreDropLimit, lootTableUnlimitedDrops, ref lootGroupRemainingDrops));
                         }
                     } else {
                         foreach (Loot item in validLoot) {
                             //Debug.Log("LootTable.RollLoot(): " + item.MyItem.DisplayName + " rolling");
                             int roll = Random.Range(0, 100);
                             if (roll <= item.DropChance) {
-                                AddDroppedItems(GetLootDrop(item, lootGroupUnlimitedDrops, ignoreDropLimit, lootTableUnlimitedDrops, ref lootGroupRemainingDrops));
+                                AddDroppedItems(GetLootDrop(sourceUnitController, item, lootGroupUnlimitedDrops, ignoreDropLimit, lootTableUnlimitedDrops, ref lootGroupRemainingDrops));
                             }
                             if ((lootGroupUnlimitedDrops == false && lootGroupRemainingDrops <= 0) || (lootTableUnlimitedDrops == false && lootTableRemainingDrops <= 0)) {
                                 break;
@@ -143,13 +143,13 @@ namespace AnyRPG {
             lootManager.AddLootTableState(this);
         }
 
-        private List<ItemLootDrop> GetLootDrop(Loot loot, bool lootGroupUnlimitedDrops, bool ignoreDropLimit, bool lootTableUnlimitedDrops, ref int lootGroupRemainingDrops) {
+        private List<ItemLootDrop> GetLootDrop(UnitController sourceUnitController, Loot loot, bool lootGroupUnlimitedDrops, bool ignoreDropLimit, bool lootTableUnlimitedDrops, ref int lootGroupRemainingDrops) {
             List<ItemLootDrop> returnValue = new List<ItemLootDrop>();
             int itemCount = Random.Range(loot.MinDrops, loot.MaxDrops + 1);
             //Debug.Log("GatherLootTable.RollLoot(): itemCount: " + itemCount);
             for (int i = 0; i < itemCount; i++) {
                 ItemLootDrop droppedItem = new ItemLootDrop(systemItemManager.GetNewResource(loot.Item.ResourceName), this, systemGameManager);
-                droppedItem.Item.DropLevel = playerManager.UnitController.CharacterStats.Level;
+                droppedItem.Item.DropLevel = sourceUnitController.CharacterStats.Level;
                 AddDroppedItem(droppedItem);
                 if (lootGroupUnlimitedDrops == false && ignoreDropLimit == false) {
                     lootGroupRemainingDrops = lootGroupRemainingDrops - 1;
@@ -169,11 +169,11 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public List<LootDrop> GetLoot(LootTable lootTable, bool rollLoot = true) {
+        public List<LootDrop> GetLoot(UnitController sourceUnitController, LootTable lootTable, bool rollLoot = true) {
             //Debug.Log("LootTable.GetLoot().");
             if (!rolled && rollLoot == true) {
                 //Debug.Log("LootTable.GetLoot() !rolled. rolling...");
-                RollLoot(lootTable);
+                RollLoot(sourceUnitController, lootTable);
             }
             //Debug.Log("LootTable.GetLoot(). MyDroppedItems.Length: " + MyDroppedItems.Count);
             return droppedItems;

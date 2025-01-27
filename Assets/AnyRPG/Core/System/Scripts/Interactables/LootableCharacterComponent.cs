@@ -12,7 +12,8 @@ namespace AnyRPG {
 
         public LootableCharacterProps Props { get => interactableOptionProps as LootableCharacterProps; }
 
-        private CharacterUnit characterUnit;
+        private CharacterUnit characterUnit = null;
+        private UnitController unitController = null;
 
         // keep track of whether or not currency for this character has been rolled.
         private bool currencyRolled = false;
@@ -78,8 +79,10 @@ namespace AnyRPG {
 
             // have to set this here instead of constructor because the base constructor will call this before the local constructor runs
             characterUnit = CharacterUnit.GetCharacterUnit(interactable);
-
-            characterUnit.UnitController.UnitEventController.OnBeforeDie += HandleDeath;
+            if (characterUnit != null) {
+                unitController = characterUnit.UnitController;
+                unitController.UnitEventController.OnBeforeDie += HandleDeath;
+            }
         }
 
         public override void ProcessCleanupEventSubscriptions() {
@@ -115,7 +118,7 @@ namespace AnyRPG {
             lootHolder.ClearLootTableStates();
         }
 
-        public void HandleDeath(UnitController unitController) {
+        public void HandleDeath(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + "LootableCharacter.HandleDeath()");
             if (playerManager == null) {
                 // game is exiting
@@ -124,9 +127,9 @@ namespace AnyRPG {
             int lootCount = 0;
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): MyLootTable != null.  Getting loot");
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): characterinAgrotable: " + characterUnit.BaseCharacter.CharacterCombat.MyAggroTable.AggroTableContains(playerManager.UnitController.CharacterUnit));
-            if (LootHolder.LootTableStates.Count > 0 && characterUnit.UnitController.CharacterCombat.AggroTable.AggroTableContains(playerManager.UnitController.CharacterUnit)) {
+            if (LootHolder.LootTableStates.Count > 0 && characterUnit.UnitController.CharacterCombat.AggroTable.AggroTableContains(sourceUnitController.CharacterUnit)) {
                 //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): characterinAgrotable: " + characterUnit.BaseCharacter.CharacterCombat.MyAggroTable.AggroTableContains(playerManager.UnitController.CharacterUnit));
-                lootCount = GetLootCount();
+                lootCount = GetLootCount(sourceUnitController);
             }
             lootCalculated = true;
             if (lootCount > 0 && systemConfigurationManager.LootSparkleEffect != null) {
@@ -153,7 +156,7 @@ namespace AnyRPG {
                 Despawn();
                 return;
             }
-            int lootCount = GetLootCount();
+            int lootCount = GetExistingLootCount();
             if (lootCount == 0) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.TryToDespawn(): loot table had no dropped items, despawning");
                 if (monitoringTakeLoot) {
@@ -168,7 +171,8 @@ namespace AnyRPG {
                 AdvertiseLootComplete();
                 Despawn();
             }
-            HandlePrerequisiteUpdates();
+            //HandlePrerequisiteUpdates();
+            HandleOptionStateChange();
         }
 
         public void AdvertiseLootComplete() {
@@ -180,18 +184,19 @@ namespace AnyRPG {
             }
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
 
+            float factionValue = Faction.RelationWith(sourceUnitController, unitController);
             // you can't loot friendly characters
             if (factionValue > -1f ) {
                 return false;
             }
             // testing, this could include a a range check, and we want that to be processed, so send in a fake faction value
-            if (base.CanInteract(processRangeCheck, passedRangeCheck, 0f, false) == false || GetCurrentOptionCount() == 0) {
+            if (base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, false) == false || GetCurrentOptionCount(sourceUnitController) == 0) {
                 return false;
             }
 
-            int lootCount = GetLootCount();
+            int lootCount = GetLootCount(sourceUnitController);
             // changed this next line to getcurrentoptioncount to cover the size of the loot table and aliveness checks.  This should prevent an empty window from popping up after the character is looted
             if (lootHolder.LootTableStates.Count > 0 && lootCount > 0) {
                 return true;
@@ -199,13 +204,13 @@ namespace AnyRPG {
             return false;
         }
 
-        public int GetLootCount() {
+        public int GetLootCount(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + ".LootableCharacter.GetLootCount()");
             int lootCount = 0;
             
             foreach (LootTable lootTable in lootHolder.LootTableStates.Keys) {
                 if (lootTable != null) {
-                    lootHolder.LootTableStates[lootTable].GetLoot(lootTable, !lootCalculated);
+                    lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable, !lootCalculated);
                     lootCount += lootHolder.LootTableStates[lootTable].DroppedItems.Count;
                     //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after loot table count: " + lootCount);
                 }
@@ -214,6 +219,27 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): automatic currency : true");
                 CurrencyNode tmpNode = GetCurrencyLoot();
                 if (tmpNode.currency != null) {
+                    lootCount += 1;
+                    //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after currency count: " + lootCount);
+                }
+            }
+            return lootCount;
+        }
+
+        public int GetExistingLootCount() {
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount()");
+            int lootCount = 0;
+
+            foreach (LootTable lootTable in lootHolder.LootTableStates.Keys) {
+                if (lootTable != null) {
+                    lootCount += lootHolder.LootTableStates[lootTable].DroppedItems.Count;
+                    //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after loot table count: " + lootCount);
+                }
+            }
+            if (Props.AutomaticCurrency == true) {
+                //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): automatic currency : true");
+                //CurrencyNode tmpNode = GetCurrencyLoot();
+                if (currencyNode.currency != null) {
                     lootCount += 1;
                     //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after currency count: " + lootCount);
                 }
@@ -264,12 +290,12 @@ namespace AnyRPG {
             return currencyNode;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".LootableCharacter.Interact()");
             uIManager.interactionWindow.CloseWindow();
             if (!characterUnit.UnitController.CharacterStats.IsAlive) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): Character is dead.  Showing Loot Window on interaction");
-                base.Interact(source, optionIndex);
+                base.Interact(sourceUnitController, optionIndex);
                 // keep track of currency drops for combining after
                 CurrencyLootDrop droppedCurrencies = new CurrencyLootDrop(systemGameManager);
 
@@ -293,7 +319,7 @@ namespace AnyRPG {
 
                             // get item loot
                             foreach (LootTable lootTable in lootableCharacter.LootHolder.LootTableStates.Keys) {
-                                itemDrops.AddRange(lootableCharacter.LootHolder.LootTableStates[lootTable].GetLoot(lootTable));
+                                itemDrops.AddRange(lootableCharacter.LootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable));
                                 // testing - move this outside of loop because otherwise we can subscribe multiple times to loot events, and they will never be cleared
                                 //lootableCharacter.MonitorLootTable();
                             }
@@ -356,10 +382,10 @@ namespace AnyRPG {
             }
         }
 
-        public override int GetValidOptionCount() {
+        public override int GetValidOptionCount(UnitController sourceUnitController) {
             // this was commented out.  putting it back in because bunnies are 
             //if (MyCharacterUnit != null && MyCharacterUnit.MyCharacter != null && MyCharacterUnit.MyCharacter.MyCharacterStats != null) {
-            if (base.GetValidOptionCount() == 0) {
+            if (base.GetValidOptionCount(sourceUnitController) == 0) {
                 return 0;
             }
                 return (CharacterUnit.UnitController.CharacterStats.IsAlive == false ? 1 : 0);
@@ -367,11 +393,11 @@ namespace AnyRPG {
             //return 0;
         }
 
-        public override int GetCurrentOptionCount() {
-            if (GetValidOptionCount() == 0) {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
+            if (GetValidOptionCount(sourceUnitController) == 0) {
                 return 0;
             }
-            int lootCount = GetLootCount();
+            int lootCount = GetLootCount(sourceUnitController);
             return ((lootCount > 0) ? 1 : 0);
         }
 

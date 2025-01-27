@@ -10,10 +10,12 @@ namespace AnyRPG {
             //Debug.Log(gameObject.name + gameObject.GetInstanceID() + ".InanimateUnit.OnDisable()");
         }
 
+        /*
         public override void OnDestroy() {
             base.OnDestroy();
             //Debug.Log(gameObject.name + gameObject.GetInstanceID() + ".InanimateUnit.OnDestroy()");
         }
+        */
 
     }
 

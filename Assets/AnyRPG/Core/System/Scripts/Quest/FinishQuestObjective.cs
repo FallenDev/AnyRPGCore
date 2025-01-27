@@ -23,9 +23,9 @@ namespace AnyRPG {
 
         private Quest questObjective;
 
-        public override void UpdateCompletionCount(bool printMessages = true) {
+        public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
             //Debug.Log("QuestQuestObjective.UpdateCompletionCount()");
-            bool completeBefore = IsComplete;
+            bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
                 //Debug.Log("QuestQuestObjective.UpdateCompletionCount() : COMPLETEBEFORE = TRUE");
                 return;
@@ -34,29 +34,29 @@ namespace AnyRPG {
                 //Debug.Log("QuestQuestObjective.UpdateCompletionCount(): questObjective is null");
                 return;
             }
-            if (questObjective.GetStatus() == "completed") {
-                CurrentAmount++;
+            if (questObjective.GetStatus(sourceUnitController) == "completed") {
+                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
                 // i think that is supposed to be this instead to ask the quest that we are an objective for to check completion
-                questBase.CheckCompletion(true, printMessages);
+                questBase.CheckCompletion(sourceUnitController, true, printMessages);
                 //questObjective.CheckCompletion(true, printMessages);
-                if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount != 0) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount, 0, Amount), Amount));
+                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
+                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
                 }
-                if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("Complete {1}: Objective Complete", CurrentAmount, questObjective.DisplayName));
+                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
+                    messageFeedManager.WriteMessage(string.Format("Complete {1}: Objective Complete", CurrentAmount(sourceUnitController), questObjective.DisplayName));
                 }
             }
-            base.UpdateCompletionCount(printMessages);
+            base.UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public override void OnAcceptQuest(QuestBase quest, bool printMessages = true) {
-            base.OnAcceptQuest(quest, printMessages);
+        public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
+            base.OnAcceptQuest(sourceUnitController, quest, printMessages);
             questObjective.OnQuestStatusUpdated += HandleQuestStatusUpdated;
-            UpdateCompletionCount(printMessages);
+            UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public override void OnAbandonQuest() {
-            base.OnAbandonQuest();
+        public override void OnAbandonQuest(UnitController sourceUnitController) {
+            base.OnAbandonQuest(sourceUnitController);
             questObjective.OnQuestStatusUpdated -= HandleQuestStatusUpdated;
         }
 

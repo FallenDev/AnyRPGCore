@@ -46,7 +46,6 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private LevelManager levelManager = null;
         private LogManager logManager = null;
-        private QuestLog questLog = null;
         private InteractionManager interactionManager = null;
 
         public string Username { get => username; }
@@ -228,7 +227,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
-            Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderClientId}) clientid: {clientId}");
+            //Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderClientId}) clientid: {clientId}");
 
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             if (lobbyGame.leaderClientId == clientId) {
@@ -304,7 +303,7 @@ namespace AnyRPG {
         }
 
         public void SetLobbyGameList(List<LobbyGame> lobbyGames) {
-            Debug.Log($"NetworkManagerClient.SetLobbyGameList({lobbyGames.Count})");
+            //Debug.Log($"NetworkManagerClient.SetLobbyGameList({lobbyGames.Count})");
 
             this.lobbyGames.Clear();
             foreach (LobbyGame lobbyGame in lobbyGames) {
@@ -380,7 +379,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex) {
-            questLog.InteractWithQuestGiverClient(interactable, optionIndex, playerManager.UnitController);
+            interactionManager.InteractWithQuestGiverClient(interactable, optionIndex, playerManager.UnitController);
         }
 
         public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
@@ -400,7 +399,11 @@ namespace AnyRPG {
         }
 
         public void AdvertiseInteractWithClassChangeComponent(Interactable interactable, int optionIndex) {
-            interactionManager.InteractWithClassChangeComponent(interactable, optionIndex);
+            interactionManager.InteractWithClassChangeComponentClient(interactable, optionIndex);
+        }
+
+        public void SetPlayerCharacterClass(string className) {
+            networkController.SetPlayerCharacterClass(className);
         }
     }
 

@@ -36,7 +36,7 @@ namespace AnyRPG {
         public void LearnSkill(Skill skill) {
             playerManager.UnitController.CharacterSkillManager.LearnSkill(skill);
 
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
         public void UnlearnSkill(Skill skill) {

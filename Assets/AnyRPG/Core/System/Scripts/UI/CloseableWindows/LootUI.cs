@@ -22,6 +22,7 @@ namespace AnyRPG {
 
         // game manager references
         private LootManager lootManager = null;
+        private PlayerManager playerManager = null;
 
         public List<LootButton> LootButtons { get => lootButtons; set => lootButtons = value; }
 
@@ -39,6 +40,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             lootManager = systemGameManager.LootManager;
+            playerManager = systemGameManager.PlayerManager;
         }
 
         protected override void PopulatePages() {
@@ -87,7 +89,7 @@ namespace AnyRPG {
 
         public void TakeAllLoot() {
             //Debug.Log("LootUI.TakeAllLoot()");
-            lootManager.TakeAllLoot();
+            lootManager.TakeAllLoot(playerManager.UnitController);
             BroadcastPageCountUpdate();
         }
 

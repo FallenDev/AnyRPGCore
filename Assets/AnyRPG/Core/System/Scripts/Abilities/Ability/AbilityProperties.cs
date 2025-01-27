@@ -10,8 +10,8 @@ namespace AnyRPG {
     [Serializable]
     public class AbilityProperties : ConfiguredClass, IRewardable, IDescribable, IUseable, IMoveable, ITargetable, ILearnable {
 
-        public event System.Action OnAbilityLearn = delegate { };
-        public event System.Action OnAbilityUsed = delegate { };
+        public event System.Action<UnitController> OnAbilityLearn = delegate { };
+        public event System.Action<UnitController> OnAbilityUsed = delegate { };
 
         [Header("Casting Requirements")]
 
@@ -477,16 +477,16 @@ namespace AnyRPG {
 
         }
 
-        public void GiveReward() {
-            playerManager.UnitController.CharacterAbilityManager.LearnAbility(this);
+        public void GiveReward(UnitController sourceUnitController) {
+            sourceUnitController.CharacterAbilityManager.LearnAbility(this);
         }
 
-        public bool HasReward() {
-            return playerManager.UnitController.CharacterAbilityManager.HasAbility(this);
+        public bool HasReward(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterAbilityManager.HasAbility(this);
         }
 
-        public virtual bool IsUseableStale() {
-            if (playerManager.UnitController.CharacterAbilityManager.HasAbility(DisplayName)) {
+        public virtual bool IsUseableStale(UnitController sourceUnitController) {
+            if (sourceUnitController.CharacterAbilityManager.HasAbility(DisplayName)) {
                 //Debug.Log(DisplayName + " is not stale");
                 return false;
             }
@@ -502,8 +502,8 @@ namespace AnyRPG {
             backgroundImage.color = new Color32(0, 0, 0, 255);
         }
 
-        public bool ActionButtonUse() {
-            return Use();
+        public bool ActionButtonUse(UnitController sourceUnitController) {
+            return Use(sourceUnitController);
         }
 
         public IUseable GetFactoryUseable() {
@@ -968,12 +968,12 @@ namespace AnyRPG {
             }
         }
 
-        public bool Use() {
+        public bool Use(UnitController sourceUnitController) {
             //Debug.Log(DisplayName + ".BaseAbility.Use()");
             // prevent casting any ability without the proper weapon affinity
-            if (CanCast(playerManager.UnitController, true)) {
+            if (CanCast(sourceUnitController, true)) {
                 //Debug.Log(DisplayName + ".BaseAbility.Use(): cancast is true");
-                playerManager.UnitController.CharacterAbilityManager.BeginAbility(this, true);
+                sourceUnitController.CharacterAbilityManager.BeginAbility(this, true);
                 return true;
             }
             return false;
@@ -1252,12 +1252,12 @@ namespace AnyRPG {
             return nextTickPercent;
         }
 
-        public void NotifyOnLearn() {
-            OnAbilityLearn();
+        public void NotifyOnLearn(UnitController unitController) {
+            OnAbilityLearn(unitController);
         }
 
-        public void NotifyOnAbilityUsed() {
-            OnAbilityUsed();
+        public void NotifyOnAbilityUsed(UnitController unitController) {
+            OnAbilityUsed(unitController);
         }
 
         /// <summary>

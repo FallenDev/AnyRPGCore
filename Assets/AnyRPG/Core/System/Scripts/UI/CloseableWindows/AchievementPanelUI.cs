@@ -12,6 +12,7 @@ namespace AnyRPG {
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
+        private PlayerManager playerManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -22,11 +23,16 @@ namespace AnyRPG {
             }
         }
 
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            playerManager = systemGameManager.PlayerManager;
+        }
+
         protected override void PopulatePages() {
             //Debug.Log("AchievementPanelUI.CreatePages()");
             QuestContentList page = new QuestContentList();
             foreach (Achievement quest in systemDataFactory.GetResourceList<Achievement>()) {
-                if (quest.TurnedIn) {
+                if (quest.TurnedIn(playerManager.UnitController)) {
                     page.achievements.Add(quest);
                 }
                 if (page.achievements.Count == pageSize) {

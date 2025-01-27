@@ -146,7 +146,7 @@ namespace AnyRPG {
             }
 
             if (Useable != null) {
-                Useable.ActionButtonUse();
+                Useable.ActionButtonUse(playerManager.UnitController);
             }
         }
 
@@ -383,7 +383,7 @@ namespace AnyRPG {
         /// attempt to remove unlearned spells from the button
         /// </summary>
         public void RemoveStaleActions() {
-            if (Useable != null && Useable.IsUseableStale() == true) {
+            if (Useable != null && Useable.IsUseableStale(playerManager.UnitController) == true) {
                 savedUseable = Useable;
                 useable = null;
                 UpdateVisual();
@@ -460,7 +460,7 @@ namespace AnyRPG {
             }
         }
 
-        public void UpdateItemCount(Item item) {
+        public void UpdateItemCount(UnitController unitController, Item item) {
 
             if (item is IUseable) {
                 UpdateVisual();

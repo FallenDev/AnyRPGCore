@@ -47,9 +47,9 @@ namespace AnyRPG {
 
         // game manager references
         protected UIManager uIManager = null;
-        protected QuestLog questLog = null;
         protected LogManager logManager = null;
         protected DialogManager dialogManager = null;
+        protected PlayerManager playerManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -59,9 +59,9 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             uIManager = systemGameManager.UIManager;
-            questLog = systemGameManager.QuestLog;
             logManager = systemGameManager.LogManager;
             dialogManager = systemGameManager.DialogManager;
+            playerManager = systemGameManager.PlayerManager;
         }
 
         public void CancelAction() {
@@ -73,16 +73,16 @@ namespace AnyRPG {
             //Debug.Log("NewGameMenuController.ConfirmAction(): dialogIndex: " + dialogIndex + "; DialogNode Count: " + MyDialog.MyDialogNodes.Count);
             dialogIndex++;
             if (dialogIndex >= dialogManager.Dialog.DialogNodes.Count) {
-                dialogManager.Dialog.TurnedIn = true;
+                dialogManager.Dialog.SetTurnedIn(playerManager.UnitController, true);
                 if (dialogManager.Quest == null) {
 
                     // next line is no longer true because onconfirmaction calls a prerequisiteupdate on the dialog controller
                     // no one is currently subscribed so safe to set turnedIn at bottom because nothing here depends on it being set yet
 
-                    dialogManager.ConfirmAction();
+                    dialogManager.ConfirmAction(playerManager.UnitController);
                     uIManager.dialogWindow.CloseWindow();
                 } else {
-                    if (!dialogManager.Quest.TurnedIn) {
+                    if (!dialogManager.Quest.TurnedIn(playerManager.UnitController)) {
                         DisplayQuestText();
                         continueButton.gameObject.SetActive(false);
                         viewQuestButton.gameObject.SetActive(true);
@@ -108,13 +108,13 @@ namespace AnyRPG {
         public void DisplayQuestText() {
             //Debug.Log("DialogPanelController.DisplayQuestText()");
             if (dialogManager.Quest != null) {
-                dialogText.text = dialogManager.Quest.GetObjectiveDescription();
+                dialogText.text = dialogManager.Quest.GetObjectiveDescription(playerManager.UnitController);
             }
         }
 
         public void ViewQuest() {
             uIManager.questGiverWindow.OpenWindow();
-            questLog.ShowQuestGiverDescription(dialogManager.Quest, null);
+            playerManager.UnitController.CharacterQuestLog.ShowQuestGiverDescription(dialogManager.Quest, null);
             uIManager.dialogWindow.CloseWindow();
         }
 
@@ -125,7 +125,7 @@ namespace AnyRPG {
             // CLOSE THIS FIRST SO OTHER WINDOWS AREN'T BLOCKED FROM POPPING
             uIManager.dialogWindow.CloseWindow();
 
-            questLog.AcceptQuest(quest);
+            playerManager.UnitController.CharacterQuestLog.AcceptQuest(quest);
             //interactable.CheckForInteractableObjectives(MyQuest.DisplayName);
         }
 

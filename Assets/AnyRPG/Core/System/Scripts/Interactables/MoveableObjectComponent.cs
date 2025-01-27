@@ -48,15 +48,15 @@ namespace AnyRPG {
             }
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController source, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
 
             if (Props.SwitchOnly == true) {
                 return false;
             }
-            return base.CanInteract(processRangeCheck, passedRangeCheck, factionValue, processNonCombatCheck);
+            return base.CanInteract(source, processRangeCheck, passedRangeCheck, processNonCombatCheck);
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
 
             base.Interact(source, optionIndex);

@@ -176,7 +176,7 @@ namespace AnyRPG {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an ability reward; current count of highlighted icons: " + GetHighlightedAbilityRewardIcons().Count + "; max: " + quest.MyMaxAbilityRewards);
                 if (quest.MaxAbilityRewards == 0
                     || (quest.MaxAbilityRewards > 0 && GetHighlightedAbilityRewardIcons().Count > quest.MaxAbilityRewards)
-                    || rewardButton.Rewardable.HasReward() == true) {
+                    || rewardButton.Rewardable.HasReward(playerManager.UnitController) == true) {
                     rewardButton.Unselect();
                 }
             }
@@ -185,7 +185,7 @@ namespace AnyRPG {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an ability reward; current count of highlighted icons: " + GetHighlightedAbilityRewardIcons().Count + "; max: " + quest.MyMaxAbilityRewards);
                 if (quest.MaxSkillRewards == 0
                     || (quest.MaxSkillRewards > 0 && GetHighlightedSkillRewardIcons().Count > quest.MaxSkillRewards)
-                    || rewardButton.Rewardable.HasReward() == true) {
+                    || rewardButton.Rewardable.HasReward(playerManager.UnitController) == true) {
                     rewardButton.Unselect();
                 }
             }
@@ -202,7 +202,7 @@ namespace AnyRPG {
             }
             this.quest = quest;
 
-            questDescription.text = quest.GetObjectiveDescription();
+            questDescription.text = quest.GetObjectiveDescription(playerManager.UnitController);
 
             experienceReward.text += LevelEquations.GetXPAmountForQuest(playerManager.UnitController.CharacterStats.Level, quest, systemConfigurationManager) + " XP";
 

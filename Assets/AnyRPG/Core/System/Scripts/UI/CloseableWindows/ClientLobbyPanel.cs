@@ -78,7 +78,7 @@ namespace AnyRPG {
         }
 
         public void CreateGame() {
-            Debug.Log($"ClientLobbyPanelController.CreateGame()");
+            //Debug.Log($"ClientLobbyPanelController.CreateGame()");
 
             uIManager.createLobbyGameWindow.OpenWindow();
         }

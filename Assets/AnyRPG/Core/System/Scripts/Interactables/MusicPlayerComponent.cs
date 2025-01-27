@@ -21,7 +21,7 @@ namespace AnyRPG {
             musicPlayerManager = systemGameManager.MusicPlayerManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
             base.Interact(source, optionIndex);
             if (!uIManager.musicPlayerWindow.IsOpen) {

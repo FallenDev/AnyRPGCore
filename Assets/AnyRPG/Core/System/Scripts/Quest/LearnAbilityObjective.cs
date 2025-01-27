@@ -24,54 +24,54 @@ namespace AnyRPG {
         private AbilityProperties baseAbility;
 
         // for learning
-        public void UpdateCompletionCount() {
+        public void UpdateCompletionCount(UnitController sourceUnitController) {
             //Debug.Log("AbilityObjective.UpdateCompletionCount(" + (baseAbility == null ? "null" : baseAbility.DisplayName) + ")");
-            bool completeBefore = IsComplete;
+            bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
                 return;
             }
-            CurrentAmount++;
-            questBase.CheckCompletion();
-            if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount != 0) {
-                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount, 0, Amount), Amount));
+            SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+            questBase.CheckCompletion(sourceUnitController);
+            if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount(sourceUnitController) != 0) {
+                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
             }
-            if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages) {
-                messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount, DisplayName));
+            if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
+                messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), DisplayName));
             }
         }
 
-        public override void UpdateCompletionCount(bool printMessages = true) {
+        public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
 
-            base.UpdateCompletionCount(printMessages);
-            bool completeBefore = IsComplete;
+            base.UpdateCompletionCount(sourceUnitController, printMessages);
+            bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
                 return;
             }
-            if (playerManager.UnitController.CharacterAbilityManager.HasAbility(baseAbility)) {
-                CurrentAmount++;
-                questBase.CheckCompletion(true, printMessages);
-                if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount, Amount));
+            if (sourceUnitController.CharacterAbilityManager.HasAbility(baseAbility)) {
+                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController)+1);
+                questBase.CheckCompletion(sourceUnitController, true, printMessages);
+                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
+                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
                 }
-                if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount, baseAbility.DisplayName));
+                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
+                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), baseAbility.DisplayName));
                 }
             }
         }
 
-        public override void OnAcceptQuest(QuestBase questBase, bool printMessages = true) {
-            base.OnAcceptQuest(questBase, printMessages);
+        public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase questBase, bool printMessages = true) {
+            base.OnAcceptQuest(sourceUnitController, questBase, printMessages);
             baseAbility.OnAbilityLearn += UpdateCompletionCount;
-            UpdateCompletionCount(printMessages);
+            UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public override void OnAbandonQuest() {
-            base.OnAbandonQuest();
+        public override void OnAbandonQuest(UnitController sourceUnitController) {
+            base.OnAbandonQuest(sourceUnitController);
             baseAbility.OnAbilityLearn -= UpdateCompletionCount;
         }
 
-        public override string GetUnformattedStatus() {
-            return "Learn " + DisplayName + ": " + Mathf.Clamp(CurrentAmount, 0, Amount) + "/" + Amount;
+        public override string GetUnformattedStatus(UnitController sourceUnitController) {
+            return "Learn " + DisplayName + ": " + Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount) + "/" + Amount;
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {

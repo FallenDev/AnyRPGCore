@@ -28,6 +28,8 @@ namespace AnyRPG {
         // game manager references
         private AudioManager audioManager = null;
         private LevelManager levelManager = null;
+        private NetworkManagerServer networkManagerServer = null;
+        private PlayerManager playerManager = null;
 
         public int BehaviorIndex { get => behaviorIndex; }
         public bool BehaviorPlaying { get => behaviorPlaying; set => behaviorPlaying = value; }
@@ -48,6 +50,8 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             audioManager = systemGameManager.AudioManager;
             levelManager = systemGameManager.LevelManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+            playerManager = systemGameManager.PlayerManager;
         }
 
         // this should be run after the unit profile is set
@@ -158,7 +162,7 @@ namespace AnyRPG {
         }
         */
 
-        public void HandlePrerequisiteUpdates() {
+        public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorController.HandlePrerequisiteUpdates()");
             if (unitController.UnitControllerMode != UnitControllerMode.AI) {
                 return;
@@ -167,11 +171,11 @@ namespace AnyRPG {
             PlayAutomaticBehaviors();
 
             if (behaviorComponent != null) {
-                behaviorComponent.HandlePrerequisiteUpdates();
+                behaviorComponent.HandlePrerequisiteUpdates(sourceUnitController);
             }
         }
 
-        public void HandlePlayerUnitSpawn() {
+        public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorController.HandlePlayerUnitSpawn()");
             if (unitController.UnitControllerMode != UnitControllerMode.AI) {
                 return;
@@ -179,19 +183,21 @@ namespace AnyRPG {
 
             // since player unit spawn doesn't trigger prerequisite update on individual behaviors, a manual check is needed
             foreach (BehaviorProfile behaviorProfile in behaviorList.Keys) {
-                behaviorProfile.UpdatePrerequisites(false);
+                behaviorProfile.UpdatePrerequisites(sourceUnitController, false);
             }
             PlayAutomaticBehaviors();
             // the behavior component may have already triggered on this event, so trigger it manually since a prerequisite update was just performed
             if (behaviorComponent != null) {
-                behaviorComponent.HandlePlayerUnitSpawn();
+                behaviorComponent.HandlePlayerUnitSpawn(sourceUnitController);
             }
         }
 
 
         public void PlayAutomaticBehaviors() {
             //Debug.Log($"{unitController.gameObject.name}.Controller.PlayAutomaticBehaviors()");
-
+            if (networkManagerServer.ServerModeActive == true) {
+                return;
+            }
             if (unitController.UnitControllerMode != UnitControllerMode.AI) {
                 return;
             }
@@ -207,7 +213,7 @@ namespace AnyRPG {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorController.GetCurrentOptionList()");
             List<BehaviorProfile> currentList = new List<BehaviorProfile>();
             foreach (BehaviorProfile behaviorProfile in behaviorList.Keys) {
-                if (behaviorProfile.PrerequisitesMet == true
+                if (behaviorProfile.PrerequisitesMet(playerManager.UnitController) == true
                     && (behaviorProfile.Completed == false || behaviorProfile.Repeatable == true)) {
                     //Debug.Log("BehaviorInteractable.GetCurrentOptionList() adding behaviorProfile " + behaviorProfile.DisplayName + "; id: " + behaviorProfile.GetInstanceID());
                     currentList.Add(behaviorProfile);

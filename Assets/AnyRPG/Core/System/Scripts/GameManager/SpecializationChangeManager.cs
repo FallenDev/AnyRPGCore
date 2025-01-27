@@ -32,7 +32,7 @@ namespace AnyRPG {
         public void ChangeClassSpecialization() {
             playerManager.SetPlayerCharacterSpecialization(classSpecialization);
 
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
         public override void EndInteraction() {

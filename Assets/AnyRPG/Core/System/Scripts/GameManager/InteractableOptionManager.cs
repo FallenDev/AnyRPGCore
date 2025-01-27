@@ -29,8 +29,8 @@ namespace AnyRPG {
             //OnEndInteraction();
         }
 
-        public virtual void ConfirmAction() {
-            interactableOptionComponent?.NotifyOnConfirmAction();
+        public virtual void ConfirmAction(UnitController sourceUnitController) {
+            interactableOptionComponent?.NotifyOnConfirmAction(sourceUnitController);
         }
 
         public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent) {

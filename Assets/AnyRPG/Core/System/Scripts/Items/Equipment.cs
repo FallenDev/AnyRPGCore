@@ -209,14 +209,14 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public override bool Use() {
-            if (playerManager.UnitController?.CharacterEquipmentManager != null) {
-                bool returnValue = base.Use();
+        public override bool Use(UnitController sourceUnitController) {
+            if (sourceUnitController?.CharacterEquipmentManager != null) {
+                bool returnValue = base.Use(sourceUnitController);
                 if (returnValue == false) {
                     return false;
                 }
-                if (playerManager.UnitController.CharacterEquipmentManager.Equip(this) == true) {
-                    playerManager.UnitController.UnitModelController.RebuildModelAppearance();
+                if (sourceUnitController.CharacterEquipmentManager.Equip(this) == true) {
+                    sourceUnitController.UnitModelController.RebuildModelAppearance();
                     Remove();
                     return true;
                 } else {

@@ -11,7 +11,7 @@ namespace AnyRPG {
         public PressureSwitchComponent(Interactable interactable, PressureSwitchProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".PressureSwitch.Interact(" + (source == null ? "null" : source.DisplayName) +")");
             float totalWeight = 0f;
             if (interactable.Collider != null) {

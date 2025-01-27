@@ -125,7 +125,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void SpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
+            //Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
 
             if (networkManagerServer.LobbyGames.ContainsKey(gameId) == false || networkManagerServer.LobbyGames[gameId].PlayerList.ContainsKey(networkConnection.ClientId) == false) {
                 // game not running or client not in game
@@ -191,20 +191,13 @@ namespace AnyRPG {
                 return null;
             }
             int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
-            /*
-            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-            characterConfigurationRequest.unitLevel = playerCharacterSaveData.SaveData.PlayerLevel;
-            characterConfigurationRequest.unitControllerMode = unitControllerMode;
-            CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
-            */
-            //characterManager.AddUnitSpawnRequest(serverSpawnRequestId, characterRequestData);
-            position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
+
             NetworkObject nob = GetSpawnablePrefab(characterRequestData.spawnRequestId, serverSpawnRequestId, unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
             // update syncvars
             NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
             if (networkCharacterUnit != null) {
                 networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
-                networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.Player;
+                networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.AI;
                 networkCharacterUnit.unitLevel.Value = 1;
                 networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
             }
@@ -263,7 +256,7 @@ namespace AnyRPG {
         }
 
         public void SpawnModelPrefabServer(int clientSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetClientConnector.SpawnModelPrefabServer({clientSpawnRequestId}, {parentTransform.gameObject.name})");
+            //Debug.Log($"FishNetClientConnector.SpawnModelPrefabServer({clientSpawnRequestId}, {parentTransform.gameObject.name})");
 
             int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
             //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
@@ -644,6 +637,11 @@ namespace AnyRPG {
                 interactable = networkInteractable.Interactable;
             }
             networkManagerClient.AdvertiseInteractWithClassChangeComponent(interactable, optionIndex);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {
+            networkManagerServer.SetPlayerCharacterClass(className, networkConnection.ClientId);
         }
 
         /*

@@ -28,7 +28,7 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
             //List<BehaviorProfile> currentList = GetCurrentOptionList();
             /*
@@ -61,13 +61,13 @@ namespace AnyRPG {
     }
         */
 
-        public List<PatrolProps> GetCurrentOptionList() {
+        public List<PatrolProps> GetCurrentOptionList(UnitController sourceUnitController) {
             //Debug.Log(unitController.gameObject.name +  ".BehaviorComponent.GetCurrentOptionList()");
             List<PatrolProps> currentList = new List<PatrolProps>();
             if (interactable.CombatOnly == false) {
                 //foreach (BehaviorProfile behaviorProfile in unitController.BehaviorController.BehaviorList.Keys) {
                 //Debug.Log($"{unitController.gameObject.name}.BehaviorComponent.GetCurrentOptionList() processing behavior: " + behaviorProfile.DisplayName);
-                if (PrerequisitesMet == true
+                if (PrerequisitesMet(sourceUnitController) == true
                     && Props.PatrolProperties.AutoStart == false) {
                     //Debug.Log(unitController.gameObject.name +  ".BehaviorComponent.GetCurrentOptionList() adding behaviorProfile " + behaviorProfile.DisplayName + "; id: " + behaviorProfile.GetInstanceID());
                     currentList.Add(Props);
@@ -78,12 +78,12 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.CanInteract()");
-            if (!base.CanInteract(processRangeCheck, passedRangeCheck, factionValue, processNonCombatCheck)) {
+            if (!base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck)) {
                 return false;
             }
-            if (GetCurrentOptionCount() == 0 || unitController.BehaviorController.SuppressNameplateImage == true) {
+            if (GetCurrentOptionCount(sourceUnitController) == 0 || unitController.BehaviorController.SuppressNameplateImage == true) {
                 return false;
             }
             return true;
@@ -96,7 +96,7 @@ namespace AnyRPG {
         }
 
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorComponent.GetCurrentOptionCount()");
             if (interactable.CombatOnly) {
                 return 0;
@@ -114,7 +114,7 @@ namespace AnyRPG {
                 }
                 return count;
                 */
-                return GetCurrentOptionList().Count;
+                return GetCurrentOptionList(sourceUnitController).Count;
             } else {
                 return 0;
             }
@@ -122,7 +122,7 @@ namespace AnyRPG {
 
         public void ProcessBehaviorBeginEnd() {
             //Debug.Log(interactable.gameObject.name + ".BehaviorComponent.ProcessBehaviorBeginEnd()");
-            base.HandlePrerequisiteUpdates();
+            base.HandleOptionStateChange();
             CallMiniMapStatusUpdateHandler();
         }
 
@@ -135,11 +135,11 @@ namespace AnyRPG {
         }
         */
 
-        public override bool CanShowMiniMapIcon() {
+        public override bool CanShowMiniMapIcon(UnitController sourceUnitController) {
             if (unitController.BehaviorController.SuppressNameplateImage == true) {
                 return false;
             }
-            return base.CanShowMiniMapIcon();
+            return base.CanShowMiniMapIcon(sourceUnitController);
         }
 
     }

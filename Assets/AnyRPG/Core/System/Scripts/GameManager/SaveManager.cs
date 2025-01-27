@@ -14,7 +14,6 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private MessageFeedManager messageFeedManager = null;
         private LevelManager levelManager = null;
-        private QuestLog questLog = null;
         private AchievementLog achievementLog = null;
         private ActionBarManager actionBarManager = null;
         //private InventoryManager inventoryManager = null;
@@ -39,24 +38,15 @@ namespace AnyRPG {
         //private List<AnyRPGSaveData> anyRPGSaveDataList = new List<AnyRPGSaveData>();
 
         // keep track of mutable properties on scriptableObjects
-        private Dictionary<string, QuestSaveData> questSaveDataDictionary = new Dictionary<string, QuestSaveData>();
-        private Dictionary<string, QuestSaveData> achievementSaveDataDictionary = new Dictionary<string, QuestSaveData>();
         private Dictionary<string, BehaviorSaveData> behaviorSaveDataDictionary = new Dictionary<string, BehaviorSaveData>();
         private Dictionary<string, DialogSaveData> dialogSaveDataDictionary = new Dictionary<string, DialogSaveData>();
         private Dictionary<string, SceneNodeSaveData> sceneNodeSaveDataDictionary = new Dictionary<string, SceneNodeSaveData>();
         private Dictionary<string, CutsceneSaveData> cutsceneSaveDataDictionary = new Dictionary<string, CutsceneSaveData>();
 
-        // [questName][objectiveType][objectiveName] : questObjectiveSavaData
-        private Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>> questObjectiveSaveDataDictionary = new Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>>();
-        private Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>> achievementObjectiveSaveDataDictionary = new Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>>();
-
-        public Dictionary<string, QuestSaveData> QuestSaveDataDictionary { get => questSaveDataDictionary; set => questSaveDataDictionary = value; }
-        public Dictionary<string, QuestSaveData> AchievementSaveDataDictionary { get => achievementSaveDataDictionary; set => achievementSaveDataDictionary = value; }
         public Dictionary<string, BehaviorSaveData> BehaviorSaveDataDictionary { get => behaviorSaveDataDictionary; set => behaviorSaveDataDictionary = value; }
         public Dictionary<string, DialogSaveData> DialogSaveDataDictionary { get => dialogSaveDataDictionary; set => dialogSaveDataDictionary = value; }
         public Dictionary<string, SceneNodeSaveData> SceneNodeSaveDataDictionary { get => sceneNodeSaveDataDictionary; set => sceneNodeSaveDataDictionary = value; }
         public Dictionary<string, CutsceneSaveData> CutsceneSaveDataDictionary { get => cutsceneSaveDataDictionary; set => cutsceneSaveDataDictionary = value; }
-        public Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>> QuestObjectiveSaveDataDictionary { get => questObjectiveSaveDataDictionary; set => questObjectiveSaveDataDictionary = value; }
         //public string RecipeString { get => recipeString; }
         //public AnyRPGSaveData CurrentSaveData { get => currentSaveData; }
 
@@ -74,7 +64,6 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
             levelManager = systemGameManager.LevelManager;
-            questLog = systemGameManager.QuestLog;
             achievementLog = systemGameManager.AchievementLog;
             //inventoryManager = systemGameManager.InventoryManager;
             systemItemManager = systemGameManager.SystemItemManager;
@@ -343,8 +332,8 @@ namespace AnyRPG {
             SaveResourcePowerData(anyRPGSaveData);
             SaveAppearanceData(anyRPGSaveData);
 
-            SaveQuestData(anyRPGSaveData);
-            SaveAchievementData(anyRPGSaveData);
+            SaveQuestData(playerManager.UnitController, anyRPGSaveData);
+            SaveAchievementData(playerManager.UnitController, anyRPGSaveData);
 
             SaveDialogData(anyRPGSaveData);
             SaveBehaviorData(anyRPGSaveData);
@@ -431,45 +420,7 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitModelController.SaveAppearanceSettings(/*this,*/ anyRPGSaveData);
         }
 
-        public void SetQuestSaveData(string questName, QuestSaveData questSaveData) {
-            if (questSaveDataDictionary.ContainsKey(questName)) {
-                questSaveDataDictionary[questName] = questSaveData;
-            } else {
-                questSaveDataDictionary.Add(questName, questSaveData);
-            }
-        }
 
-        public void SetAchievementSaveData(string questName, QuestSaveData questSaveData) {
-            if (achievementSaveDataDictionary.ContainsKey(questName)) {
-                achievementSaveDataDictionary[questName] = questSaveData;
-            } else {
-                achievementSaveDataDictionary.Add(questName, questSaveData);
-            }
-        }
-
-        public QuestSaveData GetQuestSaveData(QuestBase quest) {
-            QuestSaveData saveData;
-            if (questSaveDataDictionary.ContainsKey(quest.ResourceName)) {
-                saveData = questSaveDataDictionary[quest.ResourceName];
-            } else {
-                saveData = new QuestSaveData();
-                saveData.QuestName = quest.ResourceName;
-                questSaveDataDictionary.Add(quest.ResourceName, saveData);
-            }
-            return saveData;
-        }
-
-        public QuestSaveData GetAchievementSaveData(QuestBase quest) {
-            QuestSaveData saveData;
-            if (achievementSaveDataDictionary.ContainsKey(quest.ResourceName)) {
-                saveData = achievementSaveDataDictionary[quest.ResourceName];
-            } else {
-                saveData = new QuestSaveData();
-                saveData.QuestName = quest.ResourceName;
-                achievementSaveDataDictionary.Add(quest.ResourceName, saveData);
-            }
-            return saveData;
-        }
 
         public DialogSaveData GetDialogSaveData(Dialog dialog) {
             DialogSaveData saveData;
@@ -522,57 +473,17 @@ namespace AnyRPG {
             return saveData;
         }
 
-        public void ResetQuestObjectiveSaveData(string questName) {
-            questObjectiveSaveDataDictionary[questName] = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
-        }
-
-        public void ResetAchievementObjectiveSaveData(string questName) {
-            achievementObjectiveSaveDataDictionary[questName] = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
-        }
-
-        public QuestObjectiveSaveData GetQuestObjectiveSaveData(string questName, string objectiveType, string objectiveName) {
-            QuestObjectiveSaveData saveData;
-
-            // first, check if this quest is in the main objective dictionary.  If not, add it.
-            Dictionary<string, Dictionary<string, QuestObjectiveSaveData>> questObjectiveSaveData;
-            if (questObjectiveSaveDataDictionary.ContainsKey(questName)) {
-                questObjectiveSaveData = questObjectiveSaveDataDictionary[questName];
-            } else {
-                questObjectiveSaveData = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
-                questObjectiveSaveDataDictionary.Add(questName, questObjectiveSaveData);
-            }
-
-            Dictionary<string, QuestObjectiveSaveData> questObjectiveSaveDataType;
-            if (questObjectiveSaveData.ContainsKey(objectiveType)) {
-                questObjectiveSaveDataType = questObjectiveSaveData[objectiveType];
-            } else {
-                questObjectiveSaveDataType = new Dictionary<string, QuestObjectiveSaveData>();
-                questObjectiveSaveData.Add(objectiveType, questObjectiveSaveDataType);
-            }
-
-            if (questObjectiveSaveDataType.ContainsKey(objectiveName)) {
-                saveData = questObjectiveSaveDataType[objectiveName];
-            } else {
-                saveData = new QuestObjectiveSaveData();
-                saveData.ObjectiveName = objectiveName;
-                saveData.ObjectiveType = objectiveType;
-                questObjectiveSaveDataType.Add(objectiveName, saveData);
-            }
-
-            return saveData;
-        }
-
-        public void SaveQuestData(AnyRPGSaveData anyRPGSaveData) {
+        public void SaveQuestData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveQuestData()");
 
             anyRPGSaveData.questSaveData.Clear();
-            foreach (QuestSaveData questSaveData in questSaveDataDictionary.Values) {
+            foreach (QuestSaveData questSaveData in sourceUnitController.CharacterQuestLog.QuestSaveDataDictionary.Values) {
                 QuestSaveData finalSaveData = questSaveData;
-                if (questObjectiveSaveDataDictionary.ContainsKey(questSaveData.QuestName)) {
+                if (sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary.ContainsKey(questSaveData.QuestName)) {
                     
                     List<QuestObjectiveSaveData> questObjectiveSaveDataList = new List<QuestObjectiveSaveData>();
-                    foreach (string typeName in questObjectiveSaveDataDictionary[questSaveData.QuestName].Keys) {
-                        foreach (QuestObjectiveSaveData saveData in questObjectiveSaveDataDictionary[questSaveData.QuestName][typeName].Values) {
+                    foreach (string typeName in sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary[questSaveData.QuestName].Keys) {
+                        foreach (QuestObjectiveSaveData saveData in sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary[questSaveData.QuestName][typeName].Values) {
                             questObjectiveSaveDataList.Add(saveData);
                         }
 
@@ -580,22 +491,22 @@ namespace AnyRPG {
 
                     finalSaveData.questObjectives = questObjectiveSaveDataList;
                 }
-                finalSaveData.inLog = questLog.HasQuest(questSaveData.QuestName);
+                finalSaveData.inLog = sourceUnitController.CharacterQuestLog.HasQuest(questSaveData.QuestName);
                 anyRPGSaveData.questSaveData.Add(finalSaveData);
             }
         }
 
-        public void SaveAchievementData(AnyRPGSaveData anyRPGSaveData) {
+        public void SaveAchievementData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveAchievementData()");
 
             anyRPGSaveData.achievementSaveData.Clear();
-            foreach (QuestSaveData achievementSaveData in achievementSaveDataDictionary.Values) {
+            foreach (QuestSaveData achievementSaveData in sourceUnitController.CharacterQuestLog.AchievementSaveDataDictionary.Values) {
                 QuestSaveData finalSaveData = achievementSaveData;
-                if (achievementObjectiveSaveDataDictionary.ContainsKey(achievementSaveData.QuestName)) {
+                if (sourceUnitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary.ContainsKey(achievementSaveData.QuestName)) {
 
                     List<QuestObjectiveSaveData> achievementObjectiveSaveDataList = new List<QuestObjectiveSaveData>();
-                    foreach (string typeName in achievementObjectiveSaveDataDictionary[achievementSaveData.QuestName].Keys) {
-                        foreach (QuestObjectiveSaveData saveData in achievementObjectiveSaveDataDictionary[achievementSaveData.QuestName][typeName].Values) {
+                    foreach (string typeName in sourceUnitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary[achievementSaveData.QuestName].Keys) {
+                        foreach (QuestObjectiveSaveData saveData in sourceUnitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary[achievementSaveData.QuestName][typeName].Values) {
                             achievementObjectiveSaveDataList.Add(saveData);
                         }
 
@@ -603,7 +514,7 @@ namespace AnyRPG {
 
                     finalSaveData.questObjectives = achievementObjectiveSaveDataList;
                 }
-                finalSaveData.inLog = achievementLog.HasAchievement(achievementSaveData.QuestName);
+                finalSaveData.inLog = sourceUnitController.CharacterQuestLog.HasAchievement(achievementSaveData.QuestName);
                 anyRPGSaveData.achievementSaveData.Add(finalSaveData);
             }
         }
@@ -831,17 +742,17 @@ namespace AnyRPG {
 
         }
 
-        public void LoadQuestData(AnyRPGSaveData anyRPGSaveData) {
+        public void LoadQuestData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.LoadQuestData()");
-            questSaveDataDictionary.Clear();
-            questObjectiveSaveDataDictionary.Clear();
+            sourceUnitController.CharacterQuestLog.QuestSaveDataDictionary.Clear();
+            sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary.Clear();
             foreach (QuestSaveData questSaveData in anyRPGSaveData.questSaveData) {
 
                 if (questSaveData.QuestName == null || questSaveData.QuestName == string.Empty) {
                     // don't load invalid quest data
                     continue;
                 }
-                questSaveDataDictionary.Add(questSaveData.QuestName, questSaveData);
+                sourceUnitController.CharacterQuestLog.QuestSaveDataDictionary.Add(questSaveData.QuestName, questSaveData);
 
                 Dictionary<string, Dictionary<string, QuestObjectiveSaveData>> objectiveDictionary = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
 
@@ -856,26 +767,26 @@ namespace AnyRPG {
                     }
                 }
 
-                questObjectiveSaveDataDictionary.Add(questSaveData.QuestName, objectiveDictionary);
+                sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary.Add(questSaveData.QuestName, objectiveDictionary);
             }
 
             foreach (QuestSaveData questSaveData in anyRPGSaveData.questSaveData) {
                 //Debug.Log("Savemanager.LoadQuestData(): loading questsavedata");
-                questLog.AcceptQuest(questSaveData);
+                sourceUnitController.CharacterQuestLog.LoadQuest(questSaveData);
             }
         }
 
-        public void LoadAchievementData(AnyRPGSaveData anyRPGSaveData) {
+        public void LoadAchievementData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.LoadAchievementData()");
-            achievementSaveDataDictionary.Clear();
-            achievementObjectiveSaveDataDictionary.Clear();
+            sourceUnitController.CharacterQuestLog.AchievementSaveDataDictionary.Clear();
+            sourceUnitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary.Clear();
             foreach (QuestSaveData achievementSaveData in anyRPGSaveData.achievementSaveData) {
 
                 if (achievementSaveData.QuestName == null || achievementSaveData.QuestName == string.Empty) {
                     // don't load invalid quest data
                     continue;
                 }
-                achievementSaveDataDictionary.Add(achievementSaveData.QuestName, achievementSaveData);
+                sourceUnitController.CharacterQuestLog.AchievementSaveDataDictionary.Add(achievementSaveData.QuestName, achievementSaveData);
 
                 Dictionary<string, Dictionary<string, QuestObjectiveSaveData>> objectiveDictionary = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
 
@@ -890,12 +801,12 @@ namespace AnyRPG {
                     }
                 }
 
-                achievementObjectiveSaveDataDictionary.Add(achievementSaveData.QuestName, objectiveDictionary);
+                sourceUnitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary.Add(achievementSaveData.QuestName, objectiveDictionary);
             }
 
             foreach (QuestSaveData questSaveData in anyRPGSaveData.achievementSaveData) {
                 //Debug.Log("Savemanager.LoadQuestData(): loading questsavedata");
-                achievementLog.AcceptAchievement(questSaveData);
+                sourceUnitController.CharacterQuestLog.AcceptAchievement(questSaveData);
             }
         }
 
@@ -1361,8 +1272,9 @@ namespace AnyRPG {
             LoadCutsceneData(playerCharacterSaveData.SaveData);
 
             // quest data gets loaded last because it could rely on other data such as dialog completion status, which don't get saved because they are inferred
-            LoadQuestData(playerCharacterSaveData.SaveData);
-            LoadAchievementData(playerCharacterSaveData.SaveData);
+            // FIX ME - do this when character spawns
+            //LoadQuestData(playerCharacterSaveData.SaveData);
+            //LoadAchievementData(playerCharacterSaveData.SaveData);
 
             LoadWindowPositions();
 
@@ -1419,17 +1331,12 @@ namespace AnyRPG {
             //Debug.Log("Savemanager.ClearSystemmanagedCharacterData()");
 
             actionBarManager.ClearActionBars(true);
-            questLog.ClearLog();
-            achievementLog.ClearLog();
 
             // clear describable resource mutable data dictionaries
-            questSaveDataDictionary.Clear();
-            achievementSaveDataDictionary.Clear();
             behaviorSaveDataDictionary.Clear();
             DialogSaveDataDictionary.Clear();
             sceneNodeSaveDataDictionary.Clear();
             cutsceneSaveDataDictionary.Clear();
-            questObjectiveSaveDataDictionary.Clear();
         }
 
         public void LoadWindowPositions() {

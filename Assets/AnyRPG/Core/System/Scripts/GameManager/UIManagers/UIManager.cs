@@ -1066,7 +1066,7 @@ namespace AnyRPG {
             miniMapController.ClearTarget();
         }
 
-        public void HandleAbilityListChanged(AbilityProperties newAbility) {
+        public void HandleAbilityListChanged(UnitController sourceUnitController, AbilityProperties newAbility) {
             //Debug.Log("UIManager.HandleAbilityListChanged(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
 
             // loop through ability bars and try to add ability

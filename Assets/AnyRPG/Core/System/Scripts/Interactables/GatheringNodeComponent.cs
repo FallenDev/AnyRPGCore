@@ -13,16 +13,8 @@ namespace AnyRPG {
         public GatheringNodeComponent(Interactable interactable, GatheringNodeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
         }
 
-        public override bool PrerequisitesMet {
-            get {
-                /*
-                 * moved this option to getValidOptions because this should spawn even if the character doesn't have the ability
-                if (playerManager.UnitController.CharacterAbilityManager.HasAbility(GatheringNodeProps.BaseAbility.AbilityProperties) == false) {
-                    return false;
-                }
-                */
-                return base.PrerequisitesMet;
-            }
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+                return base.PrerequisitesMet(sourceUnitController);
         }
 
         public override void ProcessCreateEventSubscriptions() {
@@ -41,9 +33,9 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleAbilityListChange(AbilityProperties baseAbility) {
+        public void HandleAbilityListChange(UnitController sourceUnitController, AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.GatheringNode.HandleAbilityListChange(" + baseAbility.DisplayName + ")");
-            HandlePrerequisiteUpdates();
+            HandlePrerequisiteUpdates(sourceUnitController);
         }
 
         public static GatheringNodeComponent GetGatheringNodeComponent(Interactable searchInteractable) {
@@ -54,7 +46,7 @@ namespace AnyRPG {
         }
 
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
@@ -74,20 +66,18 @@ namespace AnyRPG {
             //if (lootCount > 0) {
             if (lootDropped == true) {
                 // this call is safe, it will internally check if loot is already dropped and just pickup instead
-                Gather(optionIndex);
+                Gather(source, optionIndex);
             } else {
-                source.UnitController.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
+                source.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
             }
             uIManager.interactionWindow.CloseWindow();
             return true;
             //return PickUp();
         }
 
-        public void Gather(int optionIndex = 0) {
+        public void Gather(UnitController source, int optionIndex = 0) {
             //Debug.Log($"{gameObject.name}.GatheringNode.DropLoot()");
-            if (playerManager.ActiveUnitController != null) {
-                base.Interact(playerManager.ActiveUnitController.CharacterUnit, optionIndex);
-            }
+            base.Interact(source, optionIndex);
         }
 
         /*
@@ -99,10 +89,9 @@ namespace AnyRPG {
         }
         */
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.GatheringNode.GetCurrentOptionCount()");
-            return ((playerManager.UnitController.CharacterAbilityManager.HasAbility(GatheringNodeProps.BaseAbility.AbilityProperties) == true
-                && interactable.SpawnReference != null
+            return ((sourceUnitController.CharacterAbilityManager.HasAbility(GatheringNodeProps.BaseAbility.AbilityProperties) == true
                 && currentTimer <= 0f) ? 1 : 0);
         }
 

@@ -39,8 +39,9 @@ namespace AnyRPG {
         private QuestScript selectedQuestScript = null;
 
         // game manager references
-        private QuestLog questLog = null;
         private ObjectPooler objectPooler = null;
+        private PlayerManager playerManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public QuestScript SelectedQuestScript { get => selectedQuestScript; set => selectedQuestScript = value; }
 
@@ -49,9 +50,9 @@ namespace AnyRPG {
 
             abandonButton.Configure(systemGameManager);
 
-            questLog.OnShowQuestLogDescription += HandleShowQuestDescription;
             SystemEventManager.StartListening("OnQuestStatusUpdated", HandleQuestStatusUpdated);
-            UpdateQuestCount();
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
 
             questDetailsArea.Configure(systemGameManager);
             questDetailsArea.SetOwner(this);
@@ -59,8 +60,17 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            questLog = systemGameManager.QuestLog;
             objectPooler = systemGameManager.ObjectPooler;
+            playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
+        }
+
+        private void HandlePlayerUnitSpawn(UnitController unitController) {
+            unitController.CharacterQuestLog.OnShowQuestLogDescription += HandleShowQuestDescription;
+        }
+
+        private void HandlePlayerUnitDespawn(UnitController unitController) {
+            unitController.CharacterQuestLog.OnShowQuestLogDescription -= HandleShowQuestDescription;
         }
 
         public void HandleQuestStatusUpdated(string eventName, EventParamProperties eventParamProperties) {
@@ -68,7 +78,7 @@ namespace AnyRPG {
         }
 
         private void UpdateQuestCount() {
-            questCount.text = questLog.Quests.Count + " / " + maxCount;
+            questCount.text = playerManager.UnitController.CharacterQuestLog.Quests.Count + " / " + maxCount;
         }
 
         public void ShowQuestsCommon() {
@@ -79,7 +89,7 @@ namespace AnyRPG {
 
             QuestScript firstAvailableQuest = null;
 
-            foreach (Quest quest in questLog.Quests.Values) {
+            foreach (Quest quest in playerManager.UnitController.CharacterQuestLog.Quests.Values) {
                 GameObject go = objectPooler.GetPooledObject(questPrefab, questParent);
 
                 QuestScript qs = go.GetComponent<QuestScript>();
@@ -199,7 +209,7 @@ namespace AnyRPG {
         }
 
         public void AbandonQuest() {
-            questLog.AbandonQuest(SelectedQuestScript.Quest);
+            playerManager.UnitController.CharacterQuestLog.AbandonQuest(SelectedQuestScript.Quest);
             ShowQuestsCommon();
         }
     }

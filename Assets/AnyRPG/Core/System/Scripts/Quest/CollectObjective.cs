@@ -29,48 +29,49 @@ namespace AnyRPG {
             }
         }
 
-        public void UpdateItemCount(Item item) {
+        public void UpdateItemCount(UnitController sourceUnitController, Item item) {
 
             // change this with check reference to item prefab in the future
             if (SystemDataUtility.MatchResource(item.ResourceName, itemName, partialMatch)) {
-                UpdateCompletionCount();
+                UpdateCompletionCount(sourceUnitController);
             }
         }
 
-        public override void UpdateCompletionCount(bool printMessages = true) {
+        public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
 
-            bool completeBefore = IsComplete;
+            bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
                 return;
             }
-            CurrentAmount = playerManager.UnitController.CharacterInventoryManager.GetItemCount(itemName, partialMatch);
-            CurrentAmount += playerManager.UnitController.CharacterEquipmentManager.GetEquipmentCount(itemName, partialMatch);
+            SetCurrentAmount(sourceUnitController,
+                sourceUnitController.CharacterInventoryManager.GetItemCount(itemName, partialMatch)
+                + sourceUnitController.CharacterEquipmentManager.GetEquipmentCount(itemName, partialMatch));
 
-            questBase.CheckCompletion(true, printMessages);
-            if (CurrentAmount <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount != 0) {
-                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount, 0, Amount), Amount));
+            questBase.CheckCompletion(sourceUnitController, true, printMessages);
+            if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
+                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
             }
-            if (completeBefore == false && IsComplete && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                messageFeedManager.WriteMessage(string.Format("Collect {0} {1}: Objective Complete", CurrentAmount, DisplayName));
+            if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
+                messageFeedManager.WriteMessage(string.Format("Collect {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), DisplayName));
             }
-            base.UpdateCompletionCount(printMessages);
+            base.UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public void Complete() {
-            List<Item> items = playerManager.UnitController.CharacterInventoryManager.GetItems(itemName, Amount);
+        public void Complete(UnitController sourceUnitController) {
+            List<Item> items = sourceUnitController.CharacterInventoryManager.GetItems(itemName, Amount);
             foreach (Item item in items) {
                 item.Remove();
             }
         }
 
-        public override void OnAcceptQuest(QuestBase quest, bool printMessages = true) {
-            base.OnAcceptQuest(quest, printMessages);
+        public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
+            base.OnAcceptQuest(sourceUnitController, quest, printMessages);
             systemEventManager.OnItemCountChanged += UpdateItemCount;
-            UpdateCompletionCount(printMessages);
+            UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
-        public override void OnAbandonQuest() {
-            base.OnAbandonQuest();
+        public override void OnAbandonQuest(UnitController sourceUnitController) {
+            base.OnAbandonQuest(sourceUnitController);
             systemEventManager.OnItemCountChanged -= UpdateItemCount;
         }
 

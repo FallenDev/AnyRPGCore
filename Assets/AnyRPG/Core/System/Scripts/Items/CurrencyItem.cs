@@ -21,14 +21,14 @@ namespace AnyRPG {
 
         public CurrencyNode MyCurrencyNode { get => currencyNode; }
 
-        public override bool Use() {
+        public override bool Use(UnitController sourceUnitController) {
             //Debug.Log("CurrencyItem.Use()");
-            bool returnValue = base.Use();
+            bool returnValue = base.Use(sourceUnitController);
             if (returnValue == false) {
                 return false;
             }
             if (currencyNode.currency != null) {
-                playerManager.UnitController.CharacterCurrencyManager.AddCurrency(currencyNode.currency, currencyNode.Amount);
+                sourceUnitController.CharacterCurrencyManager.AddCurrency(currencyNode.currency, currencyNode.Amount);
             }
             Remove();
             return true;

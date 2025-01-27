@@ -268,7 +268,7 @@ namespace AnyRPG {
                 playerManager.UnitController.CharacterAbilityManager.LearnDefaultAutoAttackAbility();
             }
 
-            characterCreatorInteractableManager.ConfirmAction();
+            characterCreatorInteractableManager.ConfirmAction(playerManager.UnitController);
         }
 
         public void OpenAppearancePanel() {

@@ -21,10 +21,10 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
-            Debug.Log($"{interactable.gameObject.name}.PortalComponent.Interact({source.UnitController.gameObject.name})");
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+            Debug.Log($"{interactable.gameObject.name}.PortalComponent.Interact({sourceUnitController.gameObject.name})");
 
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, optionIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             uIManager.interactionWindow.CloseWindow();
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
@@ -41,7 +41,7 @@ namespace AnyRPG {
                     loadSceneRequest.locationTag = Props.LocationTag;
                 }
             }
-            playerManagerServer.AddSpawnRequest(source.UnitController, loadSceneRequest);
+            playerManagerServer.AddSpawnRequest(sourceUnitController, loadSceneRequest);
             return true;
         }
 
@@ -49,9 +49,9 @@ namespace AnyRPG {
             base.StopInteract();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.PortalInteractable.GetCurrentOptionCount()");
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
     }

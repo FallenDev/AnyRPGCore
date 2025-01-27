@@ -57,12 +57,12 @@ namespace AnyRPG {
             //Debug.Log("Checking questscript iscomplete on myquest: " + MyQuest.MyTitle);
 
             //if (quest.IsComplete && !markedComplete) {
-            if (quest.IsComplete) {
+            if (quest.IsComplete(playerManager.UnitController)) {
                 //markedComplete = true;
                 //Debug.Log("the quest is complete");
                 //Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName + " (Complete)";
                 Text.text += " (Complete)";
-            } else if (!quest.IsComplete) {
+            } else if (!quest.IsComplete(playerManager.UnitController)) {
                 //markedComplete = false;
                 //Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName;
             }

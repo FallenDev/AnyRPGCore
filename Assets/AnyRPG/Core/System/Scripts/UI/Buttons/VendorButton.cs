@@ -167,7 +167,7 @@ namespace AnyRPG {
                     }
                     SellItem();
                     if (tmpItem is CurrencyItem) {
-                        (tmpItem as CurrencyItem).Use();
+                        (tmpItem as CurrencyItem).Use(playerManager.UnitController);
                     }
                 }
             } else {

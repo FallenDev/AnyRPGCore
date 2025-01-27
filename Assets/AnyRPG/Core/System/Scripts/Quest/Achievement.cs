@@ -20,30 +20,28 @@ namespace AnyRPG {
             achievementLog = systemGameManager.AchievementLog;
         }
 
-        protected override void ProcessMarkComplete(bool printMessages) {
-            base.ProcessMarkComplete(printMessages);
+        protected override void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
+            base.ProcessMarkComplete(sourceUnitController, printMessages);
             if (printMessages == true) {
                 messageFeedManager.WriteMessage(string.Format("Achievement: {0} Complete!", DisplayName));
             }
-            playerManager.PlayLevelUpEffects(0);
+            playerManager.PlayLevelUpEffects(sourceUnitController, 0);
 
-            TurnedIn = true;
+            SetTurnedIn(sourceUnitController, true);
         }
 
-        protected override void ResetObjectiveSaveData() {
-            saveManager.ResetAchievementObjectiveSaveData(ResourceName);
+        protected override QuestSaveData GetSaveData(UnitController sourceUnitController) {
+            Debug.Log($"{ResourceName}.Achievement.GetSaveData({sourceUnitController.gameObject.name})");
+
+            return sourceUnitController.CharacterQuestLog.GetAchievementSaveData(this);
         }
 
-        protected override QuestSaveData GetSaveData() {
-            return saveManager.GetAchievementSaveData(this);
+        protected override void SetSaveData(UnitController sourceUnitController, string QuestName, QuestSaveData questSaveData) {
+            sourceUnitController.CharacterQuestLog.SetAchievementSaveData(ResourceName, questSaveData);
         }
 
-        protected override void SetSaveData(string QuestName, QuestSaveData questSaveData) {
-            saveManager.SetAchievementSaveData(ResourceName, questSaveData);
-        }
-
-        protected override bool HasQuest() {
-            return achievementLog.HasAchievement(ResourceName);
+        protected override bool HasQuest(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterQuestLog.HasAchievement(ResourceName);
         }
 
     }

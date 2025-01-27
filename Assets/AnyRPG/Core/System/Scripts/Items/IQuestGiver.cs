@@ -9,10 +9,10 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public interface IQuestGiver {
         QuestGiverProps Props { get; }
-        void UpdateQuestStatus();
+        void UpdateQuestStatus(UnitController sourceUnitController);
         Interactable Interactable { get; }
         InteractableOptionComponent InteractableOptionComponent { get; }
-        bool Interact(CharacterUnit source, int optionIndex = 0);
+        bool Interact(UnitController source, int optionIndex = 0);
         void HandleCompleteQuest();
         void HandleAcceptQuest();
         bool EndsQuest(string questName);

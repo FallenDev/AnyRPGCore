@@ -98,12 +98,12 @@ namespace AnyRPG {
             unitController.BaseCharacter.ChangeCharacterFaction(newFaction);
         }
 
-        public void HandleClassChange(CharacterClass newClass, CharacterClass oldClass) {
+        public void HandleClassChange(UnitController sourceUnitController, CharacterClass newClass, CharacterClass oldClass) {
             //Debug.Log("CharacterPanelManager.HandleClassChange()");
             unitController.BaseCharacter.ChangeCharacterClass(newClass);
         }
 
-        public void HandleSpecializationChange(ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
+        public void HandleSpecializationChange(UnitController sourceUnitController, ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
             //Debug.Log("CharacterPanelManager.HandleSpecializationChange()");
             unitController.BaseCharacter.ChangeClassSpecialization(newSpecialization);
         }

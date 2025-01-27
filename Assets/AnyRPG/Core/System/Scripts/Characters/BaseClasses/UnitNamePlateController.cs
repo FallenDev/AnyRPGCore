@@ -120,7 +120,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnReputationChange += HandleReputationChange;
         }
 
-        public void HandleReputationChange() {
+        public void HandleReputationChange(UnitController sourceUnitController) {
             namePlate.HandleReputationChange();
         }
 

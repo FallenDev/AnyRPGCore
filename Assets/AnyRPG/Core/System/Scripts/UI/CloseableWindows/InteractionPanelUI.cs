@@ -39,7 +39,6 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
-        private QuestLog questLog = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -52,7 +51,6 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
-            questLog = systemGameManager.QuestLog;
         }
 
         public void HandleSetInteractable(Interactable _interactable) {
@@ -115,7 +113,7 @@ namespace AnyRPG {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + ") player unit is null");
                 return;
             }
-            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables();
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(playerManager.UnitController);
             if (currentInteractables.Count == 0) {
                 // this could have been a refresh from while a quest was open overtop.  close it if there are no valid interactables
                 uIManager.interactionWindow.CloseWindow();
@@ -131,7 +129,7 @@ namespace AnyRPG {
                         Quest quest = questNode.Quest;
                         if (quest != null) {
                             string displayText = string.Empty;
-                            string questStatus = quest.GetStatus();
+                            string questStatus = quest.GetStatus(playerManager.UnitController);
                             if (questStatus == "complete" && questNode.EndQuest == true) {
                                 displayText = "<color=yellow>?</color> ";
                             } else if (questNode.StartQuest == true && questStatus == "available") {
@@ -170,9 +168,9 @@ namespace AnyRPG {
                 } else {
                     // this block used to be outside the else statement, but for now we don't want quests to show as an interaction option because they are handled separately above
                     // handle generic stuff
-                    if (_interactable.Value.DisplayName != null && _interactable.Value.DisplayName != string.Empty && _interactable.Value.GetCurrentOptionCount() > 0) {
+                    if (_interactable.Value.DisplayName != null && _interactable.Value.DisplayName != string.Empty && _interactable.Value.GetCurrentOptionCount(playerManager.UnitController) > 0) {
                         //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Instantiating button");
-                        for (int i = 0; i < _interactable.Value.GetCurrentOptionCount(); i++) {
+                        for (int i = 0; i < _interactable.Value.GetCurrentOptionCount(playerManager.UnitController); i++) {
                             GameObject go = objectPooler.GetPooledObject(interactableButtonPrefab, interactableButtonParent);
                             InteractionPanelScript iPS = go.GetComponent<InteractionPanelScript>();
                             if (iPS != null) {
@@ -211,7 +209,7 @@ namespace AnyRPG {
             // priority open - completed quest first
             foreach (InteractionPanelQuestScript questScript in questScripts) {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking questScript for complete quest");
-                if (questScript.Quest.MarkedComplete) {
+                if (questScript.Quest.MarkedComplete(playerManager.UnitController)) {
                     //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking questScript: quest is complete, selecting");
                     questScript.Interact();
                     //optionOpened = true;
@@ -222,7 +220,7 @@ namespace AnyRPG {
             // priority open - available quest second
             foreach (InteractionPanelQuestScript questScript in questScripts) {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking questScript for available quest");
-                if (questScript.Quest.GetStatus() == "available") {
+                if (questScript.Quest.GetStatus(playerManager.UnitController) == "available") {
                     //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking questScript: quest is available, selecting");
                     questScript.Interact();
                     //optionOpened = true;
@@ -232,7 +230,7 @@ namespace AnyRPG {
 
             foreach (KeyValuePair<int, InteractionPanelScript> interactionPanelScript in interactionPanelScripts) {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script");
-                if (interactionPanelScript.Value.InteractableOption.CanInteract() && interactionPanelScript.Value.InteractableOption.GetCurrentOptionCount() == 1) {
+                if (interactionPanelScript.Value.InteractableOption.CanInteract(playerManager.UnitController) && interactionPanelScript.Value.InteractableOption.GetCurrentOptionCount(playerManager.UnitController) == 1) {
                     //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script: canInteract is TRUE!!!");
                     interactionManager.InteractWithOptionClient(playerManager.UnitController, interactable, interactionPanelScript.Value.InteractableOption, interactionPanelScript.Key);
                     //interactionPanelScript.Value.InteractableOption.Interact(playerManager.UnitController.CharacterUnit, interactionPanelScript.Key);

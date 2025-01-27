@@ -26,7 +26,7 @@ namespace AnyRPG {
             unitSpawnManager = systemGameManager.UnitSpawnManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             base.Interact(source, optionIndex);
             unitSpawnManager.SetProps(Props, this);
             uIManager.unitSpawnWindow.OpenWindow();
@@ -38,9 +38,9 @@ namespace AnyRPG {
             uIManager.unitSpawnWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.CharacterCreatorInteractable.GetCurrentOptionCount()");
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
     }

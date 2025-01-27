@@ -1004,7 +1004,7 @@ namespace AnyRPG {
 
 
             if (statusEffect.FactionModifiers.Count > 0) {
-                SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+                unitController.UnitEventController.NotifyOnReputationChange();
             }
         }
 

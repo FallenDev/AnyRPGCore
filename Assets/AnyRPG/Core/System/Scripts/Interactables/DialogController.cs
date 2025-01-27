@@ -48,18 +48,18 @@ namespace AnyRPG {
             }
         }
 
-        public void BeginDialog(string dialogName, DialogComponent caller = null) {
+        public void BeginDialog(UnitController sourceUnitController, string dialogName, DialogComponent caller = null) {
             //Debug.Log(interactable.gameObject.name + ".DialogController.BeginDialog(" + dialogName + ")");
             Dialog tmpDialog = systemDataFactory.GetResource<Dialog>(dialogName);
             if (tmpDialog != null) {
-                BeginDialog(tmpDialog, caller);
+                BeginDialog(sourceUnitController, tmpDialog, caller);
             }
         }
 
-        public void BeginDialog(Dialog dialog, DialogComponent caller = null) {
+        public void BeginDialog(UnitController sourceUnitController, Dialog dialog, DialogComponent caller = null) {
             //Debug.Log(interactable.gameObject.name + ".DialogController.BeginDialog()");
             if (dialog != null && dialogCoroutine == null) {
-                dialogCoroutine = interactable.StartCoroutine(PlayDialog(dialog, caller));
+                dialogCoroutine = interactable.StartCoroutine(PlayDialog(sourceUnitController, dialog, caller));
             }
         }
 
@@ -79,7 +79,7 @@ namespace AnyRPG {
             interactable.ProcessEndDialog();
         }
 
-        public IEnumerator PlayDialog(Dialog dialog, DialogComponent caller = null) {
+        public IEnumerator PlayDialog(UnitController sourceUnitController, Dialog dialog, DialogComponent caller = null) {
             //Debug.Log(interactable.gameObject.name + ".DialogController.PlayDialog(" + dialog.DisplayName + ")");
 
             interactable.ProcessBeginDialog();
@@ -90,7 +90,7 @@ namespace AnyRPG {
             // this needs to be reset to allow for repeatable dialogs to replay
             dialog.ResetStatus();
 
-            while (dialog.TurnedIn == false) {
+            while (dialog.TurnedIn(sourceUnitController) == false) {
                 foreach (DialogNode dialogNode in dialog.DialogNodes) {
                     if (dialogNode.StartTime <= elapsedTime && dialogNode.Shown == false) {
                         currentdialogNode = dialogNode;
@@ -113,9 +113,9 @@ namespace AnyRPG {
                     }
                 }
                 if (dialogIndex >= dialog.DialogNodes.Count) {
-                    dialog.TurnedIn = true;
+                    dialog.SetTurnedIn(sourceUnitController, true);
                     if (caller != null) {
-                        caller.NotifyOnConfirmAction();
+                        caller.NotifyOnConfirmAction(sourceUnitController);
                     }
                 }
                 elapsedTime += Time.deltaTime;

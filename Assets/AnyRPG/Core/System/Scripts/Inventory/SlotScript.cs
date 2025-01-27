@@ -238,7 +238,7 @@ namespace AnyRPG {
             }
 
             // if we got to here, nothing left to do but use the item
-            inventorySlot.UseItem();
+            inventorySlot.UseItem(playerManager.UnitController);
         }
 
         public override void Accept() {

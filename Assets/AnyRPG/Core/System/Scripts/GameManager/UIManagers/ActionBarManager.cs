@@ -611,7 +611,7 @@ namespace AnyRPG {
         private void RemoveStaleGamepadActions() {
 
             foreach (ActionButtonNode actionButtonNode in gamepadActionButtons) {
-                if (actionButtonNode.Useable != null && actionButtonNode.Useable.IsUseableStale()) {
+                if (actionButtonNode.Useable != null && actionButtonNode.Useable.IsUseableStale(playerManager.UnitController)) {
                     actionButtonNode.SavedUseable = actionButtonNode.Useable;
                     actionButtonNode.Useable = null;
                 }

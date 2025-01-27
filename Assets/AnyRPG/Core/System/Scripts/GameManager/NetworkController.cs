@@ -39,6 +39,7 @@ namespace AnyRPG {
         public abstract void StartLobbyGame(int gameId);
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
+        public abstract void SetPlayerCharacterClass(string className);
 
         // server functions
         public abstract void StartServer();

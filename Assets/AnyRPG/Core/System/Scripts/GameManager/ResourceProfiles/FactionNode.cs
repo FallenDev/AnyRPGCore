@@ -38,11 +38,11 @@ namespace AnyRPG {
             return faction.GetDescription();
         }
 
-        public void GiveReward() {
-            playerManager.UnitController.CharacterFactionManager.AddReputation(Faction, reputationAmount);
+        public void GiveReward(UnitController sourceUnitController) {
+            sourceUnitController.CharacterFactionManager.AddReputation(Faction, reputationAmount);
         }
 
-        public bool HasReward() {
+        public bool HasReward(UnitController sourceUnitController) {
             return false;
         }
 

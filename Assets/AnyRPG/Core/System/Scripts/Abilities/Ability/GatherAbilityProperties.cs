@@ -18,7 +18,7 @@ namespace AnyRPG {
                 if (target != null) {
                     GatheringNodeComponent gatheringNodeComponent = GatheringNodeComponent.GetGatheringNodeComponent(target);
                     if (gatheringNodeComponent != null) {
-                        gatheringNodeComponent.Gather();
+                        gatheringNodeComponent.Gather(source.AbilityManager.GetCharacterUnit().UnitController);
                     }
                 } else {
                     //Debug.Log(DisplayName + ".GatherAbility.Cast(): target was null");

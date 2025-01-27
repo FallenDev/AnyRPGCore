@@ -22,7 +22,7 @@ namespace AnyRPG {
             nameChangeManager = systemGameManager.NameChangeManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.NameChangeInteractable.Interact()");
             
             base.Interact(source, optionIndex);
@@ -37,9 +37,9 @@ namespace AnyRPG {
             uIManager.nameChangeWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + ".NameChangeInteractable.GetCurrentOptionCount(): returning " + GetValidOptionCount());
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

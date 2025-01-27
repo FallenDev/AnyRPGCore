@@ -42,22 +42,22 @@ namespace AnyRPG {
         }
 
 
-        public virtual void TakeLoot() {
+        public virtual void TakeLoot(UnitController sourceUnitController) {
 
-            if (ProcessTakeLoot()) {
-                AfterLoot();
+            if (ProcessTakeLoot(sourceUnitController)) {
+                AfterLoot(sourceUnitController);
                 Remove();
                 lootManager.TakeLoot(this);
             }
 
         }
 
-        protected virtual bool ProcessTakeLoot() {
+        protected virtual bool ProcessTakeLoot(UnitController sourceUnitController) {
             // need a fake value by default
             return true;
         }
 
-        public virtual void AfterLoot() {
+        public virtual void AfterLoot(UnitController sourceUnitController) {
 
         }
 
@@ -137,11 +137,11 @@ namespace AnyRPG {
             return GetDescription();
         }
 
-        protected override bool ProcessTakeLoot() {
-            base.ProcessTakeLoot();
+        protected override bool ProcessTakeLoot(UnitController sourceUnitController) {
+            base.ProcessTakeLoot(sourceUnitController);
             foreach (LootableCharacterComponent lootableCharacter in currencyNodes.Keys) {
                 if (currencyNodes[lootableCharacter].currency != null) {
-                    playerManager.UnitController.CharacterCurrencyManager.AddCurrency(currencyNodes[lootableCharacter].currency, currencyNodes[lootableCharacter].Amount);
+                    sourceUnitController.CharacterCurrencyManager.AddCurrency(currencyNodes[lootableCharacter].currency, currencyNodes[lootableCharacter].Amount);
                     List<CurrencyNode> tmpCurrencyNode = new List<CurrencyNode>();
                     tmpCurrencyNode.Add(currencyNodes[lootableCharacter]);
                     logManager.WriteSystemMessage("Gained " + currencyConverter.RecalculateValues(tmpCurrencyNode, false).Value.Replace("\n", ", "));
@@ -217,9 +217,9 @@ namespace AnyRPG {
             return (Item.ResourceName == item.ResourceName);
         }
 
-        protected override bool ProcessTakeLoot() {
-            base.ProcessTakeLoot();
-            return playerManager.UnitController.CharacterInventoryManager.AddItem(Item, false);
+        protected override bool ProcessTakeLoot(UnitController sourceUnitController) {
+            base.ProcessTakeLoot(sourceUnitController);
+            return sourceUnitController.CharacterInventoryManager.AddItem(Item, false);
         }
 
         public override void Remove() {
@@ -230,12 +230,12 @@ namespace AnyRPG {
             }
         }
 
-        public override void AfterLoot() {
-            base.AfterLoot();
+        public override void AfterLoot(UnitController sourceUnitController) {
+            base.AfterLoot(sourceUnitController);
             if ((Item as CurrencyItem) is CurrencyItem) {
-                (Item as CurrencyItem).Use();
+                (Item as CurrencyItem).Use(sourceUnitController);
             } else if ((Item as QuestStartItem) is QuestStartItem) {
-                (Item as QuestStartItem).Use();
+                (Item as QuestStartItem).Use(sourceUnitController);
             }
         }
 

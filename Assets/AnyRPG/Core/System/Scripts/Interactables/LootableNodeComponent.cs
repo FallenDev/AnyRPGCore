@@ -25,20 +25,18 @@ namespace AnyRPG {
         // game manager references
         protected LootManager lootManager = null;
 
-        public override bool PrerequisitesMet {
-            get {
-                bool returnResult = base.PrerequisitesMet;
-                if (returnResult == false) {
-                    return returnResult;
-                }
-                if (spawnCoroutine != null) {
-                    return false;
-                }
-                if (Props.SpawnTimer == -1 && pickupCount > 0) {
-                    return false;
-                }
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+            bool returnResult = base.PrerequisitesMet(sourceUnitController);
+            if (returnResult == false) {
                 return returnResult;
             }
+            if (spawnCoroutine != null) {
+                return false;
+            }
+            if (Props.SpawnTimer == -1 && pickupCount > 0) {
+                return false;
+            }
+            return returnResult;
         }
 
         public LootHolder LootHolder { get => lootHolder; set => lootHolder = value; }
@@ -58,15 +56,15 @@ namespace AnyRPG {
             ClearLootTables();
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log($"{gameObject.name}.LootableNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
                 return true;
             }
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, optionIndex);
 
-            DropLoot();
+            DropLoot(sourceUnitController);
             PickUp();
             uIManager.interactionWindow.CloseWindow();
             return true;
@@ -91,11 +89,11 @@ namespace AnyRPG {
             //interactable.Spawn();
 
             // ENABLE MINIMAP ICON AFTER SPAWN
-            HandlePrerequisiteUpdates();
+            HandleOptionStateChange();
         }
 
 
-        public virtual void DropLoot() {
+        public virtual void DropLoot(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.LootableNode.DropLoot()");
 
             // is the below code necessary?  it was causing stuff that was already dropped but not picked up to not pop a window again and just remain unlootable
@@ -108,7 +106,7 @@ namespace AnyRPG {
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (LootTable lootTable in Props.LootTables) {
-                lootDrops.AddRange(lootHolder.LootTableStates[lootTable].GetLoot(lootTable));
+                lootDrops.AddRange(lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable));
             }
             //lootManager.CreatePages(lootDrops);
             lootManager.AddLoot(lootDrops);
@@ -188,7 +186,7 @@ namespace AnyRPG {
                 // loot being gone is a type of prerequisite for a lootable node
                 // DISABLE MINIMAP ICON WHILE ITEM IS NOT SPAWNED
 
-                HandlePrerequisiteUpdates();
+                HandleOptionStateChange();
             }
         }
 
@@ -205,16 +203,16 @@ namespace AnyRPG {
             uIManager.lootWindow.CloseWindow();
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log(interactable.gameObject.name + ".LootableNode.CanInteract()");
-            bool returnValue = base.CanInteract(processRangeCheck, passedRangeCheck, factionValue, processNonCombatCheck);
+            bool returnValue = base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck);
             if (returnValue == false) {
                 return false;
             }
             if (spawnCoroutine != null) {
                 return false;
             }
-            return (GetCurrentOptionCount() == 0 ? false : true);
+            return (GetCurrentOptionCount(sourceUnitController) == 0 ? false : true);
         }
     }
 

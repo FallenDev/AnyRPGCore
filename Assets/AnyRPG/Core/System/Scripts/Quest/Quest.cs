@@ -120,9 +120,6 @@ namespace AnyRPG {
         [SerializeField]
         protected bool allowRawComplete = false;
 
-        // game manager references
-        protected QuestLog questLog = null;
-
         public override bool PrintObjectiveCompletionMessages {
             get => true;
         }
@@ -151,17 +148,12 @@ namespace AnyRPG {
         public virtual int BaseCurrencyReward { get => baseCurrencyReward; set => baseCurrencyReward = value; }
         public virtual int CurrencyRewardPerLevel { get => currencyRewardPerLevel; set => currencyRewardPerLevel = value; }
 
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            questLog = systemGameManager.QuestLog;
-        }
-
-        public virtual void HandInItems() {
+        public virtual void HandInItems(UnitController sourceUnitController) {
             if (turnInItems == true) {
                 if (steps.Count > 0) {
-                    foreach (QuestObjective questObjective in steps[GetSaveData().questStep].QuestObjectives) {
+                    foreach (QuestObjective questObjective in steps[GetSaveData(sourceUnitController).questStep].QuestObjectives) {
                         if ((questObjective as CollectObjective) is CollectObjective) {
-                            (questObjective as CollectObjective).Complete();
+                            (questObjective as CollectObjective).Complete(sourceUnitController);
                         }
                     }
                 }
@@ -189,47 +181,43 @@ namespace AnyRPG {
             return currencyNodes;
         }
 
-        protected override void ProcessMarkComplete(bool printMessages) {
-            base.ProcessMarkComplete(printMessages);
+        protected override void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
+            base.ProcessMarkComplete(sourceUnitController, printMessages);
             if (printMessages == true) {
                 messageFeedManager.WriteMessage(string.Format("{0} Complete!", DisplayName));
             }
         }
 
-        protected override void ResetObjectiveSaveData() {
-            saveManager.ResetQuestObjectiveSaveData(ResourceName);
+        protected override QuestSaveData GetSaveData(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterQuestLog.GetQuestSaveData(this);
         }
 
-        protected override QuestSaveData GetSaveData() {
-            return saveManager.GetQuestSaveData(this);
+        protected override void SetSaveData(UnitController sourceUnitController, string questName, QuestSaveData questSaveData) {
+            sourceUnitController.CharacterQuestLog.SetQuestSaveData(questName, questSaveData);
         }
 
-        protected override void SetSaveData(string questName, QuestSaveData questSaveData) {
-            saveManager.SetQuestSaveData(questName, questSaveData);
+        protected override bool HasQuest(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterQuestLog.HasQuest(ResourceName);
         }
 
-        protected override bool HasQuest() {
-            return questLog.HasQuest(ResourceName);
-        }
-
-        protected override bool StatusAvailable() {
-            if (base.StatusAvailable() == false) {
+        protected override bool StatusAvailable(UnitController sourceUnitController) {
+            if (base.StatusAvailable(sourceUnitController) == false) {
                 return false;
             }
 
-            if (TurnedIn == false || RepeatableQuest == true) {
+            if (TurnedIn(sourceUnitController) == false || RepeatableQuest == true) {
                 return true;
             }
 
             return false;
         }
 
-        protected override bool StatusCompleted() {
+        protected override bool StatusCompleted(UnitController sourceUnitController) {
             if (repeatableQuest == true) {
                 return false;
             }
 
-            return base.StatusCompleted();
+            return base.StatusCompleted(sourceUnitController);
         }
 
         protected override Color GetTitleColor() {

@@ -98,9 +98,6 @@ namespace AnyRPG {
         private KeyBindManager keyBindManager = null;
 
         [SerializeField]
-        private QuestLog questLog = null;
-
-        [SerializeField]
         private AchievementLog achievementLog = null;
 
         [SerializeField]
@@ -189,7 +186,6 @@ namespace AnyRPG {
         public SystemPlayableDirectorManager SystemPlayableDirectorManager { get => systemPlayableDirectorManager; set => systemPlayableDirectorManager = value; }
         public SaveManager SaveManager { get => saveManager; set => saveManager = value; }
         public KeyBindManager KeyBindManager { get => keyBindManager; set => keyBindManager = value; }
-        public QuestLog QuestLog { get => questLog; set => questLog = value; }
         public AchievementLog AchievementLog { get => achievementLog; set => achievementLog = value; }
 
         public SystemConfigurationManager SystemConfigurationManager { get => systemConfigurationManager; set => systemConfigurationManager = value; }
@@ -298,7 +294,6 @@ namespace AnyRPG {
             loadGameManager.Configure(this);
             saveManager.Configure(this);
             KeyBindManager.Configure(this);
-            questLog.Configure(this);
             achievementLog.Configure(this);
             systemEnvironmentManager.Configure(this);
             craftingManager.Configure(this);
@@ -363,7 +358,7 @@ namespace AnyRPG {
         /// configure all classes of type AutoConfiguredMonoBehavior in the scene
         /// </summary>
         public void AutoConfigureMonoBehaviours(string sceneName) {
-            Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
+            //Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
 
             foreach (AutoConfiguredMonoBehaviour autoConfiguredMonoBehaviour in GameObject.FindObjectsByType<AutoConfiguredMonoBehaviour>(FindObjectsSortMode.None)) {
                 if (autoConfiguredMonoBehaviour.gameObject.scene.name == sceneName) {

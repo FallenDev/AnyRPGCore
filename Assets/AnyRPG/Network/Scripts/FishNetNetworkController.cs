@@ -38,7 +38,7 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
-            Debug.Log("FishNetNetworkController.Configure()");
+            //Debug.Log("FishNetNetworkController.Configure()");
 
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
@@ -100,7 +100,7 @@ namespace AnyRPG {
         }
 
         private void HandleClientConnectionState(ClientConnectionStateArgs obj) {
-            Debug.Log($"HandleClientConnectionState() {obj.ConnectionState.ToString()}");
+            //Debug.Log($"HandleClientConnectionState() {obj.ConnectionState.ToString()}");
 
             clientState = obj.ConnectionState;
             if (clientState == LocalConnectionState.Starting) {
@@ -218,7 +218,7 @@ namespace AnyRPG {
         }
 
         private void HandleLoadEndClient(SceneLoadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
+            //Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 levelManager.ProcessLevelLoad();
@@ -227,7 +227,7 @@ namespace AnyRPG {
         }
 
         private void HandleActiveSceneSet(bool userInitiated) {
-            Debug.Log($"FishNetNetworkController.HandleActiveSceneSet({userInitiated}) current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            //Debug.Log($"FishNetNetworkController.HandleActiveSceneSet({userInitiated}) current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
 
             //if (systemGameManager.GameMode == GameMode.Network) {
             //    levelManager.ProcessLevelLoad();
@@ -405,21 +405,26 @@ namespace AnyRPG {
             clientConnector.InteractWithOptionClient(sourceUnitController, targetInteractable, componentIndex);
         }
 
+        public override void SetPlayerCharacterClass(string className) {
+            clientConnector.SetPlayerCharacterClass(className);
+        }
+
 
         #endregion
 
         #region server functions
 
         private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+            //Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+
             if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
                 return;
             }
             foreach (Scene scene in obj.LoadedScenes) {
-                Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
+                //Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
                 networkManagerServer.HandleSceneLoadEnd(scene);
             }
-            Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
+            //Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
 
         }
 
@@ -535,7 +540,7 @@ namespace AnyRPG {
         }
 
         public override GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkController.SpawnModelPrefabServer({spawnRequestId}, {parentTransform.gameObject.name})");
+            //Debug.Log($"FishNetNetworkController.SpawnModelPrefabServer({spawnRequestId}, {parentTransform.gameObject.name})");
 
             clientConnector.SpawnModelPrefabServer(spawnRequestId, prefab, parentTransform, position, forward);
             return null;

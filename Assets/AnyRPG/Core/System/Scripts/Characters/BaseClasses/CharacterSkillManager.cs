@@ -59,7 +59,7 @@ namespace AnyRPG {
                     }
                 }
 
-                systemEventManager.NotifyOnSkillListChanged(newSkill);
+                systemEventManager.NotifyOnSkillListChanged(unitController, newSkill);
             }
         }
 

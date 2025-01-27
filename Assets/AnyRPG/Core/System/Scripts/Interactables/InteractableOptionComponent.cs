@@ -34,17 +34,15 @@ namespace AnyRPG {
             }
         }
 
-        public virtual bool PrerequisitesMet {
-            get {
+        public virtual bool PrerequisitesMet(UnitController sourceUnitController) {
                 //Debug.Log($"{gameObject.name}.InteractableOption.MyPrerequisitesMet");
                 foreach (PrerequisiteConditions prerequisiteCondition in interactableOptionProps.PrerequisiteConditions) {
-                    if (!prerequisiteCondition.IsMet()) {
+                    if (!prerequisiteCondition.IsMet(sourceUnitController)) {
                         return false;
                     }
                 }
                 // there are no prerequisites, or all prerequisites are complete
                 return true;
-            }
         }
 
         public InteractableOptionComponent(Interactable interactable, InteractableOptionProps interactableOptionProps, SystemGameManager systemGameManager) {
@@ -110,8 +108,8 @@ namespace AnyRPG {
         public virtual void ProcessCleanupEventSubscriptions() {
         }
 
-        public virtual void NotifyOnConfirmAction() {
-            systemEventManager.NotifyOnInteractionWithOptionCompleted(this);
+        public virtual void NotifyOnConfirmAction(UnitController sourceUnitController) {
+            systemEventManager.NotifyOnInteractionWithOptionCompleted(sourceUnitController, this);
         }
 
         public virtual bool ProcessFactionValue(float factionValue) {
@@ -132,14 +130,10 @@ namespace AnyRPG {
             return true;
         }
 
-        public virtual bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public virtual bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log(interactable.gameObject.name + this.ToString() + ".InteractableOptionComponent.CanInteract(" + processRangeCheck + ", " + passedRangeCheck + ", " + factionValue + ")");
             if (processRangeCheck == true && passedRangeCheck == false) {
                 //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact(): range check failed");
-                return false;
-            }
-            if (ProcessFactionValue(factionValue) == false) {
-                //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact(): faction check failed");
                 return false;
             }
             if (ProcessCombatOnly() == false) {
@@ -150,17 +144,17 @@ namespace AnyRPG {
                 return false;
             }
 
-            bool returnValue = PrerequisitesMet;
+            bool returnValue = PrerequisitesMet(sourceUnitController);
             if (returnValue == false) {
                 //Debug.Log(interactable.gameObject.name + this.ToString() + ".InteractableOptionComponent.Interact(): prerequisites not met");
             }
             return returnValue;
         }
 
-        public virtual bool Interact(CharacterUnit source, int optionIndex) {
+        public virtual bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
             //source.CancelMountEffects();
-            systemEventManager.NotifyOnInteractionWithOptionStarted(this);
+            systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
             return true;
         }
 
@@ -205,12 +199,12 @@ namespace AnyRPG {
         public virtual bool SetMiniMapText(TextMeshProUGUI text) {
             //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.SetMiniMapText()");
 
-            return (GetCurrentOptionCount() > 0);
+            return (GetCurrentOptionCount(playerManager.UnitController) > 0);
         }
 
         public virtual void SetMiniMapIcon(Image icon) {
             //Debug.Log($"{gameObject.name}.InteractableOption.SetMiniMapIcon()");
-            if (CanShowMiniMapIcon()) {
+            if (CanShowMiniMapIcon(playerManager.UnitController)) {
                 icon.sprite = GetMiniMapIcon();
                 icon.color = GetMiniMapIconColor();
             } else {
@@ -228,9 +222,9 @@ namespace AnyRPG {
             return Color.white;
         }
 
-        public virtual bool CanShowMiniMapIcon() {
+        public virtual bool CanShowMiniMapIcon(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.InteractableOption.CanShowMiniMapIcon()");
-            return (GetCurrentOptionCount() > 0);
+            return (GetCurrentOptionCount(sourceUnitController) > 0);
         }
 
         public virtual string GetDescription() {
@@ -242,13 +236,13 @@ namespace AnyRPG {
         }
         
 
-        public virtual void HandlePlayerUnitSpawn() {
+        public virtual void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOption.HandlePlayerUnitSpawn()");
 
             if (interactableOptionProps.PrerequisiteConditions != null && interactableOptionProps.PrerequisiteConditions.Count > 0) {
                 foreach (PrerequisiteConditions tmpPrerequisiteConditions in interactableOptionProps.PrerequisiteConditions) {
                     if (tmpPrerequisiteConditions != null) {
-                        tmpPrerequisiteConditions.UpdatePrerequisites(false);
+                        tmpPrerequisiteConditions.UpdatePrerequisites(sourceUnitController, false);
                     }
                 }
                 /*
@@ -265,7 +259,7 @@ namespace AnyRPG {
         }
 
 
-        public virtual int GetValidOptionCount() {
+        public virtual int GetValidOptionCount(UnitController sourceUnitController) {
             // overwrite me if this type of interactable option has a list of options instead of just one
             /*
             if (processRangeCheck == true && passedRangeCheck == false) {
@@ -275,20 +269,27 @@ namespace AnyRPG {
             if (interactable.CombatOnly) {
                 return 0;
             }
-            return (PrerequisitesMet == true ? 1 : 0);
+            return (PrerequisitesMet(sourceUnitController) == true ? 1 : 0);
         }
 
-        public virtual int GetCurrentOptionCount() {
+        public virtual int GetCurrentOptionCount(UnitController sourceUnitController) {
             // overwrite me or everything is valid as long as prerequisites are met, which isn't the case for things like dialog, which have multiple options
             //Debug.Log($"{gameObject.name}.CharacterCreatorInteractable.GetCurrentOptionCount()");
             if (interactable.CombatOnly) {
                 return 0;
             }
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
-        public virtual void HandlePrerequisiteUpdates() {
+        public virtual void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + this.ToString() + ".InteractableOption.HandlePrerequisiteUpdates()");
+            HandleOptionStateChange();
+        }
+
+        /// <summary>
+        /// trigger to update minimap
+        /// </summary>
+        public void HandleOptionStateChange() {
             if (interactable != null) {
                 interactable.HandlePrerequisiteUpdates();
             }

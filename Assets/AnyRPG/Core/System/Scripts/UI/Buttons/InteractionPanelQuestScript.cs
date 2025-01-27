@@ -17,7 +17,6 @@ namespace AnyRPG {
 
         // game manager references
         protected PlayerManager playerManager = null;
-        protected QuestLog questLog = null;
 
         public Quest Quest { get => quest; set => quest = value; }
         public QuestGiverComponent QuestGiver { get => questGiver; set => questGiver = value; }
@@ -31,7 +30,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
-            questLog = systemGameManager.QuestLog;
         }
 
         public override void ButtonClickAction() {
@@ -42,12 +40,12 @@ namespace AnyRPG {
                 return;
             }
 
-            if (quest.HasOpeningDialog == true && quest.OpeningDialog != null && quest.OpeningDialog.TurnedIn == false) {
+            if (quest.HasOpeningDialog == true && quest.OpeningDialog != null && quest.OpeningDialog.TurnedIn(playerManager.UnitController) == false) {
                 //Debug.Log("InteractionPanelQuestScript.Select(): dialog is not completed, popping dialog with questGiver: " + (questGiver == null ? "null" : questGiver.Interactable.DisplayName));
-                questLog.ShowQuestGiverDescription(quest, questGiver);
+                playerManager.UnitController.CharacterQuestLog.ShowQuestGiverDescription(quest, questGiver);
             } else {
                 //Debug.Log("InteractionPanelQuestScript.Select(): has no dialog, or dialog is completed, opening questgiver window");
-                questLog.ShowQuestGiverDescription(quest, questGiver);
+                playerManager.UnitController.CharacterQuestLog.ShowQuestGiverDescription(quest, questGiver);
             }
         }
 

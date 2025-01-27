@@ -33,7 +33,7 @@ namespace AnyRPG {
             
             playerManager.SetPlayerCharacterClass(characterClass);
             
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
         public override void EndInteraction() {

@@ -22,11 +22,11 @@ namespace AnyRPG {
 
         private HealEffectProperties healEffect = null;
 
-        public override bool Use() {
+        public override bool Use(UnitController sourceUnitController) {
             //Debug.Log(DisplayName + ".PowerResourcePotion.Use()");
             int fullcount = 0;
             foreach (ResourceAmountNode resourceAmountNode in healEffect.ResourceAmounts) {
-                if (playerManager.UnitController.CharacterStats.GetPowerResourceAmount(resourceAmountNode.PowerResource) >= playerManager.UnitController.CharacterStats.GetPowerResourceMaxAmount(resourceAmountNode.PowerResource)) {
+                if (sourceUnitController.CharacterStats.GetPowerResourceAmount(resourceAmountNode.PowerResource) >= sourceUnitController.CharacterStats.GetPowerResourceMaxAmount(resourceAmountNode.PowerResource)) {
                     fullcount++;
                 }
             }
@@ -35,16 +35,15 @@ namespace AnyRPG {
                 messageFeedManager.WriteMessage("Already full!");
                 return false;
             }
-            bool returnValue = base.Use();
+            bool returnValue = base.Use(sourceUnitController);
             if (returnValue == false) {
                 return false;
             }
 
             // perform heal effect
-            healEffect.Cast(playerManager.UnitController, playerManager.UnitController, null, null);
+            healEffect.Cast(sourceUnitController, sourceUnitController, null, null);
 
             return returnValue;
-
         }
 
         /*

@@ -67,15 +67,15 @@ namespace AnyRPG {
                 //originalXPSliderWidth = xpBarBackGround.GetComponent<RectTransform>().rect.width;
                 //Debug.Log("XPBarController.HandlePlayerUnitSpawn(): originalXPSliderWidth was 0, now: " + originalXPSliderWidth);
             }
-            UpdateXPBar(playerManager.UnitController.CharacterStats.Level);
+            UpdateXPBar(playerManager.UnitController, playerManager.UnitController.CharacterStats.Level);
         }
 
         public void UpdateXP() {
             //Debug.Log("XPBarController.UpdateXP()");
-            UpdateXPBar(playerManager.UnitController.CharacterStats.Level);
+            UpdateXPBar(playerManager.UnitController, playerManager.UnitController.CharacterStats.Level);
         }
 
-        public void UpdateXPBar(int _Level) {
+        public void UpdateXPBar(UnitController sourceUnitController, int _Level) {
             if (!playerManager.PlayerUnitSpawned) {
                 return;
             }

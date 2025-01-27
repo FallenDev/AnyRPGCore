@@ -40,26 +40,7 @@ namespace AnyRPG {
             }
         }
 
-        public int CurrentAmount {
-            get {
-                return saveManager.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName).Amount;
-                //return false;
-            }
-            set {
-                QuestObjectiveSaveData saveData = saveManager.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName);
-                saveData.Amount = value;
-                saveManager.QuestObjectiveSaveDataDictionary[questBase.ResourceName][ObjectiveType.Name][ObjectiveName] = saveData;
-            }
-        }
-
         public virtual string ObjectiveName { get => string.Empty; }
-
-        public virtual bool IsComplete {
-            get {
-                //Debug.Log("checking if quest objective iscomplete, current: " + MyCurrentAmount.ToString() + "; needed: " + amount.ToString());
-                return CurrentAmount >= Amount;
-            }
-        }
 
         public QuestBase QuestBase { get => questBase; set => questBase = value; }
         public string OverrideDisplayName { get => overrideDisplayName; set => overrideDisplayName = value; }
@@ -73,35 +54,6 @@ namespace AnyRPG {
             set => overrideDisplayName = value;
         }
 
-        public virtual void UpdateCompletionCount(bool printMessages = true) {
-            //Debug.Log("QuestObjective.UpdateCompletionCount()");
-        }
-
-        public virtual void OnAcceptQuest(QuestBase questBase, bool printMessages = true) {
-            this.questBase = questBase;
-        }
-
-        private void SetQuest(QuestBase questBase) {
-            this.questBase = questBase;
-        }
-
-        public virtual void OnAbandonQuest() {
-            // overwrite me
-        }
-
-        public virtual void HandleQuestStatusUpdated() {
-            UpdateCompletionCount();
-        }
-
-        public virtual string GetUnformattedStatus() {
-            return DisplayName + ": " + Mathf.Clamp(CurrentAmount, 0, Amount) + "/" + Amount;
-        }
-
-        public virtual void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {
-            Configure(systemGameManager);
-            SetQuest(quest);
-        }
-
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             saveManager = systemGameManager.SaveManager;
@@ -110,6 +62,52 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             levelManager = systemGameManager.LevelManager;
         }
+
+        public int CurrentAmount(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName).Amount;
+        }
+
+        public void SetCurrentAmount(UnitController sourceUnitController, int value) {
+            QuestObjectiveSaveData saveData = sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName);
+            saveData.Amount = value;
+            sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary[questBase.ResourceName][ObjectiveType.Name][ObjectiveName] = saveData;
+        }
+
+
+        public virtual bool IsComplete(UnitController sourceUnitController) {
+            //Debug.Log("checking if quest objective iscomplete, current: " + MyCurrentAmount.ToString() + "; needed: " + amount.ToString());
+            return CurrentAmount(sourceUnitController) >= Amount;
+        }
+
+        public virtual void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
+            //Debug.Log("QuestObjective.UpdateCompletionCount()");
+        }
+
+        public virtual void OnAcceptQuest(UnitController sourceUnitController, QuestBase questBase, bool printMessages = true) {
+            this.questBase = questBase;
+        }
+
+        private void SetQuest(QuestBase questBase) {
+            this.questBase = questBase;
+        }
+
+        public virtual void OnAbandonQuest(UnitController sourceUnitController) {
+            // overwrite me
+        }
+
+        public virtual void HandleQuestStatusUpdated(UnitController sourceUnitController) {
+            UpdateCompletionCount(sourceUnitController);
+        }
+
+        public virtual string GetUnformattedStatus(UnitController sourceUnitController) {
+            return DisplayName + ": " + Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount) + "/" + Amount;
+        }
+
+        public virtual void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {
+            Configure(systemGameManager);
+            SetQuest(quest);
+        }
+
     }
 
 

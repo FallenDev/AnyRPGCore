@@ -30,17 +30,17 @@ namespace AnyRPG {
             systemAbilityController = systemGameManager.SystemAbilityController;
         }
 
-        public override bool Use() {
+        public override bool Use(UnitController sourceUnitController) {
             //Debug.Log("CastableItem.Use()");
             if (Ability == null) {
                 Debug.LogError(ResourceName + ".CastableItem.Use(): ability is null.  Please set it in the inspector!");
                 return false;
             }
-            bool returnValue = base.Use();
+            bool returnValue = base.Use(sourceUnitController);
             if (returnValue == false) {
                 return false;
             }
-            if (playerManager.UnitController.CharacterAbilityManager.BeginAbility(Ability)) {
+            if (sourceUnitController.CharacterAbilityManager.BeginAbility(Ability)) {
                 Remove();
             }
             return returnValue;

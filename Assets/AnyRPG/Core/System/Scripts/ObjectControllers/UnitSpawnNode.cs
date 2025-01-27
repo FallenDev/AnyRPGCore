@@ -125,23 +125,21 @@ namespace AnyRPG {
 
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
-        public bool PrerequisitesMet {
-            get {
-                // disabled next bit because it interferes with spawning in cutscenes
-                /*
-                if (playerManager.MyPlayerUnitSpawned == false) {
-                    //Debug.Log($"{gameObject.name}.PrerequisitesMet: returning false because player isn't spawned");
+        public bool PrerequisitesMet(UnitController sourceUnitController) {
+            // disabled next bit because it interferes with spawning in cutscenes
+            /*
+            if (playerManager.MyPlayerUnitSpawned == false) {
+                //Debug.Log($"{gameObject.name}.PrerequisitesMet: returning false because player isn't spawned");
+                return false;
+            }
+            */
+            foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
+                if (!prerequisiteCondition.IsMet(sourceUnitController)) {
                     return false;
                 }
-                */
-                foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
-                    if (!prerequisiteCondition.IsMet()) {
-                        return false;
-                    }
-                }
-                // there are no prerequisites, or all prerequisites are complete
-                return true;
             }
+            // there are no prerequisites, or all prerequisites are complete
+            return true;
         }
 
         public string DisplayName {
@@ -153,7 +151,7 @@ namespace AnyRPG {
         public List<string> UnitProfileNames { get => unitProfileNames; set => unitProfileNames = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
 
             base.Configure(systemGameManager);
 
@@ -175,7 +173,7 @@ namespace AnyRPG {
 
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
                 // server does not respond to player spawn
-                CheckPrerequisites();
+                CheckPrerequisites(null);
             }
 
         }
@@ -202,7 +200,7 @@ namespace AnyRPG {
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
             if (playerManager.PlayerUnitSpawned == true) {
                 //Debug.Log($"{gameObject.name}.UnitSpawnNode.CreateEventSubscriptions(): player unit already spawned.  Handling player unit spawn");
-                ProcessPlayerUnitSpawn();
+                ProcessPlayerUnitSpawn(playerManager.UnitController);
             }
             eventSubscriptionsInitialized = true;
         }
@@ -246,7 +244,7 @@ namespace AnyRPG {
 
         public void HandlePlayerUnitSpawn(string eventName, EventParamProperties eventParamProperties) {
             //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
-            ProcessPlayerUnitSpawn();
+            ProcessPlayerUnitSpawn(playerManager.UnitController);
         }
 
         public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
@@ -254,20 +252,20 @@ namespace AnyRPG {
             Cleanup();
         }
 
-        public void ProcessPlayerUnitSpawn() {
+        public void ProcessPlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandlePlayerUnitSpawn()");
             if (prerequisiteConditions != null && prerequisiteConditions.Count > 0) {
                 foreach (PrerequisiteConditions tmpPrerequisiteConditions in prerequisiteConditions) {
                     if (tmpPrerequisiteConditions != null) {
-                        tmpPrerequisiteConditions.UpdatePrerequisites(false);
+                        tmpPrerequisiteConditions.UpdatePrerequisites(sourceUnitController, false);
                     }
                 }
-                if (PrerequisitesMet) {
-                    HandlePrerequisiteUpdates();
+                if (PrerequisitesMet(sourceUnitController)) {
+                    HandlePrerequisiteUpdates(sourceUnitController);
                 }
             } else {
                 //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandlePlayerUnitSpawn(): no prerequisites found.");
-                HandlePrerequisiteUpdates();
+                HandlePrerequisiteUpdates(sourceUnitController);
             }
             //HandlePrerequisiteUpdates();
         }
@@ -287,17 +285,17 @@ namespace AnyRPG {
             disabled = true;
         }
 
-        public void HandlePrerequisiteUpdates() {
+        public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandlePrerequisiteUpdates()");
-            CheckPrerequisites();
+            CheckPrerequisites(sourceUnitController);
         }
 
-        public void CheckPrerequisites() {
+        public void CheckPrerequisites(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.CheckPrerequisites()");
-            if (PrerequisitesMet && !triggerBased) {
+            if (PrerequisitesMet(sourceUnitController) && !triggerBased) {
                 SpawnWithDelay();
             }
-            if (forceDespawnUnits && !PrerequisitesMet) {
+            if (forceDespawnUnits && !PrerequisitesMet(sourceUnitController)) {
                 StartCoroutine(DestroySpawnsAtEndOfFrame());
             }
         }
@@ -371,7 +369,7 @@ namespace AnyRPG {
         }
 
         public void Spawn() {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): " + GetMaxUnits());
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): " + GetMaxUnits());
 
             if (unitProfiles.Count == 0) {
                 return;
@@ -385,7 +383,7 @@ namespace AnyRPG {
         }
 
         public void CommonSpawn(int unitLevel, int extraLevels, bool dynamicLevel, UnitProfile unitProfile, UnitToughness toughness = null) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn()");
 
             // prevent a coroutine that finished during a level load from spawning a character
             if (disabled == true) {
@@ -424,7 +422,7 @@ namespace AnyRPG {
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.ConfigureSpawnedCharacter()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.ConfigureSpawnedCharacter()");
 
             //if (spawnRequests.ContainsKey(characterRequestData.spawnRequestId) == false) {
             //    return;
@@ -497,7 +495,7 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         private bool CanTriggerSpawn() {
-            if ((spawnReferences.Count < GetMaxUnits() || GetMaxUnits() == -1) && PrerequisitesMet) {
+            if ((spawnReferences.Count < GetMaxUnits() || GetMaxUnits() == -1) && PrerequisitesMet(null)) {
                 return true;
             }
             return false;
@@ -507,7 +505,7 @@ namespace AnyRPG {
         /// spawn a unit if the trigger conditions are met, then start the countdown for the next spawn
         /// </summary>
         private void SpawnWithDelay() {
-            Debug.Log($"{gameObject.name}UnitSpawnNode.SpawnWithDelay()");
+            //Debug.Log($"{gameObject.name}UnitSpawnNode.SpawnWithDelay()");
 
             if (suppressAutoSpawn) {
                 return;
@@ -548,7 +546,7 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         private IEnumerator StartSpawnDelayCountDown() {
-            Debug.Log($"{gameObject.name}UnitSpawnNode.StartSpawnDelayCountDown()");
+            //Debug.Log($"{gameObject.name}UnitSpawnNode.StartSpawnDelayCountDown()");
 
             float currentDelayTimer = spawnDelay;
             while (currentDelayTimer > 0) {
@@ -682,7 +680,7 @@ namespace AnyRPG {
                         tmpPrerequisiteConditions.SetupScriptableObjects(systemGameManager, this);
 
                         // add this so unit spawn nodes can have their prerequisites properly set on the first check
-                        tmpPrerequisiteConditions.UpdatePrerequisites(false);
+                        //tmpPrerequisiteConditions.UpdatePrerequisites(false);
                     }
                 }
             }

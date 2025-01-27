@@ -128,7 +128,7 @@ namespace AnyRPG
         /// </summary>
         /// <param name="rb"></param>
         private void OnResponseBroadcast(ResponseBroadcast rb, Channel channel) {
-            Debug.Log("FishNetPasswordAuthenticator.OnResponseBroadcast()");
+            //Debug.Log("FishNetPasswordAuthenticator.OnResponseBroadcast()");
 
             string result = (rb.AuthenticationPassed && rb.ClientPassed) ? "Authentication complete." : "Authentication failed.";
             NetworkManager.Log(result);

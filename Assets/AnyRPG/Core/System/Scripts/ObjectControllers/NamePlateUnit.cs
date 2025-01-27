@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -92,7 +93,7 @@ namespace AnyRPG {
                 }
             }
 
-            Dictionary<int, InteractableOptionComponent> currentInteractables = GetCurrentInteractables();
+            Dictionary<int, InteractableOptionComponent> currentInteractables = GetCurrentInteractables(playerManager.UnitController);
 
             int currentInteractableCount = currentInteractables.Count;
             //Debug.Log($"{gameObject.name}.Interactable.UpdateDialogStatus(): currentInteractableCount: " + currentInteractableCount);
@@ -102,7 +103,7 @@ namespace AnyRPG {
             foreach (InteractableOptionComponent interactableOption in currentInteractables.Values) {
                 if (interactableOption is QuestGiverComponent) {
                     questGiverCurrent = true;
-                    (interactableOption as QuestGiverComponent).UpdateQuestStatus();
+                    (interactableOption as QuestGiverComponent).UpdateQuestStatus(playerManager.UnitController);
                 }
             }
 
@@ -112,9 +113,10 @@ namespace AnyRPG {
             } else {
                 if (currentInteractableCount == 1) {
                     // there is only one interactable.  set the specific nameplate image for it
-                    if (currentInteractables[0].InteractableOptionProps.NamePlateImage != null) {
+                    InteractableOptionComponent onlyOption = currentInteractables.Values.First<InteractableOptionComponent>();
+                    if (onlyOption.InteractableOptionProps.NamePlateImage != null) {
                         NamePlateController.NamePlate.GenericIndicatorImage.gameObject.SetActive(true);
-                        NamePlateController.NamePlate.GenericIndicatorImage.sprite = currentInteractables[0].InteractableOptionProps.NamePlateImage;
+                        NamePlateController.NamePlate.GenericIndicatorImage.sprite = onlyOption.InteractableOptionProps.NamePlateImage;
                     }
                 } else {
                     // set a generic indicator if there is more than 1 interactable

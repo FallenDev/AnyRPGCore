@@ -31,21 +31,21 @@ namespace AnyRPG {
             Props.CleanupPrerequisiteOwner(this);
         }
 
-        public override void NotifyOnConfirmAction() {
+        public override void NotifyOnConfirmAction(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.NameChangeInteractable.HandleConfirmAction()");
-            base.NotifyOnConfirmAction();
+            base.NotifyOnConfirmAction(sourceUnitController);
 
             // since the dialog completion status is itself a form of prerequisite, we should call the prerequisite update here
-            HandlePrerequisiteUpdates();
+            HandleOptionStateChange();
         }
 
-        public List<Dialog> GetCurrentOptionList() {
+        public List<Dialog> GetCurrentOptionList(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.DialogInteractable.GetCurrentOptionList()");
             List<Dialog> currentList = new List<Dialog>();
             if (interactable.CombatOnly == false) {
                 foreach (Dialog dialog in Props.DialogList) {
                     //Debug.Log(interactable.gameObject.name + ".DialogInteractable.GetCurrentOptionList() : found dialog: " + dialog.DisplayName);
-                    if (dialog.PrerequisitesMet == true && (dialog.TurnedIn == false || dialog.Repeatable == true)) {
+                    if (dialog.PrerequisitesMet(sourceUnitController) == true && (dialog.TurnedIn(sourceUnitController) == false || dialog.Repeatable == true)) {
                         currentList.Add(dialog);
                     }
                 }
@@ -54,14 +54,14 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".DialogInteractable.Interact()");
-            List<Dialog> currentList = GetCurrentOptionList();
+            List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
                 return false;
             } else /*if (currentList.Count == 1)*/ {
                 if (currentList[optionIndex].Automatic) {
-                    interactable.DialogController.BeginDialog(currentList[optionIndex]);
+                    interactable.DialogController.BeginDialog(sourceUnitController, currentList[optionIndex]);
                 } else {
                     dialogManager.SetDialog(currentList[optionIndex], this.interactable, this);
                     uIManager.dialogWindow.OpenWindow();
@@ -69,16 +69,16 @@ namespace AnyRPG {
             }/* else {
                 interactable.OpenInteractionWindow();
             }*/
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, optionIndex);
             return true;
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log($"{gameObject.name}.DialogInteractable.CanInteract()");
-            if (!base.CanInteract(processRangeCheck, passedRangeCheck, factionValue, processNonCombatCheck)) {
+            if (!base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck)) {
                 return false;
             }
-            if (GetCurrentOptionList().Count == 0) {
+            if (GetCurrentOptionList(sourceUnitController).Count == 0) {
                 return false;
             }
             return true;
@@ -89,30 +89,30 @@ namespace AnyRPG {
             uIManager.dialogWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.DialogInteractable.GetCurrentOptionCount(): " + GetCurrentOptionList().Count);
-            return GetCurrentOptionList().Count;
+            return GetCurrentOptionList(sourceUnitController).Count;
         }
 
-        public override void HandlePlayerUnitSpawn() {
-            UpdateDialogStatuses();
-            base.HandlePlayerUnitSpawn();
+        public override void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
+            UpdateDialogStatuses(sourceUnitController);
+            base.HandlePlayerUnitSpawn(sourceUnitController);
         }
 
-        public void UpdateDialogStatuses() {
+        public void UpdateDialogStatuses(UnitController sourceUnitController) {
             foreach (Dialog dialog in Props.DialogList) {
-                dialog.UpdatePrerequisites(false);
+                dialog.UpdatePrerequisites(sourceUnitController, false);
             }
 
             bool preRequisitesUpdated = false;
             foreach (Dialog dialog in Props.DialogList) {
-                if (dialog.PrerequisitesMet == true) {
+                if (dialog.PrerequisitesMet(sourceUnitController) == true) {
                     preRequisitesUpdated = true;
                 }
             }
 
             if (preRequisitesUpdated) {
-                HandlePrerequisiteUpdates();
+                HandlePrerequisiteUpdates(sourceUnitController);
             }
 
         }

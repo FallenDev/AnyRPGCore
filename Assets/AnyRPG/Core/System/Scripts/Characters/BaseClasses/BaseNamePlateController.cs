@@ -19,6 +19,7 @@ namespace AnyRPG {
 
         // game manager references
         protected NamePlateManager namePlateManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public virtual NamePlateController NamePlate { get => namePlate; }
 
@@ -127,6 +128,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             namePlateManager = systemGameManager.UIManager.NamePlateManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void SetNamePlatePosition() {
@@ -147,6 +149,9 @@ namespace AnyRPG {
             //Debug.Log(namePlateUnit.gameObject.name + ".BasenamePlateController.InitializeNamePlate()");
             if (SuppressNamePlate == true) {
                 //Debug.Log(namePlateUnit.gameObject.name + ".BasenamePlateController.InitializeNamePlate(): suppressing NamePlate");
+                return false;
+            }
+            if (networkManagerServer.ServerModeActive == true) {
                 return false;
             }
             if (CanSpawnNamePlate()) {

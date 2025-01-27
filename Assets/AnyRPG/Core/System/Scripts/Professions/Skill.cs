@@ -29,24 +29,26 @@ namespace AnyRPG {
         public List<AbilityProperties> AbilityList { get => abilityList; set => abilityList = value; }
 
         // game manager references
-        protected PlayerManager playerManager = null;
+        //protected PlayerManager playerManager = null;
 
+        /*
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
         }
+        */
 
         public override string GetSummary() {
             return string.Format("<color=#ffff00ff>{0}</color>\n\n{1}", resourceName, GetDescription());
         }
 
-        public void GiveReward() {
-            playerManager.UnitController.CharacterSkillManager.LearnSkill(this);
+        public void GiveReward(UnitController sourceUnitController) {
+            sourceUnitController.CharacterSkillManager.LearnSkill(this);
         }
 
-        public bool HasReward() {
-            return playerManager.UnitController.CharacterSkillManager.HasSkill(this);
+        public bool HasReward(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterSkillManager.HasSkill(this);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

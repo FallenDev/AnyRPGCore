@@ -17,9 +17,9 @@ namespace AnyRPG {
         protected Interactable interactable = null;
 
         // game manager references
-        protected PlayerManager playerManager = null;
+        protected PlayerManagerServer playerManagerServer = null;
 
-        protected List<GameObject> inRangeColliders = new List<GameObject>();
+        protected Dictionary<GameObject, UnitController> inRangeGameObjects = new Dictionary<GameObject, UnitController>();
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -27,7 +27,7 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public void SetInteractable(Interactable interactable) {
@@ -57,45 +57,49 @@ namespace AnyRPG {
         private void OnTriggerEnter(Collider collider) {
             //Debug.Log(interactable.gameObject.name + ".InteractableRange.OnTriggerEnter(" + collider.gameObject.name + ") count : " + inRangeColliders.Count);
 
-            if (playerManager.ActiveUnitController == null) {
+            if (playerManagerServer.ActivePlayerGameObjects.ContainsKey(collider.gameObject) == false) {
                 return;
             }
 
-            if (collider.gameObject == playerManager.ActiveUnitController.gameObject && inRangeColliders.Contains(collider.gameObject) == false) {
-                inRangeColliders.Add(collider.gameObject);
-
-                if (interactable.SpawnPrerequisitesMet == false || interactable.GetCurrentInteractables().Count == 0) {
+            if (inRangeGameObjects.ContainsKey(collider.gameObject) == false) {
+                UnitController unitController = collider.gameObject.GetComponent<UnitController>();
+                if (unitController != null) {
                     return;
                 }
-
-                playerManager.PlayerController.AddInteractable(interactable);
+                inRangeGameObjects.Add(collider.gameObject, unitController);
+                if (interactable.GetCurrentInteractables(unitController).Count == 0) {
+                    return;
+                }
+                unitController.UnitEventController.NotifyOnEnterInteractableRange(interactable);
             }
         }
 
         private void OnTriggerExit(Collider collider) {
             //Debug.Log(interactable.gameObject.name + ".InteractableRange.OnTriggerExit(" + collider.gameObject.name + ") count: " + inRangeColliders.Count);
 
-            if (collider.gameObject == playerManager.ActiveUnitController.gameObject) {
-                playerManager.PlayerController.RemoveInteractable(interactable);
-                RemoveInRangeCollider(collider.gameObject);
+            if (inRangeGameObjects.ContainsKey(collider.gameObject) == false) {
+                return;
             }
+
+            inRangeGameObjects[collider.gameObject].UnitEventController.NotifyOnExitInteractableRange(interactable);
+            RemoveInRangeCollider(collider.gameObject);
         }
 
         private void RemoveInRangeCollider(GameObject go) {
             //Debug.Log("InteractableRange.RemoveInRangeCollider(" + go.name + ") count: " + inRangeColliders.Count);
-            if (inRangeColliders.Contains(go)) {
-                inRangeColliders.Remove(go);
+            if (inRangeGameObjects.ContainsKey(go)) {
+                inRangeGameObjects.Remove(go);
             }
         }
 
         public void UpdateStatus() {
             //Debug.Log("InteractableRange.UpdateStatus()");
 
-            foreach (GameObject go in inRangeColliders) {
-                if (interactable.SpawnPrerequisitesMet == false || interactable.GetCurrentInteractables().Count == 0) {
-                    playerManager.PlayerController.RemoveInteractable(interactable);
+            foreach (UnitController inRangeUnitController in inRangeGameObjects.Values) {
+                if (interactable.GetCurrentInteractables(inRangeUnitController).Count == 0) {
+                    inRangeUnitController.UnitEventController.NotifyOnExitInteractableRange(interactable);
                 } else {
-                    playerManager.PlayerController.AddInteractable(interactable);
+                    inRangeUnitController.UnitEventController.NotifyOnEnterInteractableRange(interactable);
                 }
 
             }
@@ -106,12 +110,10 @@ namespace AnyRPG {
         }
 
         public void OnSendObjectToPool() {
-            foreach (GameObject go in inRangeColliders) {
-                if (go == playerManager.ActiveUnitController.gameObject) {
-                    playerManager.PlayerController.RemoveInteractable(interactable);
-                }
+            foreach (UnitController inRangeUnitController in inRangeGameObjects.Values) {
+                inRangeUnitController.UnitEventController.NotifyOnExitInteractableRange(interactable);
             }
-            inRangeColliders.Clear();
+            inRangeGameObjects.Clear();
         }
 
 

@@ -23,13 +23,11 @@ namespace AnyRPG {
             craftingManager = systemGameManager.CraftingManager;
         }
 
-        public override bool PrerequisitesMet {
-            get {
-                if (playerManager.UnitController.CharacterAbilityManager.HasAbility(Props.Ability) == false) {
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+                if (sourceUnitController.CharacterAbilityManager.HasAbility(Props.Ability) == false) {
                     return false;
                 }
-                return base.PrerequisitesMet;
-            }
+                return base.PrerequisitesMet(sourceUnitController);
         } 
 
         public override void ProcessCreateEventSubscriptions() {
@@ -53,18 +51,18 @@ namespace AnyRPG {
             return searchInteractable.GetInteractableOptionList(typeof(CraftingNodeComponent)).Cast<CraftingNodeComponent>().ToList();
         }
 
-        public void HandleAbilityListChange(AbilityProperties baseAbility) {
+        public void HandleAbilityListChange(UnitController sourceUnitController, AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.GatheringNode.HandleAbilityListChange(" + baseAbility.DisplayName + ")");
-            HandlePrerequisiteUpdates();
+            HandlePrerequisiteUpdates(sourceUnitController);
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.GatheringNode.GetCurrentOptionCount()");
-            return ((playerManager.UnitController.CharacterAbilityManager.HasAbility(Props.Ability) == true) ? 1 : 0);
+            return ((sourceUnitController.CharacterAbilityManager.HasAbility(Props.Ability) == true) ? 1 : 0);
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
-            base.Interact(source, optionIndex);
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+            base.Interact(sourceUnitController, optionIndex);
 
             if (Props == null || Props.Ability == null) {
                 Debug.Log("Props is null");

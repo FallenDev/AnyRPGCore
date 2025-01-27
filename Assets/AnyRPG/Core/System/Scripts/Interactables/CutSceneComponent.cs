@@ -24,7 +24,7 @@ namespace AnyRPG {
             cutSceneBarController = uIManager.CutSceneBarController;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             base.Interact(source, optionIndex);
             // save character position and stuff here
             //uIManager.interactionWindow.CloseWindow();

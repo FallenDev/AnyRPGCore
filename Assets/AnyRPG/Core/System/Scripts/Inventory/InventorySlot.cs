@@ -161,12 +161,12 @@ namespace AnyRPG {
         /// <summary>
         /// Uses the item if it is useable
         /// </summary>
-        public void UseItem() {
+        public void UseItem(UnitController sourceUnitController) {
             //Debug.Log("SlotScript.HandleRightClick()");
             if (Item is Equipment) {
-                (Item as Equipment).Use();
+                (Item as Equipment).Use(sourceUnitController);
             } else if (Item is IUseable) {
-                (Item as IUseable).Use();
+                (Item as IUseable).Use(sourceUnitController);
             } 
         }
 

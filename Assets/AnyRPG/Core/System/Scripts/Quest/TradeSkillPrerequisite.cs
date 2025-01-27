@@ -7,7 +7,7 @@ namespace AnyRPG {
     [System.Serializable]
     public class TradeSkillPrerequisite : ConfiguredClass, IPrerequisite {
 
-        public event System.Action OnStatusUpdated = delegate { };
+        public event System.Action<UnitController> OnStatusUpdated = delegate { };
 
         [SerializeField]
         private string prerequisiteName = string.Empty;
@@ -22,22 +22,22 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private SystemEventManager systemEventManager = null;
 
-        public void UpdateStatus(bool notify = true) {
+        public void UpdateStatus(UnitController sourceUnitController, bool notify = true) {
             bool originalResult = prerequisiteMet;
-            bool checkResult = playerManager.UnitController.CharacterSkillManager.HasSkill(prerequisiteSkill);
+            bool checkResult = sourceUnitController.CharacterSkillManager.HasSkill(prerequisiteSkill);
             if (checkResult != originalResult) {
                 prerequisiteMet = checkResult;
                 if (notify == true) {
-                    OnStatusUpdated();
+                    OnStatusUpdated(sourceUnitController);
                 }
             }
         }
 
-        public void HandleSkillListChanged(Skill newSkill) {
-            UpdateStatus();
+        public void HandleSkillListChanged(UnitController unitController, Skill newSkill) {
+            UpdateStatus(unitController);
         }
 
-        public virtual bool IsMet(BaseCharacter baseCharacter) {
+        public virtual bool IsMet(UnitController sourceUnitController) {
             return prerequisiteMet;
         }
 

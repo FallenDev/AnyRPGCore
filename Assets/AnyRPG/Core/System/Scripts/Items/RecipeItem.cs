@@ -16,17 +16,17 @@ namespace AnyRPG {
 
         private Recipe recipe = null;
 
-        public override bool Use() {
+        public override bool Use(UnitController sourceUnitController) {
             //Debug.Log(MyDisplayName + ".RecipeItem.Use()");
-            if (!playerManager.UnitController.CharacterRecipeManager.RecipeList.ContainsValue(recipe)) {
+            if (!sourceUnitController.CharacterRecipeManager.RecipeList.ContainsValue(recipe)) {
                 //Debug.Log(MyDisplayName + ".RecipeItem.Use(): Player does not have the recipe: " + recipe.MyDisplayName);
-                bool returnValue = base.Use();
+                bool returnValue = base.Use(sourceUnitController);
                 if (returnValue == false) {
                     return false;
                 }
                 // learn recipe if the character has the right skill
-                if (playerManager.UnitController.CharacterAbilityManager.AbilityList.ContainsValue(recipe.CraftAbility)) {
-                    playerManager.UnitController.CharacterRecipeManager.LearnRecipe(recipe);
+                if (sourceUnitController.CharacterAbilityManager.AbilityList.ContainsValue(recipe.CraftAbility)) {
+                    sourceUnitController.CharacterRecipeManager.LearnRecipe(recipe);
                     messageFeedManager.WriteMessage("You learned the recipe " + recipe.DisplayName);
                     Remove();
                 } else {

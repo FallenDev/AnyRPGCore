@@ -32,10 +32,6 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnPlayerConnectionSpawn", HandlePlayerConnectionSpawn);
-            if (playerManager.PlayerConnectionSpawned == true) {
-                AcceptAchievements();
-            }
             eventSubscriptionsInitialized = true;
         }
 
@@ -44,14 +40,7 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnPlayerConnectionSpawn", HandlePlayerConnectionSpawn);
             eventSubscriptionsInitialized = false;
-        }
-
-        public void HandlePlayerConnectionSpawn(string eventName, EventParamProperties eventParamProperties) {
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerClient.ClientMode == NetworkClientMode.MMO) {
-                AcceptAchievements();
-            }
         }
 
         public void OnDisable() {
@@ -62,11 +51,12 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void AcceptAchievements() {
-            //Debug.Log("SystemQuestManager.AcceptAchievements()");
+        public void AcceptAchievements(UnitController sourceUnitController) {
+            Debug.Log($"SystemAchievementManager.AcceptAchievements({sourceUnitController.gameObject.name})");
+
             foreach (Achievement resource in systemDataFactory.GetResourceList<Achievement>()) {
-                if (resource.TurnedIn == false && resource.IsComplete == false) {
-                    resource.AcceptQuest();
+                if (resource.TurnedIn(sourceUnitController) == false && resource.IsComplete(sourceUnitController) == false) {
+                    resource.AcceptQuest(sourceUnitController);
                 }
             }
         }

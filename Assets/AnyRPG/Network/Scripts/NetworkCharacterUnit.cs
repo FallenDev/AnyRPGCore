@@ -53,6 +53,7 @@ namespace AnyRPG {
             unitController = GetComponent<UnitController>();
         }
 
+
         public override void OnStartClient() {
             base.OnStartClient();
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartClient()");
@@ -67,7 +68,7 @@ namespace AnyRPG {
 
         public override void OnStopClient() {
             base.OnStopClient();
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopClient()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopClient()");
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
@@ -78,7 +79,7 @@ namespace AnyRPG {
 
         public override void OnStartServer() {
             base.OnStartServer();
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartServer()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartServer()");
 
             Configure();
             if (systemGameManager == null) {
@@ -151,6 +152,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
             //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
+            unitController.UnitEventController.OnClassChange += HandleClassChangeServer;
+            unitController.UnitEventController.OnSpecializationChange += HandleSpecializationChangeServer;
+            unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
+            unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -176,7 +181,67 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
             //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
+            unitController.UnitEventController.OnClassChange -= HandleClassChangeServer;
+            unitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChangeServer;
+            unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRangeServer;
+            unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRangeServer;
+        }
 
+        private void HandleEnterInteractableRangeServer(UnitController controller, Interactable interactable) {
+
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            HandleEnterInteractableRangeClient(networkInteractable);
+        }
+
+        [ObserversRpc]
+        private void HandleEnterInteractableRangeClient(NetworkInteractable networkInteractable) {
+            Interactable interactable = null;
+            if (networkInteractable != null) {
+                interactable = networkInteractable.Interactable;
+            }
+            unitController.UnitEventController.NotifyOnEnterInteractableRange(interactable);
+        }
+
+        private void HandleExitInteractableRangeServer(UnitController controller, Interactable interactable) {
+
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            HandleExitInteractableRangeClient(networkInteractable);
+        }
+
+        [ObserversRpc]
+        private void HandleExitInteractableRangeClient(NetworkInteractable networkInteractable) {
+            Interactable interactable = null;
+            if (networkInteractable != null) {
+                interactable = networkInteractable.Interactable;
+            }
+            unitController.UnitEventController.NotifyOnExitInteractableRange(interactable);
+        }
+
+
+        public void HandleSpecializationChangeServer(UnitController sourceUnitController, ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
+            HandleSpecializationChangeClient(newSpecialization.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleSpecializationChangeClient(string newSpecializationName) {
+            ClassSpecialization newSpecialization = systemDataFactory.GetResource<ClassSpecialization>(newSpecializationName);
+            unitController.BaseCharacter.ChangeClassSpecialization(newSpecialization);
+        }
+
+        public void HandleClassChangeServer(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
+            HandleClassChangeClient(newCharacterClass.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleClassChangeClient(string newCharacterClassName) {
+            CharacterClass newCharacterClass = systemDataFactory.GetResource<CharacterClass>(newCharacterClassName);
+            unitController.BaseCharacter.ChangeCharacterClass(newCharacterClass);
         }
 
         /*
@@ -388,21 +453,23 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
 
+            /*
             if (base.Owner != null ) {
-                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner clientId: {base.Owner.ClientId} {base.OwnerId}");
+                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner clientId: {base.OwnerId}");
             }
+            */
 
             unitProfile = systemGameManager.SystemDataFactory.GetResource<UnitProfile>(unitProfileName.Value);
             CharacterConfigurationRequest characterConfigurationRequest;
             if (isOwner && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value)) {
                 systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
             } else if (base.OwnerId == -1 && networkManagerServer.ServerModeActive == true && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value) == true) {
-                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner is -1");
+                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner is -1");
                 systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
             } else {
-                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) falling back to creating new config request");
+                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) falling back to creating new config request");
                 characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
                 characterConfigurationRequest.characterName = characterName.Value;
                 characterConfigurationRequest.unitLevel = unitLevel.Value;

@@ -19,7 +19,7 @@ namespace AnyRPG {
 
         public void ChangePlayerName(string newName) {
             playerManager.SetPlayerName(newName);
-            ConfirmAction();
+            ConfirmAction(playerManager.UnitController);
         }
 
     }

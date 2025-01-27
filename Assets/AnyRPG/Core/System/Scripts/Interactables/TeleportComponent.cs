@@ -13,11 +13,11 @@ namespace AnyRPG {
         public TeleportComponent(Interactable interactable, TeleportProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact()");
             base.Interact(source, optionIndex);
 
-            source.UnitController.CharacterAbilityManager.BeginAbility(TeleportProps.BaseAbility.AbilityProperties);
+            source.CharacterAbilityManager.BeginAbility(TeleportProps.BaseAbility.AbilityProperties);
             return true;
         }
 

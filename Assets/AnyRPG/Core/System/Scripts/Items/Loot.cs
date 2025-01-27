@@ -39,29 +39,27 @@ namespace AnyRPG {
         public int MinDrops { get => minDrops; set => minDrops = value; }
         public int MaxDrops { get => maxDrops; set => maxDrops = value; }
 
-        public bool PrerequisitesMet {
-            get {
-                //Debug.Log(itemName + ".MyPrerequisitesMet");
+        public bool PrerequisitesMet(UnitController sourceUnitController) {
+            //Debug.Log(itemName + ".MyPrerequisitesMet");
 
-                // match standard prerequisites
-                foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
-                    // realtime check for loot
-                    prerequisiteCondition.UpdatePrerequisites();
-                    if (!prerequisiteCondition.IsMet()) {
-                        return false;
-                    }
+            // match standard prerequisites
+            foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
+                // realtime check for loot
+                prerequisiteCondition.UpdatePrerequisites(sourceUnitController);
+                if (!prerequisiteCondition.IsMet(sourceUnitController)) {
+                    return false;
                 }
-
-                // match character class
-                if (matchItemRestrictions) {
-                    if (!item.RequirementsAreMet()) {
-                        return false;
-                    }
-                }
-                // there are no prerequisites, or all prerequisites are complete
-                //Debug.Log(itemName + ".MyPrerequisitesMet: nothing false");
-                return true;
             }
+
+            // match character class
+            if (matchItemRestrictions) {
+                if (!item.RequirementsAreMet(sourceUnitController)) {
+                    return false;
+                }
+            }
+            // there are no prerequisites, or all prerequisites are complete
+            //Debug.Log(itemName + ".MyPrerequisitesMet: nothing false");
+            return true;
         }
 
         public void SetupScriptableObjects(SystemGameManager systemGameManager) {
@@ -95,7 +93,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandlePrerequisiteUpdates() {
+        public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             // do nothing
         }
     }

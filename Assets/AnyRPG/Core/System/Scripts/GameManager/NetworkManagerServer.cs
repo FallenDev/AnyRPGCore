@@ -54,6 +54,7 @@ namespace AnyRPG {
         private CharacterManager characterManager = null;
         private InteractionManager interactionManager = null;
         private LevelManagerServer levelManagerServer = null;
+        private SystemDataFactory systemDataFactory = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -70,7 +71,9 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             characterManager = systemGameManager.CharacterManager;
+            interactionManager = systemGameManager.InteractionManager;
             levelManagerServer = systemGameManager.LevelManagerServer;
+            systemDataFactory = systemGameManager.SystemDataFactory;
 
             networkController?.Configure(systemGameManager);
 
@@ -574,8 +577,17 @@ namespace AnyRPG {
         }
 
         public GameObject SpawnModelPrefab(int spawnRequestId, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"NetworkManagerServer.SpawnModelPrefab({spawnRequestId})");
+            //Debug.Log($"NetworkManagerServer.SpawnModelPrefab({spawnRequestId})");
+
             return networkController.SpawnModelPrefabServer(spawnRequestId, spawnPrefab, parentTransform, position, forward);
+        }
+
+        public void SetPlayerCharacterClass(string className, int clientId) {
+            CharacterClass characterClass = systemDataFactory.GetResource<CharacterClass>(className);
+            if (characterClass == null) {
+                return;
+            }
+            playerManagerServer.SetPlayerCharacterClass(characterClass, clientId);
         }
     }
 

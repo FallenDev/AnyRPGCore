@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace AnyRPG {
 
         // clientId, UnitController
         private Dictionary<int, UnitController> activePlayers = new Dictionary<int, UnitController>();
+        private Dictionary<GameObject, int> activePlayerGameObjects = new Dictionary<GameObject, int>();
         private Dictionary<UnitController, int> activePlayerLookup = new Dictionary<UnitController, int>();
 
         protected bool eventSubscriptionsInitialized = false;
@@ -19,9 +21,11 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected InteractionManager interactionManager = null;
         protected PlayerManager playerManager = null;
+        protected SystemAchievementManager systemAchievementManager = null;
 
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
+        public Dictionary<GameObject, int> ActivePlayerGameObjects { get => activePlayerGameObjects; set => activePlayerGameObjects = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -38,6 +42,7 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
             levelManager = systemGameManager.LevelManager;
             interactionManager = systemGameManager.InteractionManager;
+            systemAchievementManager = systemGameManager.SystemAchievementManager;
         }
 
 
@@ -72,10 +77,16 @@ namespace AnyRPG {
         }
 
         public void AddActivePlayer(int clientId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.AddActivePlayer({clientId})");
+            Debug.Log($"PlayerManagerServer.AddActivePlayer({clientId}, {unitController.gameObject.name})");
 
             activePlayers.Add(clientId, unitController);
+            activePlayerGameObjects.Add(unitController.gameObject, clientId);
             activePlayerLookup.Add(unitController, clientId);
+
+            SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(unitController.gameObject.scene.name);
+            if (sceneNode != null) {
+                sceneNode.Visit(unitController);
+            }
         }
 
         public void MonitorPlayer(UnitController unitController) {
@@ -83,6 +94,7 @@ namespace AnyRPG {
                 return;
             }
             SubscribeToPlayerEvents(unitController);
+            systemAchievementManager.AcceptAchievements(unitController);
         }
 
         public void RemoveActivePlayer(int clientId) {
@@ -90,16 +102,17 @@ namespace AnyRPG {
                 return;
             }
             UnsubscribeFromPlayerEvents(activePlayers[clientId]);
+            activePlayerGameObjects.Remove(activePlayers[clientId].gameObject);
             activePlayerLookup.Remove(activePlayers[clientId]);
             activePlayers.Remove(clientId);
         }
 
         public void SubscribeToPlayerEvents(UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.SubscribeToPlayerEvents({unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.SubscribeToPlayerEvents({unitController.gameObject.name})");
 
             unitController.UnitEventController.OnKillEvent += HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTrigger;
-
+            unitController.UnitEventController.OnExitInteractableTrigger += HandleExitInteractableTrigger;
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
@@ -107,9 +120,18 @@ namespace AnyRPG {
 
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTrigger;
+            unitController.UnitEventController.OnExitInteractableTrigger -= HandleExitInteractableTrigger;
         }
 
         private void HandleEnterInteractableTrigger(UnitController unitController, Interactable interactable) {
+            Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
+
+            if (networkManagerServer.ServerModeActive || systemGameManager.GameMode == GameMode.Local) {
+                interactionManager.InteractWithTrigger(unitController, interactable);
+            }
+        }
+
+        private void HandleExitInteractableTrigger(UnitController unitController, Interactable interactable) {
             Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
 
             if (networkManagerServer.ServerModeActive || systemGameManager.GameMode == GameMode.Local) {
@@ -186,11 +208,11 @@ namespace AnyRPG {
             }
         }
 
-        public void LoadScene(string sceneName, CharacterUnit characterUnit) {
-            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {characterUnit.UnitController.gameObject.name})");
+        public void LoadScene(string sceneName, UnitController sourceUnitController) {
+            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {sourceUnitController.gameObject.name})");
 
-            if (activePlayerLookup.ContainsKey(characterUnit.UnitController)) {
-                LoadScene(sceneName, activePlayerLookup[characterUnit.UnitController]);
+            if (activePlayerLookup.ContainsKey(sourceUnitController)) {
+                LoadScene(sceneName, activePlayerLookup[sourceUnitController]);
             }
         }
 
@@ -268,12 +290,20 @@ namespace AnyRPG {
 
         public void InteractWithClassChangeComponent(UnitController unitController, ClassChangeComponent classChangeComponent, int optionIndex) {
             if (systemGameManager.GameMode == GameMode.Local) {
-                interactionManager.InteractWithClassChangeComponent(classChangeComponent);
+                interactionManager.InteractWithClassChangeComponentClient(classChangeComponent);
             } else if (networkManagerServer.ServerModeActive) {
                 if (activePlayerLookup.ContainsKey(unitController)) {
                     networkManagerServer.InteractWithClassChangeComponent(activePlayerLookup[unitController], classChangeComponent.Interactable, optionIndex);
                 }
             }
+
+        }
+
+        public void SetPlayerCharacterClass(CharacterClass characterClass, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].BaseCharacter.ChangeCharacterClass(characterClass);
 
         }
     }

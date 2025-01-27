@@ -22,14 +22,12 @@ namespace AnyRPG {
 
         // game manager references
         protected PlayerManager playerManager = null;
-        protected QuestLog questLog = null;
         protected ObjectPooler objectPooler = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
-            questLog = systemGameManager.QuestLog;
             objectPooler = systemGameManager.ObjectPooler;
         }
 
@@ -80,7 +78,7 @@ namespace AnyRPG {
             }
             ClearQuests();
 
-            foreach (Quest quest in questLog.Quests.Values) {
+            foreach (Quest quest in playerManager.UnitController.CharacterQuestLog.Quests.Values) {
                 //Debug.Log("QuestTrackerUI.ShowQuestsCommon(): quest: " + quest);
                 GameObject go = objectPooler.GetPooledObject(questPrefab, questParent);
                 QuestTrackerQuestScript qs = go.GetComponent<QuestTrackerQuestScript>();
@@ -90,12 +88,12 @@ namespace AnyRPG {
                     //Debug.Log("QuestTrackerUI.ShowQuestsCommon(): QuestGiverQuestScript is null");
                 }
                 qs.Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName;
-                if (quest.IsComplete) {
+                if (quest.IsComplete(playerManager.UnitController)) {
                     qs.Text.text += " (Complete)";
                 }
                 string objectives = string.Empty;
 
-                qs.Text.text += "\n<size=12>" + quest.GetUnformattedObjectiveList() + "</size>";
+                qs.Text.text += "\n<size=12>" + quest.GetUnformattedObjectiveList(playerManager.UnitController) + "</size>";
 
                 //Debug.Log("QuestTrackerUI.ShowQuestsCommon(" + questGiver.name + "): " + questNode.MyQuest.MyTitle);
                 qs.Text.color = LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, quest.ExperienceLevel);

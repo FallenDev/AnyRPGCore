@@ -51,7 +51,7 @@ namespace AnyRPG {
             // do nothing
         }
 
-        public virtual bool IsUseableStale() {
+        public virtual bool IsUseableStale(UnitController sourceUnitController) {
             return false;
         }
 
@@ -63,8 +63,8 @@ namespace AnyRPG {
             backgroundImage.color = new Color32(0, 0, 0, 255);
         }
 
-        public bool ActionButtonUse() {
-            return Use();
+        public bool ActionButtonUse(UnitController sourceUnitController) {
+            return Use(sourceUnitController);
         }
 
         public IUseable GetFactoryUseable() {
@@ -163,10 +163,10 @@ namespace AnyRPG {
             return true;
         }
 
-        public bool Use() {
+        public bool Use(UnitController sourceUnitController) {
             //Debug.Log(DisplayName + ".BaseAbility.Use()");
             // prevent casting any ability without the proper weapon affinity
-            if (CanCast(playerManager.UnitController, true)) {
+            if (CanCast(sourceUnitController, true)) {
                 //Debug.Log(DisplayName + ".BaseAbility.Use(): cancast is true");
                 //playerManager.UnitController.CharacterAbilityManager.BeginAbility(this, true);
                 //playerManager.ActiveUnitController.UnitActionManager.BeginAction(this, true);

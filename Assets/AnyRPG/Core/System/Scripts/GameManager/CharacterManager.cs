@@ -53,7 +53,7 @@ namespace AnyRPG {
         }
 
         private void SetupUnitSpawnRequest(CharacterRequestData characterRequestData) {
-            Debug.Log($"CharacterManager.SetupUnitSpawnRequest({characterRequestData.characterConfigurationRequest.unitProfile.resourceName})");
+            //Debug.Log($"CharacterManager.SetupUnitSpawnRequest({characterRequestData.characterConfigurationRequest.unitProfile.resourceName})");
 
             characterRequestData.spawnRequestId = GetSpawnRequestId();
             AddUnitSpawnRequest(characterRequestData.spawnRequestId, characterRequestData);
@@ -83,7 +83,7 @@ namespace AnyRPG {
         }
 
         public UnitController SpawnUnitPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
-            Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {scene.name})");
+            //Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {scene.name})");
 
             SetupUnitSpawnRequest(characterRequestData);
 
@@ -91,7 +91,7 @@ namespace AnyRPG {
         }
 
         public UnitController SpawnUnitPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            //Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             SetupUnitSpawnRequest(characterRequestData);
 
@@ -100,7 +100,8 @@ namespace AnyRPG {
 
 
         public void ProcessStopNetworkUnit(UnitController unitController) {
-            Debug.Log($"CharacterManager.ProcessStopClient({unitController.gameObject.name})");
+            //Debug.Log($"CharacterManager.ProcessStopClient({unitController.gameObject.name})");
+
             if (unitController.IsOwner == true && networkOwnedUnits.Contains(unitController)) {
                 //HandleNetworkOwnedUnitDespawn(unitController);
                 unitController.Despawn(0f, false, true);
@@ -112,7 +113,7 @@ namespace AnyRPG {
         }
 
         public void CompleteCharacterRequest(GameObject characterGameObject, int spawnRequestId, bool isOwner) {
-            Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {spawnRequestId}, {isOwner})");
+            //Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {spawnRequestId}, {isOwner})");
 
             if (unitSpawnRequests.ContainsKey(spawnRequestId) == true) {
                 CompleteCharacterRequest(characterGameObject, unitSpawnRequests[spawnRequestId], isOwner);
@@ -120,7 +121,7 @@ namespace AnyRPG {
         }
 
         public UnitController CompleteCharacterRequest(GameObject characterGameObject, CharacterRequestData characterRequestData, bool isOwner) {
-            Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {characterRequestData.isServerOwned}, {isOwner})");
+            //Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {characterRequestData.isServerOwned}, {isOwner})");
 
             UnitController unitController = ConfigureUnitController(characterRequestData, characterGameObject, isOwner);
             if (unitController == null) {
@@ -143,14 +144,14 @@ namespace AnyRPG {
         }
 
         public void CompleteNetworkModelRequest(int spawnRequestId, UnitController unitController, GameObject unitModel, bool isOwner, bool isServerOwner) {
-            Debug.Log($"CharacterManager.CompleteNetworkModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner}, {isServerOwner})");
+            //Debug.Log($"CharacterManager.CompleteNetworkModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner}, {isServerOwner})");
 
             unitController.UnitModelController.SetUnitModel(unitModel);
             CompleteModelRequest(spawnRequestId, unitController, isOwner, isServerOwner);
         }
 
         public void CompleteModelRequest(int spawnRequestId, UnitController unitController, bool isOwner, bool isServerOwner) {
-            Debug.Log($"CharacterManager.CompleteModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner}, {isServerOwner})");
+            //Debug.Log($"CharacterManager.CompleteModelRequest({spawnRequestId}, {unitController.gameObject.name}, {isOwner}, {isServerOwner})");
 
             CharacterRequestData characterRequestData;
             if (isServerOwner && networkManagerServer.ServerModeActive == true && unitSpawnRequests.ContainsKey(spawnRequestId)) {
@@ -168,14 +169,14 @@ namespace AnyRPG {
 
             unitController.UnitModelController.SetInitialSavedAppearance();
 
-            if (unitSpawnRequests.ContainsKey(spawnRequestId) == true && (isOwner || isServerOwner)) {
+            if (unitSpawnRequests.ContainsKey(spawnRequestId) == true && (isOwner || (isServerOwner && networkManagerServer.ServerModeActive == true))) {
                 //Debug.Log($"CharacterManager.CompleteModelRequest({characterRequestData.spawnRequestId}, {isOwner}) unitSpawnRequests contains the key");
                 characterRequestData.characterRequestor.ConfigureSpawnedCharacter(unitController, characterRequestData);
             }
 
             unitController.Init();
 
-            if (unitSpawnRequests.ContainsKey(spawnRequestId) == true && (isOwner || isServerOwner)) {
+            if (unitSpawnRequests.ContainsKey(spawnRequestId) == true && (isOwner || (isServerOwner && networkManagerServer.ServerModeActive == true))) {
                 characterRequestData.characterRequestor.PostInit(unitController, characterRequestData);
                 //Debug.Log($"CharacterManager.CompleteModelRequest({characterRequestData.spawnRequestId}, {isOwner}) removing character request id {characterRequestData.spawnRequestId}");
                 unitSpawnRequests.Remove(spawnRequestId);
@@ -184,7 +185,7 @@ namespace AnyRPG {
         }
 
         public UnitController ConfigureUnitController(CharacterRequestData characterRequestData, GameObject prefabObject, bool isOwner) {
-            Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name})");
+            //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name})");
 
             characterRequestData.isOwner = isOwner;
 
@@ -203,7 +204,7 @@ namespace AnyRPG {
                     unitController.Configure(systemGameManager);
 
                     if (characterRequestData.requestMode == GameMode.Local) {
-                        Debug.Log($"adding {unitController.gameObject.name} to local owned units");
+                        //Debug.Log($"adding {unitController.gameObject.name} to local owned units");
                         localUnits.Add(unitController);
                         SubscribeToLocalOwnedUnitsEvents(unitController);
                     } else {
@@ -211,7 +212,7 @@ namespace AnyRPG {
                             networkOwnedUnits.Add(unitController);
                             unitController.UnitEventController.OnDespawn += HandleNetworkOwnedUnitDespawn;
                         } else if (characterRequestData.isServerOwned) {
-                            Debug.Log($"adding {unitController.gameObject.name} to server owned units");
+                            //Debug.Log($"adding {unitController.gameObject.name} to server owned units");
                             serverOwnedUnits.Add(unitController);
                             unitController.UnitEventController.OnDespawn += HandleServerOwnedUnitDespawn;
                         } else {
@@ -244,7 +245,7 @@ namespace AnyRPG {
         }
 
         public void HandleAfterDie(CharacterStats deadCharacterStats) {
-            if (deadCharacterStats.UnitController.GetCurrentInteractables().Count == 0) {
+            if (deadCharacterStats.UnitController.GetCurrentInteractables(playerManager.UnitController).Count == 0) {
                 deadCharacterStats.UnitController.OutlineController.TurnOffOutline();
             }
         }
@@ -271,7 +272,7 @@ namespace AnyRPG {
         }
 
         private GameObject LocalSpawnPrefab(GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.LocalSpawnPrefab({spawnPrefab.name})");
+            //Debug.Log($"CharacterManager.LocalSpawnPrefab({spawnPrefab.name})");
 
             if (spawnPrefab == null) {
                 return null;
@@ -283,7 +284,7 @@ namespace AnyRPG {
         }
 
         private UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnCharacterPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            //Debug.Log($"CharacterManager.SpawnCharacterPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             GameObject prefabObject = LocalSpawnPrefab(characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.UnitPrefab, parentTransform, position, forward);
             UnitController unitController = null;
@@ -295,7 +296,7 @@ namespace AnyRPG {
         }
 
         public void AddUnitSpawnRequest(int spawnRequestId, CharacterRequestData characterRequestData) {
-            Debug.Log($"CharacterManager.AddUnitSpawnRequest({spawnRequestId}, {characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            //Debug.Log($"CharacterManager.AddUnitSpawnRequest({spawnRequestId}, {characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             unitSpawnRequests.Add(spawnRequestId, characterRequestData);
         }
@@ -305,7 +306,7 @@ namespace AnyRPG {
         }
 
         private GameObject SpawnModelPrefab(int spawnRequestId, GameMode spawnMode, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnModelPrefab({spawnRequestId}, {spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name})");
+            //Debug.Log($"CharacterManager.SpawnModelPrefab({spawnRequestId}, {spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name})");
 
             if (spawnMode == GameMode.Network) {
                 if (networkManagerServer.ServerModeActive == true) {
@@ -325,15 +326,15 @@ namespace AnyRPG {
         /// <param name="settingsTransform"></param>
         /// <returns></returns>
         public GameObject SpawnModelPrefab(UnitController unitController, UnitProfile unitProfile, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
+            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
 
             if (modelSpawnRequests.ContainsKey(unitController) == false) {
-                Debug.Log($"CharacterManager.SpawnModelPrefab() return null not in spawn requests");
+                //Debug.Log($"CharacterManager.SpawnModelPrefab() return null not in spawn requests");
                 return null;
             }
 
             if (networkUnownedUnits.Contains(unitController)) {
-                Debug.Log($"CharacterManager.SpawnModelPrefab() network unowned unit");
+                //Debug.Log($"CharacterManager.SpawnModelPrefab() network unowned unit");
                 return null;
             }
 
@@ -342,7 +343,6 @@ namespace AnyRPG {
             modelSpawnRequests.Remove(unitController);
 
             if (localUnits.Contains(unitController)) {
-                Debug.Log("in local units");
                 return SpawnModelPrefab(usedSpawnRequestId, GameMode.Local, unitProfile.UnitPrefabProps.ModelPrefab, parentTransform, position, forward);
             }
 

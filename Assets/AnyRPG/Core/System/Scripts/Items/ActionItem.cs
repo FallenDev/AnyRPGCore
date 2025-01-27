@@ -38,7 +38,7 @@ namespace AnyRPG {
             systemAbilityController = systemGameManager.SystemAbilityController;
         }
 
-        public override bool Use() {
+        public override bool Use(UnitController sourceUnitController) {
             //Debug.Log(DisplayName + ".ActionItem.Use()");
 
             /*
@@ -48,21 +48,21 @@ namespace AnyRPG {
             }
             */
 
-            bool returnValue = base.Use();
+            bool returnValue = base.Use(sourceUnitController);
             if (returnValue == false) {
                 return false;
             }
-            if (playerManager.UnitController.AbilityManager.ControlLocked) {
+            if (sourceUnitController.AbilityManager.ControlLocked) {
                 return false;
             }
-            if (playerManager.UnitController.AbilityManager.IsOnCoolDown(ResourceName)) {
+            if (sourceUnitController.AbilityManager.IsOnCoolDown(ResourceName)) {
                 messageFeedManager.WriteMessage("Item is on cooldown");
                 return false;
             }
 
-            playerManager.UnitController.UnitActionManager.BeginAction(animatedAction);
+            sourceUnitController.UnitActionManager.BeginAction(animatedAction);
 
-            BeginAbilityCoolDown(playerManager.UnitController, coolDown);
+            BeginAbilityCoolDown(sourceUnitController, coolDown);
             Remove();
 
             return returnValue;

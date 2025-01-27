@@ -75,6 +75,7 @@ namespace AnyRPG {
         private CharacterCurrencyManager characterCurrencyManager = null;
         private CharacterRecipeManager characterRecipeManager = null;
         private CharacterInventoryManager characterInventoryManager = null;
+        private CharacterQuestLog characterQuestLog = null;
 
 
         // control logic
@@ -427,6 +428,7 @@ namespace AnyRPG {
         public CharacterFactionManager CharacterFactionManager { get => characterFactionManager; set => characterFactionManager = value; }
         public CharacterEquipmentManager CharacterEquipmentManager { get => characterEquipmentManager; set => characterEquipmentManager = value; }
         public CharacterInventoryManager CharacterInventoryManager { get => characterInventoryManager; }
+        public CharacterQuestLog CharacterQuestLog { get => characterQuestLog; }
         public CharacterPetManager CharacterPetManager { get => characterPetManager; set => characterPetManager = value; }
         public CharacterRecipeManager CharacterRecipeManager { get => characterRecipeManager; set => characterRecipeManager = value; }
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
@@ -466,6 +468,7 @@ namespace AnyRPG {
             characterRecipeManager = new CharacterRecipeManager(this, systemGameManager);
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
             characterInventoryManager = new CharacterInventoryManager(this, systemGameManager);
+            characterQuestLog = new CharacterQuestLog(this, systemGameManager);
 
             // testing moved to SetUnitProfile to give a chance to override baseCharacter if player so equipmentManager reference is correct
             // now that baseCharacter is not overridden, this can probably be moved back here
@@ -583,9 +586,10 @@ namespace AnyRPG {
 
         }
 
-        public override void InteractWithPlayer(UnitController sourceUnitController, float factionValue) {
+        public override void InteractWithPlayer(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UnitController.InteractWithPlayer({factionValue})");
 
+            float factionValue = PerformFactionCheck(sourceUnitController);
             if (factionValue >= 0f
                 && characterStats.IsAlive == true
                 && unitControllerMode == UnitControllerMode.AI) {
@@ -1068,7 +1072,7 @@ namespace AnyRPG {
 
             // now that the characterUnit is available
             unitComponentController?.HighlightController?.ConfigureOwner(this);
-            AddInteractable(characterUnit);
+            AddInteractableOption(characterUnit);
 
             base.GetComponentReferences();
 
@@ -1098,7 +1102,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="unitProfile"></param>
         public void SetCharacterConfiguration(CharacterRequestData characterRequestData) {
-            Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
+            //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
 
             CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
 
@@ -1199,14 +1203,14 @@ namespace AnyRPG {
             foreach (InteractableOptionProps interactableOption in unitProfile.InteractableOptionConfigs) {
                 if (interactableOption != null) {
                     InteractableOptionComponent interactableOptionComponent = interactableOption.GetInteractableOption(this);
-                    AddInteractable(interactableOptionComponent);
+                    AddInteractableOption(interactableOptionComponent);
                     //interactableOptionComponent.HandlePrerequisiteUpdates();
                 }
             }
 
             // this will cause the minimap to be instantiated so it should be done after all interactables are added so the layers can be created properly
             foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
-                interactableOptionComponent.HandlePrerequisiteUpdates();
+                interactableOptionComponent.HandleOptionStateChange();
             }
 
             lootableCharacter = LootableCharacterComponent.GetLootableCharacterComponent(this);
@@ -2164,7 +2168,7 @@ namespace AnyRPG {
             }
         }
 
-        public override void ProcessPlayerUnitSpawn() {
+        public override void ProcessPlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.UnitController.ProcessPlayerUnitSpawn()");
 
             // players do not need to react to their own spawn, and previews should never react
@@ -2174,8 +2178,8 @@ namespace AnyRPG {
                 return;
             }
 
-            behaviorController.HandlePlayerUnitSpawn();
-            base.ProcessPlayerUnitSpawn();
+            behaviorController.HandlePlayerUnitSpawn(sourceUnitController);
+            base.ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public void HandleMovementSpeedUpdate() {
@@ -2255,7 +2259,7 @@ namespace AnyRPG {
         #region MessagePassthroughs
 
         public void BeginDialog(string dialogName) {
-            dialogController.BeginDialog(dialogName);
+            dialogController.BeginDialog(playerManager.UnitController, dialogName);
         }
 
         public void BeginChatMessage(string messageText) {

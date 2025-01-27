@@ -71,16 +71,15 @@ namespace AnyRPG {
         private Quest currentQuest = null;
 
         // game manager references
-        private QuestLog questLog = null;
         private UIManager uIManager = null;
         private ObjectPooler objectPooler = null;
         private MessageFeedManager messageFeedManager = null;
         private PlayerManager playerManager = null;
         private LogManager logManager = null;
-        //private InventoryManager inventoryManager = null;
         private SystemItemManager systemItemManager = null;
         private CurrencyConverter currencyConverter = null;
         private DialogManager dialogManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public QuestGiverQuestScript SelectedQuestGiverQuestScript { get => selectedQuestGiverQuestScript; set => selectedQuestGiverQuestScript = value; }
         //public Interactable MyInteractable { get => interactable; set => interactable = value; }
@@ -93,23 +92,31 @@ namespace AnyRPG {
 
             questDetailsArea.Configure(systemGameManager);
             questDetailsArea.SetOwner(this);
-
-            questLog.OnShowQuestGiverDescription += HandleShowQuestGiverDescription;
+            systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
         }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            questLog = systemGameManager.QuestLog;
             uIManager = systemGameManager.UIManager;
             objectPooler = systemGameManager.ObjectPooler;
             messageFeedManager = uIManager.MessageFeedManager;
             playerManager = systemGameManager.PlayerManager;
             logManager = systemGameManager.LogManager;
-            //inventoryManager = systemGameManager.InventoryManager;
             systemItemManager = systemGameManager.SystemItemManager;
             currencyConverter = systemGameManager.CurrencyConverter;
             dialogManager = systemGameManager.DialogManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
+
+        private void HandlePlayerUnitDespawn(UnitController unitController) {
+            unitController.CharacterQuestLog.OnShowQuestGiverDescription += HandleShowQuestGiverDescription;
+        }
+
+        private void HandlePlayerUnitSpawn(UnitController unitController) {
+            unitController.CharacterQuestLog.OnShowQuestGiverDescription -= HandleShowQuestGiverDescription;
+        }
+
 
         public void ToggleShowAllQuests(bool showAllQuests) {
             this.showAllQuests = showAllQuests;
@@ -255,7 +262,7 @@ namespace AnyRPG {
                 completeButton.Button.enabled = true;
                 return;
             }
-            if (newQuest.GetStatus() == "available" && questLog.HasQuest(newQuest.ResourceName) == false) {
+            if (newQuest.GetStatus(playerManager.UnitController) == "available" && playerManager.UnitController.CharacterQuestLog.HasQuest(newQuest.ResourceName) == false) {
                 acceptButton.gameObject.SetActive(true);
                 acceptButton.Button.enabled = true;
                 completeButton.gameObject.SetActive(false);
@@ -263,7 +270,7 @@ namespace AnyRPG {
             }
 
             //Debug.Log("questGiver: " + questGiver.ToString());
-            if (newQuest.GetStatus() == "complete" && questLog.HasQuest(newQuest.ResourceName) == true && questGiver != null && questGiver.EndsQuest(newQuest.ResourceName)) {
+            if (newQuest.GetStatus(playerManager.UnitController) == "complete" && playerManager.UnitController.CharacterQuestLog.HasQuest(newQuest.ResourceName) == true && questGiver != null && questGiver.EndsQuest(newQuest.ResourceName)) {
                 completeButton.gameObject.SetActive(true);
                 completeButton.Button.enabled = true;
                 acceptButton.gameObject.SetActive(false);
@@ -300,7 +307,7 @@ namespace AnyRPG {
             currentQuest = quest;
 
             if (quest.HasOpeningDialog == true) {
-                if (quest.OpeningDialog != null && quest.OpeningDialog.TurnedIn == false) {
+                if (quest.OpeningDialog != null && quest.OpeningDialog.TurnedIn(playerManager.UnitController) == false) {
                     //Debug.Log("QuestGiverUI.ShowDescription(): opening dialog is not complete, showing dialog");
                     dialogManager.SetQuestDialog(quest, interactable, questGiver.InteractableOptionComponent);
                     uIManager.dialogWindow.OpenWindow();
@@ -391,7 +398,7 @@ namespace AnyRPG {
                 // DO THIS HERE SO IT DOESN'T INSTA-CLOSE ANY AUTO-POPUP BACK TO HERE ON ACCEPT QUEST CAUSING STATUS CHANGE
                 uIManager.questGiverWindow.CloseWindow();
 
-                questLog.AcceptQuest(currentQuest);
+                playerManager.UnitController.CharacterQuestLog.AcceptQuest(currentQuest);
 
                 if (questGiver != null) {
                     // notify a bag item so it can remove itself
@@ -429,7 +436,7 @@ namespace AnyRPG {
 
         public void CompleteQuest() {
             //Debug.Log("QuestGiverUI.CompleteQuest()");
-            if (!currentQuest.IsComplete) {
+            if (!currentQuest.IsComplete(playerManager.UnitController)) {
                 Debug.Log("QuestGiverUI.CompleteQuest(): currentQuest is not complete, exiting!");
                 return;
             }
@@ -476,12 +483,12 @@ namespace AnyRPG {
                 }
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedItemRewardIcons()) {
                     if (rewardButton.Rewardable != null) {
-                        rewardButton.Rewardable.GiveReward();
+                        rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
             }
 
-            currentQuest.HandInItems();
+            currentQuest.HandInItems(playerManager.UnitController);
 
             // faction rewards
             if (currentQuest.FactionRewards.Count > 0) {
@@ -489,7 +496,7 @@ namespace AnyRPG {
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedFactionRewardIcons()) {
                     //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Faction Rewards: got a reward button!");
                     if (rewardButton.Rewardable != null) {
-                        rewardButton.Rewardable.GiveReward();
+                        rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
             }
@@ -499,7 +506,7 @@ namespace AnyRPG {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Ability Rewards");
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedAbilityRewardIcons()) {
                     if (rewardButton.Rewardable != null) {
-                        rewardButton.Rewardable.GiveReward();
+                        rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
             }
@@ -509,7 +516,7 @@ namespace AnyRPG {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Skill Rewards");
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedSkillRewardIcons()) {
                     if (rewardButton.Rewardable != null) {
-                        rewardButton.Rewardable.GiveReward();
+                        rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
             }
@@ -523,7 +530,7 @@ namespace AnyRPG {
             // DO THIS HERE OR TURNING THE QUEST RESULTING IN THIS WINDOW RE-OPENING WOULD JUST INSTA-CLOSE IT INSTEAD
             uIManager.questGiverWindow.CloseWindow();
 
-            questLog.TurnInQuest(currentQuest);
+            playerManager.UnitController.CharacterQuestLog.TurnInQuest(currentQuest);
 
             // do this last
             // DO THIS AT THE END OR THERE WILL BE NO SELECTED QUESTGIVERQUESTSCRIPT
@@ -531,7 +538,7 @@ namespace AnyRPG {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is not null");
                 // MUST BE DONE IN CASE WINDOW WAS OPEN INBETWEEN SCENES BY ACCIDENT
                 //Debug.Log("QuestGiverUI.CompleteQuest() Updating questGiver queststatus");
-                questGiver.UpdateQuestStatus();
+                questGiver.UpdateQuestStatus(playerManager.UnitController);
                 questGiver.HandleCompleteQuest();
             } else {
                 Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is null!");

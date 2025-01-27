@@ -40,10 +40,10 @@ namespace AnyRPG {
         }
 
         public void HandleFactionChange(string eventName, EventParamProperties eventParamProperties) {
-            HandlePrerequisiteUpdates();
+            HandleOptionStateChange();
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".FactionChangeInteractable.Interact()");
 
             base.Interact(source, optionIndex);
@@ -59,19 +59,17 @@ namespace AnyRPG {
             uIManager.factionChangeWindow.CloseWindow();
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.CharacterCreatorInteractable.GetCurrentOptionCount()");
-            return GetValidOptionCount();
+            return GetValidOptionCount(sourceUnitController);
         }
 
         // faction is a special type of prerequisite
-        public override bool PrerequisitesMet {
-            get {
-                if (playerManager.UnitController.BaseCharacter.Faction == Props.Faction) {
+        public override bool PrerequisitesMet(UnitController sourceUnitController) {
+                if (sourceUnitController.BaseCharacter.Faction == Props.Faction) {
                     return false;
                 }
-                return base.PrerequisitesMet;
-            }
+                return base.PrerequisitesMet(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

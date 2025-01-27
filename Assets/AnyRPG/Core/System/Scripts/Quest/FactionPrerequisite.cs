@@ -8,8 +8,7 @@ namespace AnyRPG {
     public class FactionPrerequisite : ConfiguredClass, IPrerequisite {
 
 
-        public event System.Action OnStatusUpdated = delegate { };
-
+        public event System.Action<UnitController> OnStatusUpdated = delegate { };
 
         [SerializeField]
         [ResourceSelector(resourceType = typeof(Faction))]
@@ -27,29 +26,30 @@ namespace AnyRPG {
 
         // game manager references
         private PlayerManager playerManager = null;
-
-        public void HandleReputationChange(string eventName, EventParamProperties eventParam) {
-            UpdateStatus();
-        }
-
-        public void UpdateStatus(bool notify = true) {
-            bool originalResult = prerequisiteMet;
-            bool checkResult = (Faction.RelationWith(playerManager.UnitController, prerequisiteFaction) >= prerequisiteDisposition);
-            if (checkResult != originalResult) {
-                prerequisiteMet = checkResult;
-                if (notify == true) {
-                    OnStatusUpdated();
-                }
-            }
-        }
-
-        public virtual bool IsMet(BaseCharacter baseCharacter) {
-            return prerequisiteMet;
-        }
+        private SystemEventManager systemEventManager = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
+        }
+
+        public void HandleReputationChange(UnitController sourceUnitController) {
+            UpdateStatus(sourceUnitController);
+        }
+
+        public void UpdateStatus(UnitController unitController, bool notify = true) {
+            bool originalResult = prerequisiteMet;
+            bool checkResult = (Faction.RelationWith(unitController, prerequisiteFaction) >= prerequisiteDisposition);
+            if (checkResult != originalResult) {
+                prerequisiteMet = checkResult;
+                if (notify == true) {
+                    OnStatusUpdated(unitController);
+                }
+            }
+        }
+
+        public virtual bool IsMet(UnitController sourceUnitController) {
+            return prerequisiteMet;
         }
 
         public void SetupScriptableObjects(SystemGameManager systemGameManager, string ownerName) {
@@ -60,11 +60,11 @@ namespace AnyRPG {
             } else {
                 Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find faction : " + prerequisiteName + " while inititalizing a faction prerequisite for " + ownerName + ".  CHECK INSPECTOR");
             }
-            SystemEventManager.StartListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange += HandleReputationChange;
         }
 
         public void CleanupScriptableObjects() {
-            SystemEventManager.StopListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange -= HandleReputationChange;
         }
     }
 

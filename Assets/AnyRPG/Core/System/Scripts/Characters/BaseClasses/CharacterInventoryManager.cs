@@ -507,7 +507,7 @@ namespace AnyRPG {
         }
 
         public void OnItemCountChanged(Item item) {
-            systemEventManager.NotifyOnItemCountChanged(item);
+            systemEventManager.NotifyOnItemCountChanged(unitController, item);
         }
 
         public int GetItemCount(string type, bool partialMatch = false) {

@@ -23,6 +23,7 @@ namespace AnyRPG {
         private NetworkManagerClient networkManagerClient = null;
         private ClassChangeManager classChangeManager = null;
         private UIManager uIManager = null;
+        private DialogManager dialogManager = null;
 
         /*
         public Interactable CurrentInteractable {
@@ -43,16 +44,17 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             classChangeManager = systemGameManager.ClassChangeManager;
+            dialogManager = systemGameManager.DialogManager;
         }
 
-        public bool Interact(Interactable target) {
+        public bool Interact(UnitController sourceUnitController, Interactable target) {
             // get reference to name now since interactable could change scene and then target reference is lost
             string targetDisplayName = target.DisplayName;
 
             //if (target.Interact(playerManager.ActiveUnitController.CharacterUnit, true)) {
             if (InteractWithInteractable(playerManager.ActiveUnitController, target)) {
                 //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
-                systemEventManager.NotifyOnInteractionStarted(targetDisplayName);
+                systemEventManager.NotifyOnInteractionStarted(sourceUnitController, targetDisplayName);
                 return true;
             }
             return false;
@@ -84,23 +86,23 @@ namespace AnyRPG {
                 }
             }
 
-            float factionValue = targetInteractable.PerformFactionCheck(sourceUnitController);
+            //float factionValue = targetInteractable.PerformFactionCheck(sourceUnitController);
 
             // get a list of valid interactables to determine if there is an action we can treat as default
-            Dictionary<int, InteractableOptionComponent> validInteractables = targetInteractable.GetCurrentInteractables(factionValue);
+            Dictionary<int, InteractableOptionComponent> validInteractables = targetInteractable.GetCurrentInteractables(sourceUnitController);
             Dictionary<int, InteractableOptionComponent> inRangeInteractables = new Dictionary<int, InteractableOptionComponent>();
             foreach (KeyValuePair<int, InteractableOptionComponent> validInteractable in validInteractables) {
                 //Debug.Log($"{gameObject.name}.Interactable.Interact(" + source.name + "): valid interactable name: " + validInteractable);
-                if (validInteractable.Value.CanInteract(true, passedRangeCheck, factionValue)) {
+                if (validInteractable.Value.CanInteract(sourceUnitController, true, passedRangeCheck)) {
                     inRangeInteractables.Add(validInteractable.Key, validInteractable.Value);
                 }
             }
 
             if (inRangeInteractables.Count > 0) {
-                targetInteractable.InteractWithPlayer(sourceUnitController, factionValue);
+                targetInteractable.InteractWithPlayer(sourceUnitController);
                 if (targetInteractable.SuppressInteractionWindow == true || inRangeInteractables.Count == 1) {
                     int firstInteractable = inRangeInteractables.Take(1).Select(d => d.Key).First();
-                    if (inRangeInteractables[firstInteractable].GetCurrentOptionCount() > 1) {
+                    if (inRangeInteractables[firstInteractable].GetCurrentOptionCount(sourceUnitController) > 1) {
                         OpenInteractionWindow(targetInteractable);
                     } else {
                         InteractWithOptionClient(sourceUnitController, targetInteractable, inRangeInteractables[firstInteractable], firstInteractable);
@@ -124,7 +126,7 @@ namespace AnyRPG {
             Debug.Log($"InteractionManager.InteractionWithTrigger({unitController.gameObject.name}, {triggerInteractable.gameObject.name})");
 
             // no range check for triggers since the unit walked into it so we know its in range
-            Dictionary<int, InteractableOptionComponent> validInteractables = triggerInteractable.GetCurrentInteractables(0f);
+            Dictionary<int, InteractableOptionComponent> validInteractables = triggerInteractable.GetCurrentInteractables(unitController);
             if (validInteractables.Count == 1) {
                 int firstInteractable = validInteractables.Take(1).Select(d => d.Key).First();
                 InteractWithOptionInternal(unitController, triggerInteractable, validInteractables[firstInteractable], firstInteractable);
@@ -140,7 +142,7 @@ namespace AnyRPG {
         }
 
         public void InteractWithOptionServer(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
-            Dictionary<int, InteractableOptionComponent> interactionOptions = targetInteractable.GetCurrentInteractables();
+            Dictionary<int, InteractableOptionComponent> interactionOptions = targetInteractable.GetCurrentInteractables(sourceUnitController);
             if (interactionOptions.ContainsKey(componentIndex)) {
                 InteractWithOptionInternal(sourceUnitController, targetInteractable, interactionOptions[componentIndex], componentIndex);
             }
@@ -149,7 +151,7 @@ namespace AnyRPG {
         public void InteractWithOptionInternal(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex) {
             Debug.Log($"InteractionManager.InteractWithOptionInternal({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
 
-            interactableOptionComponent.Interact(sourceUnitController.CharacterUnit, componentIndex);
+            interactableOptionComponent.Interact(sourceUnitController, componentIndex);
         }
 
         public void OpenInteractionWindow(Interactable targetInteractable) {
@@ -181,25 +183,61 @@ namespace AnyRPG {
             SetInteractable(interactableOptionComponent.Interactable);
         }
 
-        public void InteractWithClassChangeComponent(Interactable interactable, int optionIndex) {
-            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables();
+        public void InteractWithClassChangeComponentClient(Interactable interactable, int optionIndex) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(playerManager.UnitController);
             if (currentInteractables.ContainsKey(optionIndex)) {
                 if (currentInteractables[optionIndex] is ClassChangeComponent) {
-                    InteractWithClassChangeComponent(currentInteractables[optionIndex] as ClassChangeComponent);
+                    InteractWithClassChangeComponentClient(currentInteractables[optionIndex] as ClassChangeComponent);
                 }
             }
         }
 
-        public void InteractWithClassChangeComponent(ClassChangeComponent classChangeComponent) {
+        public void InteractWithClassChangeComponentClient(ClassChangeComponent classChangeComponent) {
             classChangeManager.SetDisplayClass(classChangeComponent.Props.CharacterClass, classChangeComponent);
             uIManager.classChangeWindow.OpenWindow();
         }
 
-
         //public void SetInteractableOptionManager(InteractableOptionManager interactableOptionManager) {
         //}
 
+        public void InteractWithQuestGiver(QuestGiverComponent questGiverComponent, int optionIndex, UnitController sourceUnitController) {
+            if (networkManagerServer.ServerModeActive) {
+                networkManagerServer.AdvertiseInteractWithQuestGiver(questGiverComponent.Interactable, optionIndex, sourceUnitController);
+                return;
+            }
 
+            // this is running locally.  Interact directly
+            InteractWithQuestGiverInternal(questGiverComponent, optionIndex, sourceUnitController);
+        }
+
+        public void InteractWithQuestGiverClient(Interactable interactable, int optionIndex, UnitController sourceUnitController) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if ((currentInteractables[optionIndex] as QuestGiverComponent) is QuestGiverComponent) {
+                InteractWithQuestGiverInternal(currentInteractables[optionIndex] as QuestGiverComponent, optionIndex, sourceUnitController);
+            }
+        }
+
+        public void InteractWithQuestGiverInternal(QuestGiverComponent questGiverComponent, int optionIndex, UnitController sourceUnitController) {
+            // this is running locally
+            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(questGiverComponent.Props.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests).Count > 1) {
+                OpenInteractionWindow(questGiverComponent.Interactable);
+                return;
+            } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(questGiverComponent.Props.Quests).Count == 0) {
+                if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
+                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests)[0], questGiverComponent.Interactable, questGiverComponent);
+                    uIManager.dialogWindow.OpenWindow();
+                    return;
+                } else {
+                    // do nothing will skip to below and open questlog to the available quest
+                }
+            }
+            // we got here: we only have a single complete quest, or a single available quest with the opening dialog competed already
+            if (!uIManager.questGiverWindow.IsOpen) {
+                //Debug.Log(source + " interacting with " + gameObject.name);
+                sourceUnitController.CharacterQuestLog.ShowQuestGiverDescription(sourceUnitController.CharacterQuestLog.GetAvailableQuests(questGiverComponent.Props.Quests).Union(sourceUnitController.CharacterQuestLog.GetCompleteQuests(questGiverComponent.Props.Quests)).ToList()[0], questGiverComponent);
+                return;
+            }
+        }
 
     }
 

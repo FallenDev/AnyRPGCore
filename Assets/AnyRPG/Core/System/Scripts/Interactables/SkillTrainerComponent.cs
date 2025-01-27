@@ -24,7 +24,7 @@ namespace AnyRPG {
             skillTrainerManager = systemGameManager.SkillTrainerManager;
         }
 
-        public override bool Interact(CharacterUnit source, int optionIndex) {
+        public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
             base.Interact(source, optionIndex);
             if (!uIManager.skillTrainerWindow.IsOpen) {
@@ -49,28 +49,28 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleSkillListChanged(Skill skill) {
+        public void HandleSkillListChanged(UnitController sourceUnitController, Skill skill) {
             // this is a special case.  since skill is not a prerequisites, we need to subscribe directly to the event to get notified things have changed
             if (Props.Skills.Contains(skill)) {
-                HandlePrerequisiteUpdates();
+                HandlePrerequisiteUpdates(sourceUnitController);
             }
         }
 
-        public override int GetValidOptionCount() {
-            if (base.GetValidOptionCount() == 0) {
+        public override int GetValidOptionCount(UnitController sourceUnitController) {
+            if (base.GetValidOptionCount(sourceUnitController) == 0) {
                 return 0;
             }
-            return GetCurrentOptionCount();
+            return GetCurrentOptionCount(sourceUnitController);
         }
 
-        public override int GetCurrentOptionCount() {
+        public override int GetCurrentOptionCount(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.SkillTrainerInteractable.GetCurrentOptionCount()");
             if (interactable.CombatOnly) {
                 return 0;
             }
             int optionCount = 0;
             foreach (Skill skill in Props.Skills) {
-                if (!playerManager.UnitController.CharacterSkillManager.HasSkill(skill)) {
+                if (!sourceUnitController.CharacterSkillManager.HasSkill(skill)) {
                     optionCount++;
                 }
             }
@@ -80,16 +80,16 @@ namespace AnyRPG {
             return (optionCount == 0 ? 0 : 1);
         }
 
-        public override bool CanInteract(bool processRangeCheck = false, bool passedRangeCheck = false, float factionValue = 0f, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.CanInteract()");
-            bool returnValue = ((GetCurrentOptionCount() > 0 && base.CanInteract(processRangeCheck, passedRangeCheck, factionValue, processNonCombatCheck)) ? true : false);
+            bool returnValue = ((GetCurrentOptionCount(sourceUnitController) > 0 && base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck)) ? true : false);
             //Debug.Log($"{gameObject.name}.SkillTrainer.CanInteract(): return: " + returnValue);
             return returnValue;
         }
 
-        public override bool CanShowMiniMapIcon() {
-            float relationValue = interactable.PerformFactionCheck(playerManager.UnitController);
-            return CanInteract(false, false, relationValue);
+        public override bool CanShowMiniMapIcon(UnitController sourceUnitController) {
+            float relationValue = interactable.PerformFactionCheck(sourceUnitController);
+            return CanInteract(sourceUnitController, false, false);
         }
 
         //public override bool PlayInteractionSound() {

@@ -219,8 +219,12 @@ namespace AnyRPG {
 
         public void SetPlayerCharacterClass(CharacterClass newCharacterClass) {
             //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.SetPlayerCharacterClass(newCharacterClass.ResourceName);
+                return;
+            }
             if (newCharacterClass != null) {
-                unitController.BaseCharacter.ChangeCharacterClass(newCharacterClass);
+                playerManagerServer.SetPlayerCharacterClass(newCharacterClass, 0);
             }
         }
 
@@ -274,7 +278,7 @@ namespace AnyRPG {
             cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
         }
 
-        public void PlayLevelUpEffects(int newLevel) {
+        public void PlayLevelUpEffects(UnitController sourceUnitController, int newLevel) {
             //Debug.Log("PlayerManager.PlayLevelUpEffect()");
             if (PlayerUnitSpawned == false || systemConfigurationManager.LevelUpEffect == null) {
                 return;
@@ -528,7 +532,7 @@ namespace AnyRPG {
             playerUnitSpawned = true;
 
             // inform any subscribers that we just spawned a player unit
-            SystemEventManager.TriggerEvent("OnPlayerUnitSpawn", new EventParamProperties());
+            systemEventManager.NotifyOnPlayerUnitSpawn(unitController);
 
             playerController.SubscribeToUnitEvents();
 
@@ -668,6 +672,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnActivateTargetingMode += HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage += HandleCombatMessage;
             unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
+            unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRange;
+            unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRange;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -704,6 +710,16 @@ namespace AnyRPG {
             unitController.UnitEventController.OnActivateTargetingMode -= HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage -= HandleCombatMessage;
             unitController.UnitEventController.OnMessageFeedMessage -= HandleMessageFeedMessage;
+            unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRange;
+            unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRange;
+        }
+
+        private void HandleEnterInteractableRange(UnitController controller, Interactable interactable) {
+            playerController.AddInteractable(interactable);
+        }
+
+        private void HandleExitInteractableRange(UnitController controller, Interactable interactable) {
+            playerController.RemoveInteractable(interactable);
         }
 
         public void HandleAddInventoryBagNode(BagNode bagNode) {
@@ -756,11 +772,11 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleLearnAbility(AbilityProperties baseAbility) {
+        public void HandleLearnAbility(UnitController sourceUnitController, AbilityProperties baseAbility) {
             //Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
 
-            systemEventManager.NotifyOnAbilityListChanged(baseAbility);
-            baseAbility.NotifyOnLearn();
+            systemEventManager.NotifyOnAbilityListChanged(sourceUnitController, baseAbility);
+            baseAbility.NotifyOnLearn(unitController);
         }
 
         public void HandleUnlearnAbility(bool updateActionBars) {
@@ -787,10 +803,10 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleReputationChange() {
+        public void HandleReputationChange(UnitController sourceUnitController) {
             //Debug.Log("PlayerManager.HandleReputationChange");
 
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            systemEventManager.NotifyOnReputationChange(sourceUnitController);
         }
 
         public void HandleTargetInAbilityRangeFail(AbilityProperties baseAbility, Interactable target) {
@@ -800,8 +816,8 @@ namespace AnyRPG {
         }
 
         public void HandlePerformAbility(AbilityProperties ability) {
-            systemEventManager.NotifyOnAbilityUsed(ability);
-            ability.NotifyOnAbilityUsed();
+            systemEventManager.NotifyOnAbilityUsed(unitController, ability);
+            ability.NotifyOnAbilityUsed(unitController);
         }
 
         public void HandleCombatCheckFail(AbilityProperties ability) {
@@ -829,9 +845,9 @@ namespace AnyRPG {
         public void HandleEquipmentChanged(Equipment newItem, Equipment oldItem, int slotIndex) {
             if (PlayerUnitSpawned) {
                 if (slotIndex != -1) {
-                    UnitController.CharacterInventoryManager.AddInventoryItem(oldItem, slotIndex);
+                    unitController.CharacterInventoryManager.AddInventoryItem(oldItem, slotIndex);
                 } else if (oldItem != null) {
-                    UnitController.CharacterInventoryManager.AddItem(oldItem, false);
+                    unitController.CharacterInventoryManager.AddItem(oldItem, false);
                 }
             }
             systemEventManager.NotifyOnEquipmentChanged(newItem, oldItem);
@@ -882,7 +898,7 @@ namespace AnyRPG {
                 }
             }
 
-            statusEffectNode.StatusEffect.NotifyOnApply();
+            statusEffectNode.StatusEffect.NotifyOnApply(unitController);
         }
 
         public void HandleGainXP(UnitController unitController, int gainedXP, int currentXP) {
@@ -898,11 +914,11 @@ namespace AnyRPG {
         }
 
         public void HandleLevelChanged(int newLevel) {
-            systemEventManager.NotifyOnLevelChanged(newLevel);
+            systemEventManager.NotifyOnLevelChanged(unitController, newLevel);
             messageFeedManager.WriteMessage(string.Format("YOU HAVE REACHED LEVEL {0}!", newLevel.ToString()));
         }
 
-        public void HandleReviveComplete() {
+        public void HandleReviveComplete(UnitController sourceUnitController) {
             SystemEventManager.TriggerEvent("OnReviveComplete", new EventParamProperties());
             if (activeUnitController != null) {
                 activeUnitController.UnitAnimator.SetCorrectOverrideController();
@@ -924,15 +940,6 @@ namespace AnyRPG {
 
         public void HandleImmuneToEffect(AbilityEffectContext abilityEffectContext) {
             combatTextManager.SpawnCombatText(activeUnitController, 0, CombatTextType.immune, CombatMagnitude.normal, abilityEffectContext);
-        }
-
-        public bool PlayerHasSkill(Skill skill) {
-            foreach (SkillSaveData skillSaveData in playerCharacterSaveData.SaveData.skillSaveData) {
-                if (skillSaveData.SkillName == skill.ResourceName) {
-                    return true;
-                }
-            }
-            return false;
         }
 
     }

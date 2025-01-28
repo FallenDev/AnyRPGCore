@@ -17,12 +17,14 @@ namespace AnyRPG {
         private InteractableOptionManager interactableOptionManager = null;
 
         private PlayerManager playerManager = null;
+        private PlayerManagerServer playerManagerServer = null;
         private SystemEventManager systemEventManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private NetworkManagerClient networkManagerClient = null;
         private ClassChangeManager classChangeManager = null;
         private UIManager uIManager = null;
         private DialogManager dialogManager = null;
+        private SkillTrainerManager skillTrainerManager = null;
 
         /*
         public Interactable CurrentInteractable {
@@ -41,11 +43,13 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
             uIManager = systemGameManager.UIManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             classChangeManager = systemGameManager.ClassChangeManager;
             dialogManager = systemGameManager.DialogManager;
+            skillTrainerManager = systemGameManager.SkillTrainerManager;
         }
 
         public bool Interact(UnitController sourceUnitController, Interactable target) {
@@ -184,41 +188,43 @@ namespace AnyRPG {
             SetInteractable(interactableOptionComponent.Interactable);
         }
 
+        // since interactions are server authoritative this always happens on the server
+        public void InteractWithClassChangeComponent(UnitController sourceUnitController, ClassChangeComponent classChangeComponent, int optionIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                InteractWithClassChangeComponentInternal(classChangeComponent);
+            } else if (networkManagerServer.ServerModeActive) {
+                if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
+                    networkManagerServer.AdvertiseInteractWithClassChangeComponent(playerManagerServer.ActivePlayerLookup[sourceUnitController], classChangeComponent.Interactable, optionIndex);
+                }
+            }
+        }
+
         public void InteractWithClassChangeComponentClient(Interactable interactable, int optionIndex) {
             Debug.Log($"InteractionManager.InteractWithClassChangeComponentClient({interactable.gameObject.name}, {optionIndex})");
 
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(playerManager.UnitController);
             if (currentInteractables.ContainsKey(optionIndex)) {
                 if (currentInteractables[optionIndex] is ClassChangeComponent) {
-                    InteractWithClassChangeComponentClient(currentInteractables[optionIndex] as ClassChangeComponent);
+                    InteractWithClassChangeComponentInternal(currentInteractables[optionIndex] as ClassChangeComponent);
                 }
             }
         }
 
-        public void InteractWithClassChangeComponentClient(ClassChangeComponent classChangeComponent) {
-            Debug.Log($"InteractionManager.InteractWithClassChangeComponentClient()");
+        public void InteractWithClassChangeComponentInternal(ClassChangeComponent classChangeComponent) {
+            Debug.Log($"InteractionManager.InteractWithClassChangeComponentInternal()");
             
             classChangeManager.SetDisplayClass(classChangeComponent.Props.CharacterClass, classChangeComponent);
-            if (uIManager == null) {
-                Debug.Log("uimanager is null");
-            }
-            if (uIManager.classChangeWindow == null) {
-                Debug.Log("classchangewindow is null");
-            }
+
             uIManager.classChangeWindow.OpenWindow();
         }
 
-        //public void SetInteractableOptionManager(InteractableOptionManager interactableOptionManager) {
-        //}
-
         public void InteractWithQuestGiver(QuestGiverComponent questGiverComponent, int optionIndex, UnitController sourceUnitController) {
-            if (networkManagerServer.ServerModeActive) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                InteractWithQuestGiverInternal(questGiverComponent, optionIndex, sourceUnitController);
+            } else if (networkManagerServer.ServerModeActive) {
                 networkManagerServer.AdvertiseInteractWithQuestGiver(questGiverComponent.Interactable, optionIndex, sourceUnitController);
                 return;
             }
-
-            // this is running locally.  Interact directly
-            InteractWithQuestGiverInternal(questGiverComponent, optionIndex, sourceUnitController);
         }
 
         public void InteractWithQuestGiverClient(Interactable interactable, int optionIndex, UnitController sourceUnitController) {
@@ -250,6 +256,37 @@ namespace AnyRPG {
             }
         }
 
+        // since interactions are server authoritative this always happens on the server
+        internal void InteractWithSkillTrainerComponent(UnitController sourceUnitController, SkillTrainerComponent skillTrainerComponent, int optionIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                InteractWithSkillTrainerComponentInternal(skillTrainerComponent);
+            } else if (networkManagerServer.ServerModeActive) {
+                if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
+                    networkManagerServer.AdvertiseInteractWithSkillTrainerComponent(playerManagerServer.ActivePlayerLookup[sourceUnitController], skillTrainerComponent.Interactable, optionIndex);
+                }
+            }
+        }
+
+        public void InteractWithSkillTrainerComponentClient(Interactable interactable, int optionIndex) {
+            Debug.Log($"InteractionManager.InteractWithSkillTrainerComponentClient({interactable.gameObject.name}, {optionIndex})");
+
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(playerManager.UnitController);
+            if (currentInteractables.ContainsKey(optionIndex)) {
+                if (currentInteractables[optionIndex] is SkillTrainerComponent) {
+                    InteractWithSkillTrainerComponentInternal(currentInteractables[optionIndex] as SkillTrainerComponent);
+                }
+            }
+        }
+
+        public void InteractWithSkillTrainerComponentInternal(SkillTrainerComponent skillTrainerComponent) {
+            Debug.Log($"InteractionManager.InteractWithSkillTrainerComponentInternal()");
+
+            if (!uIManager.skillTrainerWindow.IsOpen) {
+                skillTrainerManager.SetSkillTrainer(skillTrainerComponent);
+                uIManager.skillTrainerWindow.OpenWindow();
+            }
+
+        }
     }
 
 }

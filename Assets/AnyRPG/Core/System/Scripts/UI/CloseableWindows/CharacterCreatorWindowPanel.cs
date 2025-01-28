@@ -12,7 +12,7 @@ namespace AnyRPG {
         [Header("Character Creator")]
 
         [SerializeField]
-        private CharacterPreviewPanelController characterPreviewPanel = null;
+        private CharacterPreviewPanel characterPreviewPanel = null;
 
         [SerializeField]
         private GameObject panelParent = null;

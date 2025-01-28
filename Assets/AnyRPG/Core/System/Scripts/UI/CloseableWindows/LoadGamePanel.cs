@@ -12,7 +12,7 @@ namespace AnyRPG {
         public override event Action<CloseableWindowContents> OnCloseWindow = delegate { };
 
         [SerializeField]
-        private CharacterPreviewPanelController characterPreviewPanel = null;
+        private CharacterPreviewPanel characterPreviewPanel = null;
 
         [SerializeField]
         private GameObject buttonPrefab = null;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class ConfirmSellItemPanelController : WindowContentController {
+    public class ConfirmSellItemPanel : WindowContentController {
 
         /*
         [SerializeField]

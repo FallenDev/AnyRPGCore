@@ -225,7 +225,7 @@ namespace AnyRPG {
                 if (inventorySlot.Item != null) {
                     if (inventorySlot.Item.ItemQuality != null && inventorySlot.Item.ItemQuality.RequireSellConfirmation) {
                         uIManager.confirmSellItemMenuWindow.OpenWindow();
-                        (uIManager.confirmSellItemMenuWindow.CloseableWindowContents as ConfirmSellItemPanelController).MyItem = inventorySlot.Item;
+                        (uIManager.confirmSellItemMenuWindow.CloseableWindowContents as ConfirmSellItemPanel).MyItem = inventorySlot.Item;
                         return;
                     }
                     if ((uIManager.vendorWindow.CloseableWindowContents as VendorUI).SellItem(inventorySlot.Item)) {

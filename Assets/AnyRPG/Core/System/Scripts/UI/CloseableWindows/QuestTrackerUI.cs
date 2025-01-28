@@ -37,8 +37,10 @@ namespace AnyRPG {
             //Debug.Log("QuestTrackerUI.InitializeReferences()");
             base.ProcessCreateEventSubscriptions();
 
-            SystemEventManager.StartListening("OnQuestObjectiveStatusUpdated", HandleQuestObjectiveStatusUpdated);
-            SystemEventManager.StartListening("OnAfterQuestStatusUpdated", HandleAfterQuestStatusUpdated);
+            systemEventManager.OnAcceptQuest += HandleAcceptQuest;
+            systemEventManager.OnRemoveQuest += HandleRemoveQuest;
+            systemEventManager.OnMarkQuestComplete += HandleMarkQuestComplete;
+            systemEventManager.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             if (playerManager.PlayerUnitSpawned == true) {
                 ShowQuests();
@@ -48,9 +50,27 @@ namespace AnyRPG {
         protected override void ProcessCleanupEventSubscriptions() {
             //Debug.Log("QuestTrackerUI.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
-            SystemEventManager.StopListening("OnQuestObjectiveStatusUpdated", HandleQuestObjectiveStatusUpdated);
-            SystemEventManager.StopListening("OnAfterQuestStatusUpdated", HandleAfterQuestStatusUpdated);
+            systemEventManager.OnAcceptQuest -= HandleAcceptQuest;
+            systemEventManager.OnRemoveQuest -= HandleRemoveQuest;
+            systemEventManager.OnMarkQuestComplete -= HandleMarkQuestComplete;
+            systemEventManager.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdated;
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
+        }
+
+        private void HandleQuestObjectiveStatusUpdated(UnitController controller, QuestBase questBase) {
+            ShowQuests();
+        }
+
+        private void HandleMarkQuestComplete(UnitController controller, QuestBase questBase) {
+            ShowQuests();
+        }
+
+        private void HandleRemoveQuest(UnitController controller, QuestBase questBase) {
+            ShowQuests();
+        }
+
+        private void HandleAcceptQuest(UnitController controller, QuestBase questBase) {
+            ShowQuests();
         }
 
         public void HandleQuestObjectiveStatusUpdated(string eventName, EventParamProperties eventParamProperties) {

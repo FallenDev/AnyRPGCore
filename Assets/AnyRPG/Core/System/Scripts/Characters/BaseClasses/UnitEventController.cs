@@ -77,7 +77,6 @@ namespace AnyRPG {
         public event System.Action<AbilityProperties> OnPerformAbility = delegate { };
         public event System.Action<UnitController> OnDespawn = delegate { };
         public event System.Action<string> OnBeginChatMessage = delegate { };
-
         public event System.Action OnInitializeAnimator = delegate { };
         public event System.Action<string> OnAnimatorSetTrigger = delegate { };
         public event System.Action OnAnimatorReviveComplete = delegate { };
@@ -107,7 +106,12 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnExitInteractableTrigger = delegate { };
         public event System.Action<UnitController, Interactable> OnEnterInteractableRange = delegate { };
         public event System.Action<UnitController, Interactable> OnExitInteractableRange = delegate { };
-
+        public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnMarkQuestComplete = delegate { };
+        public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
+        public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -538,6 +542,30 @@ namespace AnyRPG {
 
         public void NotifyOnExitInteractableRange(Interactable interactable) {
             OnExitInteractableRange(unitController, interactable);
+        }
+
+        public void NotifyOnAcceptQuest(QuestBase questBase) {
+            OnAcceptQuest(unitController, questBase);
+        }
+
+        public void NotifyOnRemoveQuest(QuestBase questBase) {
+            OnRemoveQuest(unitController, questBase);
+        }
+
+        public void NotifyOnMarkQuestComplete(QuestBase questBase) {
+            OnMarkQuestComplete(unitController, questBase);
+        }
+
+        public void NotifyOnQuestObjectiveStatusUpdated(QuestBase questBase) {
+            OnQuestObjectiveStatusUpdated(unitController, questBase);
+        }
+
+        public void NotifyOnLearnSkill(Skill newSkill) {
+            OnLearnSkill(unitController, newSkill);
+        }
+
+        public void NotifyOnUnLearnSkill(Skill oldSkill) {
+            OnUnLearnSkill(unitController, oldSkill);
         }
 
         #endregion

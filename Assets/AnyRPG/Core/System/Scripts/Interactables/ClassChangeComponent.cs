@@ -46,7 +46,7 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
             base.Interact(sourceUnitController, optionIndex);
 
-            playerManagerServer.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
+            interactionManager.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
 
             return true;
         }

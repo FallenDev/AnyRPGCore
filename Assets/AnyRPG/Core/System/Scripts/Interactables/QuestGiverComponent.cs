@@ -14,7 +14,6 @@ namespace AnyRPG {
 
         // game manager references
         private DialogManager dialogManager = null;
-        private InteractionManager interactionManager = null;
 
         public QuestGiverProps Props { get => interactableOptionProps as QuestGiverProps; }
         public override int PriorityValue { get => 1; }
@@ -34,7 +33,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             
             dialogManager = systemGameManager.DialogManager;
-            interactionManager = systemGameManager.InteractionManager;
         }
 
         /*

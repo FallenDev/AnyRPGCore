@@ -40,6 +40,7 @@ namespace AnyRPG {
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
         public abstract void SetPlayerCharacterClass(string className);
+        public abstract void LearnSkill(string skillName);
 
         // server functions
         public abstract void StartServer();
@@ -65,9 +66,10 @@ namespace AnyRPG {
         public abstract void ReturnObjectToPool(GameObject returnedObject);
         public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
-        public abstract void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
+        public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
     }
 
 }

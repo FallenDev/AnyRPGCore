@@ -620,7 +620,7 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
         }
 
-        public void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
+        public void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 NetworkInteractable networkInteractable = null;
                 if (interactable != null) {
@@ -642,6 +642,30 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {
             networkManagerServer.SetPlayerCharacterClass(className, networkConnection.ClientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void LearnSkill(string skillName, NetworkConnection networkConnection = null) {
+            networkManagerServer.LearnSkill(skillName, networkConnection.ClientId);
+        }
+
+        public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
+                NetworkInteractable networkInteractable = null;
+                if (interactable != null) {
+                    networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                }
+                AdvertiseInteractWithSkillTrainerComponent(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseInteractWithSkillTrainerComponent(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
+            Interactable interactable = null;
+            if (networkInteractable != null) {
+                interactable = networkInteractable.Interactable;
+            }
+            networkManagerClient.AdvertiseInteractWithSkillTrainerComponent(interactable, optionIndex);
         }
 
         /*

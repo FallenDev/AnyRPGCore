@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class ConfirmCharacterStuckPanelController : WindowContentController {
+    public class ConfirmCharacterStuckPanel : WindowContentController {
 
         // game manager references
         private UIManager uIManager = null;

@@ -50,13 +50,15 @@ namespace AnyRPG {
 
             abandonButton.Configure(systemGameManager);
 
-            SystemEventManager.StartListening("OnQuestStatusUpdated", HandleQuestStatusUpdated);
+            systemEventManager.OnAcceptQuest += HandleAcceptQuest;
+            systemEventManager.OnRemoveQuest += HandleRemoveQuest;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
 
             questDetailsArea.Configure(systemGameManager);
             questDetailsArea.SetOwner(this);
         }
+
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -73,7 +75,11 @@ namespace AnyRPG {
             unitController.CharacterQuestLog.OnShowQuestLogDescription -= HandleShowQuestDescription;
         }
 
-        public void HandleQuestStatusUpdated(string eventName, EventParamProperties eventParamProperties) {
+        private void HandleAcceptQuest(UnitController controller, QuestBase questBase) {
+            UpdateQuestCount();
+        }
+        
+        private void HandleRemoveQuest(UnitController controller, QuestBase questBase) {
             UpdateQuestCount();
         }
 

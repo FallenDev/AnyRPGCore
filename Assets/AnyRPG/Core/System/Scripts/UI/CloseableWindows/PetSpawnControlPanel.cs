@@ -21,7 +21,7 @@ namespace AnyRPG {
         private GameObject buttonArea = null;
 
         [SerializeField]
-        private CharacterPreviewPanelController characterPreviewPanel = null;
+        private CharacterPreviewPanel characterPreviewPanel = null;
 
         [SerializeField]
         private TextMeshProUGUI nameText = null;

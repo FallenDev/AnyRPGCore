@@ -405,6 +405,14 @@ namespace AnyRPG {
         public void SetPlayerCharacterClass(string className) {
             networkController.SetPlayerCharacterClass(className);
         }
+
+        public void AdvertiseInteractWithSkillTrainerComponent(Interactable interactable, int optionIndex) {
+            interactionManager.InteractWithSkillTrainerComponentClient(interactable, optionIndex);
+        }
+
+        public void LearnSkill(string skillName) {
+            networkController.LearnSkill(skillName);
+        }
     }
 
     public enum NetworkClientMode { Lobby, MMO }

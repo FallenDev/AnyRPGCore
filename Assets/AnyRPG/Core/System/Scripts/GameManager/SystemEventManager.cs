@@ -13,7 +13,6 @@ namespace AnyRPG {
         public event System.Action<UnitController> OnPlayerUnitDespawn = delegate { };
         public event System.Action<UnitController, AbilityProperties> OnAbilityUsed = delegate { };
         public event System.Action<UnitController, AbilityProperties> OnAbilityListChanged = delegate { };
-        public event System.Action<UnitController, Skill> OnSkillListChanged = delegate { };
         public event System.Action<UnitController, int> OnLevelChanged = delegate { };
         public event System.Action<UnitController, CharacterClass, CharacterClass> OnClassChange = delegate { };
         public event System.Action<UnitController, ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
@@ -25,6 +24,12 @@ namespace AnyRPG {
         public event System.Action<UnitController, Dialog> OnDialogCompleted = delegate { };
         public event System.Action<IAbilityCaster, CharacterUnit, int, string> OnTakeDamage = delegate { };
         public event System.Action<UnitController> OnReputationChange = delegate { };
+        public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnMarkQuestComplete = delegate { };
+        public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
+        public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
 
         // equipment manager
         public System.Action<Equipment, Equipment> OnEquipmentChanged = delegate { };
@@ -138,15 +143,33 @@ namespace AnyRPG {
             OnAbilityUsed(sourceUnitController, ability);
         }
 
-        public void NotifyOnSkillListChanged(UnitController sourceUnitController, Skill skill) {
-            OnSkillListChanged(sourceUnitController, skill);
-            //OnPrerequisiteUpdated();
-        }
-
         public void NotifyOnItemCountChanged(UnitController sourceUnitController, Item item) {
             OnItemCountChanged(sourceUnitController, item);
         }
 
+        public void NotifyOnAcceptQuest(UnitController sourceUnitController, QuestBase questBase) {
+            OnAcceptQuest(sourceUnitController, questBase);
+        }
+
+        public void NotifyOnRemoveQuest(UnitController sourceUnitController, QuestBase questBase) {
+            OnRemoveQuest(sourceUnitController, questBase);
+        }
+
+        public void NotifyOnMarkQuestComplete(UnitController sourceUnitController, QuestBase questBase) {
+            OnMarkQuestComplete(sourceUnitController, questBase);
+        }
+
+        public void NotifyOnQuestObjectiveStatusUpdated(UnitController sourceUnitController, QuestBase questBase) {
+            OnQuestObjectiveStatusUpdated(sourceUnitController, questBase);
+        }
+
+        public void NotifyOnLearnSkill(UnitController sourceUnitController, Skill skill) {
+            OnLearnSkill(sourceUnitController, skill);
+        }
+
+        public void NotifyOnUnLearnSkill(UnitController sourceUnitController, Skill skill) {
+            OnUnLearnSkill(sourceUnitController, skill);
+        }
     }
 
     [System.Serializable]

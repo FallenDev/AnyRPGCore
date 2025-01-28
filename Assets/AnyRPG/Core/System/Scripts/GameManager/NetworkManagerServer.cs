@@ -559,8 +559,8 @@ namespace AnyRPG {
             networkController.AdvertiseAddSpawnRequest(clientId, loadSceneRequest);
         }
 
-        public void InteractWithClassChangeComponent(int clientId, Interactable interactable, int optionIndex) {
-            networkController.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        public void AdvertiseInteractWithClassChangeComponent(int clientId, Interactable interactable, int optionIndex) {
+            networkController.AdvertiseInteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
         }
 
         public void HandleSceneLoadEnd(Scene scene) {
@@ -588,6 +588,18 @@ namespace AnyRPG {
                 return;
             }
             playerManagerServer.SetPlayerCharacterClass(characterClass, clientId);
+        }
+
+        public void LearnSkill(string skillName, int clientId) {
+            Skill skill = systemDataFactory.GetResource<Skill>(skillName);
+            if (skill == null) {
+                return;
+            }
+            playerManagerServer.LearnSkill(skill, clientId);
+        }
+
+        public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {
+            networkController.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
         }
     }
 

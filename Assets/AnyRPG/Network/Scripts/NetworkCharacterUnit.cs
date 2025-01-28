@@ -156,6 +156,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpecializationChange += HandleSpecializationChangeServer;
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
+            unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
+            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
+            unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
+            unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
+
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -185,6 +190,58 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChangeServer;
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRangeServer;
+            unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
+            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
+            unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
+            unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
+        }
+
+        public void HandleLearnSkillServer(UnitController sourceUnitController, Skill skill) {
+            HandleLearnSkillClient(skill.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleLearnSkillClient(string skillName) {
+            Skill skill = systemDataFactory.GetResource<Skill>(skillName);
+            if (skill != null) {
+                unitController.CharacterSkillManager.LearnSkill(skill);
+            }
+        }
+
+        public void HandleUnLearnSkillServer(UnitController sourceUnitController, Skill skill) {
+            HandleUnLearnSkillClient(skill.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleUnLearnSkillClient(string skillName) {
+            Skill skill = systemDataFactory.GetResource<Skill>(skillName);
+            if (skill != null) {
+                unitController.CharacterSkillManager.UnLearnSkill(skill);
+            }
+        }
+
+        public void HandleAcceptQuestServer(UnitController sourceUnitController, QuestBase quest) {
+            HandleAcceptQuestClient(quest.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleAcceptQuestClient(string questName) {
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest != null) {
+                unitController.CharacterQuestLog.AcceptQuest(quest);
+            }
+        }
+
+        public void HandleRemoveQuestServer(UnitController sourceUnitController, QuestBase quest) {
+            HandleRemoveQuestClient(quest.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleRemoveQuestClient(string questName) {
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest != null) {
+                unitController.CharacterQuestLog.RemoveQuest(quest);
+            }
         }
 
         private void HandleEnterInteractableRangeServer(UnitController controller, Interactable interactable) {

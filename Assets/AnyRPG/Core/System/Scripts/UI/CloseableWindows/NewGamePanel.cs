@@ -21,7 +21,7 @@ namespace AnyRPG {
         private GameObject panelParent = null;
 
         [SerializeField]
-        private CharacterPreviewPanelController characterPreviewPanel = null;
+        private CharacterPreviewPanel characterPreviewPanel = null;
 
         [SerializeField]
         private NewGameDetailsPanelController detailsPanel = null;

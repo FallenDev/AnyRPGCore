@@ -55,11 +55,11 @@ namespace AnyRPG {
                 }
                 foreach (Recipe recipe in systemDataFactory.GetResourceList<Recipe>()) {
                     if (unitController.CharacterStats.Level >= recipe.RequiredLevel && recipe.AutoLearn == true && newSkill.AbilityList.Contains(recipe.CraftAbility)) {
-                        playerManager.UnitController.CharacterRecipeManager.LearnRecipe(recipe);
+                        unitController.CharacterRecipeManager.LearnRecipe(recipe);
                     }
                 }
 
-                systemEventManager.NotifyOnSkillListChanged(unitController, newSkill);
+                unitController.UnitEventController.NotifyOnLearnSkill(newSkill);
             }
         }
 
@@ -77,13 +77,15 @@ namespace AnyRPG {
         }
 
 
-        public void UnlearnSkill(Skill oldSkill) {
+        public void UnLearnSkill(Skill oldSkill) {
             if (skillList.ContainsValue(oldSkill)) {
                 skillList.Remove(SystemDataUtility.PrepareStringForMatch(oldSkill.ResourceName));
                 foreach (AbilityProperties ability in oldSkill.AbilityList) {
                     unitController.CharacterAbilityManager.UnlearnAbility(ability);
                 }
             }
+            unitController.UnitEventController.NotifyOnUnLearnSkill(oldSkill);
+
         }
 
 

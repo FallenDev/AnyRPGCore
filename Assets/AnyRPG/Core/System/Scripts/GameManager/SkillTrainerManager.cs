@@ -21,11 +21,11 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        public List<Skill> GetAvailableSkillList() {
+        public List<Skill> GetAvailableSkillList(UnitController sourceUnitController) {
             List<Skill> returnList = new List<Skill>();
 
             foreach (Skill skill in skillTrainer.Props.Skills) {
-                if (!playerManager.UnitController.CharacterSkillManager.HasSkill(skill)) {
+                if (!sourceUnitController.CharacterSkillManager.HasSkill(skill)) {
                     returnList.Add(skill);
                 }
             }
@@ -33,18 +33,19 @@ namespace AnyRPG {
             return returnList;
         }
 
-        public void LearnSkill(Skill skill) {
-            playerManager.UnitController.CharacterSkillManager.LearnSkill(skill);
+        public void LearnSkill(UnitController sourceUnitController, Skill skill) {
 
-            ConfirmAction(playerManager.UnitController);
+            playerManager.LearnSkill(skill);
+
+            ConfirmAction(sourceUnitController);
         }
 
-        public void UnlearnSkill(Skill skill) {
-            playerManager.UnitController.CharacterSkillManager.UnlearnSkill(skill);
+        public void UnlearnSkill(UnitController sourceUnitController, Skill skill) {
+            sourceUnitController.CharacterSkillManager.UnLearnSkill(skill);
         }
 
-        public bool SkillIsKnown(Skill skill) {
-            return playerManager.UnitController.CharacterSkillManager.HasSkill(skill);
+        public bool SkillIsKnown(UnitController sourceUnitController, Skill skill) {
+            return sourceUnitController.CharacterSkillManager.HasSkill(skill);
         }
 
         public override void EndInteraction() {

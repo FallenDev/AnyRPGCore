@@ -16,7 +16,8 @@ namespace AnyRPG {
             if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
                 interactableOptionProps.InteractionPanelTitle = "Train Me";
             }
-            systemEventManager.OnSkillListChanged += HandleSkillListChanged;
+            systemEventManager.OnLearnSkill += HandleSkillListChanged;
+            systemEventManager.OnUnLearnSkill += HandleSkillListChanged;
         }
 
         public override void SetGameManagerReferences() {
@@ -24,15 +25,13 @@ namespace AnyRPG {
             skillTrainerManager = systemGameManager.SkillTrainerManager;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
-            base.Interact(source, optionIndex);
-            if (!uIManager.skillTrainerWindow.IsOpen) {
-                skillTrainerManager.SetSkillTrainer(this);
-                uIManager.skillTrainerWindow.OpenWindow();
-                return true;
-            }
-            return false;
+            base.Interact(sourceUnitController, optionIndex);
+
+            interactionManager.InteractWithSkillTrainerComponent(sourceUnitController, this, optionIndex);
+
+            return true;
         }
 
         public override void StopInteract() {
@@ -45,7 +44,8 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.SkillTrainer.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
             if (systemEventManager != null) {
-                systemEventManager.OnSkillListChanged -= HandleSkillListChanged;
+                systemEventManager.OnLearnSkill -= HandleSkillListChanged;
+                systemEventManager.OnUnLearnSkill -= HandleSkillListChanged;
             }
         }
 

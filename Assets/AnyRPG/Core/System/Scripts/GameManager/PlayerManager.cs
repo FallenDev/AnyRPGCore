@@ -235,6 +235,17 @@ namespace AnyRPG {
             }
         }
 
+        public void LearnSkill(Skill skill) {
+            //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.LearnSkill(skill.ResourceName);
+                return;
+            }
+            if (skill != null) {
+                playerManagerServer.LearnSkill(skill, 0);
+            }
+        }
+
         public void SetPlayerFaction(Faction newFaction) {
             //Debug.Log("PlayerManager.SetPlayerFaction(" + factionName + ")");
             if (newFaction != null) {
@@ -674,6 +685,12 @@ namespace AnyRPG {
             unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRange;
+            unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
+            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuest;
+            unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestComplete;
+            unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
+            unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
+            unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkill;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -712,13 +729,44 @@ namespace AnyRPG {
             unitController.UnitEventController.OnMessageFeedMessage -= HandleMessageFeedMessage;
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRange;
+            unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuest;
+            unitController.UnitEventController.OnRemoveQuest -= HandleRemoveQuest;
+            unitController.UnitEventController.OnMarkQuestComplete -= HandleMarkQuestComplete;
+            unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdated;
+            unitController.UnitEventController.OnLearnSkill -= HandleLearnSkill;
+            unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkill;
+
         }
 
-        private void HandleEnterInteractableRange(UnitController controller, Interactable interactable) {
+        public void HandleLearnSkill(UnitController sourceUnitController, Skill skill) {
+            systemEventManager.NotifyOnLearnSkill(unitController, skill);
+        }
+
+        public void HandleUnLearnSkill(UnitController sourceUnitController, Skill skill) {
+            systemEventManager.NotifyOnUnLearnSkill(unitController, skill);
+        }
+
+        public void HandleQuestObjectiveStatusUpdated(UnitController sourceUnitController, QuestBase questBase) {
+            systemEventManager.NotifyOnQuestObjectiveStatusUpdated(sourceUnitController, questBase);
+        }
+
+        public void HandleMarkQuestComplete(UnitController sourceUnitController, QuestBase questBase) {
+            systemEventManager.NotifyOnMarkQuestComplete(sourceUnitController, questBase);
+        }
+
+        public void HandleRemoveQuest(UnitController sourceUnitController, QuestBase questBase) {
+            systemEventManager.NotifyOnRemoveQuest(sourceUnitController, questBase);
+        }
+
+        public void HandleAcceptQuest(UnitController sourceUnitController, QuestBase questBase) {
+            systemEventManager.NotifyOnAcceptQuest(sourceUnitController, questBase);
+        }
+
+        public void HandleEnterInteractableRange(UnitController controller, Interactable interactable) {
             playerController.AddInteractable(interactable);
         }
 
-        private void HandleExitInteractableRange(UnitController controller, Interactable interactable) {
+        public void HandleExitInteractableRange(UnitController controller, Interactable interactable) {
             playerController.RemoveInteractable(interactable);
         }
 

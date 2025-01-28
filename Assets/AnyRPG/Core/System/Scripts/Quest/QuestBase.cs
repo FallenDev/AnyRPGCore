@@ -35,6 +35,21 @@ namespace AnyRPG {
             get => false;
         }
 
+        public virtual Quest QuestTemplate { get => questTemplate; set => questTemplate = value; }
+
+        public List<QuestStep> Steps { get => steps; }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            saveManager = systemGameManager.SaveManager;
+            playerManager = systemGameManager.PlayerManager;
+            messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
+        }
+
+        protected abstract QuestSaveData GetSaveData(UnitController sourceUnitController);
+        protected abstract void SetSaveData(UnitController sourceUnitController, string QuestName, QuestSaveData questSaveData);
+        protected abstract bool HasQuest(UnitController sourceUnitController);
+
         public virtual bool IsComplete(UnitController sourceUnitController) {
             if (steps.Count > 0) {
                 foreach (QuestObjective questObjective in steps[steps.Count -1].QuestObjectives) {
@@ -55,12 +70,6 @@ namespace AnyRPG {
 
             //Debug.Log(DisplayName + ".Quest.TurnedIn = " + value);
             if (notify) {
-                if (playerManager.PlayerUnitSpawned == false) {
-                    // STOP STUFF FROM REACTING WHEN PLAYER ISN'T SPAWNED
-                    return;
-                }
-                SystemEventManager.TriggerEvent("OnQuestStatusUpdated", new EventParamProperties());
-                SystemEventManager.TriggerEvent("OnAfterQuestStatusUpdated", new EventParamProperties());
                 OnQuestStatusUpdated(sourceUnitController);
             }
         }
@@ -75,7 +84,6 @@ namespace AnyRPG {
             return true;
         }
 
-        public virtual Quest QuestTemplate { get => questTemplate; set => questTemplate = value; }
 
         public bool TurnedIn(UnitController sourceUnitController) {
             //Debug.Log($"{ResourceName}.QuestBase.TurnedIn({sourceUnitController.gameObject.name})");
@@ -101,19 +109,6 @@ namespace AnyRPG {
             SetSaveData(sourceUnitController, saveData.QuestName, saveData);
         }
 
-        public List<QuestStep> Steps { get => steps; }
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            saveManager = systemGameManager.SaveManager;
-            playerManager = systemGameManager.PlayerManager;
-            messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
-        }
-
-        protected abstract QuestSaveData GetSaveData(UnitController sourceUnitController);
-        protected abstract void SetSaveData(UnitController sourceUnitController, string QuestName, QuestSaveData questSaveData);
-        protected abstract bool HasQuest(UnitController sourceUnitController);
-
         public virtual void RemoveQuest(UnitController sourceUnitController, bool resetQuestStep = true) {
             //Debug.Log("Quest.RemoveQuest(): " + DisplayName + " calling OnQuestStatusUpdated()");
 
@@ -125,12 +120,7 @@ namespace AnyRPG {
             }
             SetMarkedComplete(sourceUnitController, false);
 
-            if (playerManager != null && playerManager.PlayerUnitSpawned == false) {
-                // STOP STUFF FROM REACTING WHEN PLAYER ISN'T SPAWNED
-                return;
-            }
-            SystemEventManager.TriggerEvent("OnQuestStatusUpdated", new EventParamProperties());
-            SystemEventManager.TriggerEvent("OnAfterQuestStatusUpdated", new EventParamProperties());
+            sourceUnitController.UnitEventController.NotifyOnRemoveQuest(this);
             OnQuestStatusUpdated(sourceUnitController);
         }
 
@@ -147,12 +137,7 @@ namespace AnyRPG {
 
             SetMarkedComplete(sourceUnitController, true);
             if (notifyOnUpdate == true) {
-                if (playerManager != null && playerManager.PlayerUnitSpawned == false) {
-                    // STOP STUFF FROM REACTING WHEN PLAYER ISN'T SPAWNED
-                    return;
-                }
-                SystemEventManager.TriggerEvent("OnQuestStatusUpdated", new EventParamProperties());
-                SystemEventManager.TriggerEvent("OnAfterQuestStatusUpdated", new EventParamProperties());
+                sourceUnitController.UnitEventController.NotifyOnMarkQuestComplete(this);
                 OnQuestStatusUpdated(sourceUnitController);
             }
         }
@@ -286,18 +271,8 @@ namespace AnyRPG {
                 ProcessAcceptQuest();
             }
 
-            // this next statement seems unnecessary.  is it a holdover from when quests were cloned ?
-            // disable for now and see if anything breaks
-            //if (!MarkedComplete) {
-                // needs to be done here if quest wasn't auto-completed in checkcompletion
-                if (playerManager != null && playerManager.PlayerUnitSpawned == false) {
-                    // STOP STUFF FROM REACTING WHEN PLAYER ISN'T SPAWNED
-                    return;
-                }
-                SystemEventManager.TriggerEvent("OnQuestStatusUpdated", new EventParamProperties());
-                SystemEventManager.TriggerEvent("OnAfterQuestStatusUpdated", new EventParamProperties());
-                OnQuestStatusUpdated(sourceUnitController);
-            //}
+            sourceUnitController.UnitEventController.NotifyOnAcceptQuest(this);
+            OnQuestStatusUpdated(sourceUnitController);
         }
 
         public virtual void CheckCompletion(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
@@ -311,8 +286,7 @@ namespace AnyRPG {
                 MarkComplete(sourceUnitController, notifyOnUpdate, printMessages);
             } else {
                 // since this method only gets called as a result of a quest objective status updating, we need to notify for that at minimum
-                //Debug.Log(DisplayName + ".Quest.CheckCompletion(): about to notify for objective status updated");
-                SystemEventManager.TriggerEvent("OnQuestObjectiveStatusUpdated", new EventParamProperties());
+                sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
                 OnQuestObjectiveStatusUpdated(sourceUnitController);
             }
         }

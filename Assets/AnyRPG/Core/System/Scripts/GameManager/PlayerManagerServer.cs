@@ -288,23 +288,19 @@ namespace AnyRPG {
             }
         }
 
-        public void InteractWithClassChangeComponent(UnitController unitController, ClassChangeComponent classChangeComponent, int optionIndex) {
-            if (systemGameManager.GameMode == GameMode.Local) {
-                interactionManager.InteractWithClassChangeComponentClient(classChangeComponent);
-            } else if (networkManagerServer.ServerModeActive) {
-                if (activePlayerLookup.ContainsKey(unitController)) {
-                    networkManagerServer.InteractWithClassChangeComponent(activePlayerLookup[unitController], classChangeComponent.Interactable, optionIndex);
-                }
-            }
-
-        }
-
         public void SetPlayerCharacterClass(CharacterClass characterClass, int clientId) {
             if (activePlayers.ContainsKey(clientId) == false) {
                 return;
             }
             activePlayers[clientId].BaseCharacter.ChangeCharacterClass(characterClass);
 
+        }
+
+        public void LearnSkill(Skill skill, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].CharacterSkillManager.LearnSkill(skill);
         }
     }
 

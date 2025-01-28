@@ -409,6 +409,9 @@ namespace AnyRPG {
             clientConnector.SetPlayerCharacterClass(className);
         }
 
+        public override void LearnSkill(string skillName) {
+            clientConnector.LearnSkill(skillName);
+        }
 
         #endregion
 
@@ -531,8 +534,12 @@ namespace AnyRPG {
             clientConnector.AdvertiseAddSpawnRequestServer(clientId, loadSceneRequest);
         }
 
-        public override void InteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            clientConnector.InteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        public override void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        }
+
+        public override void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
         }
 
         public override UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {

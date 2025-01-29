@@ -26,8 +26,12 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
+    networkUnitPrefab: {fileID: 0}
     modelPrefab: {fileID: 6954704190252621995, guid: b50f0a866945a66428c3794bd6eba9b0,
       type: 3}
+    networkModelPrefab: {fileID: 0}
+    modelProvider:
+      rid: -2
     animationProfileName: 
     useInlineAnimationProps: 0
     animationProps:
@@ -137,7 +141,6 @@ MonoBehaviour:
     floatHeight: 1.4
     addFloatHeightToTransform: 0
     floatTransform: Spine1
-  isUMAUnit: 0
   isPet: 0
   flightCapable: 0
   glideCapable: 0
@@ -213,4 +216,6 @@ MonoBehaviour:
   m_UUID: eec98822-a8a8-4d9a-8c61-58c1b6f41772
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

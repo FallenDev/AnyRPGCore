@@ -26,8 +26,12 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
+    networkUnitPrefab: {fileID: 0}
     modelPrefab: {fileID: 943068409625311753, guid: 022ab4d98a489344283da6d08ddec94c,
       type: 3}
+    networkModelPrefab: {fileID: 0}
+    modelProvider:
+      rid: -2
     animationProfileName: Dragon
     useInlineAnimationProps: 0
     animationProps:
@@ -137,7 +141,6 @@ MonoBehaviour:
     floatHeight: 1.4
     addFloatHeightToTransform: 0
     floatTransform: back1
-  isUMAUnit: 0
   isPet: 1
   flightCapable: 1
   glideCapable: 0
@@ -213,4 +216,6 @@ MonoBehaviour:
   m_UUID: dd766fb1-eca7-4d79-8dc1-5c8ec60366e5
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

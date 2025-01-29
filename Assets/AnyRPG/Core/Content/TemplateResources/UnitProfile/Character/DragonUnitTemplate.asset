@@ -26,8 +26,12 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
+    networkUnitPrefab: {fileID: 0}
     modelPrefab: {fileID: 943068409625311753, guid: 022ab4d98a489344283da6d08ddec94c,
       type: 3}
+    networkModelPrefab: {fileID: 0}
+    modelProvider:
+      rid: -2
     animationProfileName: Dragon
     useInlineAnimationProps: 0
     animationProps:
@@ -121,6 +125,7 @@ MonoBehaviour:
       suppressFaction: 1
       overrideNameplatePosition: 1
       namePlatePosition: {x: 0, y: 6, z: 0}
+      useSnapShot: 1
       unitFrameTarget: jaw_upper_end
       unitFrameCameraLookOffset: {x: 0, y: 0, z: 0}
       unitFrameCameraPositionOffset: {x: 0, y: 0, z: 1.5}
@@ -136,7 +141,6 @@ MonoBehaviour:
     floatHeight: 1.4
     addFloatHeightToTransform: 0
     floatTransform: back1
-  isUMAUnit: 0
   isPet: 1
   flightCapable: 1
   glideCapable: 0
@@ -172,16 +176,15 @@ MonoBehaviour:
     weaponSkills: []
     validPetTypes: []
     startingPets: []
+  primaryStats: []
+  powerResources: []
+  useProviderEquipment: 0
+  equipmentNameList: []
   isAggressive: 1
   aggroRadius: 20
   automaticCombatStrategy: 0
   combatStrategyName: 
   defaultHitEffects: []
-  primaryStats: []
-  powerResources: []
-  useProviderEquipment: 0
-  equipmentNameList: []
-  faceInteractionTarget: 1
   isMobile: 1
   footstepType: 4
   playOnFootstep: 1
@@ -202,6 +205,7 @@ MonoBehaviour:
     movementSpeed: 0
     savePositionAtDestination: 0
   patrolNames: []
+  faceInteractionTarget: 1
   interactionMaxRange: 3
   interactableOptions: []
   inlineInteractableOptions: []
@@ -212,4 +216,6 @@ MonoBehaviour:
   m_UUID: 0c4469aa-ec9f-491c-bdc8-68d3586271dc
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

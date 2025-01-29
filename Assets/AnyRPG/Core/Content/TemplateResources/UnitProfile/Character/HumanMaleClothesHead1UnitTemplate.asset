@@ -26,8 +26,12 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
+    networkUnitPrefab: {fileID: 0}
     modelPrefab: {fileID: 6307183516646880328, guid: 67b4508f106648b47a9bdcefd4eaa12b,
       type: 3}
+    networkModelPrefab: {fileID: 0}
+    modelProvider:
+      rid: -2
     animationProfileName: 
     useInlineAnimationProps: 0
     animationProps:
@@ -121,6 +125,7 @@ MonoBehaviour:
       suppressFaction: 1
       overrideNameplatePosition: 1
       namePlatePosition: {x: 0, y: 2.3, z: 0}
+      useSnapShot: 1
       unitFrameTarget: head
       unitFrameCameraLookOffset: {x: 0, y: 0, z: 0}
       unitFrameCameraPositionOffset: {x: 0, y: 0, z: 0.66}
@@ -136,7 +141,6 @@ MonoBehaviour:
     floatHeight: 0.3
     addFloatHeightToTransform: 0
     floatTransform: torso
-  isUMAUnit: 0
   isPet: 0
   flightCapable: 0
   glideCapable: 0
@@ -171,16 +175,15 @@ MonoBehaviour:
     weaponSkills: []
     validPetTypes: []
     startingPets: []
+  primaryStats: []
+  powerResources: []
+  useProviderEquipment: 0
+  equipmentNameList: []
   isAggressive: 0
   aggroRadius: 0
   automaticCombatStrategy: 0
   combatStrategyName: 
   defaultHitEffects: []
-  primaryStats: []
-  powerResources: []
-  useProviderEquipment: 0
-  equipmentNameList: []
-  faceInteractionTarget: 1
   isMobile: 1
   footstepType: 3
   playOnFootstep: 1
@@ -201,6 +204,7 @@ MonoBehaviour:
     movementSpeed: 0
     savePositionAtDestination: 0
   patrolNames: []
+  faceInteractionTarget: 1
   interactionMaxRange: 3
   interactableOptions: []
   inlineInteractableOptions: []
@@ -208,7 +212,9 @@ MonoBehaviour:
   saveOnLevelUnload: 0
   saveOnGameSave: 0
   overwriteUnitUUID: 0
-  m_UUID: 348e4ea1-ee6b-40ea-9681-240f6ad48ef4
+  m_UUID: 751da29a-0c21-4262-b55c-c38e1f8acdaf
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

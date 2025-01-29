@@ -358,11 +358,14 @@ namespace AnyRPG {
         /// configure all classes of type AutoConfiguredMonoBehavior in the scene
         /// </summary>
         public void AutoConfigureMonoBehaviours(string sceneName) {
-            //Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
+            Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
 
             foreach (AutoConfiguredMonoBehaviour autoConfiguredMonoBehaviour in GameObject.FindObjectsByType<AutoConfiguredMonoBehaviour>(FindObjectsSortMode.None)) {
+
                 if (autoConfiguredMonoBehaviour.gameObject.scene.name == sceneName) {
                     autoConfiguredMonoBehaviour.AutoConfigure(this);
+                } else {
+                    Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours(): {autoConfiguredMonoBehaviour.gameObject.name} not in scene");
                 }
             }
         }

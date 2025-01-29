@@ -413,6 +413,10 @@ namespace AnyRPG {
         public void LearnSkill(string skillName) {
             networkController.LearnSkill(skillName);
         }
+
+        internal void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {
+            interactionManager.InteractWithAnimatedObjectComponentClient(interactable, optionIndex);
+        }
     }
 
     public enum NetworkClientMode { Lobby, MMO }

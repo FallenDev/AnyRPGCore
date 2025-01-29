@@ -15,9 +15,11 @@ namespace AnyRPG {
         */
 
         protected Interactable interactable = null;
+        protected bool colliderWasActive = false;
 
         // game manager references
         protected PlayerManagerServer playerManagerServer = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         protected Dictionary<GameObject, UnitController> inRangeGameObjects = new Dictionary<GameObject, UnitController>();
 
@@ -26,12 +28,15 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
+            Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.SetGameManagerReferences()");
+
             base.SetGameManagerReferences();
             playerManagerServer = systemGameManager.PlayerManagerServer;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void SetInteractable(Interactable interactable) {
-            //Debug.Log("InteractableRange.SetInteractable(" + interactable.gameObject.name + ")");
+            Debug.Log($"InteractableRange.SetInteractable({interactable.gameObject.name})");
             this.interactable = interactable;
             /*
             if (autoSetRadius == true) {
@@ -44,6 +49,9 @@ namespace AnyRPG {
                 extents = new Vector3(interactable.InteractionMaxRange, interactable.InteractionMaxRange, interactable.InteractionMaxRange);
             }
             */
+            if (colliderWasActive && (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local)) {
+                EnableCollider();
+            }
         }
 
         public void EnableCollider() {
@@ -55,7 +63,12 @@ namespace AnyRPG {
         }
 
         private void OnTriggerEnter(Collider collider) {
-            //Debug.Log(interactable.gameObject.name + ".InteractableRange.OnTriggerEnter(" + collider.gameObject.name + ") count : " + inRangeColliders.Count);
+            Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.OnTriggerEnter({collider.gameObject.name}) count : " + inRangeGameObjects.Count);
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                // triggers are server authoritative
+                return;
+            }
 
             if (playerManagerServer.ActivePlayerGameObjects.ContainsKey(collider.gameObject) == false) {
                 return;
@@ -116,6 +129,12 @@ namespace AnyRPG {
             inRangeGameObjects.Clear();
         }
 
+        private void Awake() {
+            if (rangeCollider != null && rangeCollider.enabled == true) {
+                colliderWasActive = true;
+                DisableCollider();
+            }
+        }
 
 
     }

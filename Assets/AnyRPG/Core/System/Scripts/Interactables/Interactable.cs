@@ -267,6 +267,8 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
+            Debug.Log($"{gameObject.name}.Interactable.SetGameManagerReferences()");
+
             base.SetGameManagerReferences();
 
             uIManager = systemGameManager.UIManager;
@@ -638,7 +640,7 @@ namespace AnyRPG {
         /// called manually after mouse enters nameplate or interactable
         /// </summary>
         public void OnMouseIn() {
-            //Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
+            Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
 
             if (!isActiveAndEnabled) {
                 // this interactable is inactive, there is no reason to do anything

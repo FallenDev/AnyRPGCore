@@ -542,6 +542,11 @@ namespace AnyRPG {
             clientConnector.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
         }
 
+        public override void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithAnimatedObjectComponentServer(clientId, interactable, optionIndex);
+
+        }
+
         public override UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
             return clientConnector.SpawnCharacterUnit(characterRequestData, parentTransform, position, forward, scene);
         }

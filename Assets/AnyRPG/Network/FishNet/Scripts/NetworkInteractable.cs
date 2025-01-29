@@ -75,6 +75,9 @@ namespace AnyRPG {
                 return;
             }
             SubscribeToClientInteractableEvents();
+
+            // network objects will not be active on clients when the autoconfigure runs, so they must configure themselves
+            interactable.AutoConfigure(systemGameManager);
         }
 
         public override void OnStopClient() {

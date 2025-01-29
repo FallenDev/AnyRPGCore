@@ -601,6 +601,10 @@ namespace AnyRPG {
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
         }
+
+        public void AdvertiseInteractWithAnimatedObjectComponent(int clientId, Interactable interactable, int optionIndex) {
+            networkController.AdvertiseInteractWithAnimatedObjectComponentServer(clientId, interactable, optionIndex);
+        }
     }
 
 }

@@ -46,9 +46,16 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
             base.Interact(sourceUnitController, optionIndex);
 
-            interactionManager.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
+            //interactionManager.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
 
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            classChangeManager.SetDisplayClass(Props.CharacterClass, this, optionIndex);
+
+            uIManager.classChangeWindow.OpenWindow();
         }
 
         public override void StopInteract() {

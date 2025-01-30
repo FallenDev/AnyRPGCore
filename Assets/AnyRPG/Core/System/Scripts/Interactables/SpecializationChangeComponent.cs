@@ -48,10 +48,14 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
             base.Interact(source, optionIndex);
 
-            specializationChangeManager.SetDisplaySpecialization(Props.ClassSpecialization, this);
-            uIManager.specializationChangeWindow.OpenWindow();
-
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+
+            specializationChangeManager.SetDisplaySpecialization(Props.ClassSpecialization, this, optionIndex);
+            uIManager.specializationChangeWindow.OpenWindow();
         }
 
         public override void StopInteract() {

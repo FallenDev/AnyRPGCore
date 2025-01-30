@@ -112,9 +112,33 @@ namespace AnyRPG {
         public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".QuestGiver.Interact()");
             base.Interact(sourceUnitController, optionIndex);
-            interactionManager.InteractWithQuestGiver(this, optionIndex, sourceUnitController);
+            //interactionManager.InteractWithQuestGiver(this, optionIndex, sourceUnitController);
             
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            // this is running locally
+            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count > 1) {
+                interactionManager.OpenInteractionWindow(Interactable);
+                return;
+            } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests).Count == 0) {
+                if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
+                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0], Interactable, this, optionIndex);
+                    uIManager.dialogWindow.OpenWindow();
+                    return;
+                } else {
+                    // do nothing will skip to below and open questlog to the available quest
+                }
+            }
+            // we got here: we only have a single complete quest, or a single available quest with the opening dialog competed already
+            if (!uIManager.questGiverWindow.IsOpen) {
+                //Debug.Log(source + " interacting with " + gameObject.name);
+                sourceUnitController.CharacterQuestLog.ShowQuestGiverDescription(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Union(sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests)).ToList()[0], this);
+                return;
+            }
+
         }
 
         public override void StopInteract() {

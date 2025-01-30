@@ -64,13 +64,13 @@ namespace AnyRPG {
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
-        public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
+        //public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
-        public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
-        public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
-        public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
     }
 
 }

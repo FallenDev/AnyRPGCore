@@ -669,12 +669,6 @@ namespace AnyRPG {
             unitController.UnitActionManager.BeginActionInternal(animatedAction, playerInitiated);
         }
 
-       
-
-        protected override void OnDisable() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnDisable()");
-        }
-
     }
 }
 

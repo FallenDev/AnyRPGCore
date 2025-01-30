@@ -27,9 +27,13 @@ namespace AnyRPG {
             
             base.Interact(source, optionIndex);
 
-            nameChangeManager.BeginInteraction(this);
-            uIManager.nameChangeWindow.OpenWindow();
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            nameChangeManager.BeginInteraction(this, optionIndex);
+            uIManager.nameChangeWindow.OpenWindow();
         }
 
         public override void StopInteract() {

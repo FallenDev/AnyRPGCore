@@ -21,12 +21,12 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        public void SetDisplayClass(CharacterClass characterClass, InteractableOptionComponent interactableOptionComponent) {
+        public void SetDisplayClass(CharacterClass characterClass, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             Debug.Log("ClassChangeManager.SetDisplayClass(" + characterClass + ")");
 
             this.characterClass = characterClass;
 
-            BeginInteraction(interactableOptionComponent);
+            BeginInteraction(interactableOptionComponent, optionIndex);
         }
 
         public void ChangeCharacterClass() {

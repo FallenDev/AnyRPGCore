@@ -12,6 +12,7 @@ namespace AnyRPG {
 
         public event System.Action OnPrerequisiteUpdates = delegate { };
         public event System.Action OnInteractableDisable = delegate { };
+        public event System.Action<UnitController, int> OnInteractionWithOptionStarted = delegate { };
 
         // this field does not do anything, but is needed to satisfy the IDescribable interface
         protected Sprite interactableIcon = null;
@@ -111,9 +112,11 @@ namespace AnyRPG {
         protected DialogController dialogController = null;
         protected OutlineController outlineController = null;
         protected ObjectMaterialController objectMaterialController = null;
-        protected PlayerManager playerManager = null;
+        protected InteractableEventController interactableEventController = null;
+
 
         // game manager references
+        protected PlayerManager playerManager = null;
         protected UIManager uIManager = null;
         protected NamePlateManager namePlateManager = null;
         protected MiniMapManager miniMapManager = null;
@@ -156,6 +159,7 @@ namespace AnyRPG {
         public bool IsTrigger { get => isTrigger; set => isTrigger = value; }
         public CharacterUnit CharacterUnit { get => characterUnit; set => characterUnit = value; }
         public DialogController DialogController { get => dialogController; }
+        public InteractableEventController InteractableEventController { get => interactableEventController; }
         public virtual bool CombatOnly { get => false; }
         public virtual bool NonCombatOptionsAvailable { get => true; }
 
@@ -256,6 +260,7 @@ namespace AnyRPG {
         protected virtual void CreateComponents() {
             dialogController = new DialogController(this, systemGameManager);
             outlineController = new OutlineController(this, systemGameManager);
+            interactableEventController = new InteractableEventController(this, systemGameManager);
             CreateMaterialController();
         }
 
@@ -554,7 +559,7 @@ namespace AnyRPG {
             // do something in inherited class
         }
 
-        public virtual void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent) {
+        public virtual void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             // do something in inherited class
         }
 
@@ -938,12 +943,14 @@ namespace AnyRPG {
             //miniMapIndicator = null;
             //mainMapIndicator = null;
 
-            characterUnit = null;
-
-            outlineController = null;
-
             CleanupEventSubscriptions();
             CleanupEverything();
+
+            characterUnit = null;
+            outlineController = null;
+            objectMaterialController = null;
+            interactableEventController = null;
+            dialogController = null;
 
             startHasRun = false;
             componentReferencesInitialized = false;
@@ -986,6 +993,13 @@ namespace AnyRPG {
             //systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
         }
 
+        #region events
+
+        public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, int optionIndex) {
+            OnInteractionWithOptionStarted(sourceUnitController, optionIndex);
+        }
+
+        #endregion
 
     }
 

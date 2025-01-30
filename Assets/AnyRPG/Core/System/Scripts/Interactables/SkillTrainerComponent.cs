@@ -29,9 +29,16 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
             base.Interact(sourceUnitController, optionIndex);
 
-            interactionManager.InteractWithSkillTrainerComponent(sourceUnitController, this, optionIndex);
+            //interactionManager.InteractWithSkillTrainerComponent(sourceUnitController, this, optionIndex);
 
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            if (!uIManager.skillTrainerWindow.IsOpen) {
+                skillTrainerManager.SetSkillTrainer(this, optionIndex);
+                uIManager.skillTrainerWindow.OpenWindow();
+            }
         }
 
         public override void StopInteract() {

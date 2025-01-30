@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace AnyRPG {
@@ -32,39 +33,6 @@ namespace AnyRPG {
             interactable = GetComponent<Interactable>();
         }
 
-        public void SubscribeToServerInteractableEvents() {
-            if (interactable == null) {
-                // something went wrong
-                return;
-            }
-
-            //unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
-        }
-
-        public void UnsubscribeFromServerInteractableEvents() {
-            if (interactable == null) {
-                return;
-            }
-            //unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
-
-        }
-
-        public void SubscribeToClientInteractableEvents() {
-            if (interactable == null) {
-                // something went wrong
-                return;
-            }
-
-            //unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
-        }
-
-        public void UnsubscribeFromClientInteractableEvents() {
-            if (interactable == null) {
-                return;
-            }
-            //unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
-        }
-
         public override void OnStartClient() {
             //Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartClient()");
 
@@ -74,10 +42,11 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            SubscribeToClientInteractableEvents();
 
             // network objects will not be active on clients when the autoconfigure runs, so they must configure themselves
             interactable.AutoConfigure(systemGameManager);
+
+            SubscribeToClientInteractableEvents();
         }
 
         public override void OnStopClient() {
@@ -101,8 +70,11 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            UnsubscribeFromServerInteractableEvents();
-            //systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, serverRequestId, false);
+
+            // network objects will not be active on clients when the autoconfigure runs, so they must configure themselves
+            //interactable.AutoConfigure(systemGameManager);
+
+            SubscribeToServerInteractableEvents();
         }
 
         public override void OnStopServer() {
@@ -117,9 +89,90 @@ namespace AnyRPG {
             //systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
         }
 
-        protected virtual void OnDisable() {
-            //Debug.Log($"{gameObject.name}.NetworkInteractable.OnDisable()");
+        public void SubscribeToServerInteractableEvents() {
+            if (interactable == null) {
+                // something went wrong
+                return;
+            }
+
+            //interactable.InteractableEventController.OnAnimatedObjectChooseMovement += HandleAnimatedObjectChooseMovementServer;
+            interactable.OnInteractionWithOptionStarted += HandleInteractionWithOptionStarted;
         }
+
+        public void UnsubscribeFromServerInteractableEvents() {
+            if (interactable == null) {
+                return;
+            }
+            //interactable.InteractableEventController.OnAnimatedObjectChooseMovement -= HandleAnimatedObjectChooseMovementServer;
+            interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
+        }
+
+        public void SubscribeToClientInteractableEvents() {
+            if (interactable == null) {
+                // something went wrong
+                return;
+            }
+
+            //unitController.UnitEventController.OnBeginChatMessage += HandleBeginChatMessageServer;
+        }
+
+        public void UnsubscribeFromClientInteractableEvents() {
+            if (interactable == null) {
+                return;
+            }
+            //unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
+        }
+
+
+        /*
+        public void HandleAnimatedObjectChooseMovementServer(UnitController sourceUnitController, int optionIndex) {
+            
+            NetworkCharacterUnit targetNetworkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                targetNetworkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+            }
+            HandleAnimatedObjectChooseMovementClient(targetNetworkCharacterUnit, optionIndex);
+        }
+
+        [ObserversRpc]
+        public void HandleAnimatedObjectChooseMovementClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int optionIndex) {
+            UnitController sourceUnitController = null;
+            if (sourceNetworkCharacterUnit != null) {
+                sourceUnitController = sourceNetworkCharacterUnit.UnitController;
+            }
+
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if (currentInteractables.ContainsKey(optionIndex)) {
+                if (currentInteractables[optionIndex] is AnimatedObjectComponent) {
+                    (currentInteractables[optionIndex] as AnimatedObjectComponent).ChooseMovement(sourceUnitController, optionIndex);
+                }
+            }
+        }
+        */
+
+        public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int optionIndex) {
+
+            NetworkCharacterUnit targetNetworkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                targetNetworkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+            }
+            HandleInteractionWithOptionStartedClient(targetNetworkCharacterUnit, optionIndex);
+        }
+
+        [ObserversRpc]
+        public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int optionIndex) {
+            UnitController sourceUnitController = null;
+            if (sourceNetworkCharacterUnit != null) {
+                sourceUnitController = sourceNetworkCharacterUnit.UnitController;
+            }
+
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if (currentInteractables.ContainsKey(optionIndex)) {
+                currentInteractables[optionIndex].Interact(sourceUnitController, optionIndex);
+            }
+        }
+
+
 
     }
 }

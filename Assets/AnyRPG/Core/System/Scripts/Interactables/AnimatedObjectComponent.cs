@@ -23,30 +23,43 @@ namespace AnyRPG {
             return base.CanInteract(source, processRangeCheck, passedRangeCheck, processNonCombatCheck);
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, optionIndex);
 
             if (Props.AnimationComponent == null) {
                 Debug.Log("AnimatedObjectComponent.Interact(): Animation component was null");
                 return false;
             }
-            ChooseMovement();
+            ChooseMovement(sourceUnitController, optionIndex);
 
             return false;
         }
 
-        private void ChooseMovement() {
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            uIManager.interactionWindow.CloseWindow();
+        }
+
+        public void ChooseMovement(UnitController sourceUnitController, int optionIndex) {
+            //interactable.InteractableEventController.NotifyOnAnimatedObjectChooseMovement(sourceUnitController, optionIndex);
             if (objectOpen) {
-                Props.AnimationComponent.Play(Props.CloseAnimationClip.name);
-                if (Props.OpenAudioClip != null) {
-                    interactable.UnitComponentController.PlayEffectSound(Props.CloseAudioClip);
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    Props.AnimationComponent.Play(Props.CloseAnimationClip.name);
+                }
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                    if (Props.OpenAudioClip != null) {
+                        interactable.UnitComponentController.PlayEffectSound(Props.CloseAudioClip);
+                    }
                 }
                 objectOpen = false;
             } else {
-                Props.AnimationComponent.Play(Props.OpenAnimationClip.name);
-                if (Props.CloseAudioClip != null) {
-                    interactable.UnitComponentController.PlayEffectSound(Props.OpenAudioClip);
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    Props.AnimationComponent.Play(Props.OpenAnimationClip.name);
+                }
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                    if (Props.CloseAudioClip != null) {
+                        interactable.UnitComponentController.PlayEffectSound(Props.OpenAudioClip);
+                    }
                 }
                 objectOpen = true;
             }

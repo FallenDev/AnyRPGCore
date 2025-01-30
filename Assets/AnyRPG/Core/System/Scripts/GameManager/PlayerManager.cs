@@ -691,6 +691,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkill;
+            unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -735,7 +736,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdated;
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkill;
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkill;
+            unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
+        }
 
+        public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int OptionIndex) {
+            interactableOptionComponent.ClientInteraction(sourceUnitController, OptionIndex);
         }
 
         public void HandleLearnSkill(UnitController sourceUnitController, Skill skill) {

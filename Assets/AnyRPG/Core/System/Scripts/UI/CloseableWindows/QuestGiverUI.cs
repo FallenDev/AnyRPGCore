@@ -298,7 +298,7 @@ namespace AnyRPG {
             ShowDescription(quest, questGiver);
         }
 
-        public void ShowDescription(Quest quest, IQuestGiver questGiver = null) {
+        public void ShowDescription(Quest quest, IQuestGiver questGiver) {
             //Debug.Log("QuestGiverUI.ShowDescription(" + quest.DisplayName + ", " + (questGiver == null ? "null" : questGiver.ToString()) + ")");
 
             if (quest == null) {
@@ -309,7 +309,8 @@ namespace AnyRPG {
             if (quest.HasOpeningDialog == true) {
                 if (quest.OpeningDialog != null && quest.OpeningDialog.TurnedIn(playerManager.UnitController) == false) {
                     //Debug.Log("QuestGiverUI.ShowDescription(): opening dialog is not complete, showing dialog");
-                    dialogManager.SetQuestDialog(quest, interactable, questGiver.InteractableOptionComponent);
+                    // FIX ME - that 0 should be the optionIndex of the interactableOption, but some quests can start from items.  There is no interactableOption in that case...
+                    dialogManager.SetQuestDialog(quest, interactable, questGiver.InteractableOptionComponent, 0);
                     uIManager.dialogWindow.OpenWindow();
                     //Debug.Log("QuestGiverUI.ShowDescription(): about to close window because of dialog");
                     if (uIManager.questGiverWindow.IsOpen) {

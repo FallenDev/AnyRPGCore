@@ -48,10 +48,14 @@ namespace AnyRPG {
 
             base.Interact(source, optionIndex);
 
-            factionChangeManager.SetDisplayFaction(Props.Faction, this);
-            uIManager.factionChangeWindow.OpenWindow();
-
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+
+            factionChangeManager.SetDisplayFaction(Props.Faction, this, optionIndex);
+            uIManager.factionChangeWindow.OpenWindow();
         }
 
         public override void StopInteract() {

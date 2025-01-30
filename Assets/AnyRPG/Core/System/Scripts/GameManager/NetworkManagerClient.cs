@@ -378,9 +378,11 @@ namespace AnyRPG {
             levelManager.LoadLevel(sceneName);
         }
 
+        /*
         public void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithQuestGiverClient(interactable, optionIndex, playerManager.UnitController);
         }
+        */
 
         public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
             networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex);
@@ -398,25 +400,31 @@ namespace AnyRPG {
             levelManager.SetLoadingProgress(percent);
         }
 
+        /*
         public void AdvertiseInteractWithClassChangeComponent(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithClassChangeComponentClient(interactable, optionIndex);
         }
+        */
 
         public void SetPlayerCharacterClass(string className) {
             networkController.SetPlayerCharacterClass(className);
         }
 
+        /*
         public void AdvertiseInteractWithSkillTrainerComponent(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithSkillTrainerComponentClient(interactable, optionIndex);
         }
+        */
 
         public void LearnSkill(string skillName) {
             networkController.LearnSkill(skillName);
         }
 
-        internal void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {
+        /*
+        public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithAnimatedObjectComponentClient(interactable, optionIndex);
         }
+        */
     }
 
     public enum NetworkClientMode { Lobby, MMO }

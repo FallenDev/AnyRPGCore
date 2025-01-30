@@ -56,21 +56,27 @@ namespace AnyRPG {
 
         public override bool Interact(UnitController sourceUnitController, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".DialogInteractable.Interact()");
+            base.Interact(sourceUnitController, optionIndex);
+            return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            
             List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
-                return false;
+                return;
             } else /*if (currentList.Count == 1)*/ {
                 if (currentList[optionIndex].Automatic) {
                     interactable.DialogController.BeginDialog(sourceUnitController, currentList[optionIndex]);
                 } else {
-                    dialogManager.SetDialog(currentList[optionIndex], this.interactable, this);
+                    dialogManager.SetDialog(currentList[optionIndex], this.interactable, this, optionIndex);
                     uIManager.dialogWindow.OpenWindow();
                 }
             }/* else {
                 interactable.OpenInteractionWindow();
             }*/
-            base.Interact(sourceUnitController, optionIndex);
-            return true;
+
         }
 
         public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {

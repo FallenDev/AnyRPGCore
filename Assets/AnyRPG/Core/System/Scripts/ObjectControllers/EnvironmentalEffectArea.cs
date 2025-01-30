@@ -27,6 +27,7 @@ namespace AnyRPG {
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public IAbilityManager AbilityManager { get => abilityManager; }
         public MonoBehaviour MonoBehaviour { get => this; }
@@ -40,9 +41,12 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.SetGameManagerReferences()");
+
             base.SetGameManagerReferences();
 
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void GetComponentReferences() {
@@ -51,6 +55,17 @@ namespace AnyRPG {
 
 
         private void FixedUpdate() {
+            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.FixedUpdate()");
+
+            if (configureCount == 0) {
+                return;
+            }
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                // ticks should only happen on the server
+                return;
+            }
+
             elapsedTime += Time.fixedDeltaTime;
             if (elapsedTime > tickRate) {
                 //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.FixedUpdate()");
@@ -60,7 +75,7 @@ namespace AnyRPG {
         }
 
         private void PerformAbilityEffects() {
-            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.PerformAbilityEffects()");
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.PerformAbilityEffects()");
 
             List<AOETargetNode> validTargets = GetValidTargets();
             foreach (AOETargetNode validTarget in validTargets) {
@@ -71,7 +86,7 @@ namespace AnyRPG {
         }
 
         protected virtual List<AOETargetNode> GetValidTargets() {
-            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets()");
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets()");
 
             Vector3 aoeSpawnCenter = transform.position;
 
@@ -80,13 +95,16 @@ namespace AnyRPG {
             int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             int validMask = (playerMask | characterMask);
 
-            //Debug.Log(DisplayName + ".AOEEffect.GetValidTargets(): using aoeSpawnCenter: " + aoeSpawnCenter + ", extents: " + aoeExtents);
-            colliders = Physics.OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, Quaternion.identity, validMask);
 
-            //Debug.Log("AOEEffect.Cast(): Casting OverlapSphere with radius: " + aoeRadius);
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(): using aoeSpawnCenter: {aoeSpawnCenter} extents: {boxCollider.bounds.extents}");
+            //int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, colliders, Quaternion.identity, validMask);
+            int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, colliders, Quaternion.identity);
+
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(): hitCount: {hitCount}");
+
             List<AOETargetNode> validTargets = new List<AOETargetNode>();
             foreach (Collider collider in colliders) {
-                //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
+                Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
 
                 bool canAdd = true;
                 Interactable interactable = collider.gameObject.GetComponent<Interactable>();
@@ -103,7 +121,7 @@ namespace AnyRPG {
                     validTargets.Add(validTargetNode);
                 }
             }
-            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(). Valid targets count: " + validTargets.Count);
+            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(). Valid targets count: " + validTargets.Count);
             return validTargets;
         }
 

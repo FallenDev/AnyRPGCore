@@ -572,6 +572,7 @@ namespace AnyRPG {
             fishNetNetworkManager.ServerManager.Despawn(returnedObject);
         }
 
+        /*
         public void AdvertiseInteractWithQuestGiver(NetworkInteractable networkInteractable, int optionIndex, int clientId) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 AdvertiseInteractWithQuestGiverClient(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
@@ -583,6 +584,7 @@ namespace AnyRPG {
 
             networkManagerClient.AdvertiseInteractWithQuestGiver(networkInteractable.Interactable, optionIndex);
         }
+        */
 
         public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
             NetworkCharacterUnit networkCharacterUnit = null;
@@ -620,6 +622,7 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
         }
 
+        /*
         public void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 NetworkInteractable networkInteractable = null;
@@ -638,6 +641,7 @@ namespace AnyRPG {
             }
             networkManagerClient.AdvertiseInteractWithClassChangeComponent(interactable, optionIndex);
         }
+        */
 
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {
@@ -649,6 +653,7 @@ namespace AnyRPG {
             networkManagerServer.LearnSkill(skillName, networkConnection.ClientId);
         }
 
+        /*
         public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 NetworkInteractable networkInteractable = null;
@@ -667,7 +672,9 @@ namespace AnyRPG {
             }
             networkManagerClient.AdvertiseInteractWithSkillTrainerComponent(interactable, optionIndex);
         }
+        */
 
+        /*
         public void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 NetworkInteractable networkInteractable = null;
@@ -686,6 +693,7 @@ namespace AnyRPG {
             }
             networkManagerClient.AdvertiseInteractWithAnimatedObjectComponent(interactable, optionIndex);
         }
+        */
 
         /*
         public override void OnStartServer() {

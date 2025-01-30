@@ -1489,7 +1489,8 @@ namespace AnyRPG {
 
             // this is necessary in case the player is moving fast and went off a cliff and we want to apply downforce
             // also needed in case of moving up stairs that are higher than 0.25f (the close to ground height)
-            Collider[] hitColliders = Physics.OverlapBox(playerManager.ActiveUnitController.transform.position, maintainingGroundExtents, playerManager.ActiveUnitController.transform.rotation, groundMask);
+            Collider[] hitColliders = new Collider[0];
+            playerManager.ActiveUnitController.PhysicsScene.OverlapBox(playerManager.ActiveUnitController.transform.position, maintainingGroundExtents, hitColliders, playerManager.ActiveUnitController.transform.rotation, groundMask);
             if (hitColliders.Length > 0) {
                 closeToGround = true;
             }

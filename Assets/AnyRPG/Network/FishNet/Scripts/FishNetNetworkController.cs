@@ -66,7 +66,7 @@ namespace AnyRPG {
         }
 
         private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+            Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
 
             serverState = obj.ConnectionState;
             if (serverState == LocalConnectionState.Started) {
@@ -86,6 +86,8 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerEvents() {
+            Debug.Log($"FishNetNetworkController.SubscribeToServerEvents()");
+
             fishNetNetworkManager.SceneManager.OnLoadEnd += HandleSceneLoadEndServer;
             fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
             fishNetNetworkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
@@ -93,6 +95,8 @@ namespace AnyRPG {
         }
 
         public void UnsubscribeFromServerEvents() {
+            Debug.Log($"FishNetNetworkController.UnsubscribeFromServerEvents()");
+
             fishNetNetworkManager.SceneManager.OnLoadEnd -= HandleSceneLoadEndServer;
             fishNetNetworkManager.ServerManager.OnClientKick -= HandleClientKick;
             fishNetNetworkManager.ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
@@ -418,7 +422,7 @@ namespace AnyRPG {
         #region server functions
 
         private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+            Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
 
             if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
                 return;
@@ -521,6 +525,7 @@ namespace AnyRPG {
             clientConnector.ReturnObjectToPool(returnedObject);
         }
 
+        /*
         public override void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId) {
 
             NetworkInteractable networkInteractable = null;
@@ -529,11 +534,13 @@ namespace AnyRPG {
             }
             clientConnector.AdvertiseInteractWithQuestGiver(networkInteractable, optionIndex, clientId);
         }
+        */
 
         public override void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
             clientConnector.AdvertiseAddSpawnRequestServer(clientId, loadSceneRequest);
         }
 
+        /*
         public override void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
             clientConnector.AdvertiseInteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
         }
@@ -544,8 +551,8 @@ namespace AnyRPG {
 
         public override void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex) {
             clientConnector.AdvertiseInteractWithAnimatedObjectComponentServer(clientId, interactable, optionIndex);
-
         }
+        */
 
         public override UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
             return clientConnector.SpawnCharacterUnit(characterRequestData, parentTransform, position, forward, scene);

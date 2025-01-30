@@ -37,7 +37,7 @@ namespace AnyRPG {
             if (!uIManager.vendorWindow.IsOpen) {
                 //Debug.Log(source + " interacting with " + gameObject.name);
 
-                vendorManager.SetProps(Props, this);
+                vendorManager.SetProps(Props, this, optionIndex);
                 uIManager.vendorWindow.OpenWindow();
                 
                 return true;

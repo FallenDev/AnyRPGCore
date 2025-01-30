@@ -4,6 +4,11 @@ using UnityEngine;
 namespace AnyRPG {
     public abstract class ConfiguredMonoBehaviour : MonoBehaviour {
 
+        protected PhysicsScene physicsScene;
+
+        public PhysicsScene PhysicsScene { get => physicsScene; }
+
+        // game manager references
         protected SystemGameManager systemGameManager = null;
         protected SystemConfigurationManager systemConfigurationManager = null;
 
@@ -11,6 +16,7 @@ namespace AnyRPG {
 
         public virtual void Configure(SystemGameManager systemGameManager) {
             this.systemGameManager = systemGameManager;
+            physicsScene = gameObject.scene.GetPhysicsScene();
             SetGameManagerReferences();
             configureCount++;
         }

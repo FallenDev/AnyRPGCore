@@ -545,11 +545,13 @@ namespace AnyRPG {
             networkController.ReturnObjectToPool(returnedObject);
         }
 
+        /*
         public void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, UnitController sourceUnitController) {
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 networkController.AdvertiseInteractWithQuestGiver(interactable, optionIndex, playerManagerServer.ActivePlayerLookup[sourceUnitController]);
             }
         }
+        */
 
         public void InteractWithOption(UnitController sourceUnitController, Interactable interactable, int componentIndex) {
             interactionManager.InteractWithOptionServer(sourceUnitController, interactable, componentIndex);
@@ -559,11 +561,15 @@ namespace AnyRPG {
             networkController.AdvertiseAddSpawnRequest(clientId, loadSceneRequest);
         }
 
+        /*
         public void AdvertiseInteractWithClassChangeComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
         }
+        */
 
         public void HandleSceneLoadEnd(Scene scene) {
+            Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name})");
+
             levelManagerServer.AddLoadedScene(scene);
             levelManagerServer.ProcessLevelLoad(scene.name);
         }
@@ -598,6 +604,7 @@ namespace AnyRPG {
             playerManagerServer.LearnSkill(skill, clientId);
         }
 
+        /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
         }
@@ -605,6 +612,7 @@ namespace AnyRPG {
         public void AdvertiseInteractWithAnimatedObjectComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithAnimatedObjectComponentServer(clientId, interactable, optionIndex);
         }
+        */
     }
 
 }

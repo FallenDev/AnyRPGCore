@@ -12,10 +12,10 @@ namespace AnyRPG {
 
         public VendorProps VendorProps { get => vendorProps; set => vendorProps = value; }
 
-        public void SetProps(VendorProps vendorProps, InteractableOptionComponent interactableOptionComponent) {
+        public void SetProps(VendorProps vendorProps, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             //Debug.Log("VendorManager.SetProps()");
             this.vendorProps = vendorProps;
-            BeginInteraction(interactableOptionComponent);
+            BeginInteraction(interactableOptionComponent, optionIndex);
         }
 
         public override void EndInteraction() {

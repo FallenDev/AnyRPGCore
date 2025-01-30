@@ -17,6 +17,7 @@ namespace AnyRPG {
         protected SystemEventManager systemEventManager = null;
         protected PlayerManager playerManager = null;
         protected PlayerManagerServer playerManagerServer = null;
+        protected NetworkManagerServer networkManagerServer = null;
         protected UIManager uIManager = null;
         protected InteractionManager interactionManager = null;
 
@@ -63,6 +64,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             interactionManager = systemGameManager.InteractionManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         /*
@@ -157,6 +159,9 @@ namespace AnyRPG {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
             //source.CancelMountEffects();
             systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
+            sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, optionIndex);
+            //interactable.InteractableEventController.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
+            interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
             return true;
         }
 
@@ -165,8 +170,8 @@ namespace AnyRPG {
             playerManager.PlayerController.StopInteract();
         }
 
-        public virtual void ProcessStartInteract() {
-            interactable.ProcessStartInteractWithOption(this);
+        public virtual void ProcessStartInteract(int optionIndex) {
+            interactable.ProcessStartInteractWithOption(this, optionIndex);
         }
 
         public virtual void ProcessStopInteract() {
@@ -175,6 +180,15 @@ namespace AnyRPG {
 
         public virtual bool PlayInteractionSound() {
             return false;
+        }
+
+        /// <summary>
+        /// called by the player manager on the client when the player interacts
+        /// </summary>
+        /// <param name="sourceUnitController"></param>
+        /// <param name="optionIndex"></param>
+        public virtual void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            // handle client-only stuff in child classes
         }
 
         public virtual AudioClip GetInteractionSound(VoiceProps voiceProps) {

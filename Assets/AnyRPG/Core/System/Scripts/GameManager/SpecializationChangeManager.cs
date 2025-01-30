@@ -21,12 +21,12 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        public void SetDisplaySpecialization(ClassSpecialization classSpecialization, InteractableOptionComponent interactableOptionComponent) {
+        public void SetDisplaySpecialization(ClassSpecialization classSpecialization, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             //Debug.Log("SpecializationChangeManager.SetDisplaySpecialization(" + classSpecialization + ")");
 
             this.classSpecialization = classSpecialization;
 
-            BeginInteraction(interactableOptionComponent);
+            BeginInteraction(interactableOptionComponent, optionIndex);
         }
 
         public void ChangeClassSpecialization() {

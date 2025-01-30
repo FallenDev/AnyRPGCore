@@ -18,21 +18,21 @@ namespace AnyRPG {
         public Interactable Interactable { get => interactable; set => interactable = value; }
         public Quest Quest { get => quest; set => quest = value; }
 
-        public void SetQuestDialog(Quest quest, Interactable interactable, InteractableOptionComponent interactableOptionComponent) {
+        public void SetQuestDialog(Quest quest, Interactable interactable, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             //Debug.Log("DialogPanelController.Setup(" + (quest == null ? "null" : quest.DisplayName) + ", " + (interactable == null ? "null" : interactable.DisplayName) + ")");
             this.quest = quest;
             this.interactable = interactable;
             dialog = quest.OpeningDialog;
 
-            BeginInteraction(interactableOptionComponent, false);
+            BeginInteraction(interactableOptionComponent, optionIndex, false);
         }
 
-        public void SetDialog(Dialog dialog, Interactable interactable, InteractableOptionComponent interactableOptionComponent) {
+        public void SetDialog(Dialog dialog, Interactable interactable, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
             //Debug.Log("DialogPanelController.Setup(" + dialog.DisplayName + ", " + interactable.DisplayName + ")");
             this.interactable = interactable;
             this.dialog = dialog;
 
-            BeginInteraction(interactableOptionComponent);
+            BeginInteraction(interactableOptionComponent, optionIndex);
         }
 
         public override void EndInteraction() {

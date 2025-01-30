@@ -126,11 +126,11 @@ namespace AnyRPG {
             int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             int validMask = (playerMask | characterMask);
             if (aoeProperties.UseRadius) {
-                colliders = Physics.OverlapSphere(aoeSpawnCenter, aoeProperties.AoeRadius, validMask);
+                source.PhysicsScene.OverlapSphere(aoeSpawnCenter, aoeProperties.AoeRadius, colliders, validMask, QueryTriggerInteraction.UseGlobal);
             }
             if (aoeProperties.UseExtents) {
                 //Debug.Log(DisplayName + ".AOEEffect.GetValidTargets(): using aoeSpawnCenter: " + aoeSpawnCenter + ", extents: " + aoeExtents);
-                colliders = Physics.OverlapBox(aoeSpawnCenter, aoeProperties.AoeExtents / 2f, aoeSpawnRotation, validMask);
+                source.PhysicsScene.OverlapBox(aoeSpawnCenter, aoeProperties.AoeExtents / 2f, colliders, aoeSpawnRotation, validMask);
             }
             //Debug.Log("AOEEffect.Cast(): Casting OverlapSphere with radius: " + aoeRadius);
             List<AOETargetNode> validTargets = new List<AOETargetNode>();

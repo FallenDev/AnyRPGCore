@@ -12,6 +12,7 @@ namespace AnyRPG {
         Transform transform { get; }
         GameObject gameObject { get; }
         MonoBehaviour MonoBehaviour {  get; }
+        PhysicsScene PhysicsScene { get; }
     }
 
 }

@@ -610,9 +610,9 @@ namespace AnyRPG {
             unitEventController.NotifyOnStopInteract();
         }
 
-        public override void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent) {
-            base.ProcessStartInteractWithOption(interactableOptionComponent);
-            unitEventController.NotifyOnStartInteractWithOption(interactableOptionComponent);
+        public override void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
+            base.ProcessStartInteractWithOption(interactableOptionComponent, optionIndex);
+            unitEventController.NotifyOnStartInteractWithOption(interactableOptionComponent, optionIndex);
         }
 
         public override void ProcessStopInteractWithOption(InteractableOptionComponent interactableOptionComponent) {
@@ -2049,7 +2049,8 @@ namespace AnyRPG {
             int validMask = (playerMask | characterMask | interactableMask | triggerMask);
 
             //Collider[] hitColliders = Physics.OverlapBox(GetHitBoxCenter(), GetHitBoxSize() / 2f, Quaternion.identity, validMask);
-            Collider[] hitColliders = Physics.OverlapBox(GetHitBoxCenter(), GetHitBoxSize() / 2f, transform.rotation, validMask);
+            Collider[] hitColliders = new Collider[0];
+             physicsScene.OverlapBox(GetHitBoxCenter(), GetHitBoxSize() / 2f, hitColliders, transform.rotation, validMask);
             //Debug.Log($"{gameObject.name}.UnitController.IsTargetInHitBox(" + (newTarget == null ? "null" : newTarget.gameObject.name) + "); center: " + hitBoxCenter.x + " " + hitBoxCenter.y + " " + hitBoxCenter.z + "; size: " + GetHitBoxSize() + "; navEnabled: " + agent.enabled);
             int i = 0;
             //Check when there is a new collider coming into contact with the box

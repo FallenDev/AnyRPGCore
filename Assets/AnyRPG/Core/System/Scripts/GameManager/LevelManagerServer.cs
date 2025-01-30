@@ -43,6 +43,8 @@ namespace AnyRPG {
         }
 
         public void ProcessLevelLoad(string sceneName)  {
+            Debug.Log($"LevelManagerServer.ProcessLevelLoad({sceneName})");
+
             cameraManager.ActivateMainCamera();
             systemGameManager.AutoConfigureMonoBehaviours(sceneName);
 

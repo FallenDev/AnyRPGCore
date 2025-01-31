@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5702170212700110633}
   - component: {fileID: 251337143587947253}
   - component: {fileID: 8596961643164384451}
+  - component: {fileID: 349439365473122481}
   m_Layer: 0
   m_Name: FishNetNetworkManager
   m_TagString: Untagged
@@ -140,3 +141,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceb97045f49c5b74bbdd42d0ec8bc36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &349439365473122481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48716581094196645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fdaae44044276a49a52229c1597e33b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _updateOrder: 0
+  _timingType: 0
+  _allowTickDropping: 1
+  _maximumFrameTicks: 3
+  _tickRate: 30
+  _pingInterval: 1
+  _physicsMode: 1

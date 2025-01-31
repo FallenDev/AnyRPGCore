@@ -545,6 +545,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAcceptQuest(QuestBase questBase) {
+            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnAcceptQuest({questBase.ResourceName})");
             OnAcceptQuest(unitController, questBase);
         }
 

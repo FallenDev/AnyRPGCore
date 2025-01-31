@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AnyRPG {
     /// <summary>
@@ -72,7 +73,8 @@ namespace AnyRPG {
         }
 
         public void AcceptQuest(Quest newQuest) {
-            //Debug.Log("QuestLog.AcceptQuest(" + quest.name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptQuest({newQuest.name})");
+
             if (quests.Count >= systemConfigurationManager.QuestLogSize) {
                 // quest log is full. we can't accept the quest
                 return;
@@ -102,14 +104,15 @@ namespace AnyRPG {
         }
 
         public void AbandonQuest(Quest oldQuest, bool resetQuestStep = true) {
-            //Debug.Log("QuestLog.AbandonQuest(" + quest.name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AbandonQuest({oldQuest.name})");
+
             RemoveQuest(oldQuest);
             // moved here instead of inside the above function so turnInQuest doesn't think a quest is available in the middle of turn-in
             oldQuest.RemoveQuest(unitController, resetQuestStep);
         }
 
         public void TurnInQuest(Quest oldQuest) {
-            //Debug.Log("QuestLog.TurnInQuest()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.TurnInQuest()");
 
             // REMOVE FIRST SO WHEN TURNEDIN TRIGGERS STATUSUPDATED CALL, QUEST DOES NOT EXIST IN LOG SO SUBSCRIBERS GET CORRECT STATUS
             RemoveQuest(oldQuest);
@@ -120,7 +123,8 @@ namespace AnyRPG {
         }
 
         public void RemoveQuest(Quest oldQuest) {
-            //Debug.Log("QuestLog.RemoveQuest()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest()");
+
             string keyName = SystemDataUtility.PrepareStringForMatch(oldQuest.ResourceName);
             if (quests.ContainsKey(keyName)) {
                 quests.Remove(keyName);
@@ -146,6 +150,8 @@ namespace AnyRPG {
         }
 
         public void ShowQuestGiverDescription(Quest quest, IQuestGiver questGiver) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.ShowQuestGiverDescription({quest.name})");
+
             OnShowQuestGiverDescription(quest, questGiver);
         }
 

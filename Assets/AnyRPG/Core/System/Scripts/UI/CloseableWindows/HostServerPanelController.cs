@@ -72,7 +72,7 @@ namespace AnyRPG {
         }
 
         public void RemovePlayerFromList(int clientId) {
-            Debug.Log($"HostServerPanelController.RemovePlayerFromList({clientId})");
+            //Debug.Log($"HostServerPanelController.RemovePlayerFromList({clientId})");
 
             if (playerButtons.ContainsKey(clientId)) {
                 uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);
@@ -133,7 +133,7 @@ namespace AnyRPG {
         }
 
         public void HandleLobbyLogout(int clientId) {
-            Debug.Log($"HostServerPanelController.HandleLobbyLogout({clientId})");
+            //Debug.Log($"HostServerPanelController.HandleLobbyLogout({clientId})");
             
             RemovePlayerFromList(clientId);
         }

@@ -8,7 +8,7 @@ namespace AnyRPG {
     public class AutoConfiguredMonoBehaviour : ConfiguredMonoBehaviour {
 
         public virtual void AutoConfigure(SystemGameManager systemGameManager) {
-            Debug.Log($"{gameObject.name}.AutoConfiguredMonoBehaviour.AutoConfigure()");
+            //Debug.Log($"{gameObject.name}.AutoConfiguredMonoBehaviour.AutoConfigure()");
 
             Configure(systemGameManager);
             PostConfigure();

@@ -28,7 +28,7 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
-            Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.SetGameManagerReferences()");
+            //Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.SetGameManagerReferences()");
 
             base.SetGameManagerReferences();
             playerManagerServer = systemGameManager.PlayerManagerServer;
@@ -36,7 +36,7 @@ namespace AnyRPG {
         }
 
         public void SetInteractable(Interactable interactable) {
-            Debug.Log($"InteractableRange.SetInteractable({interactable.gameObject.name})");
+            //Debug.Log($"InteractableRange.SetInteractable({interactable.gameObject.name})");
             this.interactable = interactable;
             /*
             if (autoSetRadius == true) {

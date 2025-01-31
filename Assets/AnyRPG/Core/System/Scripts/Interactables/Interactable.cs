@@ -123,6 +123,7 @@ namespace AnyRPG {
         protected MainMapManager mainMapManager = null;
         protected InteractionManager interactionManager = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected SystemEventManager systemEventManager = null;
 
         // properties
         public bool IsInteracting { get => isInteracting; }
@@ -272,7 +273,7 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
-            Debug.Log($"{gameObject.name}.Interactable.SetGameManagerReferences()");
+            //Debug.Log($"{gameObject.name}.Interactable.SetGameManagerReferences()");
 
             base.SetGameManagerReferences();
 
@@ -283,6 +284,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public virtual void GetComponentReferences() {
@@ -645,7 +647,7 @@ namespace AnyRPG {
         /// called manually after mouse enters nameplate or interactable
         /// </summary>
         public void OnMouseIn() {
-            Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
+            //Debug.Log($"{gameObject.name}.Interactable.OnMouseIn()");
 
             if (!isActiveAndEnabled) {
                 // this interactable is inactive, there is no reason to do anything
@@ -976,7 +978,13 @@ namespace AnyRPG {
 
         public virtual void ProcessCreateEventSubscriptions() {
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
-            //systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
+            }
+        }
+
+        private void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
+            ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public void CleanupEventSubscriptions() {
@@ -990,7 +998,9 @@ namespace AnyRPG {
 
         public virtual void ProcessCleanupEventSubscriptions() {
             SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
-            //systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
+            }
         }
 
         #region events

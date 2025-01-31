@@ -324,7 +324,7 @@ namespace AnyRPG {
         }
 
         public void ProcessClientDisconnect(int clientId) {
-            Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({clientId})");
+            //Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({clientId})");
 
             if (loggedInAccounts.ContainsKey(clientId)) {
                 loggedInAccounts.Remove(clientId);

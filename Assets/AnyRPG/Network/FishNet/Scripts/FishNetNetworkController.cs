@@ -66,7 +66,7 @@ namespace AnyRPG {
         }
 
         private void HandleServerConnectionState(ServerConnectionStateArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
+            //Debug.Log($"FishNetNetworkController.HandleServerConnectionState() {obj.ConnectionState.ToString()}");
 
             serverState = obj.ConnectionState;
             if (serverState == LocalConnectionState.Started) {
@@ -86,7 +86,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerEvents() {
-            Debug.Log($"FishNetNetworkController.SubscribeToServerEvents()");
+            //Debug.Log($"FishNetNetworkController.SubscribeToServerEvents()");
 
             fishNetNetworkManager.SceneManager.OnLoadEnd += HandleSceneLoadEndServer;
             fishNetNetworkManager.ServerManager.OnClientKick += HandleClientKick;
@@ -422,7 +422,7 @@ namespace AnyRPG {
         #region server functions
 
         private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+            //Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
 
             if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
                 return;

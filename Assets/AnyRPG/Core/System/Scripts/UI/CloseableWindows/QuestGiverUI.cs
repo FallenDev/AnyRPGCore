@@ -109,14 +109,13 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
         }
 
-        private void HandlePlayerUnitDespawn(UnitController unitController) {
+        private void HandlePlayerUnitSpawn(UnitController unitController) {
             unitController.CharacterQuestLog.OnShowQuestGiverDescription += HandleShowQuestGiverDescription;
         }
 
-        private void HandlePlayerUnitSpawn(UnitController unitController) {
+        private void HandlePlayerUnitDespawn(UnitController unitController) {
             unitController.CharacterQuestLog.OnShowQuestGiverDescription -= HandleShowQuestGiverDescription;
         }
-
 
         public void ToggleShowAllQuests(bool showAllQuests) {
             this.showAllQuests = showAllQuests;

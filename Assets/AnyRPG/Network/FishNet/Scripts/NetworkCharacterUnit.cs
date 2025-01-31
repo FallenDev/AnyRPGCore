@@ -226,6 +226,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAcceptQuestClient(string questName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAcceptQuestClient({questName})");
+
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
                 unitController.CharacterQuestLog.AcceptQuest(quest);

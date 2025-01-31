@@ -442,6 +442,8 @@ namespace AnyRPG {
         }
 
         public override void Configure(SystemGameManager systemGameManager) {
+            //Debug.Log($"{gameObject.name}.UnitController.Configure() scene: {gameObject.scene.name} default physics scene: {(gameObject.scene.GetPhysicsScene() == Physics.defaultPhysicsScene)}");
+
             base.Configure(systemGameManager);
             // create components here instead?  which ones rely on other things like unit profile being set before start?
             unitEventController = new UnitEventController(this, systemGameManager);

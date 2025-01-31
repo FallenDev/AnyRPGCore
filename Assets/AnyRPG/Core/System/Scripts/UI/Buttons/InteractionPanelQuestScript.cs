@@ -33,7 +33,8 @@ namespace AnyRPG {
         }
 
         public override void ButtonClickAction() {
-            //Debug.Log("InteractionPanelQuestScript.ButtonClickAction()");
+            Debug.Log("InteractionPanelQuestScript.ButtonClickAction()");
+
             base.ButtonClickAction();
 
             if (quest == null) {

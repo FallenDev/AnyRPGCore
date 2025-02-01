@@ -417,6 +417,10 @@ namespace AnyRPG {
             clientConnector.LearnSkill(skillName);
         }
 
+        public override void AcceptQuest(string questName) {
+            clientConnector.AcceptQuest(questName);
+        }
+
         #endregion
 
         #region server functions

@@ -604,6 +604,14 @@ namespace AnyRPG {
             playerManagerServer.LearnSkill(skill, clientId);
         }
 
+        public void AcceptQuest(string questName, int clientId) {
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest == null) {
+                return;
+            }
+            playerManagerServer.AcceptQuest(quest, clientId);
+        }
+
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);

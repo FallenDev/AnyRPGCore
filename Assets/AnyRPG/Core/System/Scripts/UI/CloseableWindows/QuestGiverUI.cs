@@ -80,6 +80,7 @@ namespace AnyRPG {
         private CurrencyConverter currencyConverter = null;
         private DialogManager dialogManager = null;
         private SystemEventManager systemEventManager = null;
+        private QuestGiverManager questGiverManager = null;
 
         public QuestGiverQuestScript SelectedQuestGiverQuestScript { get => selectedQuestGiverQuestScript; set => selectedQuestGiverQuestScript = value; }
         //public Interactable MyInteractable { get => interactable; set => interactable = value; }
@@ -107,6 +108,7 @@ namespace AnyRPG {
             currencyConverter = systemGameManager.CurrencyConverter;
             dialogManager = systemGameManager.DialogManager;
             systemEventManager = systemGameManager.SystemEventManager;
+            questGiverManager = systemGameManager.QuestGiverManager;
         }
 
         private void HandlePlayerUnitSpawn(UnitController unitController) {
@@ -398,39 +400,19 @@ namespace AnyRPG {
                 // DO THIS HERE SO IT DOESN'T INSTA-CLOSE ANY AUTO-POPUP BACK TO HERE ON ACCEPT QUEST CAUSING STATUS CHANGE
                 uIManager.questGiverWindow.CloseWindow();
 
-                playerManager.UnitController.CharacterQuestLog.AcceptQuest(currentQuest);
+                questGiverManager.AcceptQuestClient(playerManager.UnitController, currentQuest);
 
                 if (questGiver != null) {
                     // notify a bag item so it can remove itself
                     //Debug.Log("QuestGiverUI.AcceptQuest() questgiver was not null");
+                    // FIX ME - how do to this on server ?  send instantiated item id with AcceptQuest() ?
                     questGiver.HandleAcceptQuest();
                 } else {
                     //Debug.Log("QuestGiverUI.AcceptQuest() questgiver was null");
                 }
-                UpdateButtons(currentQuest);
-                if (interactable != null) {
-                    /*
-                    if (interactable.CheckForInteractableObjectives(currentQuestName)) {
-                        uIManager.questGiverWindow.CloseWindow();
-                    }
-                    */
-                }
-                /*
-                if (SelectedQuestGiverQuestScript != null) {
-                    SelectedQuestGiverQuestScript.DeSelect();
-                }
-                */
-
-                // disabled this stuff for now since only a single pane is being used
-                //RefreshQuestDisplay();
-                //if (availableArea.transform.childCount == 0 && inProgressArea.transform.childCount == 0) {
-                //Debug.Log("Nothing to show, closing window for smoother UI experience");
-                //uIManager.questGiverWindow.CloseWindow();
-                //}
-                // do it anyway for now since 
-
-                //ShowQuests();
-                //questGiver.UpdateQuestStatus();
+                // don't need to do this since the window just closes anyway?
+                //UpdateButtons(currentQuest);
+                
             }
         }
 

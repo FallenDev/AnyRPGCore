@@ -41,6 +41,7 @@ namespace AnyRPG {
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
         public abstract void SetPlayerCharacterClass(string className);
         public abstract void LearnSkill(string skillName);
+        public abstract void AcceptQuest(string questName);
 
         // server functions
         public abstract void StartServer();

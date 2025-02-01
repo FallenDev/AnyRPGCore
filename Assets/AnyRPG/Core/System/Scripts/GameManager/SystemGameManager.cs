@@ -152,6 +152,9 @@ namespace AnyRPG {
         private SkillTrainerManager skillTrainerManager = null;
 
         [SerializeField]
+        private QuestGiverManager questGiverManager = null;
+
+        [SerializeField]
         private UnitSpawnManager unitSpawnManager = null;
 
         [SerializeField]
@@ -231,6 +234,7 @@ namespace AnyRPG {
         public NetworkManagerServer NetworkManagerServer { get => networkManagerServer; set => networkManagerServer = value; }
         public CharacterManager CharacterManager { get => characterManager; set => characterManager = value; }
         public GameMode GameMode { get => gameMode; }
+        public QuestGiverManager QuestGiverManager { get => questGiverManager; set => questGiverManager = value; }
 
         private void Awake() {
             Init();
@@ -312,6 +316,7 @@ namespace AnyRPG {
             musicPlayerManager.Configure(this);
             nameChangeManager.Configure(this);
             skillTrainerManager.Configure(this);
+            questGiverManager.Configure(this);
             unitSpawnManager.Configure(this);
             vendorManager.Configure(this);
             characterCreatorInteractableManager.Configure(this);

@@ -420,6 +420,10 @@ namespace AnyRPG {
             networkController.LearnSkill(skillName);
         }
 
+        public void AcceptQuest(Quest quest) {
+            networkController.AcceptQuest(quest.ResourceName);
+        }
+
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithAnimatedObjectComponentClient(interactable, optionIndex);

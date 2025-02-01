@@ -653,6 +653,11 @@ namespace AnyRPG {
             networkManagerServer.LearnSkill(skillName, networkConnection.ClientId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void AcceptQuest(string questName, NetworkConnection networkConnection = null) {
+            networkManagerServer.AcceptQuest(questName, networkConnection.ClientId);
+        }
+
         /*
         public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {

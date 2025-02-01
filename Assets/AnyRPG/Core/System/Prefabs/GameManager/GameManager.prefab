@@ -6618,6 +6618,7 @@ GameObject:
   - component: {fileID: 8065635434469254371}
   - component: {fileID: 6522840028641832261}
   - component: {fileID: 4938176035281589816}
+  - component: {fileID: 4755277341132930208}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6995,6 +6996,7 @@ MonoBehaviour:
   musicPlayerManager: {fileID: 5304415491810491430}
   nameChangeManager: {fileID: 8414114071751978860}
   skillTrainerManager: {fileID: 2267228578513555923}
+  questGiverManager: {fileID: 4755277341132930208}
   unitSpawnManager: {fileID: 3190184857422777412}
   vendorManager: {fileID: 959829967936156170}
   characterCreatorInteractableManager: {fileID: 2881472931833898085}
@@ -7538,6 +7540,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a965ed5b16430f646916291aea5450ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4755277341132930208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5684895214070870814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0ec3ed6bee9bb4096ddbb47f03b90a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5742173228335772782

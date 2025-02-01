@@ -302,6 +302,15 @@ namespace AnyRPG {
             }
             activePlayers[clientId].CharacterSkillManager.LearnSkill(skill);
         }
+
+        public void AcceptQuest(Quest quest, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].CharacterQuestLog.AcceptQuest(quest);
+        }
+
+
     }
 
 }

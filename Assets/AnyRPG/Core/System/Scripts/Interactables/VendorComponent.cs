@@ -33,17 +33,18 @@ namespace AnyRPG {
 
         public override bool Interact(UnitController source, int optionIndex) {
             base.Interact(source, optionIndex);
-            //Debug.Log(source + " attempting to interact with " + gameObject.name);
+            return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
             if (!uIManager.vendorWindow.IsOpen) {
                 //Debug.Log(source + " interacting with " + gameObject.name);
 
                 vendorManager.SetProps(Props, this, optionIndex);
                 uIManager.vendorWindow.OpenWindow();
-                
-                return true;
             }
-            return false;
         }
+
 
         public override void StopInteract() {
             base.StopInteract();

@@ -70,9 +70,14 @@ namespace AnyRPG {
             } else {
                 source.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
             }
-            uIManager.interactionWindow.CloseWindow();
             return true;
             //return PickUp();
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
+
         }
 
         public void Gather(UnitController source, int optionIndex = 0) {

@@ -46,7 +46,6 @@ namespace AnyRPG {
                 //return false;
             //}
             base.Interact(source, optionIndex);
-            uIManager.interactionWindow.CloseWindow();
 
             // loop through the animatedobjects prefabobjects
             // check their state (open / closed)
@@ -70,6 +69,12 @@ namespace AnyRPG {
             // lerp them to the other state, using the values defined in their sheathed and regular positions
 
             return false;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
+
         }
 
         private void ChooseMovement() {

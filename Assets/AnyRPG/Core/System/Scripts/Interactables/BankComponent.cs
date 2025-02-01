@@ -13,12 +13,15 @@ namespace AnyRPG {
         public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log($"{gameObject.name}.Bank.Interact(" + (source == null ? "null" : source.name) +")");
             base.Interact(source, optionIndex);
+            return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
             uIManager.interactionWindow.CloseWindow();
             if (!uIManager.bankWindow.IsOpen) {
                 uIManager.bankWindow.OpenWindow();
-                return true;
             }
-            return false;
         }
 
         public override void StopInteract() {

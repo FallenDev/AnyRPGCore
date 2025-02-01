@@ -41,8 +41,12 @@ namespace AnyRPG {
                 unitController.PatrolController.BeginPatrol(Props.PatrolProperties);
             }
             base.Interact(source, optionIndex);
-            interactable.CloseInteractionWindow();
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            interactable.CloseInteractionWindow();
         }
 
         /*

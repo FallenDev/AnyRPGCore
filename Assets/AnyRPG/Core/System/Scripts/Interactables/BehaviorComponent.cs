@@ -37,12 +37,17 @@ namespace AnyRPG {
                     unitController.BehaviorController.TryPlayBehavior(currentList[optionIndex], this);
                 }
                 base.Interact(sourceUnitController, optionIndex);
-                interactable.CloseInteractionWindow();
             }/* else {
 
                 interactable.OpenInteractionWindow();
             }*/
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            interactable.CloseInteractionWindow();
+
         }
 
         public void InitBehaviors() {

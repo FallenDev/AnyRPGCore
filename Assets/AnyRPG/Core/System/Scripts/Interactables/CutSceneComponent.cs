@@ -26,6 +26,11 @@ namespace AnyRPG {
 
         public override bool Interact(UnitController source, int optionIndex) {
             base.Interact(source, optionIndex);
+            return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
             // save character position and stuff here
             //uIManager.interactionWindow.CloseWindow();
             if (Props.Cutscene != null
@@ -44,7 +49,7 @@ namespace AnyRPG {
             // CLOSE WINDOWS BEFORE CUTSCENE LOADS TO PREVENT INVALID REFERENCE ON LOAD
             uIManager.interactionWindow.CloseWindow();
             uIManager.questGiverWindow.CloseWindow();
-            return true;
+
         }
 
     }

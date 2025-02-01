@@ -28,9 +28,13 @@ namespace AnyRPG {
 
         public override bool Interact(UnitController source, int optionIndex) {
             base.Interact(source, optionIndex);
+            return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
             unitSpawnManager.SetProps(Props, this, optionIndex);
             uIManager.unitSpawnWindow.OpenWindow();
-            return true;
         }
 
         public override void StopInteract() {

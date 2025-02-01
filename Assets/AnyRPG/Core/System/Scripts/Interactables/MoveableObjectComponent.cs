@@ -60,7 +60,6 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
 
             base.Interact(source, optionIndex);
-            uIManager.interactionWindow.CloseWindow();
 
             if (Props.MoveableObject == null) {
                 Debug.Log("MoveableObject.Interact(): gameObject was null. Check Inspector");
@@ -79,6 +78,12 @@ namespace AnyRPG {
             }
 
             return false;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
+
         }
 
         private void ChooseMovement() {

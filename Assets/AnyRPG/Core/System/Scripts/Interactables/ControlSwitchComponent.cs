@@ -22,7 +22,6 @@ namespace AnyRPG {
 
         public override bool Interact(UnitController source, int optionIndex) {
             //Debug.Log(interactable.gameObject.name + ".ControlSwitchComponent.Interact()");
-            uIManager.interactionWindow.CloseWindow();
             if (Props.ActivationLimit > 0 && activationCount >= Props.ActivationLimit) {
                 // this has already been activated the number of allowed times
                 return false;
@@ -53,6 +52,11 @@ namespace AnyRPG {
             
 
             return false;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
         }
 
     }

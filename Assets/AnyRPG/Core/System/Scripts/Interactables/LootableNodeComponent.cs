@@ -66,8 +66,12 @@ namespace AnyRPG {
 
             DropLoot(sourceUnitController);
             PickUp();
-            uIManager.interactionWindow.CloseWindow();
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
         }
 
         protected IEnumerator StartSpawnCountdown() {

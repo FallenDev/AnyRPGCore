@@ -26,7 +26,6 @@ namespace AnyRPG {
 
             base.Interact(sourceUnitController, optionIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
-            uIManager.interactionWindow.CloseWindow();
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
             LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
             if (Props.OverrideSpawnDirection == true) {
@@ -43,6 +42,11 @@ namespace AnyRPG {
             }
             playerManagerServer.AddSpawnRequest(sourceUnitController, loadSceneRequest);
             return true;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
         }
 
         public override void StopInteract() {

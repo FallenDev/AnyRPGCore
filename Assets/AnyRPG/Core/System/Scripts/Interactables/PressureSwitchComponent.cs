@@ -39,11 +39,14 @@ namespace AnyRPG {
             } else if (totalWeight < PressureSwitchProps.MinimumWeight && onState == true) {
                 //Debug.Log($"{gameObject.name}Weight: " + totalWeight);
                 base.Interact(source, optionIndex);
-            } else {
-                uIManager.interactionWindow.CloseWindow();
             }
 
             return false;
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+            base.ClientInteraction(sourceUnitController, optionIndex);
+            uIManager.interactionWindow.CloseWindow();
         }
 
     }

@@ -197,7 +197,7 @@ namespace AnyRPG {
         */
 
         public void PerformActionAnimation(AnimatedAction animatedAction) {
-            //Debug.Log($"{unitController.gameObject.name}.PerformActionAnimation(" + (animationClip == null ? "null" : animationClip.name) + ")");
+            Debug.Log($"{unitController.gameObject.name}.PerformActionAnimation(${animatedAction.ResourceName})");
 
             if (animatedAction.ActionProperties.AnimationClip == null) {
                 return;
@@ -228,6 +228,8 @@ namespace AnyRPG {
         /// <param name="target"></param>
         /// <returns></returns>
         public IEnumerator PerformActionCast(AnimatedAction animatedAction, Interactable target) {
+            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.PerformActionCast({animatedAction.ResourceName})");
+            
             float startTime = Time.time;
             isPerformingAction = true;
             AnimatedActionProperties animatedActionProperties = animatedAction.ActionProperties;
@@ -270,7 +272,8 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="actionName"></param>
         public void BeginAction(string actionName) {
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
+            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.BeginAction({actionName})");
+
             AnimatedAction animatedAction = systemDataFactory.GetResource<AnimatedAction>(actionName);
             if (animatedAction != null) {
                 //return BeginAction(animatedAction);
@@ -283,7 +286,8 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         public void BeginAction(AnimatedAction animatedAction, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.BeginAction(" + (animatedAction == null ? "null" : animatedAction.DisplayName) + $", {playerInitiated})");
+            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.BeginAction({(animatedAction == null ? "null" : animatedAction.DisplayName)}, {playerInitiated})");
+            
             unitController.UnitEventController.NotifyOnBeginAction(animatedAction.ResourceName, playerInitiated);
             
             if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {

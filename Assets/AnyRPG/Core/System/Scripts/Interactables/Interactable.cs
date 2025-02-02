@@ -112,7 +112,7 @@ namespace AnyRPG {
         protected DialogController dialogController = null;
         protected OutlineController outlineController = null;
         protected ObjectMaterialController objectMaterialController = null;
-        protected InteractableEventController interactableEventController = null;
+        protected InteractableEventController interactableEventController = new InteractableEventController();
 
 
         // game manager references
@@ -261,7 +261,7 @@ namespace AnyRPG {
         protected virtual void CreateComponents() {
             dialogController = new DialogController(this, systemGameManager);
             outlineController = new OutlineController(this, systemGameManager);
-            interactableEventController = new InteractableEventController(this, systemGameManager);
+            interactableEventController.SetInteractable(this, systemGameManager);
             CreateMaterialController();
         }
 

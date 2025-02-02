@@ -97,6 +97,7 @@ namespace AnyRPG {
 
             //interactable.InteractableEventController.OnAnimatedObjectChooseMovement += HandleAnimatedObjectChooseMovementServer;
             interactable.OnInteractionWithOptionStarted += HandleInteractionWithOptionStarted;
+            interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
         }
 
         public void UnsubscribeFromServerInteractableEvents() {
@@ -105,6 +106,7 @@ namespace AnyRPG {
             }
             //interactable.InteractableEventController.OnAnimatedObjectChooseMovement -= HandleAnimatedObjectChooseMovementServer;
             interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
+            interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
         }
 
         public void SubscribeToClientInteractableEvents() {
@@ -121,6 +123,12 @@ namespace AnyRPG {
                 return;
             }
             //unitController.UnitEventController.OnBeginChatMessage -= HandleBeginChatMessageServer;
+        }
+
+        [ObserversRpc]
+        public void HandlePlayDialogNode(string dialogName, int dialogIndex) {
+            
+            interactable.DialogController.PlayDialogNode(dialogName, dialogIndex);
         }
 
 

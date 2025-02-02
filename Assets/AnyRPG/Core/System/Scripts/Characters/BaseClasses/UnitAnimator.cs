@@ -540,7 +540,7 @@ namespace AnyRPG {
 
         // non combat action
         public void PerformAnimatedAction(AnimatedAction animatedAction) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleAction()");
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAnimatedAction({animatedAction.ResourceName})");
 
             if (animator == null) {
                 return;

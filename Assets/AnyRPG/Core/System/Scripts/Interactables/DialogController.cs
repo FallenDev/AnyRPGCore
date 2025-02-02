@@ -22,6 +22,7 @@ namespace AnyRPG {
         // game manager references
         private PlayerManager playerManager = null;
         private LogManager logManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public int DialogIndex { get => dialogIndex; }
 
@@ -34,6 +35,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
             logManager = systemGameManager.LogManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void Cleanup() {
@@ -57,7 +59,8 @@ namespace AnyRPG {
         }
 
         public void BeginDialog(UnitController sourceUnitController, Dialog dialog, DialogComponent caller = null) {
-            //Debug.Log(interactable.gameObject.name + ".DialogController.BeginDialog()");
+            Debug.Log($"{interactable.gameObject.name}.DialogController.BeginDialog()");
+
             if (dialog != null && dialogCoroutine == null) {
                 dialogCoroutine = interactable.StartCoroutine(PlayDialog(sourceUnitController, dialog, caller));
             }
@@ -94,20 +97,8 @@ namespace AnyRPG {
                 foreach (DialogNode dialogNode in dialog.DialogNodes) {
                     if (dialogNode.StartTime <= elapsedTime && dialogNode.Shown == false) {
                         currentdialogNode = dialogNode;
-                        interactable.ProcessDialogTextUpdate(dialogNode.Description);
-                        if (interactable != null && dialogNode.AudioClip != null) {
-                            interactable.UnitComponentController.PlayVoiceSound(dialogNode.AudioClip);
-                        }
-                        bool writeMessage = true;
-                        if (playerManager != null && playerManager.ActiveUnitController != null) {
-                            if (Vector3.Distance(interactable.transform.position, playerManager.ActiveUnitController.transform.position) > systemConfigurationManager.MaxChatTextDistance) {
-                                writeMessage = false;
-                            }
-                        }
-                        if (writeMessage && logManager != null) {
-                            logManager.RequestChatMessageClient(dialogNode.Description);
-                        }
-
+                        PlayDialogNode(dialogNode);
+                        interactable.InteractableEventController.NotifyOnPlayDialogNode(dialog, dialogIndex);
                         dialogNode.Shown = true;
                         dialogIndex++;
                     }
@@ -132,6 +123,33 @@ namespace AnyRPG {
                 yield return new WaitForSeconds(currentdialogNode.ShowTime);
             }
             interactable.ProcessEndDialog();
+        }
+
+        public void PlayDialogNode(string dialogName, int dialogIndex) {
+            Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogName);
+            if (dialog == null && dialog.DialogNodes.Count > dialogIndex) {
+                PlayDialogNode(dialog.DialogNodes[dialogIndex]);
+            }
+        }
+
+        public void PlayDialogNode(DialogNode dialogNode) {
+            if (networkManagerServer.ServerModeActive == true) {
+                return;
+            }
+            //bool writeMessage = true;
+            if (playerManager != null && playerManager.ActiveUnitController != null) {
+                if (Vector3.Distance(interactable.transform.position, playerManager.ActiveUnitController.transform.position) > systemConfigurationManager.MaxChatTextDistance) {
+                    //writeMessage = false;
+                    return;
+                }
+            }
+            if (logManager != null) {
+                logManager.WriteChatMessageClient($"{interactable.DisplayName}: {dialogNode.Description}");
+            }
+            interactable.ProcessDialogTextUpdate(dialogNode.Description);
+            if (dialogNode.AudioClip != null) {
+                interactable.UnitComponentController.PlayVoiceSound(dialogNode.AudioClip);
+            }
         }
 
 

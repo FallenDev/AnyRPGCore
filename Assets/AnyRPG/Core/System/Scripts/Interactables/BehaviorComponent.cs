@@ -33,7 +33,8 @@ namespace AnyRPG {
 
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
-            //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
+            Debug.Log($"{unitController.gameObject.name}.BehaviorInteractable.Interact()");
+
             List<BehaviorProfile> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
                 return false;

@@ -75,7 +75,7 @@ namespace AnyRPG {
         }
 
         public void TryPlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null) {
-            //Debug.Log($"{unitController.gameObject.name}.BehaviorInteractable.TryPlayBehavior()");
+            Debug.Log($"{unitController.gameObject.name}.BehaviorInteractable.TryPlayBehavior()");
 
             if (behaviorPlaying == false) {
                 behaviorCoroutine = unitController.StartCoroutine(PlayBehavior(behaviorProfile, caller));

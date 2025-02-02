@@ -612,9 +612,9 @@ namespace AnyRPG {
             unitEventController.NotifyOnStopInteract();
         }
 
-        public override void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
-            base.ProcessStartInteractWithOption(interactableOptionComponent, optionIndex);
-            unitEventController.NotifyOnStartInteractWithOption(interactableOptionComponent, optionIndex);
+        public override void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            base.ProcessStartInteractWithOption(interactableOptionComponent, componentIndex, choiceIndex);
+            unitEventController.NotifyOnStartInteractWithOption(interactableOptionComponent, componentIndex, choiceIndex);
         }
 
         public override void ProcessStopInteractWithOption(InteractableOptionComponent interactableOptionComponent) {

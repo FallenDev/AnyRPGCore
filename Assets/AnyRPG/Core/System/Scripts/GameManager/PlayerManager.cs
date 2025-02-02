@@ -739,8 +739,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
         }
 
-        public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int OptionIndex) {
-            interactableOptionComponent.ClientInteraction(sourceUnitController, OptionIndex);
+        public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            interactableOptionComponent.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
         }
 
         public void HandleLearnSkill(UnitController sourceUnitController, Skill skill) {

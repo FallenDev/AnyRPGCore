@@ -15,8 +15,8 @@ namespace AnyRPG {
         public UnitSpawnControllerProps Props { get => interactableOptionProps as UnitSpawnControllerProps; }
 
         public UnitSpawnControllerComponent(Interactable interactable, UnitSpawnControllerProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = "Spawn Characters";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = "Spawn Characters";
             }
         }
 
@@ -26,14 +26,14 @@ namespace AnyRPG {
             unitSpawnManager = systemGameManager.UnitSpawnManager;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
-            base.Interact(source, optionIndex);
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
-            unitSpawnManager.SetProps(Props, this, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
+            unitSpawnManager.SetProps(Props, this, componentIndex, choiceIndex);
             uIManager.unitSpawnWindow.OpenWindow();
         }
 

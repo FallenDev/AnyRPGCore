@@ -14,8 +14,8 @@ namespace AnyRPG {
         public FactionChangeProps Props { get => interactableOptionProps as FactionChangeProps; }
 
         public FactionChangeComponent(Interactable interactable, FactionChangeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = Props.Faction.DisplayName + " Faction";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = Props.Faction.DisplayName + " Faction";
             }
         }
 
@@ -43,18 +43,18 @@ namespace AnyRPG {
             HandleOptionStateChange();
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log(interactable.gameObject.name + ".FactionChangeInteractable.Interact()");
 
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
 
-            factionChangeManager.SetDisplayFaction(Props.Faction, this, optionIndex);
+            factionChangeManager.SetDisplayFaction(Props.Faction, this, componentIndex, choiceIndex);
             uIManager.factionChangeWindow.OpenWindow();
         }
 

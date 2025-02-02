@@ -31,16 +31,16 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(UnitController source, int optionIndex) {
-            base.Interact(source, optionIndex);
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             if (!uIManager.vendorWindow.IsOpen) {
                 //Debug.Log(source + " interacting with " + gameObject.name);
 
-                vendorManager.SetProps(Props, this, optionIndex);
+                vendorManager.SetProps(Props, this, componentIndex, choiceIndex);
                 uIManager.vendorWindow.OpenWindow();
             }
         }

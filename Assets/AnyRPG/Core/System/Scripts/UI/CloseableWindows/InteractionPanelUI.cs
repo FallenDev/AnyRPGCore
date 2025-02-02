@@ -32,7 +32,8 @@ namespace AnyRPG {
         private GameObject completeQuestArea = null;
         */
 
-        private Dictionary<int, InteractionPanelScript> interactionPanelScripts = new Dictionary<int, InteractionPanelScript>();
+        //private Dictionary<int, InteractionPanelScript> interactionPanelScripts = new Dictionary<int, InteractionPanelScript>();
+        private List<InteractionPanelScript> interactionPanelScripts = new List<InteractionPanelScript>();
 
         // game manager references
         private InteractionManager interactionManager = null;
@@ -166,17 +167,17 @@ namespace AnyRPG {
                         }
                     }
                 } else {
-                    // this block used to be outside the else statement, but for now we don't want quests to show as an interaction option because they are handled separately above
                     // handle generic stuff
-                    if (_interactable.Value.DisplayName != null && _interactable.Value.DisplayName != string.Empty && _interactable.Value.GetCurrentOptionCount(playerManager.UnitController) > 0) {
+                    if (_interactable.Value.GetInteractionButtonText(playerManager.UnitController) != string.Empty && _interactable.Value.GetCurrentOptionCount(playerManager.UnitController) > 0) {
                         //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Instantiating button");
                         for (int i = 0; i < _interactable.Value.GetCurrentOptionCount(playerManager.UnitController); i++) {
                             GameObject go = objectPooler.GetPooledObject(interactableButtonPrefab, interactableButtonParent);
                             InteractionPanelScript iPS = go.GetComponent<InteractionPanelScript>();
                             if (iPS != null) {
                                 iPS.Configure(systemGameManager);
-                                iPS.Setup(_interactable.Value, i);
-                                interactionPanelScripts.Add(_interactable.Key, iPS);
+                                iPS.Setup(_interactable.Value, _interactable.Key, i);
+                                //interactionPanelScripts.Add(_interactable.Key, iPS);
+                                interactionPanelScripts.Add(iPS);
                             }
                         }
                     }
@@ -187,7 +188,7 @@ namespace AnyRPG {
             foreach (InteractionPanelQuestScript questScript in questScripts) {
                 uINavigationControllers[0].AddActiveButton(questScript);
             }
-            foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts.Values) {
+            foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts) {
                 uINavigationControllers[0].AddActiveButton(interactionPanelScript);
             }
 
@@ -228,11 +229,11 @@ namespace AnyRPG {
                 }
             }
 
-            foreach (KeyValuePair<int, InteractionPanelScript> interactionPanelScript in interactionPanelScripts) {
+            foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts) {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script");
-                if (interactionPanelScript.Value.InteractableOption.CanInteract(playerManager.UnitController) && interactionPanelScript.Value.InteractableOption.GetCurrentOptionCount(playerManager.UnitController) == 1) {
+                if (interactionPanelScript.InteractableOption.CanInteract(playerManager.UnitController) && interactionPanelScript.InteractableOption.GetCurrentOptionCount(playerManager.UnitController) == 1) {
                     //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script: canInteract is TRUE!!!");
-                    interactionManager.InteractWithOptionClient(playerManager.UnitController, interactable, interactionPanelScript.Value.InteractableOption, interactionPanelScript.Key);
+                    interactionManager.InteractWithOptionClient(playerManager.UnitController, interactable, interactionPanelScript.InteractableOption, interactionPanelScript.ComponentIndex, interactionPanelScript.ChoiceIndex);
                     //interactionPanelScript.Value.InteractableOption.Interact(playerManager.UnitController.CharacterUnit, interactionPanelScript.Key);
                     //optionOpened = true;
                     return;
@@ -264,7 +265,7 @@ namespace AnyRPG {
             }
             questScripts.Clear();
 
-            foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts.Values) {
+            foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts) {
                 interactionPanelScript.transform.SetParent(null);
                 objectPooler.ReturnObjectToPool(interactionPanelScript.gameObject);
             }

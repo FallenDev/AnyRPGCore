@@ -21,11 +21,11 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        public void SetProps(UnitSpawnControllerProps unitSpawnControllerProps, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
+        public void SetProps(UnitSpawnControllerProps unitSpawnControllerProps, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
             //Debug.Log("UnitSpawnManager.SetProps()");
 
             this.unitSpawnControllerProps = unitSpawnControllerProps;
-            BeginInteraction(interactableOptionComponent, optionIndex);
+            BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex);
         }
 
         public void SpawnUnit(int unitLevel, int extraLevels, bool useDynamicLevel, UnitProfile unitProfile, UnitToughness unitToughness) {

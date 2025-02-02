@@ -91,7 +91,7 @@ namespace AnyRPG {
             Remove();
         }
 
-        public bool Interact(UnitController sourceUnitController, int optionIndex = 0) {
+        public bool Interact(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
             // should not need to be used unless a quest item has more than 1 quest, but here for compatibility with IQuestGiver
             Use(sourceUnitController);
             return true;

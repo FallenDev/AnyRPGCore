@@ -23,24 +23,24 @@ namespace AnyRPG {
             return base.CanInteract(source, processRangeCheck, passedRangeCheck, processNonCombatCheck);
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props.AnimationComponent == null) {
                 Debug.Log("AnimatedObjectComponent.Interact(): Animation component was null");
                 return false;
             }
-            ChooseMovement(sourceUnitController, optionIndex);
+            ChooseMovement(sourceUnitController, componentIndex);
 
             return false;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             uIManager.interactionWindow.CloseWindow();
         }
 
-        public void ChooseMovement(UnitController sourceUnitController, int optionIndex) {
+        public void ChooseMovement(UnitController sourceUnitController, int componentIndex) {
             //interactable.InteractableEventController.NotifyOnAnimatedObjectChooseMovement(sourceUnitController, optionIndex);
             if (objectOpen) {
                 if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {

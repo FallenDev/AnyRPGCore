@@ -56,21 +56,21 @@ namespace AnyRPG {
             ClearLootTables();
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.LootableNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
                 return true;
             }
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             DropLoot(sourceUnitController);
             PickUp();
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
         }
 

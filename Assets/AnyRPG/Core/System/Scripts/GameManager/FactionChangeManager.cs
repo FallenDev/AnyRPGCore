@@ -21,12 +21,12 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        public void SetDisplayFaction(Faction faction, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
+        public void SetDisplayFaction(Faction faction, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
             //Debug.Log("FactionChangeChangeManager.SetDisplayFaction(" + faction.DisplayName + ")");
 
             this.faction = faction;
 
-            BeginInteraction(interactableOptionComponent, optionIndex);
+            BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex);
         }
 
         public void ChangePlayerFaction() {

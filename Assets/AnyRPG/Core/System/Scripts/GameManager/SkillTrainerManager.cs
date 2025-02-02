@@ -54,11 +54,11 @@ namespace AnyRPG {
             skillTrainer = null;
         }
 
-        public void SetSkillTrainer(SkillTrainerComponent skillTrainerComponent, int optionIndex) {
+        public void SetSkillTrainer(SkillTrainerComponent skillTrainerComponent, int componentIndex, int choiceIndex) {
             //Debug.Log("ClassChangeManager.SetDisplayClass(" + characterClass + ")");
             this.skillTrainer = skillTrainerComponent;
             
-            BeginInteraction(skillTrainerComponent, optionIndex);
+            BeginInteraction(skillTrainerComponent, componentIndex, choiceIndex);
         }
 
 

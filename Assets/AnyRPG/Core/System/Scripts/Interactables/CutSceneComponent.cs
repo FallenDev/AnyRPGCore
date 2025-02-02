@@ -24,13 +24,13 @@ namespace AnyRPG {
             cutSceneBarController = uIManager.CutSceneBarController;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
-            base.Interact(source, optionIndex);
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             // save character position and stuff here
             //uIManager.interactionWindow.CloseWindow();
             if (Props.Cutscene != null

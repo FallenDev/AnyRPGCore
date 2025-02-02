@@ -32,9 +32,6 @@ namespace AnyRPG {
                 return (BaseAbility.Icon != null ? BaseAbility.Icon : base.NamePlateImage);
             }
         }
-        public override string GetInteractionPanelTitle(int optionIndex = 0) {
-            return (BaseAbility != null ? BaseAbility.DisplayName : base.GetInteractionPanelTitle(optionIndex));
-        }
 
         public GatherAbility BaseAbility { get => baseAbility; }
 

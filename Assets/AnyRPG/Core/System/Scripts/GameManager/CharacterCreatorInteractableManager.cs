@@ -18,11 +18,11 @@ namespace AnyRPG {
             characterCreator = null;
         }
 
-        public void SetCharacterCreator(CharacterCreatorComponent characterCreator, int optionIndex) {
+        public void SetCharacterCreator(CharacterCreatorComponent characterCreator, int componentIndex, int choiceIndex) {
             //Debug.Log("CharacterCreatorInteractableManager.SetSkillTrainer(" + characterClass + ")");
             this.characterCreator = characterCreator;
 
-            BeginInteraction(characterCreator, optionIndex);
+            BeginInteraction(characterCreator, componentIndex, choiceIndex);
         }
     }
 

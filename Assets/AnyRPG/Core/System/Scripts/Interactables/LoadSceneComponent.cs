@@ -13,10 +13,10 @@ namespace AnyRPG {
         public LoadSceneComponent(Interactable interactable, LoadSceneProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
-            Debug.Log($"{interactable.gameObject.name}.LoadSceneComponent.Interact({sourceUnitController.gameObject.name}, {optionIndex})");
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+            Debug.Log($"{interactable.gameObject.name}.LoadSceneComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex})");
 
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             //levelManager.LoadLevel(LoadSceneProps.SceneName);
             playerManagerServer.LoadScene(LoadSceneProps.SceneName, sourceUnitController);

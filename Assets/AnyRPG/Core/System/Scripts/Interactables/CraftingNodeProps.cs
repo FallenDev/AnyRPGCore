@@ -32,10 +32,6 @@ namespace AnyRPG {
             }
         }
 
-        public override string GetInteractionPanelTitle(int optionIndex = 0) {
-            return (Ability != null ? Ability.DisplayName : base.GetInteractionPanelTitle(optionIndex));
-        }
-
         public CraftAbilityProperties Ability { get => ability; set => ability = value; }
 
         public override InteractableOptionComponent GetInteractableOption(Interactable interactable, InteractableOption interactableOption = null) {

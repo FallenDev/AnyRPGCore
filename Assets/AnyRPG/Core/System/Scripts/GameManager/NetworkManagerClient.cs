@@ -384,8 +384,9 @@ namespace AnyRPG {
         }
         */
 
-        public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
-            networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex);
+        public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
+            Debug.Log($"NetworkManagerClient.InteractWithOption({targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
+            networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
         }
 
         public void AdvertiseAddSpawnRequest(LoadSceneRequest loadSceneRequest) {

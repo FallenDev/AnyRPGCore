@@ -14,8 +14,8 @@ namespace AnyRPG {
         public ClassChangeProps Props { get => interactableOptionProps as ClassChangeProps; }
 
         public ClassChangeComponent(Interactable interactable, ClassChangeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = Props.CharacterClass.DisplayName + " Class";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = Props.CharacterClass.DisplayName + " Class";
             }
         }
 
@@ -42,18 +42,18 @@ namespace AnyRPG {
             HandlePrerequisiteUpdates(sourceUnitController);
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             //interactionManager.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
 
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
-            classChangeManager.SetDisplayClass(Props.CharacterClass, this, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
+            classChangeManager.SetDisplayClass(Props.CharacterClass, this, componentIndex, choiceIndex);
 
             uIManager.classChangeWindow.OpenWindow();
         }

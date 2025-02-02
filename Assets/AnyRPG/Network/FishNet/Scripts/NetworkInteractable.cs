@@ -150,25 +150,25 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int optionIndex) {
+        public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
 
             NetworkCharacterUnit targetNetworkCharacterUnit = null;
             if (sourceUnitController != null) {
                 targetNetworkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
             }
-            HandleInteractionWithOptionStartedClient(targetNetworkCharacterUnit, optionIndex);
+            HandleInteractionWithOptionStartedClient(targetNetworkCharacterUnit, componentIndex, choiceIndex);
         }
 
         [ObserversRpc]
-        public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int optionIndex) {
+        public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit != null) {
                 sourceUnitController = sourceNetworkCharacterUnit.UnitController;
             }
 
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
-            if (currentInteractables.ContainsKey(optionIndex)) {
-                currentInteractables[optionIndex].Interact(sourceUnitController, optionIndex);
+            if (currentInteractables.ContainsKey(componentIndex)) {
+                currentInteractables[componentIndex].Interact(sourceUnitController, componentIndex, choiceIndex);
             }
         }
 

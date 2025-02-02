@@ -10,8 +10,8 @@ namespace AnyRPG {
         public MusicPlayerProps Props { get => interactableOptionProps as MusicPlayerProps; }
 
         public MusicPlayerComponent(Interactable interactable, MusicPlayerProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = "Music Player";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = "Music Player";
             }
         }
 
@@ -21,19 +21,19 @@ namespace AnyRPG {
             musicPlayerManager = systemGameManager.MusicPlayerManager;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
 
             if (!uIManager.musicPlayerWindow.IsOpen) {
                 //Debug.Log(source + " interacting with " + gameObject.name);
-                musicPlayerManager.SetMusicPlayerProps(Props, this, optionIndex);
+                musicPlayerManager.SetMusicPlayerProps(Props, this, componentIndex, choiceIndex);
                 uIManager.musicPlayerWindow.OpenWindow();
             }
         }

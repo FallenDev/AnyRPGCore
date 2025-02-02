@@ -110,7 +110,7 @@ namespace AnyRPG {
                     if (inRangeInteractables[firstInteractable].GetCurrentOptionCount(sourceUnitController) > 1) {
                         OpenInteractionWindow(targetInteractable);
                     } else {
-                        InteractWithOptionClient(sourceUnitController, targetInteractable, inRangeInteractables[firstInteractable], firstInteractable);
+                        InteractWithOptionClient(sourceUnitController, targetInteractable, inRangeInteractables[firstInteractable], firstInteractable, 0);
                         
                     }
                 } else {
@@ -134,29 +134,29 @@ namespace AnyRPG {
             Dictionary<int, InteractableOptionComponent> validInteractables = triggerInteractable.GetCurrentInteractables(unitController);
             if (validInteractables.Count == 1) {
                 int firstInteractable = validInteractables.Take(1).Select(d => d.Key).First();
-                InteractWithOptionInternal(unitController, triggerInteractable, validInteractables[firstInteractable], firstInteractable);
+                InteractWithOptionInternal(unitController, triggerInteractable, validInteractables[firstInteractable], firstInteractable, 0);
             }
         }
 
-        public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex) {
+        public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
             if (systemGameManager.GameMode == GameMode.Local) {
-                InteractWithOptionInternal(sourceUnitController, targetInteractable, interactableOptionComponent, componentIndex);
+                InteractWithOptionInternal(sourceUnitController, targetInteractable, interactableOptionComponent, componentIndex, choiceIndex);
             } else {
-                networkManagerClient.InteractWithOption(sourceUnitController, targetInteractable, componentIndex);
+                networkManagerClient.InteractWithOption(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
             }
         }
 
-        public void InteractWithOptionServer(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
+        public void InteractWithOptionServer(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
             Dictionary<int, InteractableOptionComponent> interactionOptions = targetInteractable.GetCurrentInteractables(sourceUnitController);
             if (interactionOptions.ContainsKey(componentIndex)) {
-                InteractWithOptionInternal(sourceUnitController, targetInteractable, interactionOptions[componentIndex], componentIndex);
+                InteractWithOptionInternal(sourceUnitController, targetInteractable, interactionOptions[componentIndex], componentIndex, choiceIndex);
             }
         }
 
-        public void InteractWithOptionInternal(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex) {
-            Debug.Log($"InteractionManager.InteractWithOptionInternal({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
+        public void InteractWithOptionInternal(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            Debug.Log($"InteractionManager.InteractWithOptionInternal({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
 
-            interactableOptionComponent.Interact(sourceUnitController, componentIndex);
+            interactableOptionComponent.Interact(sourceUnitController, componentIndex, choiceIndex);
         }
 
         public void OpenInteractionWindow(Interactable targetInteractable) {

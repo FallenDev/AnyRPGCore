@@ -23,18 +23,18 @@ namespace AnyRPG {
             characterCreatorInteractableManager = systemGameManager.CharacterCreatorInteractableManager;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             // was there a reason why we didn't have base.Interact here before or just an oversight?
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
 
             // moved to coroutine because UMA will crash here due to its use of DestroyImmediate in the case where an UMAData was attached to the model.
-            characterCreatorInteractableManager.SetCharacterCreator(this, optionIndex);
+            characterCreatorInteractableManager.SetCharacterCreator(this, componentIndex, choiceIndex);
             interactable.StartCoroutine(OpenWindowWait());
         }
 

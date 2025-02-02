@@ -586,7 +586,7 @@ namespace AnyRPG {
         }
         */
 
-        public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
+        public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
             NetworkCharacterUnit networkCharacterUnit = null;
             if (sourceUnitController != null) {
                 networkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
@@ -595,11 +595,11 @@ namespace AnyRPG {
             if (targetInteractable != null) {
                 networkInteractable = targetInteractable.GetComponent<NetworkInteractable>();
             }
-            InteractWithOptionServer(networkCharacterUnit, networkInteractable, componentIndex);
+            InteractWithOptionServer(networkCharacterUnit, networkInteractable, componentIndex, choiceIndex);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void InteractWithOptionServer(NetworkCharacterUnit sourceNetworkCharacterUnit, NetworkInteractable targetNetworkInteractable, int componentIndex) {
+        public void InteractWithOptionServer(NetworkCharacterUnit sourceNetworkCharacterUnit, NetworkInteractable targetNetworkInteractable, int componentIndex, int choiceIndex) {
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit != null) {
                 sourceUnitController = sourceNetworkCharacterUnit.UnitController;
@@ -608,7 +608,7 @@ namespace AnyRPG {
             if (targetNetworkInteractable != null) {
                 interactable = targetNetworkInteractable.Interactable;
             }
-            networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex);
+            networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex, choiceIndex);
         }
 
         public void AdvertiseAddSpawnRequestServer(int clientId, LoadSceneRequest loadSceneRequest) {

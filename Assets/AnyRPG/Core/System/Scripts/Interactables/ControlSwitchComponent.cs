@@ -20,7 +20,7 @@ namespace AnyRPG {
             interactableOptionProps.InteractionPanelTitle = "Interactable";
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log(interactable.gameObject.name + ".ControlSwitchComponent.Interact()");
             if (Props.ActivationLimit > 0 && activationCount >= Props.ActivationLimit) {
                 // this has already been activated the number of allowed times
@@ -42,11 +42,11 @@ namespace AnyRPG {
 
             }
             onState = !onState;
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props.ControlObjects != null) {
                 foreach (InteractableOptionComponent interactableOption in Props.ControlObjects) {
-                    interactableOption.Interact(source, optionIndex);
+                    interactableOption.Interact(sourceUnitController, componentIndex, choiceIndex);
                 }
             }
             
@@ -54,8 +54,8 @@ namespace AnyRPG {
             return false;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
         }
 

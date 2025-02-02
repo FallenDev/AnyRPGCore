@@ -61,11 +61,11 @@ namespace AnyRPG {
             questGiver = null;
         }
 
-        public void SetQuestGiver(QuestGiverComponent questGiverComponent, int optionIndex) {
+        public void SetQuestGiver(QuestGiverComponent questGiverComponent, int componentIndex, int choiceIndex) {
             //Debug.Log($"QuestGiverManager.SetQuestGiver({optionIndex})");
             this.questGiver = questGiverComponent;
             
-            BeginInteraction(questGiverComponent, optionIndex);
+            BeginInteraction(questGiverComponent, componentIndex, choiceIndex);
         }
 
 

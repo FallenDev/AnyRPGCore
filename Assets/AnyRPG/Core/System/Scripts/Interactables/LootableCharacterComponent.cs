@@ -40,8 +40,8 @@ namespace AnyRPG {
 
         public LootableCharacterComponent(Interactable interactable, LootableCharacterProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             CreateLootTables();
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = "Loot";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = "Loot";
             }
         }
 
@@ -290,12 +290,11 @@ namespace AnyRPG {
             return currencyNode;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".LootableCharacter.Interact()");
-            uIManager.interactionWindow.CloseWindow();
             if (!characterUnit.UnitController.CharacterStats.IsAlive) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): Character is dead.  Showing Loot Window on interaction");
-                base.Interact(sourceUnitController, optionIndex);
+                base.Interact(sourceUnitController, componentIndex, choiceIndex);
                 // keep track of currency drops for combining after
                 CurrencyLootDrop droppedCurrencies = new CurrencyLootDrop(systemGameManager);
 
@@ -357,6 +356,11 @@ namespace AnyRPG {
             return false;
         }
 
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
+            uIManager.interactionWindow.CloseWindow();
+        }
+
         public void MonitorLootTable() {
             //Debug.Log(interactable.gameObject.name + ".LootableCharacterComponent.MonitorLootTable()");
             if (!monitoringTakeLoot) {
@@ -416,7 +420,7 @@ namespace AnyRPG {
             }
         }
 
-        public override string GetSummary() {
+        public override string GetSummary(UnitController sourceUnitController) {
             return "Lootable";
         }
         

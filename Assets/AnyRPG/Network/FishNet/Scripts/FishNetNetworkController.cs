@@ -405,8 +405,8 @@ namespace AnyRPG {
             clientConnector.ToggleLobbyGameReadyStatus(gameId);
         }
 
-        public override void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex) {
-            clientConnector.InteractWithOptionClient(sourceUnitController, targetInteractable, componentIndex);
+        public override void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
+            clientConnector.InteractWithOptionClient(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
         }
 
         public override void SetPlayerCharacterClass(string className) {

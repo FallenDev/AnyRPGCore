@@ -144,7 +144,7 @@ namespace AnyRPG {
             if (playerManager.UnitController != null && target == playerManager.UnitController.CharacterUnit) {
                 textColor = Color.red;
             }
-            string combatMessage = string.Format("<color=#{0}>{1} Takes {2} damage from {3}'s {4}</color>", ColorUtility.ToHtmlStringRGB(textColor), target.DisplayName, damage, source.AbilityManager.Name, abilityName);
+            string combatMessage = string.Format("<color=#{0}>{1} Takes {2} damage from {3}'s {4}</color>", ColorUtility.ToHtmlStringRGB(textColor), target.UnitController.BaseCharacter.CharacterName, damage, source.AbilityManager.Name, abilityName);
 
             WriteCombatMessage(combatMessage);
         }

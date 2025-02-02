@@ -12,7 +12,7 @@ namespace AnyRPG {
         void UpdateQuestStatus(UnitController sourceUnitController);
         Interactable Interactable { get; }
         InteractableOptionComponent InteractableOptionComponent { get; }
-        bool Interact(UnitController source, int optionIndex = 0);
+        bool Interact(UnitController source, int componentIndex = 0, int choiceIndex = 0);
         void HandleCompleteQuest();
         void HandleAcceptQuest();
         bool EndsQuest(string questName);

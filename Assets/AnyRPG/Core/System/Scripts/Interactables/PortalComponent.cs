@@ -21,10 +21,10 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.PortalComponent.Interact({sourceUnitController.gameObject.name})");
 
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
             LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
@@ -44,8 +44,8 @@ namespace AnyRPG {
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
         }
 

@@ -38,7 +38,7 @@ namespace AnyRPG {
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
         public abstract void StartLobbyGame(int gameId);
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
-        public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex);
+        public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex);
         public abstract void SetPlayerCharacterClass(string className);
         public abstract void LearnSkill(string skillName);
         public abstract void AcceptQuest(string questName);
@@ -65,13 +65,13 @@ namespace AnyRPG {
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
-        //public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId);
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
-        //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int componentIndex, int clientId);
     }
 
 }

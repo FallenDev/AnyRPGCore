@@ -39,13 +39,13 @@ namespace AnyRPG {
             }
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
             //if (coroutine != null) {
                 //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(): coroutine is not null, exiting");
                 //return false;
             //}
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             // loop through the animatedobjects prefabobjects
             // check their state (open / closed)
@@ -71,8 +71,8 @@ namespace AnyRPG {
             return false;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
 
         }

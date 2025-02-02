@@ -13,6 +13,8 @@ namespace AnyRPG {
 
         protected bool eventSubscriptionsInitialized = false;
 
+        protected string interactionPanelTitle = string.Empty;
+
         // game manager references
         protected SystemEventManager systemEventManager = null;
         protected PlayerManager playerManager = null;
@@ -26,8 +28,8 @@ namespace AnyRPG {
         public virtual int PriorityValue { get => 0; }
         public virtual string DisplayName {
             get {
-                if (interactableOptionProps.GetInteractionPanelTitle() != null && interactableOptionProps.GetInteractionPanelTitle() != string.Empty) {
-                    return interactableOptionProps.GetInteractionPanelTitle();
+                if (interactionPanelTitle != string.Empty) {
+                    return interactionPanelTitle;
                 }
                 if (interactable != null) {
                     return interactable.DisplayName;
@@ -51,6 +53,7 @@ namespace AnyRPG {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent(" + interactable.gameObject.name + ", " + (systemGameManager == null ? "null" : systemGameManager.gameObject.name) + ")");
             this.interactable = interactable;
             this.interactableOptionProps = interactableOptionProps;
+            interactionPanelTitle = interactableOptionProps.InteractionPanelTitle;
             Configure(systemGameManager);
             SetupScriptableObjects();
             CreateEventSubscriptions();
@@ -155,13 +158,13 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public virtual bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public virtual bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
             //source.CancelMountEffects();
             systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
-            sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, optionIndex);
+            sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, componentIndex, choiceIndex);
             //interactable.InteractableEventController.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
-            interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
+            interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 
@@ -170,8 +173,8 @@ namespace AnyRPG {
             playerManager.PlayerController.StopInteract();
         }
 
-        public virtual void ProcessStartInteract(int optionIndex) {
-            interactable.ProcessStartInteractWithOption(this, optionIndex);
+        public virtual void ProcessStartInteract(int componentIndex, int choiceIndex) {
+            interactable.ProcessStartInteractWithOption(this, componentIndex, choiceIndex);
         }
 
         public virtual void ProcessStopInteract() {
@@ -186,8 +189,8 @@ namespace AnyRPG {
         /// called by the player manager on the client when the player interacts
         /// </summary>
         /// <param name="sourceUnitController"></param>
-        /// <param name="optionIndex"></param>
-        public virtual void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+        /// <param name="componentIndex"></param>
+        public virtual void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             // handle client-only stuff in child classes
         }
 
@@ -244,13 +247,16 @@ namespace AnyRPG {
         }
 
         public virtual string GetDescription() {
-            return string.Format("<color=#ffff00ff>{0}</color>", GetSummary());
+            return string.Format("<color=#ffff00ff>{0}</color>", GetSummary(playerManager.UnitController));
         }
 
-        public virtual string GetSummary() {
-            return string.Format("{0}", interactableOptionProps.GetInteractionPanelTitle());
+        public virtual string GetSummary(UnitController sourceUnitController) {
+            return string.Format("{0}", GetInteractionButtonText(sourceUnitController));
         }
-        
+
+        public virtual string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
+            return interactionPanelTitle;
+        }
 
         public virtual void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOption.HandlePlayerUnitSpawn()");

@@ -901,9 +901,9 @@ namespace AnyRPG {
         }
 
         // not currently in use - this is for when click to move is enabled
-        public void InterActWithInteractableOption(Interactable interactable, InteractableOptionComponent interactableOption, int optionIndex) {
+        public void InterActWithInteractableOption(Interactable interactable, InteractableOptionComponent interactableOption, int componentIndex, int choiceIndex) {
             playerManager.UnitController.SetTarget(interactable);
-            if (InteractionWithOptionSucceeded(interactableOption, optionIndex)) {
+            if (InteractionWithOptionSucceeded(interactableOption, componentIndex, choiceIndex)) {
                 // not actually stopping interacting.  just clearing target if this was a trigger interaction and we are not interacting with a focus
                 StopInteract();
             } else {
@@ -917,10 +917,10 @@ namespace AnyRPG {
             }
         }
 
-        private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption, int optionIndex) {
+        private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded()");
             //if (IsTargetInHitBox(target)) {
-            if (interactableOption.Interact(playerManager.ActiveUnitController, optionIndex)) {
+            if (interactableOption.Interact(playerManager.ActiveUnitController, componentIndex, choiceIndex)) {
                 //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
                 systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController, playerManager.UnitController.Target.DisplayName);
                 systemEventManager.NotifyOnInteractionWithOptionStarted(playerManager.UnitController, interactableOption);

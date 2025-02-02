@@ -22,17 +22,17 @@ namespace AnyRPG {
             nameChangeManager = systemGameManager.NameChangeManager;
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.NameChangeInteractable.Interact()");
             
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
-            nameChangeManager.BeginInteraction(this, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
+            nameChangeManager.BeginInteraction(this, componentIndex, choiceIndex);
             uIManager.nameChangeWindow.OpenWindow();
         }
 

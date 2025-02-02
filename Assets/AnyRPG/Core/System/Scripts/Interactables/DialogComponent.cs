@@ -22,6 +22,16 @@ namespace AnyRPG {
             dialogManager = systemGameManager.DialogManager;
         }
 
+        public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
+
+            List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
+            if (currentList.Count > choiceIndex) {
+                return currentList[choiceIndex].DisplayName;
+            }
+            return base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex);
+        }
+
+
         public override void Cleanup() {
             base.Cleanup();
             CleanupPrerequisiteOwner();
@@ -54,28 +64,33 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".DialogInteractable.Interact()");
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
+            if (currentList.Count == 0) {
+                return false;
+            } else {
+                if (currentList[choiceIndex].Automatic) {
+                    interactable.DialogController.BeginDialog(sourceUnitController, currentList[choiceIndex]);
+                }
+            }
+
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             
             List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
                 return;
-            } else /*if (currentList.Count == 1)*/ {
-                if (currentList[optionIndex].Automatic) {
-                    interactable.DialogController.BeginDialog(sourceUnitController, currentList[optionIndex]);
-                } else {
-                    dialogManager.SetDialog(currentList[optionIndex], this.interactable, this, optionIndex);
+            } else {
+                if (currentList[choiceIndex].Automatic == false) {
+                    dialogManager.SetDialog(currentList[choiceIndex], this.interactable, this, componentIndex, choiceIndex);
                     uIManager.dialogWindow.OpenWindow();
                 }
-            }/* else {
-                interactable.OpenInteractionWindow();
-            }*/
+            }
 
         }
 

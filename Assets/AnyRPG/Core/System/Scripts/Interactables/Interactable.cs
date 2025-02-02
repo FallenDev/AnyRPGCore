@@ -12,7 +12,7 @@ namespace AnyRPG {
 
         public event System.Action OnPrerequisiteUpdates = delegate { };
         public event System.Action OnInteractableDisable = delegate { };
-        public event System.Action<UnitController, int> OnInteractionWithOptionStarted = delegate { };
+        public event System.Action<UnitController, int, int> OnInteractionWithOptionStarted = delegate { };
 
         // this field does not do anything, but is needed to satisfy the IDescribable interface
         protected Sprite interactableIcon = null;
@@ -538,7 +538,7 @@ namespace AnyRPG {
             Dictionary<int, InteractableOptionComponent> validInteractables = GetCurrentInteractables(null);
             if (validInteractables.Count > 0) {
                 int key = validInteractables.Take(1).Select(d => d.Key).First();
-                validInteractables[key].Interact(null, key);
+                validInteractables[key].Interact(null, key, 0);
                 return true;
             }
 
@@ -561,7 +561,7 @@ namespace AnyRPG {
             // do something in inherited class
         }
 
-        public virtual void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
+        public virtual void ProcessStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
             // do something in inherited class
         }
 
@@ -863,10 +863,10 @@ namespace AnyRPG {
 
             // perform default interaction or open a window if there are multiple valid interactions
             List<string> returnStrings = new List<string>();
-            foreach (InteractableOptionComponent _interactable in currentInteractables.Values) {
+            foreach (InteractableOptionComponent interactableOptionComponent in currentInteractables.Values) {
                 //if (!(_interactable is INamePlateUnit)) {
                 // we already put the character name in the description so skip it here
-                returnStrings.Add(_interactable.GetSummary());
+                returnStrings.Add(interactableOptionComponent.GetSummary(playerManager.UnitController));
                 //}
             }
             returnString = string.Join("\n", returnStrings);
@@ -1005,8 +1005,8 @@ namespace AnyRPG {
 
         #region events
 
-        public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, int optionIndex) {
-            OnInteractionWithOptionStarted(sourceUnitController, optionIndex);
+        public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            OnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
         }
 
         #endregion

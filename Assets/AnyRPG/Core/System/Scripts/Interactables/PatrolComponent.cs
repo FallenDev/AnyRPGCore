@@ -28,7 +28,12 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            //return (behaviorNames.Count > optionIndex ? behaviorNames[optionIndex] : base.GetInteractionPanelTitle(optionIndex));
+            return base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex);
+        }
+
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
             //List<BehaviorProfile> currentList = GetCurrentOptionList();
             /*
@@ -40,12 +45,12 @@ namespace AnyRPG {
                 //unitController.PatrolController.BeginPatrolByIndex(currentList[optionIndex]);
                 unitController.PatrolController.BeginPatrol(Props.PatrolProperties);
             }
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             interactable.CloseInteractionWindow();
         }
 

@@ -40,7 +40,7 @@ namespace AnyRPG {
         public event System.Action<string> OnMessageFeed = delegate { };
         public event System.Action OnStartInteract = delegate { };
         public event System.Action OnStopInteract = delegate { };
-        public event System.Action<UnitController, InteractableOptionComponent, int> OnStartInteractWithOption = delegate { };
+        public event System.Action<UnitController, InteractableOptionComponent, int, int> OnStartInteractWithOption = delegate { };
         public event System.Action<InteractableOptionComponent> OnStopInteractWithOption = delegate { };
         public event System.Action OnDropCombat = delegate { };
         public event System.Action<UnitController> OnBeginCastOnEnemy = delegate { };
@@ -274,8 +274,8 @@ namespace AnyRPG {
             OnStopInteract();
         }
 
-        public void NotifyOnStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
-            OnStartInteractWithOption(unitController, interactableOptionComponent, optionIndex);
+        public void NotifyOnStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            OnStartInteractWithOption(unitController, interactableOptionComponent, componentIndex, choiceIndex);
         }
 
         public void NotifyOnStopInteractWithOption(InteractableOptionComponent interactableOptionComponent) {

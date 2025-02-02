@@ -45,8 +45,11 @@ namespace AnyRPG {
             return searchInteractable.GetFirstInteractableOption(typeof(GatheringNodeComponent)) as GatheringNodeComponent;
         }
 
+        public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            return (GatheringNodeProps.BaseAbility != null ? GatheringNodeProps.BaseAbility.DisplayName : base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex));
+        }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
@@ -66,23 +69,23 @@ namespace AnyRPG {
             //if (lootCount > 0) {
             if (lootDropped == true) {
                 // this call is safe, it will internally check if loot is already dropped and just pickup instead
-                Gather(source, optionIndex);
+                Gather(sourceUnitController, componentIndex);
             } else {
-                source.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
+                sourceUnitController.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
             }
             return true;
             //return PickUp();
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
 
         }
 
-        public void Gather(UnitController source, int optionIndex = 0) {
+        public void Gather(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.GatheringNode.DropLoot()");
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
         }
 
         /*

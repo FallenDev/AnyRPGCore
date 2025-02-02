@@ -13,7 +13,7 @@ namespace AnyRPG {
 
         private UnitController unitController = null;
 
-        private List<BehaviorProfile> behaviorList = new List<BehaviorProfile>();
+        //private List<BehaviorProfile> behaviorList = new List<BehaviorProfile>();
 
         public BehaviorComponent(Interactable interactable, BehaviorProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             if ((interactable as UnitController) is UnitController) {
@@ -26,7 +26,13 @@ namespace AnyRPG {
             return searchInteractable.GetFirstInteractableOption(typeof(BehaviorComponent)) as BehaviorComponent;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            // FIX ME - THIS PULLS FROM THE Props, but all others come from a dictionary that includes local behaviours.  The sizes may not match
+            return (Props.BehaviorNames.Count > choiceIndex ? Props.BehaviorNames[choiceIndex] : base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex));
+        }
+
+
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.Interact()");
             List<BehaviorProfile> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
@@ -34,9 +40,9 @@ namespace AnyRPG {
                 //} else if (currentList.Count == 1) {
             } else {
                 if (unitController != null) {
-                    unitController.BehaviorController.TryPlayBehavior(currentList[optionIndex], this);
+                    unitController.BehaviorController.TryPlayBehavior(currentList[choiceIndex], this);
                 }
-                base.Interact(sourceUnitController, optionIndex);
+                base.Interact(sourceUnitController, componentIndex, choiceIndex);
             }/* else {
 
                 interactable.OpenInteractionWindow();
@@ -44,8 +50,8 @@ namespace AnyRPG {
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             interactable.CloseInteractionWindow();
 
         }

@@ -109,23 +109,23 @@ namespace AnyRPG {
             */
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".QuestGiver.Interact()");
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
             //interactionManager.InteractWithQuestGiver(this, optionIndex, sourceUnitController);
             
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             // this is running locally
             if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count > 1) {
                 interactionManager.OpenInteractionWindow(Interactable);
                 return;
             } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests).Count == 0) {
                 if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
-                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0], Interactable, this, optionIndex);
+                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0], Interactable, this, componentIndex, choiceIndex);
                     uIManager.dialogWindow.OpenWindow();
                     return;
                 } else {

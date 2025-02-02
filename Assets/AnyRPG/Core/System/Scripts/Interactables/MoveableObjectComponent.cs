@@ -56,10 +56,10 @@ namespace AnyRPG {
             return base.CanInteract(source, processRangeCheck, passedRangeCheck, processNonCombatCheck);
         }
 
-        public override bool Interact(UnitController source, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
 
-            base.Interact(source, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props.MoveableObject == null) {
                 Debug.Log("MoveableObject.Interact(): gameObject was null. Check Inspector");
@@ -80,8 +80,8 @@ namespace AnyRPG {
             return false;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
-            base.ClientInteraction(sourceUnitController, optionIndex);
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
 
         }

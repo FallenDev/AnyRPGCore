@@ -51,6 +51,10 @@ namespace AnyRPG {
             return searchInteractable.GetInteractableOptionList(typeof(CraftingNodeComponent)).Cast<CraftingNodeComponent>().ToList();
         }
 
+        public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
+            return (Props.Ability != null ? Props.Ability.DisplayName : base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex));
+        }
+
         public void HandleAbilityListChange(UnitController sourceUnitController, AbilityProperties baseAbility) {
             //Debug.Log($"{gameObject.name}.GatheringNode.HandleAbilityListChange(" + baseAbility.DisplayName + ")");
             HandlePrerequisiteUpdates(sourceUnitController);
@@ -61,8 +65,8 @@ namespace AnyRPG {
             return ((sourceUnitController.CharacterAbilityManager.HasAbility(Props.Ability) == true) ? 1 : 0);
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
-            base.Interact(sourceUnitController, optionIndex);
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props == null || Props.Ability == null) {
                 Debug.Log("Props is null");

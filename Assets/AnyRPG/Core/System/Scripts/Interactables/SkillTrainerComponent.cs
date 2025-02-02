@@ -13,11 +13,13 @@ namespace AnyRPG {
         public SkillTrainerProps Props { get => interactableOptionProps as SkillTrainerProps; }
 
         public SkillTrainerComponent(Interactable interactable, SkillTrainerProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            if (interactableOptionProps.GetInteractionPanelTitle() == string.Empty) {
-                interactableOptionProps.InteractionPanelTitle = "Train Me";
+            if (interactionPanelTitle == string.Empty) {
+                interactionPanelTitle = "Train Me";
             }
-            systemEventManager.OnLearnSkill += HandleSkillListChanged;
-            systemEventManager.OnUnLearnSkill += HandleSkillListChanged;
+            if (systemGameManager.GameMode == GameMode.Local || systemGameManager.NetworkManagerServer.ServerModeActive == false) {
+                systemEventManager.OnLearnSkill += HandleSkillListChanged;
+                systemEventManager.OnUnLearnSkill += HandleSkillListChanged;
+            }
         }
 
         public override void SetGameManagerReferences() {
@@ -25,18 +27,18 @@ namespace AnyRPG {
             skillTrainerManager = systemGameManager.SkillTrainerManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int optionIndex) {
+        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
-            base.Interact(sourceUnitController, optionIndex);
+            base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             //interactionManager.InteractWithSkillTrainerComponent(sourceUnitController, this, optionIndex);
 
             return true;
         }
 
-        public override void ClientInteraction(UnitController sourceUnitController, int optionIndex) {
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             if (!uIManager.skillTrainerWindow.IsOpen) {
-                skillTrainerManager.SetSkillTrainer(this, optionIndex);
+                skillTrainerManager.SetSkillTrainer(this, componentIndex, choiceIndex);
                 uIManager.skillTrainerWindow.OpenWindow();
             }
         }

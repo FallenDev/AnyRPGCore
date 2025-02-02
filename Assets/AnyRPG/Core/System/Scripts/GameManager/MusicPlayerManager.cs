@@ -12,10 +12,10 @@ namespace AnyRPG {
 
         public MusicPlayerProps MusicPlayerProps { get => musicPlayerProps; set => musicPlayerProps = value; }
 
-        public void SetMusicPlayerProps(MusicPlayerProps musicPlayerProps, InteractableOptionComponent interactableOptionComponent, int optionIndex) {
+        public void SetMusicPlayerProps(MusicPlayerProps musicPlayerProps, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
             this.musicPlayerProps = musicPlayerProps;
 
-            BeginInteraction(interactableOptionComponent, optionIndex);
+            BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex);
         }
 
         public override void EndInteraction() {

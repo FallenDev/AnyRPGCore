@@ -33,15 +33,15 @@ namespace AnyRPG {
             interactableOptionComponent?.NotifyOnConfirmAction(sourceUnitController);
         }
 
-        public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent, int optionIndex) {
-            BeginInteraction(interactableOptionComponent, optionIndex, true);
+        public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex, true);
         }
 
-        public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent, int optionIndex, bool notify) {
+        public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex, bool notify) {
             this.interactableOptionComponent = interactableOptionComponent;
             interactionManager.BeginInteractionWithOption(interactableOptionComponent, this);
             if (notify == true) {
-                interactableOptionComponent?.ProcessStartInteract(optionIndex);
+                interactableOptionComponent?.ProcessStartInteract(componentIndex, choiceIndex);
             }
             //OnBeginInteraction();
         }

@@ -37,14 +37,14 @@ namespace AnyRPG {
             if (questObjective.GetStatus(sourceUnitController) == "completed") {
                 SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
                 // i think that is supposed to be this instead to ask the quest that we are an objective for to check completion
-                questBase.CheckCompletion(sourceUnitController, true, printMessages);
                 //questObjective.CheckCompletion(true, printMessages);
                 if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
                 }
                 if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("Complete {1}: Objective Complete", CurrentAmount(sourceUnitController), questObjective.DisplayName));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("Complete {1}: Objective Complete", CurrentAmount(sourceUnitController), questObjective.DisplayName));
                 }
+                questBase.CheckCompletion(sourceUnitController, true, printMessages);
             }
             base.UpdateCompletionCount(sourceUnitController, printMessages);
         }

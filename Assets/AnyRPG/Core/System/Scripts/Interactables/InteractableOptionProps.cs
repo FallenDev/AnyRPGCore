@@ -31,7 +31,7 @@ namespace AnyRPG {
         [SerializeField]
         protected List<PrerequisiteConditions> prerequisiteConditions = new List<PrerequisiteConditions>();
 
-        public virtual string InteractionPanelTitle { get => interactionPanelTitle; set => interactionPanelTitle = value; }
+        public virtual string InteractionPanelTitle { get => interactionPanelTitle; }
         public virtual Sprite Icon { get => interactionPanelImage; }
         public virtual Sprite NamePlateImage { get => namePlateImage; }
 

@@ -30,6 +30,7 @@ namespace AnyRPG {
         protected SaveManager saveManager = null;
         protected PlayerManager playerManager = null;
         protected MessageFeedManager messageFeedManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public virtual bool PrintObjectiveCompletionMessages {
             get => false;
@@ -44,6 +45,7 @@ namespace AnyRPG {
             saveManager = systemGameManager.SaveManager;
             playerManager = systemGameManager.PlayerManager;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         protected abstract QuestSaveData GetSaveData(UnitController sourceUnitController);
@@ -249,7 +251,7 @@ namespace AnyRPG {
             return objectives;
         }
 
-        protected virtual void ProcessAcceptQuest() {
+        protected virtual void ProcessAcceptQuest(UnitController sourceUnitController) {
             // nothing to do here
         }
 
@@ -261,14 +263,19 @@ namespace AnyRPG {
             questSaveData.markedComplete = false;
             questSaveData.turnedIn = false;
             SetSaveData(sourceUnitController, ResourceName, questSaveData);
-            if (steps.Count > 0) {
-                foreach (QuestObjective questObjective in steps[CurrentStep(sourceUnitController)].QuestObjectives) {
-                    questObjective.OnAcceptQuest(sourceUnitController, this, printMessages);
+
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (steps.Count > 0) {
+                    foreach (QuestObjective questObjective in steps[CurrentStep(sourceUnitController)].QuestObjectives) {
+                        questObjective.OnAcceptQuest(sourceUnitController, this, printMessages);
+                    }
                 }
             }
 
-            if (printMessages == true) {
-                ProcessAcceptQuest();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                if (printMessages == true) {
+                    ProcessAcceptQuest(sourceUnitController);
+                }
             }
 
             sourceUnitController.UnitEventController.NotifyOnAcceptQuest(this);
@@ -282,12 +289,12 @@ namespace AnyRPG {
                 return;
             }
 
+            // since this method only gets called as a result of a quest objective status updating, we need to notify for that
+            sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
+            OnQuestObjectiveStatusUpdated(sourceUnitController);
+
             if (StepsComplete(sourceUnitController, printMessages)) {
                 MarkComplete(sourceUnitController, notifyOnUpdate, printMessages);
-            } else {
-                // since this method only gets called as a result of a quest objective status updating, we need to notify for that at minimum
-                sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
-                OnQuestObjectiveStatusUpdated(sourceUnitController);
             }
         }
 

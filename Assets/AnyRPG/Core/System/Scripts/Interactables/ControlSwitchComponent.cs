@@ -17,7 +17,7 @@ namespace AnyRPG {
         public bool OnState { get => onState; set => onState = value; }
 
         public ControlSwitchComponent(Interactable interactable, ControlSwitchProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            interactableOptionProps.InteractionPanelTitle = "Interactable";
+            interactionPanelTitle = "Interactable";
         }
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {

@@ -25,14 +25,14 @@ namespace AnyRPG {
 
         public void UpdateCastCount(UnitController sourceUnitController) {
             bool completeBefore = IsComplete(sourceUnitController);
-                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+            SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+            if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Use {0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
+            }
+            if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Use {0}: Objective Complete", baseAbility.DisplayName));
+            }
             questBase.CheckCompletion(sourceUnitController);
-                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
-                }
-                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), baseAbility.DisplayName));
-                }
         }
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {

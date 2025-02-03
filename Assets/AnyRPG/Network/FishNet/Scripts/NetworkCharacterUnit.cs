@@ -157,10 +157,12 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
+            unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestCompleteServer;
             unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
-
+            unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
+            unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdatedServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -183,17 +185,52 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDespawnAbilityObjects -= HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
-            unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
+            unitController.UnitEventController.OnLevelChanged -= HandleLevelChanged;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
-            //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
+            //unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTriggerServer;
             unitController.UnitEventController.OnClassChange -= HandleClassChangeServer;
             unitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChangeServer;
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRangeServer;
-            unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
-            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
-            unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
-            unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
+            unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuestServer;
+            unitController.UnitEventController.OnMarkQuestComplete -= HandleMarkQuestCompleteServer;
+            unitController.UnitEventController.OnRemoveQuest -= HandleRemoveQuestServer;
+            unitController.UnitEventController.OnLearnSkill -= HandleLearnSkillServer;
+            unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkillServer;
+            unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount -= HandleSetQuestObjectiveCurrentAmount;
+            unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdatedServer;
+
+        }
+
+        public void HandleMarkQuestCompleteServer(UnitController controller, QuestBase questBase) {
+            HandleMarkQuestCompleteClient(questBase.DisplayName);
+        }
+
+        [ObserversRpc]
+        public void HandleMarkQuestCompleteClient(string questName) {
+            Quest questBase = systemDataFactory.GetResource<Quest>(questName);
+            if (questBase == null) {
+                return;
+            }
+            questBase.MarkComplete(unitController, true, false);
+        }
+
+        public void HandleQuestObjectiveStatusUpdatedServer(UnitController controller, QuestBase questBase) {
+            HandleQuestObjectiveStatusUpdatedClient(questBase.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleQuestObjectiveStatusUpdatedClient(string questName) {
+            Quest questBase = systemDataFactory.GetResource<Quest>(questName);
+            if (questBase == null) {
+                return;
+            }
+            unitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(questBase);
+        }
+
+        [ObserversRpc]
+        public void HandleSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
+            unitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
         }
 
         public void HandleLearnSkillServer(UnitController sourceUnitController, Skill skill) {

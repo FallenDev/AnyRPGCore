@@ -20,8 +20,10 @@ namespace AnyRPG {
         public InteractableOptionComponent InteractableOptionComponent { get => this; }
 
         public QuestGiverComponent(Interactable interactable, QuestGiverProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            foreach (QuestNode questNode in Props.Quests) {
-                questNode.Quest.OnQuestStatusUpdated += HandlePrerequisiteUpdates;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                foreach (QuestNode questNode in Props.Quests) {
+                    questNode.Quest.OnQuestStatusUpdated += HandlePrerequisiteUpdates;
+                }
             }
 
             // moved here from Init() monitor for breakage
@@ -64,7 +66,7 @@ namespace AnyRPG {
                 return;
             }
 
-            interactableOptionProps.InteractionPanelTitle = "Quests";
+            interactionPanelTitle = "Quests";
             foreach (QuestNode questNode in Props.Quests) {
                 //Type questType = questNode.MyQuestTemplate.GetType();
                 if (questNode.Quest == null) {
@@ -310,6 +312,7 @@ namespace AnyRPG {
 
         public override void CleanupScriptableObjects() {
             base.CleanupScriptableObjects();
+
             foreach (QuestNode questNode in Props.Quests) {
                 questNode.Quest.OnQuestStatusUpdated -= HandlePrerequisiteUpdates;
             }

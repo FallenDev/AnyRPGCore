@@ -658,6 +658,16 @@ namespace AnyRPG {
             networkManagerServer.AcceptQuest(questName, networkConnection.ClientId);
         }
 
+        public void AdvertiseMessageFeedMessage(int clientId, string message) {
+            AdvertiseMessageFeedMessageClient(fishNetNetworkManager.ServerManager.Clients[clientId], message);
+        }
+
+        [TargetRpc]
+        public void AdvertiseMessageFeedMessageClient(NetworkConnection networkConnection, string message) {
+            networkManagerClient.AdvertiseMessageFeedMessage(message);
+        }
+
+
         /*
         public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {

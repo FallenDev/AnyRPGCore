@@ -184,7 +184,7 @@ namespace AnyRPG {
         protected override void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
             base.ProcessMarkComplete(sourceUnitController, printMessages);
             if (printMessages == true) {
-                messageFeedManager.WriteMessage(string.Format("{0} Complete!", DisplayName));
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0} Complete!", DisplayName));
             }
         }
 
@@ -224,9 +224,9 @@ namespace AnyRPG {
             return LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, ExperienceLevel);
         }
 
-        protected override void ProcessAcceptQuest() {
-            base.ProcessAcceptQuest();
-            messageFeedManager.WriteMessage("Quest Accepted: " + DisplayName);
+        protected override void ProcessAcceptQuest(UnitController sourceUnitController) {
+            base.ProcessAcceptQuest(sourceUnitController);
+            messageFeedManager.WriteMessage(sourceUnitController, $"Quest Accepted: {DisplayName}");
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

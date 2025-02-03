@@ -23,6 +23,7 @@ namespace AnyRPG {
         // GameManager references
         private ObjectPooler objectPooler = null;
         private LogManager logManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public CloseableWindow MessageFeedWindow { get => messageFeedWindow; set => messageFeedWindow = value; }
 
@@ -35,6 +36,15 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             logManager = systemGameManager.LogManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+        }
+
+        public void WriteMessage(UnitController sourceUnitController, string message) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                WriteMessage(message);
+            } else {
+                networkManagerServer.AdvertiseMessageFeedMessage(sourceUnitController, message);
+            }
         }
 
         public void WriteMessage(string message) {

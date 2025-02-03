@@ -26,7 +26,7 @@ namespace AnyRPG {
         AudioSource audioSource = null;
 
         public MoveableObjectComponent(Interactable interactable, MoveableObjectProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            interactableOptionProps.InteractionPanelTitle = "Interactable";
+            interactionPanelTitle = "Interactable";
             if (Props.MoveableObject != null) {
                 originalPosition = Props.MoveableObject.transform.localPosition;
                 

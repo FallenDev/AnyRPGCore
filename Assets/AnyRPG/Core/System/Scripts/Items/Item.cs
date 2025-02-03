@@ -352,12 +352,12 @@ namespace AnyRPG {
         public virtual bool Use(UnitController sourceUnitController) {
             //Debug.Log("Base item class: using " + itemName);
             if (!CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
-                messageFeedManager.WriteMessage("You are not the right character class to use " + DisplayName);
+                messageFeedManager.WriteMessage(sourceUnitController, "You are not the right character class to use " + DisplayName);
                 return false;
             }
             //if (GetItemLevel(playerManager.UnitController.CharacterStats.Level) > playerManager.UnitController.CharacterStats.Level) {
             if (useLevel > sourceUnitController.CharacterStats.Level) {
-                messageFeedManager.WriteMessage("You are too low level use " + DisplayName);
+                messageFeedManager.WriteMessage(sourceUnitController, "You are too low level to use " + DisplayName);
                 return false;
             }
 

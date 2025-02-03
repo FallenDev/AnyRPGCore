@@ -12,7 +12,7 @@ namespace AnyRPG {
         private bool objectOpen = false;
 
         public AnimatedObjectComponent(Interactable interactable, AnimatedObjectProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            interactableOptionProps.InteractionPanelTitle = "Interactable";
+            interactionPanelTitle = "Interactable";
         }
 
         public override bool CanInteract(UnitController source, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {

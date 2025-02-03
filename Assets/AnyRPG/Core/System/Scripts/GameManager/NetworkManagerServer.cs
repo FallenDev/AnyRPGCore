@@ -612,6 +612,10 @@ namespace AnyRPG {
             playerManagerServer.AcceptQuest(quest, clientId);
         }
 
+        public void AdvertiseMessageFeedMessage(UnitController sourceUnitController, string message) {
+            networkController.AdvertiseMessageFeedMessage(playerManagerServer.ActivePlayerLookup[sourceUnitController], message);
+        }
+
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {
             networkController.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);

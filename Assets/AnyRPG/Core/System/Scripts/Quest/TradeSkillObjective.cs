@@ -46,13 +46,15 @@ namespace AnyRPG {
             }
             if (sourceUnitController.CharacterSkillManager.HasSkill(skill)) {
                 SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
-                questBase.CheckCompletion(sourceUnitController, true, printMessages);
             }
             if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
-                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", skill.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Learn {0}: {1}/{2}", skill.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
             }
             if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), skill.DisplayName));
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Learn {0}: Objective Complete", skill.DisplayName));
+            }
+            if (sourceUnitController.CharacterSkillManager.HasSkill(skill)) {
+                questBase.CheckCompletion(sourceUnitController, true, printMessages);
             }
             base.UpdateCompletionCount(sourceUnitController, printMessages);
         }

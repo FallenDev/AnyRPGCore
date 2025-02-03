@@ -112,6 +112,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
+        public event System.Action<string, string, string, QuestObjectiveSaveData> OnSetQuestObjectiveCurrentAmount = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -567,6 +568,10 @@ namespace AnyRPG {
 
         public void NotifyOnUnLearnSkill(Skill oldSkill) {
             OnUnLearnSkill(unitController, oldSkill);
+        }
+
+        public void NotifyOnSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
+            OnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
         }
 
         #endregion

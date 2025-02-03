@@ -68,6 +68,7 @@ namespace AnyRPG {
         public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void AdvertiseMessageFeedMessage(int clientId, string message);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);

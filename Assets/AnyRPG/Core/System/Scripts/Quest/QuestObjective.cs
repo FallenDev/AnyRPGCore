@@ -70,7 +70,7 @@ namespace AnyRPG {
         public void SetCurrentAmount(UnitController sourceUnitController, int value) {
             QuestObjectiveSaveData saveData = sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName);
             saveData.Amount = value;
-            sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary[questBase.ResourceName][ObjectiveType.Name][ObjectiveName] = saveData;
+            sourceUnitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(questBase.ResourceName, ObjectiveType.Name, ObjectiveName, saveData);
         }
 
 

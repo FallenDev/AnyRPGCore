@@ -7,7 +7,7 @@ namespace AnyRPG {
         public BankProps Props { get => interactableOptionProps as BankProps; }
 
         public BankComponent(Interactable interactable, BankProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            interactableOptionProps.InteractionPanelTitle = "Bank";
+            interactionPanelTitle = "Bank";
         }
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {

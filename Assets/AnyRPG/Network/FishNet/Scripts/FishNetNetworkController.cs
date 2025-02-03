@@ -569,6 +569,10 @@ namespace AnyRPG {
             return null;
         }
 
+        public override void AdvertiseMessageFeedMessage(int clientId, string message) {
+            clientConnector.AdvertiseMessageFeedMessage(clientId, message);
+        }
+
 
         #endregion
 

@@ -25,14 +25,14 @@ namespace AnyRPG {
 
         public void UpdateApplyCount(UnitController sourceUnitController) {
             bool completeBefore = IsComplete(sourceUnitController);
-                SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
-                questBase.CheckCompletion(sourceUnitController);
-                if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", statusEffect.DisplayName, CurrentAmount(sourceUnitController), Amount));
-                }
-                if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), statusEffect.DisplayName));
-                }
+            SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
+            if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Apply {0}: {1}/{2}", statusEffect.DisplayName, CurrentAmount(sourceUnitController), Amount));
+            }
+            if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Apply {0}: Objective Complete", statusEffect.DisplayName));
+            }
+            questBase.CheckCompletion(sourceUnitController);
         }
 
         public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
@@ -44,13 +44,13 @@ namespace AnyRPG {
             }
             if (sourceUnitController.CharacterStats.GetStatusEffectNode(statusEffect) != null) {
                 SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
-                questBase.CheckCompletion(sourceUnitController, true, printMessages);
                 if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", statusEffect.DisplayName, CurrentAmount(sourceUnitController), Amount));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("Apply {0}: {1}/{2}", statusEffect.DisplayName, CurrentAmount(sourceUnitController), Amount));
                 }
                 if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(string.Format("Learn {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), statusEffect.DisplayName));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("Apply {0}: Objective Complete", statusEffect.DisplayName));
                 }
+                questBase.CheckCompletion(sourceUnitController, true, printMessages);
             }
         }
 

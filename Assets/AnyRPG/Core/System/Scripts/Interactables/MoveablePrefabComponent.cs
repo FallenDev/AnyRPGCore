@@ -24,7 +24,7 @@ namespace AnyRPG {
         private Coroutine loopCoroutine = null;
 
         public MoveablePrefabComponent(Interactable interactable, MoveablePrefabProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
-            interactableOptionProps.InteractionPanelTitle = "Interactable";
+            interactionPanelTitle = "Interactable";
         }
 
         public override void Cleanup() {

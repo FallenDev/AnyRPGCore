@@ -47,13 +47,13 @@ namespace AnyRPG {
                 sourceUnitController.CharacterInventoryManager.GetItemCount(itemName, partialMatch)
                 + sourceUnitController.CharacterEquipmentManager.GetEquipmentCount(itemName, partialMatch));
 
-            questBase.CheckCompletion(sourceUnitController, true, printMessages);
             if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
-                messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
             }
             if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                messageFeedManager.WriteMessage(string.Format("Collect {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), DisplayName));
+                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Collect {0} {1}: Objective Complete", CurrentAmount(sourceUnitController), DisplayName));
             }
+            questBase.CheckCompletion(sourceUnitController, true, printMessages);
             base.UpdateCompletionCount(sourceUnitController, printMessages);
         }
 

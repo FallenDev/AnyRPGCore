@@ -47,6 +47,7 @@ namespace AnyRPG {
         private LevelManager levelManager = null;
         private LogManager logManager = null;
         private InteractionManager interactionManager = null;
+        private MessageFeedManager messageFeedManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -68,6 +69,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             logManager = systemGameManager.LogManager;
             interactionManager = systemGameManager.InteractionManager;
+            messageFeedManager = uIManager.MessageFeedManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -423,6 +425,10 @@ namespace AnyRPG {
 
         public void AcceptQuest(Quest quest) {
             networkController.AcceptQuest(quest.ResourceName);
+        }
+
+        public void AdvertiseMessageFeedMessage(string message) {
+            messageFeedManager.WriteMessage(message);
         }
 
         /*

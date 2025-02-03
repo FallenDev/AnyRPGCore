@@ -31,13 +31,13 @@ namespace AnyRPG {
 
             if (SystemDataUtility.MatchResource(dialogName, dialog.ResourceName)) {
                 SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
-                questBase.CheckCompletion(sourceUnitController);
                 if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount(sourceUnitController) != 0) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
                 }
                 if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
-                    messageFeedManager.WriteMessage(string.Format("{0}: Objective Complete", DisplayName));
+                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0}: Objective Complete", DisplayName));
                 }
+                questBase.CheckCompletion(sourceUnitController);
             }
         }
 

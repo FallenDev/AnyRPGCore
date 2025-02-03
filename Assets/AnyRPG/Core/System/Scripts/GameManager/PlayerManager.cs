@@ -291,14 +291,14 @@ namespace AnyRPG {
 
         public void PlayLevelUpEffects(UnitController sourceUnitController, int newLevel) {
             //Debug.Log("PlayerManager.PlayLevelUpEffect()");
-            if (PlayerUnitSpawned == false || systemConfigurationManager.LevelUpEffect == null) {
+            if (systemConfigurationManager.LevelUpEffect == null) {
                 return;
             }
             // 0 to allow playing this effect for different reasons than levelup
             if (newLevel == 0 || newLevel != 1) {
                 AbilityEffectContext abilityEffectContext = new AbilityEffectContext();
 
-                systemConfigurationManager.LevelUpEffect.AbilityEffectProperties.Cast(systemAbilityController, unitController, unitController, abilityEffectContext);
+                systemConfigurationManager.LevelUpEffect.AbilityEffectProperties.Cast(systemAbilityController, sourceUnitController, sourceUnitController, abilityEffectContext);
             }
         }
 

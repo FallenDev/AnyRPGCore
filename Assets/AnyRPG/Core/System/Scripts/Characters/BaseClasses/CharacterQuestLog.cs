@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -304,6 +305,11 @@ namespace AnyRPG {
                 ResetAchievementObjectiveSaveData(oldAchievement.ResourceName);
             }
             achievements.Clear();
+        }
+
+        public void SetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
+            questObjectiveSaveDataDictionary[questName][objectiveType][objectiveName] = saveData;
+            unitController.UnitEventController.NotifyOnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
         }
     }
 

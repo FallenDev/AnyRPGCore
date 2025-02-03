@@ -51,13 +51,13 @@ namespace AnyRPG {
         /// Track whether this dialog has been turned in
         /// </summary>
         public bool TurnedIn(UnitController sourceUnitController) {
-            return saveManager.GetDialogSaveData(this).turnedIn;
+            return sourceUnitController.CharacterSaveManager.GetDialogSaveData(this).turnedIn;
         }
 
         public void SetTurnedIn(UnitController sourceUnitController, bool turnedIn) {
-            DialogSaveData saveData = saveManager.GetDialogSaveData(this);
+            DialogSaveData saveData = sourceUnitController.CharacterSaveManager.GetDialogSaveData(this);
             saveData.turnedIn = turnedIn;
-            saveManager.DialogSaveDataDictionary[saveData.DialogName] = saveData;
+            sourceUnitController.CharacterSaveManager.DialogSaveDataDictionary[saveData.DialogName] = saveData;
             if (saveData.turnedIn == true) {
                 //Debug.Log(DisplayName + ".Dialog.TurnedIn = true");
                 // these events are for things that need the dialog turned in as a prerequisite

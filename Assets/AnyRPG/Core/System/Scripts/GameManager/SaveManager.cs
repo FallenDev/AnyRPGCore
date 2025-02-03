@@ -38,15 +38,11 @@ namespace AnyRPG {
         //private List<AnyRPGSaveData> anyRPGSaveDataList = new List<AnyRPGSaveData>();
 
         // keep track of mutable properties on scriptableObjects
-        private Dictionary<string, BehaviorSaveData> behaviorSaveDataDictionary = new Dictionary<string, BehaviorSaveData>();
-        private Dictionary<string, DialogSaveData> dialogSaveDataDictionary = new Dictionary<string, DialogSaveData>();
         private Dictionary<string, SceneNodeSaveData> sceneNodeSaveDataDictionary = new Dictionary<string, SceneNodeSaveData>();
         private Dictionary<string, CutsceneSaveData> cutsceneSaveDataDictionary = new Dictionary<string, CutsceneSaveData>();
 
-        public Dictionary<string, BehaviorSaveData> BehaviorSaveDataDictionary { get => behaviorSaveDataDictionary; set => behaviorSaveDataDictionary = value; }
-        public Dictionary<string, DialogSaveData> DialogSaveDataDictionary { get => dialogSaveDataDictionary; set => dialogSaveDataDictionary = value; }
-        public Dictionary<string, SceneNodeSaveData> SceneNodeSaveDataDictionary { get => sceneNodeSaveDataDictionary; set => sceneNodeSaveDataDictionary = value; }
         public Dictionary<string, CutsceneSaveData> CutsceneSaveDataDictionary { get => cutsceneSaveDataDictionary; set => cutsceneSaveDataDictionary = value; }
+        public Dictionary<string, SceneNodeSaveData> SceneNodeSaveDataDictionary { get => sceneNodeSaveDataDictionary; set => sceneNodeSaveDataDictionary = value; }
         //public string RecipeString { get => recipeString; }
         //public AnyRPGSaveData CurrentSaveData { get => currentSaveData; }
 
@@ -335,8 +331,8 @@ namespace AnyRPG {
             SaveQuestData(playerManager.UnitController, anyRPGSaveData);
             SaveAchievementData(playerManager.UnitController, anyRPGSaveData);
 
-            SaveDialogData(anyRPGSaveData);
-            SaveBehaviorData(anyRPGSaveData);
+            SaveDialogData(playerManager.UnitController, anyRPGSaveData);
+            SaveBehaviorData(playerManager.UnitController, anyRPGSaveData);
             SaveActionBarData(anyRPGSaveData);
             SaveInventorySlotData(anyRPGSaveData);
             SaveBankSlotData(anyRPGSaveData);
@@ -420,16 +416,16 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitModelController.SaveAppearanceSettings(/*this,*/ anyRPGSaveData);
         }
 
-
-
-        public DialogSaveData GetDialogSaveData(Dialog dialog) {
-            DialogSaveData saveData;
-            if (dialogSaveDataDictionary.ContainsKey(dialog.ResourceName)) {
-                saveData = dialogSaveDataDictionary[dialog.ResourceName];
+        public CutsceneSaveData GetCutsceneSaveData(Cutscene cutscene) {
+            CutsceneSaveData saveData;
+            if (cutsceneSaveDataDictionary.ContainsKey(cutscene.ResourceName)) {
+                //Debug.Log("Savemanager.GetCutsceneSaveData(): loading existing save data for: " + cutscene.DisplayName);
+                saveData = cutsceneSaveDataDictionary[cutscene.ResourceName];
             } else {
-                saveData = new DialogSaveData();
-                saveData.DialogName = dialog.ResourceName;
-                dialogSaveDataDictionary.Add(dialog.ResourceName, saveData);
+                //Debug.Log("Savemanager.GetCutsceneSaveData(): generating new cutscene save data for: " + cutscene.DisplayName);
+                saveData = new CutsceneSaveData();
+                saveData.CutsceneName = cutscene.ResourceName;
+                cutsceneSaveDataDictionary.Add(cutscene.ResourceName, saveData);
             }
             return saveData;
         }
@@ -447,32 +443,6 @@ namespace AnyRPG {
             return saveData;
         }
 
-        public CutsceneSaveData GetCutsceneSaveData(Cutscene cutscene) {
-            CutsceneSaveData saveData;
-            if (cutsceneSaveDataDictionary.ContainsKey(cutscene.ResourceName)) {
-                //Debug.Log("Savemanager.GetCutsceneSaveData(): loading existing save data for: " + cutscene.DisplayName);
-                saveData = cutsceneSaveDataDictionary[cutscene.ResourceName];
-            } else {
-                //Debug.Log("Savemanager.GetCutsceneSaveData(): generating new cutscene save data for: " + cutscene.DisplayName);
-                saveData = new CutsceneSaveData();
-                saveData.CutsceneName = cutscene.ResourceName;
-                cutsceneSaveDataDictionary.Add(cutscene.ResourceName, saveData);
-            }
-            return saveData;
-        }
-
-        public BehaviorSaveData GetBehaviorSaveData(BehaviorProfile behaviorProfile) {
-            BehaviorSaveData saveData;
-            if (behaviorSaveDataDictionary.ContainsKey(behaviorProfile.ResourceName)) {
-                saveData = behaviorSaveDataDictionary[behaviorProfile.ResourceName];
-            } else {
-                saveData = new BehaviorSaveData();
-                saveData.BehaviorName = behaviorProfile.ResourceName;
-                behaviorSaveDataDictionary.Add(behaviorProfile.ResourceName, saveData);
-            }
-            return saveData;
-        }
-
         public void SaveQuestData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveQuestData()");
 
@@ -486,9 +456,7 @@ namespace AnyRPG {
                         foreach (QuestObjectiveSaveData saveData in sourceUnitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary[questSaveData.QuestName][typeName].Values) {
                             questObjectiveSaveDataList.Add(saveData);
                         }
-
                     }
-
                     finalSaveData.questObjectives = questObjectiveSaveDataList;
                 }
                 finalSaveData.inLog = sourceUnitController.CharacterQuestLog.HasQuest(questSaveData.QuestName);
@@ -519,18 +487,18 @@ namespace AnyRPG {
             }
         }
 
-        public void SaveDialogData(AnyRPGSaveData anyRPGSaveData) {
+        public void SaveDialogData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveDialogData()");
             anyRPGSaveData.dialogSaveData.Clear();
-            foreach (DialogSaveData dialogSaveData in dialogSaveDataDictionary.Values) {
+            foreach (DialogSaveData dialogSaveData in sourceUnitController.CharacterSaveManager.DialogSaveDataDictionary.Values) {
                 anyRPGSaveData.dialogSaveData.Add(dialogSaveData);
             }
         }
         
-        public void SaveBehaviorData(AnyRPGSaveData anyRPGSaveData) {
+        public void SaveBehaviorData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveQuestData()");
             anyRPGSaveData.behaviorSaveData.Clear();
-            foreach (BehaviorSaveData behaviorSaveData in behaviorSaveDataDictionary.Values) {
+            foreach (BehaviorSaveData behaviorSaveData in sourceUnitController.CharacterSaveManager.BehaviorSaveDataDictionary.Values) {
                 anyRPGSaveData.behaviorSaveData.Add(behaviorSaveData);
             }
         }
@@ -811,20 +779,20 @@ namespace AnyRPG {
         }
 
 
-        public void LoadDialogData(AnyRPGSaveData anyRPGSaveData) {
-            dialogSaveDataDictionary.Clear();
+        public void LoadDialogData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
+            sourceUnitController.CharacterSaveManager.DialogSaveDataDictionary.Clear();
             foreach (DialogSaveData dialogSaveData in anyRPGSaveData.dialogSaveData) {
                 if (dialogSaveData.DialogName != null && dialogSaveData.DialogName != string.Empty) {
-                    dialogSaveDataDictionary.Add(dialogSaveData.DialogName, dialogSaveData);
+                    sourceUnitController.CharacterSaveManager.DialogSaveDataDictionary.Add(dialogSaveData.DialogName, dialogSaveData);
                 }
             }
         }
 
-        public void LoadBehaviorData(AnyRPGSaveData anyRPGSaveData) {
-            behaviorSaveDataDictionary.Clear();
+        public void LoadBehaviorData(UnitController sourceUnitController, AnyRPGSaveData anyRPGSaveData) {
+            sourceUnitController.CharacterSaveManager.BehaviorSaveDataDictionary.Clear();
             foreach (BehaviorSaveData behaviorSaveData in anyRPGSaveData.behaviorSaveData) {
                 if (behaviorSaveData.BehaviorName != null && behaviorSaveData.BehaviorName != string.Empty) {
-                    behaviorSaveDataDictionary.Add(behaviorSaveData.BehaviorName, behaviorSaveData);
+                    sourceUnitController.CharacterSaveManager.BehaviorSaveDataDictionary.Add(behaviorSaveData.BehaviorName, behaviorSaveData);
                 }
             }
         }
@@ -1266,9 +1234,9 @@ namespace AnyRPG {
             playerManager.SpawnPlayerConnection(playerCharacterSaveData);
 
             // load things that are stored in SaveManager, not on the unit controller
-            LoadDialogData(playerCharacterSaveData.SaveData);
-            LoadBehaviorData(playerCharacterSaveData.SaveData);
-            LoadSceneNodeData(playerCharacterSaveData.SaveData);
+            //LoadDialogData(playerCharacterSaveData.SaveData);
+            //LoadBehaviorData(playerCharacterSaveData.SaveData);
+            //LoadSceneNodeData(playerCharacterSaveData.SaveData);
             LoadCutsceneData(playerCharacterSaveData.SaveData);
 
             // quest data gets loaded last because it could rely on other data such as dialog completion status, which don't get saved because they are inferred
@@ -1333,9 +1301,6 @@ namespace AnyRPG {
             actionBarManager.ClearActionBars(true);
 
             // clear describable resource mutable data dictionaries
-            behaviorSaveDataDictionary.Clear();
-            DialogSaveDataDictionary.Clear();
-            sceneNodeSaveDataDictionary.Clear();
             cutsceneSaveDataDictionary.Clear();
         }
 

@@ -41,7 +41,7 @@ namespace AnyRPG {
                 //} else if (currentList.Count == 1) {
             } else {
                 if (unitController != null) {
-                    unitController.BehaviorController.TryPlayBehavior(currentList[choiceIndex], this);
+                    unitController.BehaviorController.TryPlayBehavior(currentList[choiceIndex], this, sourceUnitController);
                 }
                 base.Interact(sourceUnitController, componentIndex, choiceIndex);
             }/* else {
@@ -77,7 +77,7 @@ namespace AnyRPG {
                 foreach (BehaviorProfile behaviorProfile in unitController.BehaviorController.BehaviorList.Keys) {
                     //Debug.Log($"{unitController.gameObject.name}.BehaviorComponent.GetCurrentOptionList() processing behavior: " + behaviorProfile.DisplayName);
                     if (behaviorProfile.PrerequisitesMet(sourceUnitController) == true
-                        && (behaviorProfile.Completed == false || behaviorProfile.Repeatable == true)
+                        && (behaviorProfile.Completed(sourceUnitController) == false || behaviorProfile.Repeatable == true)
                         && behaviorProfile.AllowManualStart == true) {
                         //Debug.Log(unitController.gameObject.name +  ".BehaviorComponent.GetCurrentOptionList() adding behaviorProfile " + behaviorProfile.DisplayName + "; id: " + behaviorProfile.GetInstanceID());
                         currentList.Add(behaviorProfile);

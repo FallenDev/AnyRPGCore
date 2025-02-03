@@ -43,7 +43,7 @@ namespace AnyRPG {
         private bool looping = false;
 
         // game manager references
-        protected SaveManager saveManager = null;
+        //protected SaveManager saveManager = null;
 
         public bool PrerequisitesMet(UnitController sourceUnitController) {
                 foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
@@ -58,30 +58,29 @@ namespace AnyRPG {
         public List<BehaviorNode> BehaviorNodes { get => behaviorNodes; set => behaviorNodes = value; }
         public bool Automatic { get => automatic; set => automatic = value; }
 
-        // track whether it is completed to prevent it from repeating if it is automatic
-        public bool Completed {
-            get {
-                return saveManager.GetBehaviorSaveData(this).completed;
-            }
-            set {
-                BehaviorSaveData saveData = saveManager.GetBehaviorSaveData(this);
-                saveData.completed = value;
-                saveManager.BehaviorSaveDataDictionary[saveData.BehaviorName] = saveData;
-            }
-        }
-
         public bool Repeatable { get => repeatable; set => repeatable = value; }
         public bool Looping { get => looping; set => looping = value; }
         public bool AllowManualStart { get => allowManualStart; set => allowManualStart = value; }
+        public List<PrerequisiteConditions> PrerequisiteConditions { get => prerequisiteConditions; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            saveManager = systemGameManager.SaveManager;
+            //saveManager = systemGameManager.SaveManager;
         }
 
         public void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
             // call back to owner
             OnPrerequisiteUpdates(sourceUnitController);
+        }
+
+        public bool Completed(UnitController sourceUnitController) {
+            return sourceUnitController.CharacterSaveManager.GetBehaviorSaveData(this).completed;
+        }
+
+        public void SetCompleted(UnitController sourceUnitController, bool value) {
+            BehaviorSaveData saveData = sourceUnitController.CharacterSaveManager.GetBehaviorSaveData(this);
+            saveData.completed = value;
+            sourceUnitController.CharacterSaveManager.BehaviorSaveDataDictionary[saveData.BehaviorName] = saveData;
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
@@ -119,9 +118,9 @@ namespace AnyRPG {
         /// <summary>
         /// Reset the completion status of this profile and all its nodes
         /// </summary>
-        public void ResetStatus(BehaviorProfileState behaviorProfileState) {
+        public void ResetStatus(UnitController sourceUnitController, BehaviorProfileState behaviorProfileState) {
             if (repeatable == true) {
-                Completed = false;
+                SetCompleted(sourceUnitController, false);
                 foreach (BehaviorNode behaviorNode in behaviorNodes) {
                     behaviorNode.ResetStatus(behaviorProfileState.BehaviorNodeStates[behaviorNode]);
                 }

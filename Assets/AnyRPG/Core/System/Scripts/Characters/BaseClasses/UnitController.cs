@@ -76,6 +76,7 @@ namespace AnyRPG {
         private CharacterRecipeManager characterRecipeManager = null;
         private CharacterInventoryManager characterInventoryManager = null;
         private CharacterQuestLog characterQuestLog = null;
+        private CharacterSaveManager characterSaveManager = null;
 
 
         // control logic
@@ -432,6 +433,7 @@ namespace AnyRPG {
         public CharacterPetManager CharacterPetManager { get => characterPetManager; set => characterPetManager = value; }
         public CharacterRecipeManager CharacterRecipeManager { get => characterRecipeManager; set => characterRecipeManager = value; }
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
+        public CharacterSaveManager CharacterSaveManager { get => characterSaveManager; }
         public bool IsOwner { get => isOwner; set => isOwner = value; }
         public bool IsServer { get => isServer; set => isServer = value; }
         public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
@@ -462,7 +464,7 @@ namespace AnyRPG {
             baseCharacter = new BaseCharacter(this, systemGameManager);
             characterStats = new CharacterStats(this, systemGameManager);
             characterEquipmentManager = new CharacterEquipmentManager(this, systemGameManager);
-            characterFactionManager = new CharacterFactionManager(this);
+            characterFactionManager = new CharacterFactionManager(this, systemGameManager);
             characterPetManager = new CharacterPetManager(this, systemGameManager);
             characterCombat = new CharacterCombat(this, systemGameManager);
             characterSkillManager = new CharacterSkillManager(this, systemGameManager);
@@ -471,6 +473,7 @@ namespace AnyRPG {
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
             characterInventoryManager = new CharacterInventoryManager(this, systemGameManager);
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
+            characterSaveManager = new CharacterSaveManager(this, systemGameManager);
 
             // testing moved to SetUnitProfile to give a chance to override baseCharacter if player so equipmentManager reference is correct
             // now that baseCharacter is not overridden, this can probably be moved back here
@@ -1001,6 +1004,8 @@ namespace AnyRPG {
             characterStats = null;
             characterCurrencyManager = null;
             characterRecipeManager = null;
+            characterSaveManager = null;
+            characterQuestLog = null;
 
             currentState = null;
             target = null;

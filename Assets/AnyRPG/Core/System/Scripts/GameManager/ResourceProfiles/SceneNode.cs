@@ -243,10 +243,10 @@ namespace AnyRPG {
         public AudioProfile MovementHitProfile { get => movementHitProfile; set => movementHitProfile = value; }
         public string SceneFile { get => sceneFile; set => sceneFile = value; }
 
-        public bool Visited(UnitController sourceUnitController) {
+        public bool Visited() {
             return saveManager.GetSceneNodeSaveData(this).visited;
         }
-        public void SetVisited(UnitController sourceUnitController, bool value) {
+        public void SetVisited(bool value) {
             SceneNodeSaveData saveData = saveManager.GetSceneNodeSaveData(this);
             saveData.visited = value;
             saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
@@ -308,8 +308,8 @@ namespace AnyRPG {
         }
 
         public void Visit(UnitController sourceUnitController) {
-            if (Visited(sourceUnitController) == false) {
-                SetVisited(sourceUnitController, true);
+            if (Visited() == false) {
+                SetVisited(true);
             }
             OnVisitZone(sourceUnitController);
         }

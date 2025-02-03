@@ -74,11 +74,11 @@ namespace AnyRPG {
             behaviorPlaying = newValue;
         }
 
-        public void TryPlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null) {
+        public void TryPlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null, UnitController sourceUnitController = null) {
             Debug.Log($"{unitController.gameObject.name}.BehaviorInteractable.TryPlayBehavior()");
 
             if (behaviorPlaying == false) {
-                behaviorCoroutine = unitController.StartCoroutine(PlayBehavior(behaviorProfile, caller));
+                behaviorCoroutine = unitController.StartCoroutine(PlayBehavior(behaviorProfile, caller, sourceUnitController));
             }
         }
 
@@ -91,7 +91,7 @@ namespace AnyRPG {
             SetBehaviorPlaying(false);
         }
 
-        public IEnumerator PlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null) {
+        public IEnumerator PlayBehavior(BehaviorProfile behaviorProfile, BehaviorComponent caller = null, UnitController sourceUnitController = null) {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorController.PlayBehavior(" + (behaviorProfile == null ? "null" : behaviorProfile.DisplayName) + ")");
 
             SetBehaviorPlaying(true);
@@ -101,7 +101,7 @@ namespace AnyRPG {
             BehaviorNode currentbehaviorNode = null;
             suppressNameplateImage = true;
 
-            behaviorProfile.ResetStatus(behaviorList[behaviorProfile]);
+            behaviorProfile.ResetStatus(sourceUnitController, behaviorList[behaviorProfile]);
 
             // give the interactable a chance to update the nameplate image and minimap indicator since we want the option to interact to be gone while the behavior is playing
             if (caller != null) {
@@ -142,7 +142,7 @@ namespace AnyRPG {
             behaviorCoroutine = null;
             SetBehaviorPlaying(false);
             suppressNameplateImage = false;
-            behaviorProfile.Completed = true;
+            behaviorProfile.SetCompleted(sourceUnitController, true);
 
             // give the interactable a chance to update the nameplate image and minimap indicator since we want the option to interact to be gone while the behavior is playing
             //ProcessBehaviorBeginEnd();
@@ -203,7 +203,9 @@ namespace AnyRPG {
             }
 
             foreach (BehaviorProfile behaviorProfile in GetCurrentOptionList()) {
-                if (behaviorProfile.Automatic == true && (behaviorProfile.Completed == false || behaviorProfile.Repeatable == true)) {
+                // in order for automatic behaviors to play on the server, we can't check against any state, such as completed
+                if (behaviorProfile.Automatic == true && behaviorProfile.Repeatable == true) {
+                    //if (behaviorProfile.Automatic == true && (behaviorProfile.Completed == false || behaviorProfile.Repeatable == true)) {
                     TryPlayBehavior(behaviorProfile);
                 }
             }
@@ -213,8 +215,10 @@ namespace AnyRPG {
             //Debug.Log($"{unitController.gameObject.name}.BehaviorController.GetCurrentOptionList()");
             List<BehaviorProfile> currentList = new List<BehaviorProfile>();
             foreach (BehaviorProfile behaviorProfile in behaviorList.Keys) {
-                if (behaviorProfile.PrerequisitesMet(playerManager.UnitController) == true
-                    && (behaviorProfile.Completed == false || behaviorProfile.Repeatable == true)) {
+                if (behaviorProfile.PrerequisiteConditions.Count == 0
+                    && (behaviorProfile.Repeatable == true)) {
+                    // took away prerequisite check and completed check for multiplayer
+                    //&& (behaviorProfile.Completed(sourceUnitController) == false || behaviorProfile.Repeatable == true)) {
                     //Debug.Log("BehaviorInteractable.GetCurrentOptionList() adding behaviorProfile " + behaviorProfile.DisplayName + "; id: " + behaviorProfile.GetInstanceID());
                     currentList.Add(behaviorProfile);
                 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class CharacterFactionManager {
+    public class CharacterFactionManager : ConfiguredClass {
 
         private UnitController unitController;
 
@@ -17,8 +17,9 @@ namespace AnyRPG {
             }
         }
 
-        public CharacterFactionManager(UnitController unitController) {
+        public CharacterFactionManager(UnitController unitController, SystemGameManager systemGameManager) {
             this.unitController = unitController;
+            Configure(systemGameManager);
         }
 
         public virtual void NotifyOnReputationChange() {

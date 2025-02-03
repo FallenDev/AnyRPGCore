@@ -142,7 +142,7 @@ namespace AnyRPG {
                 dialogText.text = string.Format("<size={0}>{1}</size>", dialogFontSize, dialogManager.Dialog.DialogNodes[dialogIndex].Description);
             }
 
-            logManager.RequestChatMessageClient(dialogManager.Dialog.DialogNodes[dialogIndex].Description);
+            logManager.WriteChatMessageClient(dialogManager.Dialog.DialogNodes[dialogIndex].Description);
             if (dialogManager.Dialog.DialogNodes[dialogIndex].AudioClip != null) {
                 audioManager.PlayVoice(dialogManager.Dialog.DialogNodes[dialogIndex].AudioClip);
             }

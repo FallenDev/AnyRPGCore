@@ -128,6 +128,8 @@ namespace AnyRPG {
 
         public string DialogName;
         public bool turnedIn;
+
+        public List<bool> dialogNodeShown;
     }
 
     [Serializable]

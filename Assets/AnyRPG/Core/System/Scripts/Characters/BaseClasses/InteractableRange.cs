@@ -63,7 +63,7 @@ namespace AnyRPG {
         }
 
         private void OnTriggerEnter(Collider collider) {
-            Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.OnTriggerEnter({collider.gameObject.name}) count : " + inRangeGameObjects.Count);
+            //Debug.Log($"{gameObject.transform.parent.parent.name}.InteractableRange.OnTriggerEnter({collider.gameObject.name}) count : " + inRangeGameObjects.Count);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
                 // triggers are server authoritative

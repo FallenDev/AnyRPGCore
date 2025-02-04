@@ -2267,7 +2267,7 @@ namespace AnyRPG {
         #region MessagePassthroughs
 
         public void BeginDialog(string dialogName) {
-            dialogController.BeginDialog(playerManager.UnitController, dialogName);
+            dialogController.BeginDialog(this, dialogName);
         }
 
         public void BeginChatMessage(string messageText) {

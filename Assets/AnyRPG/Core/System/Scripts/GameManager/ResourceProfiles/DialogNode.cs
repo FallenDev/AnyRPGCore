@@ -34,16 +34,26 @@ namespace AnyRPG {
         public string Description { get => description; set => description = value; }
         public string NextOption { get => nextOption; set => nextOption = value; }
         public float StartTime { get => startTime; set => startTime = value; }
-        public bool Shown { get => shown; set => shown = value; }
         public float ShowTime { get => showTime; set => showTime = value; }
         public AudioClip AudioClip { get => audioClip; set => audioClip = value; }
 
+        public bool Shown(UnitController sourceUnitController, Dialog dialog, int index) {
+            //Debug.Log($"DialogNode.Shown({sourceUnitController.gameObject.name}, {dialog.ResourceName}, {index})");
+            return sourceUnitController.CharacterSaveManager.GetDialogNodeShown(dialog, index);
+        }
+        
+        public void SetShown(UnitController sourceUnitController, Dialog dialog, bool value, int index) {
+            sourceUnitController.CharacterSaveManager.SetDialogNodeShown(dialog, value, index);
+        }
+
+        /*
         /// <summary>
         /// Set the shown value to false
         /// </summary>
-        public void ResetStatus() {
+        public void ResetStatus(SourceUnitController) {
             shown = false;
         }
+        */
     }
 
 }

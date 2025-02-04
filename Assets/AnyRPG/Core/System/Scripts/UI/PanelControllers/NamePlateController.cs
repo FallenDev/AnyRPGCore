@@ -562,6 +562,8 @@ namespace AnyRPG {
         }
 
         public void SetSpeechText(string newSpeechText) {
+            Debug.Log($"{unitNamePlateController.UnitDisplayName}.NamePlateController.SetSpeechText({newSpeechText})");
+
             if (speechBubbleText != null && newSpeechText != null) {
                 speechBubbleText.text = newSpeechText;
             }

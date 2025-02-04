@@ -59,7 +59,7 @@ namespace AnyRPG {
         }
 
         public void BeginDialog(UnitController sourceUnitController, Dialog dialog, DialogComponent caller = null) {
-            Debug.Log($"{interactable.gameObject.name}.DialogController.BeginDialog()");
+            Debug.Log($"{interactable.gameObject.name}.DialogController.BeginDialog({sourceUnitController.gameObject.name}, {dialog.ResourceName})");
 
             if (dialog != null && dialogCoroutine == null) {
                 dialogCoroutine = interactable.StartCoroutine(PlayDialog(sourceUnitController, dialog, caller));
@@ -91,15 +91,15 @@ namespace AnyRPG {
             DialogNode currentdialogNode = null;
 
             // this needs to be reset to allow for repeatable dialogs to replay
-            dialog.ResetStatus();
+            dialog.ResetStatus(sourceUnitController);
 
             while (dialog.TurnedIn(sourceUnitController) == false) {
                 foreach (DialogNode dialogNode in dialog.DialogNodes) {
-                    if (dialogNode.StartTime <= elapsedTime && dialogNode.Shown == false) {
+                    if (dialogNode.StartTime <= elapsedTime && dialogNode.Shown(sourceUnitController, dialog, dialogIndex) == false) {
                         currentdialogNode = dialogNode;
                         PlayDialogNode(dialogNode);
                         interactable.InteractableEventController.NotifyOnPlayDialogNode(dialog, dialogIndex);
-                        dialogNode.Shown = true;
+                        dialogNode.SetShown(sourceUnitController, dialog, true, dialogIndex);
                         dialogIndex++;
                     }
                 }
@@ -126,13 +126,17 @@ namespace AnyRPG {
         }
 
         public void PlayDialogNode(string dialogName, int dialogIndex) {
+            Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialogNode({dialogName}, {dialogIndex})");
+
             Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogName);
-            if (dialog == null && dialog.DialogNodes.Count > dialogIndex) {
+            if (dialog != null && dialog.DialogNodes.Count > dialogIndex) {
                 PlayDialogNode(dialog.DialogNodes[dialogIndex]);
             }
         }
 
         public void PlayDialogNode(DialogNode dialogNode) {
+            Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialogNode()");
+
             if (networkManagerServer.ServerModeActive == true) {
                 return;
             }

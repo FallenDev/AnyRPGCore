@@ -12,25 +12,26 @@ namespace AnyRPG {
         public event System.Action<string, int> OnPlayDialogNode = delegate { };
 
         // interactable this controller is attached to
-        private Interactable Interactable;
+        private Interactable interactable;
 
         public InteractableEventController() {
             //this.Interactable = interactable;
         }
 
         public void SetInteractable(Interactable interactable, SystemGameManager systemGameManager) {
-            this.Interactable = interactable;
+            this.interactable = interactable;
             Configure(systemGameManager);
         }
 
         public InteractableEventController(Interactable interactable, SystemGameManager systemGameManager) {
-            this.Interactable = interactable;
+            this.interactable = interactable;
             Configure(systemGameManager);
         }
 
         #region EventNotifications
 
         public void NotifyOnPlayDialogNode(Dialog dialog, int dialogIndex) {
+            Debug.Log($"{interactable.gameObject.name}.InteractableEventController.NotifyOnPlayDialogNode({dialog.ResourceName}, {dialogIndex})");
             OnPlayDialogNode(dialog.ResourceName, dialogIndex);
         }
 

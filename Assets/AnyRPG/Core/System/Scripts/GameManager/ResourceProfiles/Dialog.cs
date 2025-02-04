@@ -119,14 +119,17 @@ namespace AnyRPG {
         /// <summary>
         /// Set the shown value to false for all dialog Nodes and reset the turned in status
         /// </summary>
-        public void ResetStatus() {
+        public void ResetStatus(UnitController sourceUnitController) {
             if (repeatable == false) {
                 return;
             }
-            SetTurnedIn(null, false);
+            SetTurnedIn(sourceUnitController, false);
+            sourceUnitController.CharacterSaveManager.ResetDialogNodes(this);
+            /*
             foreach (DialogNode dialogNode in dialogNodes) {
-                dialogNode.ResetStatus();
+                dialogNode.ResetStatus(sourceUnitController);
             }
+            */
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

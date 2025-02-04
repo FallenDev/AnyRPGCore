@@ -1,6 +1,6 @@
-using AnyRPG;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -20,18 +20,20 @@ namespace AnyRPG {
         }
 
         public DialogSaveData GetDialogSaveData(Dialog dialog) {
-            DialogSaveData saveData;
             if (dialogSaveDataDictionary.ContainsKey(dialog.ResourceName)) {
-                saveData = dialogSaveDataDictionary[dialog.ResourceName];
+                //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.GetDialogSaveData({dialog.ResourceName}): dialogSaveData size {dialogSaveDataDictionary[dialog.resourceName].dialogNodeShown.Count}");
+                return dialogSaveDataDictionary[dialog.ResourceName];
             } else {
-                saveData = new DialogSaveData();
+                DialogSaveData saveData = new DialogSaveData();
+                saveData.dialogNodeShown = new List<bool>(new bool[dialog.DialogNodes.Count]);
+                //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.GetDialogSaveData({dialog.ResourceName}): initialized list size {dialog.DialogNodes.Count} : {saveData.dialogNodeShown.Count}");
                 saveData.DialogName = dialog.ResourceName;
                 dialogSaveDataDictionary.Add(dialog.ResourceName, saveData);
+                //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.GetDialogSaveData({dialog.ResourceName}): dialogSaveData size {dialogSaveDataDictionary[dialog.resourceName].dialogNodeShown.Count}");
+                return saveData;
             }
-            return saveData;
+            //return saveData;
         }
-
-
 
         public BehaviorSaveData GetBehaviorSaveData(BehaviorProfile behaviorProfile) {
             BehaviorSaveData saveData;
@@ -45,8 +47,24 @@ namespace AnyRPG {
             return saveData;
         }
 
+        public bool GetDialogNodeShown(Dialog dialog, int index) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.GetDialogNodeShown({dialog.ResourceName}, {index})");
+            DialogSaveData saveData = GetDialogSaveData(dialog);
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.GetDialogNodeShown({dialog.ResourceName}, {index}) count: {saveData.dialogNodeShown.Count}");
+            return saveData.dialogNodeShown[index];
+        }
 
+        public void SetDialogNodeShown(Dialog dialog, bool value, int index) {
+            DialogSaveData saveData = GetDialogSaveData(dialog);
+            saveData.dialogNodeShown[index] = value;
+            dialogSaveDataDictionary[dialog.ResourceName] = saveData;
+        }
 
+        public void ResetDialogNodes(Dialog dialog) {
+            DialogSaveData saveData = GetDialogSaveData(dialog);
+            saveData.dialogNodeShown = new List<bool>(new bool[dialog.DialogNodes.Count]);
+            dialogSaveDataDictionary[dialog.ResourceName] = saveData;
+        }
     }
 
 }

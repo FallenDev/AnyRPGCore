@@ -25,7 +25,6 @@ namespace AnyRPG {
         }
 
         protected virtual void Configure() {
-            // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerServer = systemGameManager.NetworkManagerServer;
@@ -62,12 +61,13 @@ namespace AnyRPG {
         }
 
         public override void OnStartServer() {
-            //Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
+            Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
 
             base.OnStartServer();
 
             Configure();
             if (systemGameManager == null) {
+                Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer(): systemGameManager is null");
                 return;
             }
 
@@ -90,7 +90,10 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerInteractableEvents() {
+            Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
+
             if (interactable == null) {
+                Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): interactable is null");
                 // something went wrong
                 return;
             }
@@ -106,7 +109,7 @@ namespace AnyRPG {
             }
             //interactable.InteractableEventController.OnAnimatedObjectChooseMovement -= HandleAnimatedObjectChooseMovementServer;
             interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
-            interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
+            interactable.InteractableEventController.OnPlayDialogNode -= HandlePlayDialogNode;
         }
 
         public void SubscribeToClientInteractableEvents() {
@@ -127,7 +130,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandlePlayDialogNode(string dialogName, int dialogIndex) {
-            
+            Debug.Log($"{gameObject.name}.NetworkInteractable.HandlePlayDialogNode({dialogName}, {dialogIndex})");
             interactable.DialogController.PlayDialogNode(dialogName, dialogIndex);
         }
 
@@ -169,6 +172,9 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
+            // what was the point of this ?  all interactions are server side so this just causes clients to launch what is supposed
+            // to be a server only interaction, which crashes because its being run on the client
+            /*
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit != null) {
                 sourceUnitController = sourceNetworkCharacterUnit.UnitController;
@@ -178,6 +184,7 @@ namespace AnyRPG {
             if (currentInteractables.ContainsKey(componentIndex)) {
                 currentInteractables[componentIndex].Interact(sourceUnitController, componentIndex, choiceIndex);
             }
+            */
         }
 
 

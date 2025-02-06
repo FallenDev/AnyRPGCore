@@ -52,6 +52,7 @@ namespace AnyRPG {
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{interactable.gameObject.name}.ClassChangeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             classChangeManager.SetDisplayClass(Props.CharacterClass, this, componentIndex, choiceIndex);
 

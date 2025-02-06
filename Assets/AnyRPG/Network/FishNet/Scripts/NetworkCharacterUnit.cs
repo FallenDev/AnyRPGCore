@@ -163,6 +163,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdatedServer;
+            //unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -199,6 +200,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount -= HandleSetQuestObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdatedServer;
+            //unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOptionServer;
 
         }
 

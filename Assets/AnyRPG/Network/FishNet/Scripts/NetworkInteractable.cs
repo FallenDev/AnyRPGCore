@@ -174,7 +174,8 @@ namespace AnyRPG {
         public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
             // what was the point of this ?  all interactions are server side so this just causes clients to launch what is supposed
             // to be a server only interaction, which crashes because its being run on the client
-            /*
+            // update - its supposed to trigger an event that result in ClientInteract() on players on their own clients
+            
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit != null) {
                 sourceUnitController = sourceNetworkCharacterUnit.UnitController;
@@ -182,9 +183,10 @@ namespace AnyRPG {
 
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
             if (currentInteractables.ContainsKey(componentIndex)) {
-                currentInteractables[componentIndex].Interact(sourceUnitController, componentIndex, choiceIndex);
+                //currentInteractables[componentIndex].ClientInteract(sourceUnitController, componentIndex, choiceIndex);
+                sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(currentInteractables[componentIndex], componentIndex, choiceIndex);
             }
-            */
+            
         }
 
 

@@ -736,7 +736,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdated;
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkill;
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkill;
-            unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
+            unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOption;
         }
 
         public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {

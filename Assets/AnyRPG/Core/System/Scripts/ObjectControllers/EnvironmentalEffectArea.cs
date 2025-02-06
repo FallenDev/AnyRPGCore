@@ -42,7 +42,7 @@ namespace AnyRPG {
         }
 
         public override void SetGameManagerReferences() {
-            Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.SetGameManagerReferences()");
+            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.SetGameManagerReferences()");
 
             base.SetGameManagerReferences();
 

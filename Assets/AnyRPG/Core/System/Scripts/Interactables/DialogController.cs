@@ -12,11 +12,12 @@ namespace AnyRPG {
         // references
         private Interactable interactable;
 
-        private int dialogIndex = 0;
+        private int shownNodeCount = 0;
 
         private float maxDialogTime = 300f;
         private float chatDisplayTime = 5f;
 
+        private Coroutine chatCoroutine = null;
         private Coroutine dialogCoroutine = null;
 
         // game manager references
@@ -24,7 +25,7 @@ namespace AnyRPG {
         private LogManager logManager = null;
         private NetworkManagerServer networkManagerServer = null;
 
-        public int DialogIndex { get => dialogIndex; }
+        public int DialogIndex { get => shownNodeCount; }
 
         public DialogController(Interactable interactable, SystemGameManager systemGameManager) {
             this.interactable = interactable;
@@ -50,6 +51,12 @@ namespace AnyRPG {
             }
         }
 
+        private void ResetChat() {
+            if (chatCoroutine != null) {
+                interactable.StopCoroutine(chatCoroutine);
+            }
+        }
+
         public void BeginDialog(UnitController sourceUnitController, string dialogName, DialogComponent caller = null) {
             //Debug.Log(interactable.gameObject.name + ".DialogController.BeginDialog(" + dialogName + ")");
             Dialog tmpDialog = systemDataFactory.GetResource<Dialog>(dialogName);
@@ -67,48 +74,60 @@ namespace AnyRPG {
         }
 
         public void BeginChatMessage(string messageText) {
-            CleanupDialog();
-            dialogCoroutine = interactable.StartCoroutine(PlayChatMessage(messageText));
+            BeginChatMessage(messageText, chatDisplayTime);
         }
 
-        public IEnumerator PlayChatMessage(string messageText) {
-            //Debug.Log(interactable.gameObject.name + ".DialogController.PlayDialog(" + dialog.DisplayName + ")");
+        public void BeginChatMessage(string messageText, float displayTime) {
+            
+            //CleanupDialog();
+            ResetChat();
+            chatCoroutine = interactable.StartCoroutine(PlayChatMessage(messageText, displayTime));
+        }
+
+        public IEnumerator PlayChatMessage(string messageText, float displayTime) {
+            Debug.Log($"{interactable.gameObject.name}.DialogController.PlayChatMessage({messageText}, {displayTime})");
 
             interactable.ProcessBeginDialog();
 
             interactable.ProcessDialogTextUpdate(messageText);
 
-            yield return new WaitForSeconds(chatDisplayTime);
+            yield return new WaitForSeconds(displayTime);
             interactable.ProcessEndDialog();
         }
 
         public IEnumerator PlayDialog(UnitController sourceUnitController, Dialog dialog, DialogComponent caller = null) {
-            //Debug.Log(interactable.gameObject.name + ".DialogController.PlayDialog(" + dialog.DisplayName + ")");
+            Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialog({dialog.DisplayName})");
 
-            interactable.ProcessBeginDialog();
+            //interactable.ProcessBeginDialog();
             float elapsedTime = 0f;
-            dialogIndex = 0;
+            shownNodeCount = 0;
             DialogNode currentdialogNode = null;
 
             // this needs to be reset to allow for repeatable dialogs to replay
             dialog.ResetStatus(sourceUnitController);
 
             while (dialog.TurnedIn(sourceUnitController) == false) {
-                foreach (DialogNode dialogNode in dialog.DialogNodes) {
-                    if (dialogNode.StartTime <= elapsedTime && dialogNode.Shown(sourceUnitController, dialog, dialogIndex) == false) {
-                        currentdialogNode = dialogNode;
-                        PlayDialogNode(dialogNode);
-                        interactable.InteractableEventController.NotifyOnPlayDialogNode(dialog, dialogIndex);
-                        dialogNode.SetShown(sourceUnitController, dialog, true, dialogIndex);
-                        dialogIndex++;
+                //Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialog({dialog.DisplayName}) begin loop");
+                for (int i = 0; i < dialog.DialogNodes.Count; i++) {
+                    currentdialogNode = dialog.DialogNodes[i];
+                    //foreach (DialogNode dialogNode in dialog.DialogNodes) {
+                    //Debug.Log($"{currentdialogNode.StartTime}, {currentdialogNode.ShowTime}, {currentdialogNode.Description}");
+                    if (elapsedTime >= currentdialogNode.StartTime && currentdialogNode.Shown(sourceUnitController, dialog, i) == false) {
+                        //Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialog({dialog.DisplayName}) index: {i} {elapsedTime} >= {currentdialogNode.StartTime}");
+                        PlayDialogNode(currentdialogNode);
+                        interactable.InteractableEventController.NotifyOnPlayDialogNode(dialog, i);
+                        currentdialogNode.SetShown(sourceUnitController, dialog, true, i);
+                        shownNodeCount++;
                     }
                 }
-                if (dialogIndex >= dialog.DialogNodes.Count) {
+                if (shownNodeCount >= dialog.DialogNodes.Count) {
                     dialog.SetTurnedIn(sourceUnitController, true);
                     if (caller != null) {
                         caller.NotifyOnConfirmAction(sourceUnitController);
                     }
                 }
+                //Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialog({dialog.DisplayName}) adding elapsed time {Time.deltaTime}");
+
                 elapsedTime += Time.deltaTime;
 
                 // circuit breaker
@@ -116,13 +135,15 @@ namespace AnyRPG {
                     break;
                 }
                 yield return null;
-                dialogCoroutine = null;
             }
+            dialogCoroutine = null;
 
+            /*
             if (currentdialogNode != null) {
                 yield return new WaitForSeconds(currentdialogNode.ShowTime);
             }
-            interactable.ProcessEndDialog();
+            */
+            //interactable.ProcessEndDialog();
         }
 
         public void PlayDialogNode(string dialogName, int dialogIndex) {
@@ -150,7 +171,8 @@ namespace AnyRPG {
             if (logManager != null) {
                 logManager.WriteChatMessageClient($"{interactable.DisplayName}: {dialogNode.Description}");
             }
-            interactable.ProcessDialogTextUpdate(dialogNode.Description);
+            //interactable.ProcessDialogTextUpdate(dialogNode.Description);
+            BeginChatMessage(dialogNode.Description, dialogNode.ShowTime);
             if (dialogNode.AudioClip != null) {
                 interactable.UnitComponentController.PlayVoiceSound(dialogNode.AudioClip);
             }

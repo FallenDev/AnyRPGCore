@@ -61,7 +61,7 @@ namespace AnyRPG {
         }
 
         public override void OnStartServer() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.OnStartServer()");
 
             base.OnStartServer();
 
@@ -90,7 +90,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerInteractableEvents() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
 
             if (interactable == null) {
                 Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): interactable is null");

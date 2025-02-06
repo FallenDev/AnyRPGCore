@@ -18,7 +18,7 @@ namespace AnyRPG {
         [Tooltip("The dialog text to display")]
         [SerializeField]
         [TextArea(10, 20)]
-        private string description;
+        private string description = string.Empty;
 
         [Tooltip("Audio file to play when this dialog option is displayed or played")]
         [SerializeField]
@@ -26,7 +26,7 @@ namespace AnyRPG {
 
         [Tooltip("If this dialog is manually driven, this text will show on the next button.")]
         [SerializeField]
-        private string nextOption;
+        private string nextOption = string.Empty;
 
         // whether or not this node has been shown
         private bool shown;

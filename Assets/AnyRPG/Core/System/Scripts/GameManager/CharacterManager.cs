@@ -364,7 +364,9 @@ namespace AnyRPG {
             }
             if (networkManagerServer.ServerModeActive == true) {
                 // this is happening on the server, return the object to the pool
-                networkManagerServer.ReturnObjectToPool(unitController.gameObject);
+                // disabled because crashing.  On server, network objects are automatically despawned when level unloads
+                //networkManagerServer.ReturnObjectToPool(unitController.gameObject);
+                unitController.gameObject.SetActive(false);
             } else {
                 // this is happening on the client
                 if (localUnits.Contains(unitController)) {

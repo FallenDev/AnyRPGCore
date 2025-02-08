@@ -102,6 +102,14 @@ namespace AnyRPG {
             OnWriteCombatMessage(newMessage);
         }
 
+        public void WriteSystemMessage(UnitController sourceUnitController, string message) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                WriteSystemMessage(message);
+            } else {
+                networkManagerServer.AdvertiseSystemMessage(sourceUnitController, message);
+            }
+        }
+
         public void WriteSystemMessage(string newMessage) {
             OnWriteSystemMessage(newMessage);
         }

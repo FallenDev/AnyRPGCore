@@ -124,8 +124,6 @@ namespace AnyRPG {
             get => true;
         }
 
-        public virtual int ExperienceLevel { get => ((dynamicLevel == true ? playerManager.UnitController.CharacterStats.Level : experienceLevel) + extraLevels); }
-
         public virtual List<Item> ItemRewards { get => itemRewardList; }
         public virtual List<FactionNode> FactionRewards { get => factionRewards; }
         public virtual List<Ability> AbilityRewards { get => abilityRewardList; }
@@ -148,6 +146,10 @@ namespace AnyRPG {
         public virtual int BaseCurrencyReward { get => baseCurrencyReward; set => baseCurrencyReward = value; }
         public virtual int CurrencyRewardPerLevel { get => currencyRewardPerLevel; set => currencyRewardPerLevel = value; }
 
+        public virtual int ExperienceLevel(UnitController sourceUnitController) { 
+            return (dynamicLevel == true ? sourceUnitController.CharacterStats.Level : experienceLevel) + extraLevels;
+        }
+
         public virtual void HandInItems(UnitController sourceUnitController) {
             if (turnInItems == true) {
                 if (steps.Count > 0) {
@@ -160,20 +162,20 @@ namespace AnyRPG {
             }
         }
 
-        public virtual List<CurrencyNode> GetCurrencyReward() {
+        public virtual List<CurrencyNode> GetCurrencyReward(UnitController sourceUnitController) {
             List<CurrencyNode> currencyNodes = new List<CurrencyNode>();
 
             if (AutomaticCurrencyReward == true) {
                 if (systemConfigurationManager.QuestCurrency != null) {
                     CurrencyNode currencyNode = new CurrencyNode();
                     currencyNode.currency = systemConfigurationManager.QuestCurrency;
-                    currencyNode.Amount = systemConfigurationManager.QuestCurrencyAmountPerLevel * ExperienceLevel;
+                    currencyNode.Amount = systemConfigurationManager.QuestCurrencyAmountPerLevel * ExperienceLevel(sourceUnitController);
                     currencyNodes.Add(currencyNode);
                 }
             }
             if (RewardCurrency != null) {
                 CurrencyNode currencyNode = new CurrencyNode();
-                currencyNode.Amount = BaseCurrencyReward + (CurrencyRewardPerLevel * ExperienceLevel);
+                currencyNode.Amount = BaseCurrencyReward + (CurrencyRewardPerLevel * ExperienceLevel(sourceUnitController));
                 currencyNode.currency = RewardCurrency;
                 currencyNodes.Add(currencyNode);
             }
@@ -221,7 +223,7 @@ namespace AnyRPG {
         }
 
         protected override Color GetTitleColor() {
-            return LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, ExperienceLevel);
+            return LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, ExperienceLevel(playerManager.UnitController));
         }
 
         protected override void ProcessAcceptQuest(UnitController sourceUnitController) {

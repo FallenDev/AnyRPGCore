@@ -109,7 +109,7 @@ namespace AnyRPG {
                 if (qs == null) {
                     //Debug.Log("QuestTrackerUI.ShowQuestsCommon(): QuestGiverQuestScript is null");
                 }
-                qs.Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName;
+                qs.Text.text = "[" + quest.ExperienceLevel(playerManager.UnitController) + "] " + quest.DisplayName;
                 if (quest.IsComplete(playerManager.UnitController)) {
                     qs.Text.text += " (Complete)";
                 }
@@ -118,7 +118,7 @@ namespace AnyRPG {
                 qs.Text.text += "\n<size=12>" + quest.GetUnformattedObjectiveList(playerManager.UnitController) + "</size>";
 
                 //Debug.Log("QuestTrackerUI.ShowQuestsCommon(" + questGiver.name + "): " + questNode.MyQuest.MyTitle);
-                qs.Text.color = LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, quest.ExperienceLevel);
+                qs.Text.color = LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, quest.ExperienceLevel(playerManager.UnitController));
                 //quests.Add(go);
                 questScripts.Add(qs);
                 uINavigationControllers[0].AddActiveButton(qs);

@@ -686,7 +686,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRange;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
-            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuest;
+            unitController.UnitEventController.OnAbandonQuest += HandleRemoveQuest;
+            unitController.UnitEventController.OnTurnInQuest += HandleRemoveQuest;
             unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestComplete;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
@@ -731,7 +732,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRange;
             unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuest;
-            unitController.UnitEventController.OnRemoveQuest -= HandleRemoveQuest;
+            unitController.UnitEventController.OnAbandonQuest -= HandleRemoveQuest;
+            unitController.UnitEventController.OnTurnInQuest -= HandleRemoveQuest;
             unitController.UnitEventController.OnMarkQuestComplete -= HandleMarkQuestComplete;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdated;
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkill;

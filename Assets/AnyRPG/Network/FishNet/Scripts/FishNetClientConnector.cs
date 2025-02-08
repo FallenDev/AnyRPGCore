@@ -658,6 +658,12 @@ namespace AnyRPG {
             networkManagerServer.AcceptQuest(questName, networkConnection.ClientId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, NetworkConnection networkConnection = null) {
+            networkManagerServer.CompleteQuest(questName, questRewardChoices, networkConnection.ClientId);
+        }
+
+
         public void AdvertiseMessageFeedMessage(int clientId, string message) {
             AdvertiseMessageFeedMessageClient(fishNetNetworkManager.ServerManager.Clients[clientId], message);
         }
@@ -667,6 +673,14 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseMessageFeedMessage(message);
         }
 
+        public void AdvertiseSystemMessage(int clientId, string message) {
+            AdvertiseSystemMessageClient(fishNetNetworkManager.ServerManager.Clients[clientId], message);
+        }
+
+        [TargetRpc]
+        public void AdvertiseSystemMessageClient(NetworkConnection networkConnection, string message) {
+            networkManagerClient.AdvertiseSystemMessage(message);
+        }
 
         /*
         public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {

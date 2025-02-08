@@ -74,35 +74,35 @@ namespace AnyRPG {
             return totalXP;
         }
 
-        public static int GetXPAmountForQuest(int sourceLevel, Quest quest, SystemConfigurationManager systemConfigurationManager) {
+        public static int GetXPAmountForQuest(UnitController sourceUnitController, Quest quest, SystemConfigurationManager systemConfigurationManager) {
 
             float multiplierValue = 1f;
 
             if (systemConfigurationManager.UseQuestXPLevelMultiplierDemoninator == true) {
-                multiplierValue = 1f / Mathf.Clamp(sourceLevel, 0, (systemConfigurationManager.QuestXPMultiplierLevelCap > 0 ? systemConfigurationManager.QuestXPMultiplierLevelCap : Mathf.Infinity));
+                multiplierValue = 1f / Mathf.Clamp(sourceUnitController.CharacterStats.Level, 0, (systemConfigurationManager.QuestXPMultiplierLevelCap > 0 ? systemConfigurationManager.QuestXPMultiplierLevelCap : Mathf.Infinity));
             }
 
             int experiencePerLevel = systemConfigurationManager.QuestXPPerLevel + quest.ExperienceRewardPerLevel;
             int baseExperience = systemConfigurationManager.BaseQuestXP + quest.BaseExperienceReward;
 
-            int baseXP = (int)(((quest.ExperienceLevel * experiencePerLevel) * multiplierValue) + baseExperience);
+            int baseXP = (int)(((quest.ExperienceLevel(sourceUnitController) * experiencePerLevel) * multiplierValue) + baseExperience);
 
-            if (sourceLevel <= quest.ExperienceLevel + 5) {
+            if (sourceUnitController.CharacterStats.Level <= quest.ExperienceLevel(sourceUnitController) + 5) {
                 return baseXP;
             }
-            if (sourceLevel == quest.ExperienceLevel + 6) {
+            if (sourceUnitController.CharacterStats.Level == quest.ExperienceLevel(sourceUnitController) + 6) {
                 return (int)(baseXP * 0.8);
             }
-            if (sourceLevel == quest.ExperienceLevel + 7) {
+            if (sourceUnitController.CharacterStats.Level == quest.ExperienceLevel(sourceUnitController) + 7) {
                 return (int)(baseXP * 0.6);
             }
-            if (sourceLevel == quest.ExperienceLevel + 8) {
+            if (sourceUnitController.CharacterStats.Level == quest.ExperienceLevel(sourceUnitController) + 8) {
                 return (int)(baseXP * 0.4);
             }
-            if (sourceLevel == quest.ExperienceLevel + 9) {
+            if (sourceUnitController.CharacterStats.Level == quest.ExperienceLevel(sourceUnitController) + 9) {
                 return (int)(baseXP * 0.2);
             }
-            if (sourceLevel == quest.ExperienceLevel + 10) {
+            if (sourceUnitController.CharacterStats.Level == quest.ExperienceLevel(sourceUnitController) + 10) {
                 return (int)(baseXP * 0.1);
             }
             return 0;

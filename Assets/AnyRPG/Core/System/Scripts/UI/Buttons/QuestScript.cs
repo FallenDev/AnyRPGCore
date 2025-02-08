@@ -33,7 +33,7 @@ namespace AnyRPG {
             this.questLogUI = questLogUI;
             if (newQuest != null) {
                 quest = newQuest;
-                Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName;
+                Text.text = "[" + quest.ExperienceLevel(playerManager.UnitController) + "] " + quest.DisplayName;
                 IsComplete();
             }
         }
@@ -66,7 +66,7 @@ namespace AnyRPG {
                 //markedComplete = false;
                 //Text.text = "[" + quest.ExperienceLevel + "] " + quest.DisplayName;
             }
-            Text.color = LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, quest.ExperienceLevel);
+            Text.color = LevelEquations.GetTargetColor(playerManager.UnitController.CharacterStats.Level, quest.ExperienceLevel(playerManager.UnitController));
         }
 
 

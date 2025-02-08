@@ -110,6 +110,7 @@ namespace AnyRPG {
             RemoveQuest(oldQuest);
             // moved here instead of inside the above function so turnInQuest doesn't think a quest is available in the middle of turn-in
             oldQuest.RemoveQuest(unitController, resetQuestStep);
+            unitController.UnitEventController.NotifyOnAbandonQuest(oldQuest);
         }
 
         public void TurnInQuest(Quest oldQuest) {
@@ -121,6 +122,7 @@ namespace AnyRPG {
 
             // moved here instead of inside the above function so turnInQuest doesn't think a quest is available in the middle of turn-in
             oldQuest.RemoveQuest(unitController);
+            unitController.UnitEventController.NotifyOnTurnInQuest(oldQuest);
         }
 
         public void RemoveQuest(Quest oldQuest) {

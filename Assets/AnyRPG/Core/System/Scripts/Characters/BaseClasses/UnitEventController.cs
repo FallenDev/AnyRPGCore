@@ -107,7 +107,9 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnEnterInteractableRange = delegate { };
         public event System.Action<UnitController, Interactable> OnExitInteractableRange = delegate { };
         public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
-        public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
+        //public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnAbandonQuest = delegate { };
+        public event System.Action<UnitController, QuestBase> OnTurnInQuest = delegate { };
         public event System.Action<UnitController, QuestBase> OnMarkQuestComplete = delegate { };
         public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
@@ -550,9 +552,11 @@ namespace AnyRPG {
             OnAcceptQuest(unitController, questBase);
         }
 
+        /*
         public void NotifyOnRemoveQuest(QuestBase questBase) {
             OnRemoveQuest(unitController, questBase);
         }
+        */
 
         public void NotifyOnMarkQuestComplete(QuestBase questBase) {
             OnMarkQuestComplete(unitController, questBase);
@@ -572,6 +576,14 @@ namespace AnyRPG {
 
         public void NotifyOnSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
             OnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
+        }
+
+        public void NotifyOnAbandonQuest(QuestBase oldQuest) {
+            OnAbandonQuest(unitController, oldQuest);
+        }
+
+        public void NotifyOnTurnInQuest(QuestBase oldQuest) {
+            OnTurnInQuest(unitController, oldQuest);
         }
 
         #endregion

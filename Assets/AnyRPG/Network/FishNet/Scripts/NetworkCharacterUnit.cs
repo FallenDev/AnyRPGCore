@@ -157,8 +157,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
+            unitController.UnitEventController.OnAbandonQuest += HandleAbandonQuestServer;
+            unitController.UnitEventController.OnTurnInQuest += HandleTurnInQuestServer;
             unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestCompleteServer;
-            unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
+            //unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
@@ -194,8 +196,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuestServer;
+            unitController.UnitEventController.OnAbandonQuest -= HandleAbandonQuestServer;
+            unitController.UnitEventController.OnTurnInQuest -= HandleTurnInQuestServer;
             unitController.UnitEventController.OnMarkQuestComplete -= HandleMarkQuestCompleteServer;
-            unitController.UnitEventController.OnRemoveQuest -= HandleRemoveQuestServer;
+            //unitController.UnitEventController.OnRemoveQuest -= HandleRemoveQuestServer;
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkillServer;
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount -= HandleSetQuestObjectiveCurrentAmount;
@@ -270,6 +274,34 @@ namespace AnyRPG {
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
                 unitController.CharacterQuestLog.AcceptQuest(quest);
+            }
+        }
+
+        public void HandleAbandonQuestServer(UnitController sourceUnitController, QuestBase quest) {
+            HandleAbandonQuestClient(quest.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleAbandonQuestClient(string questName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAbandonQuestClient({questName})");
+
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest != null) {
+                unitController.CharacterQuestLog.AbandonQuest(quest);
+            }
+        }
+
+        public void HandleTurnInQuestServer(UnitController sourceUnitController, QuestBase quest) {
+            HandleTurnInQuestClient(quest.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleTurnInQuestClient(string questName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleTurnInQuestClient({questName})");
+
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest != null) {
+                unitController.CharacterQuestLog.TurnInQuest(quest);
             }
         }
 

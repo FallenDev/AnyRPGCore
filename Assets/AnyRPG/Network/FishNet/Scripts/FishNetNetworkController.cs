@@ -421,6 +421,10 @@ namespace AnyRPG {
             clientConnector.AcceptQuest(questName);
         }
 
+        public override void CompleteQuest(string questName, QuestRewardChoices questRewardChoices) {
+            clientConnector.CompleteQuest(questName, questRewardChoices);
+        }
+
         #endregion
 
         #region server functions
@@ -573,6 +577,9 @@ namespace AnyRPG {
             clientConnector.AdvertiseMessageFeedMessage(clientId, message);
         }
 
+        public override void AdvertiseSystemMessage(int clientId, string message) {
+            clientConnector.AdvertiseSystemMessage(clientId, message);
+        }
 
         #endregion
 

@@ -122,7 +122,7 @@ namespace AnyRPG {
             }
             SetMarkedComplete(sourceUnitController, false);
 
-            sourceUnitController.UnitEventController.NotifyOnRemoveQuest(this);
+            //sourceUnitController.UnitEventController.NotifyOnRemoveQuest(this);
             OnQuestStatusUpdated(sourceUnitController);
         }
 

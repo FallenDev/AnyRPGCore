@@ -612,8 +612,21 @@ namespace AnyRPG {
             playerManagerServer.AcceptQuest(quest, clientId);
         }
 
+        public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, int clientId) {
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest == null) {
+                return;
+            }
+            playerManagerServer.CompleteQuest(quest, questRewardChoices, clientId);
+        }
+
+
         public void AdvertiseMessageFeedMessage(UnitController sourceUnitController, string message) {
             networkController.AdvertiseMessageFeedMessage(playerManagerServer.ActivePlayerLookup[sourceUnitController], message);
+        }
+
+        public void AdvertiseSystemMessage(UnitController sourceUnitController, string message) {
+            networkController.AdvertiseSystemMessage(playerManagerServer.ActivePlayerLookup[sourceUnitController], message);
         }
 
         /*

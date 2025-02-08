@@ -423,10 +423,7 @@ namespace AnyRPG {
                 return;
             }
 
-            // DO THIS NOW SO NO NULL REFERENCES WHEN IT GETS DESELECTED DURING THIS PROCESS
-            //Quest questToComplete = systemDataFactory.GetResource<Quest>(currentQuestName);
-
-            //questDetailsArea.myreward
+            QuestRewardChoices questRewardChoices = new QuestRewardChoices();
 
             bool itemCountMatches = false;
             bool abilityCountMatches = false;
@@ -447,14 +444,7 @@ namespace AnyRPG {
                 return;
             }
 
-            // currency rewards
-            List<CurrencyNode> currencyNodes = currentQuest.GetCurrencyReward();
-            foreach (CurrencyNode currencyNode in currencyNodes) {
-                playerManager.UnitController.CharacterCurrencyManager.AddCurrency(currencyNode.currency, currencyNode.Amount);
-                List<CurrencyNode> tmpCurrencyNode = new List<CurrencyNode>();
-                tmpCurrencyNode.Add(currencyNode);
-                logManager.WriteSystemMessage("Gained " + currencyConverter.RecalculateValues(tmpCurrencyNode, false).Value.Replace("\n", ", "));
-            }
+            //int loopIndex = 0;
 
             // item rewards first in case not enough space in inventory
             // TO FIX: THIS CODE DOES NOT DEAL WITH PARTIAL STACKS AND WILL REQUEST ONE FULL SLOT FOR EVERY REWARD
@@ -463,74 +453,66 @@ namespace AnyRPG {
                     messageFeedManager.WriteMessage("Not enough room in inventory!");
                     return;
                 }
-                foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedItemRewardIcons()) {
-                    if (rewardButton.Rewardable != null) {
-                        rewardButton.Rewardable.GiveReward(playerManager.UnitController);
+
+                questRewardChoices.itemRewardIndexes.AddRange(questDetailsArea.GetHighlightedItemRewardIcons().Keys);
+                /*
+                foreach (int rewardIndex in questDetailsArea.GetHighlightedItemRewardIcons().Keys) {
+                    if (rewardIndex.Rewardable != null) {
+                        rewardIndex.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
+                */
             }
 
-            currentQuest.HandInItems(playerManager.UnitController);
+            //currentQuest.HandInItems(playerManager.UnitController);
 
             // faction rewards
             if (currentQuest.FactionRewards.Count > 0) {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Faction Rewards");
+                questRewardChoices.factionRewardIndexes.AddRange(questDetailsArea.GetHighlightedFactionRewardIcons().Keys);
+                /*
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedFactionRewardIcons()) {
                     //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Faction Rewards: got a reward button!");
                     if (rewardButton.Rewardable != null) {
                         rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
+                */
             }
 
             // ability rewards
             if (currentQuest.AbilityRewards.Count > 0) {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Ability Rewards");
+                questRewardChoices.abilityRewardIndexes.AddRange(questDetailsArea.GetHighlightedAbilityRewardIcons().Keys);
+                /*
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedAbilityRewardIcons()) {
                     if (rewardButton.Rewardable != null) {
                         rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
+                */
             }
 
             // skill rewards
             if (currentQuest.SkillRewards.Count > 0) {
                 //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Skill Rewards");
+                questRewardChoices.factionRewardIndexes.AddRange(questDetailsArea.GetHighlightedSkillRewardIcons().Keys);
+                /*
                 foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedSkillRewardIcons()) {
                     if (rewardButton.Rewardable != null) {
                         rewardButton.Rewardable.GiveReward(playerManager.UnitController);
                     }
                 }
+                */
             }
-
-            // xp reward
-            // FIX ME - TAKE ALL THIS LOGIC OUT OF THE UI AND SEND THE COMPLETEQUEST COMMAND OVER THE NETWORK SO WE DON'T NEED THIS CALL HERE
-            //playerManager.GainXP(LevelEquations.GetXPAmountForQuest(playerManager.UnitController.CharacterStats.Level, currentQuest, systemConfigurationManager));
 
             UpdateButtons(currentQuest);
 
             // DO THIS HERE OR TURNING THE QUEST RESULTING IN THIS WINDOW RE-OPENING WOULD JUST INSTA-CLOSE IT INSTEAD
             uIManager.questGiverWindow.CloseWindow();
 
-            playerManager.UnitController.CharacterQuestLog.TurnInQuest(currentQuest);
-
-            // do this last
-            // DO THIS AT THE END OR THERE WILL BE NO SELECTED QUESTGIVERQUESTSCRIPT
-            if (questGiver != null) {
-                //Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is not null");
-                // MUST BE DONE IN CASE WINDOW WAS OPEN INBETWEEN SCENES BY ACCIDENT
-                //Debug.Log("QuestGiverUI.CompleteQuest() Updating questGiver queststatus");
-                questGiver.UpdateQuestStatus(playerManager.UnitController);
-                questGiver.HandleCompleteQuest();
-            } else {
-                Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is null!");
-            }
-
-            /*
-            if (SelectedQuestGiverQuestScript != null) {
-                SelectedQuestGiverQuestScript.DeSelect();
-            }
-            */
+            questGiverManager.CompleteQuest(playerManager.UnitController, currentQuest, questRewardChoices);
+            //playerManager.UnitController.CharacterQuestLog.TurnInQuest(currentQuest);
 
         }
 

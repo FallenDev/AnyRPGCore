@@ -101,70 +101,78 @@ namespace AnyRPG {
         }
 
 
-        public List<RewardButton> GetHighlightedItemRewardIcons() {
+        public Dictionary<int, RewardButton> GetHighlightedItemRewardIcons() {
             //Debug.Log("QuestDetailsArea.GetHighlightedItemRewardIcons()");
-            List<RewardButton> returnList = new List<RewardButton>();
+            int loopIndex = 0;
+            Dictionary<int, RewardButton> returnList = new Dictionary<int, RewardButton>();
             foreach (RewardButton rewardButton in itemRewardIcons) {
                 //Debug.Log("QuestDetailsArea.GetHighlightedItemRewardIcons(): passing over rewardbutton");
                 if (rewardButton.isActiveAndEnabled == true && (rewardButton.Chosen == true || quest.MaxItemRewards == 0)) {
                     //Debug.Log("QuestDetailsArea.GetHighlightedItemRewardIcons(): adding button to the list");
-                    returnList.Add(rewardButton);
+                    returnList.Add(loopIndex, rewardButton);
                 }
+                loopIndex++;
             }
             return returnList;
         }
 
-        public List<RewardButton> GetHighlightedAbilityRewardIcons() {
+        public Dictionary<int, RewardButton> GetHighlightedAbilityRewardIcons() {
             //Debug.Log("QuestDetailsArea.GetHighlightedAbilityRewardIcons()");
-            List<RewardButton> returnList = new List<RewardButton>();
+            int loopIndex = 0;
+            Dictionary<int, RewardButton> returnList = new Dictionary<int, RewardButton>();
             foreach (RewardButton rewardButton in abilityRewardIcons) {
                 //Debug.Log("QuestDetailsArea.GetHighlightedAbilityRewardIcons(): passing over rewardbutton");
                 if (rewardButton.isActiveAndEnabled == true && (rewardButton.Chosen == true || quest.MaxAbilityRewards == 0)) {
                     //Debug.Log("QuestDetailsArea.GetHighlightedAbilityRewardIcons(): adding button to the list");
-                    returnList.Add(rewardButton);
+                    returnList.Add(loopIndex, rewardButton);
                 }
+                loopIndex++;
             }
             //Debug.Log("QuestDetailsArea.GetHighlightedAbilityRewardIcons(): listCount: " + returnList.Count);
             return returnList;
         }
 
-        public List<RewardButton> GetHighlightedSkillRewardIcons() {
+        public Dictionary<int, RewardButton> GetHighlightedSkillRewardIcons() {
             //Debug.Log("QuestDetailsArea.GetHighlightedSkillRewardIcons()");
-            List<RewardButton> returnList = new List<RewardButton>();
+            int loopIndex = 0;
+            Dictionary<int, RewardButton> returnList = new Dictionary<int, RewardButton>();
             foreach (RewardButton rewardButton in skillRewardIcons) {
                 //Debug.Log("QuestDetailsArea.GetHighlightedSkillRewardIcons(): passing over rewardbutton");
                 if (rewardButton.isActiveAndEnabled == true && (rewardButton.Chosen == true || quest.MaxSkillRewards == 0)) {
                     //Debug.Log("QuestDetailsArea.GetHighlightedSkillRewardIcons(): adding button to the list");
-                    returnList.Add(rewardButton);
+                    returnList.Add(loopIndex, rewardButton);
                 }
+                loopIndex++;
             }
             //Debug.Log("QuestDetailsArea.GetHighlightedAbilityRewardIcons(): listCount: " + returnList.Count);
             return returnList;
         }
 
-        public List<RewardButton> GetHighlightedFactionRewardIcons() {
+        public Dictionary<int, RewardButton> GetHighlightedFactionRewardIcons() {
             //Debug.Log("QuestDetailsArea.GetHighlightedFactionRewardIcons()");
-            List<RewardButton> returnList = new List<RewardButton>();
+            int loopIndex = 0;
+            Dictionary<int, RewardButton> returnList = new Dictionary<int, RewardButton>();
             foreach (RewardButton rewardButton in factionRewardIcons) {
                 //Debug.Log("QuestDetailsArea.GetHighlightedFactionRewardIcons(): passing over rewardbutton");
                 if (rewardButton.isActiveAndEnabled == true && (rewardButton.Chosen == true || quest.MaxFactionRewards == 0)) {
                     //Debug.Log("QuestDetailsArea.GetHighlightedFactionRewardIcons(): adding button to the list");
-                    returnList.Add(rewardButton);
+                    returnList.Add(loopIndex, rewardButton);
                 }
+                loopIndex++;
             }
             return returnList;
         }
 
         public void HandleAttemptSelect(RewardButton rewardButton) {
             //Debug.Log("QuestDetailsArea.HandleAttemptSelect()");
-            if (GetHighlightedItemRewardIcons().Contains(rewardButton)) {
+            if (GetHighlightedItemRewardIcons().ContainsValue(rewardButton)) {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an item reward; current count of highlighted icons: " + GetHighlightedItemRewardIcons().Count + "; max: " + quest.MyMaxItemRewards);
                 if (quest.MaxItemRewards == 0
                     || (quest.MaxItemRewards > 0 && GetHighlightedItemRewardIcons().Count > quest.MaxItemRewards)) {
                     rewardButton.Unselect();
                 }
             }
-            if (GetHighlightedFactionRewardIcons().Contains(rewardButton)) {
+            if (GetHighlightedFactionRewardIcons().ContainsValue(rewardButton)) {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an faction reward; current count of highlighted icons: " + GetHighlightedFactionRewardIcons().Count + "; max: " + quest.MyMaxFactionRewards);
                 if (quest.MaxFactionRewards == 0
                     || (quest.MaxFactionRewards > 0 && GetHighlightedFactionRewardIcons().Count > quest.MaxFactionRewards)) {
@@ -172,7 +180,7 @@ namespace AnyRPG {
                 }
             }
 
-            if (GetHighlightedAbilityRewardIcons().Contains(rewardButton)) {
+            if (GetHighlightedAbilityRewardIcons().ContainsValue(rewardButton)) {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an ability reward; current count of highlighted icons: " + GetHighlightedAbilityRewardIcons().Count + "; max: " + quest.MyMaxAbilityRewards);
                 if (quest.MaxAbilityRewards == 0
                     || (quest.MaxAbilityRewards > 0 && GetHighlightedAbilityRewardIcons().Count > quest.MaxAbilityRewards)
@@ -181,7 +189,7 @@ namespace AnyRPG {
                 }
             }
 
-            if (GetHighlightedSkillRewardIcons().Contains(rewardButton)) {
+            if (GetHighlightedSkillRewardIcons().ContainsValue(rewardButton)) {
                 //Debug.Log("QuestDetailsArea.HandleAttemptSelect(): it's an ability reward; current count of highlighted icons: " + GetHighlightedAbilityRewardIcons().Count + "; max: " + quest.MyMaxAbilityRewards);
                 if (quest.MaxSkillRewards == 0
                     || (quest.MaxSkillRewards > 0 && GetHighlightedSkillRewardIcons().Count > quest.MaxSkillRewards)
@@ -204,11 +212,11 @@ namespace AnyRPG {
 
             questDescription.text = quest.GetObjectiveDescription(playerManager.UnitController);
 
-            experienceReward.text += LevelEquations.GetXPAmountForQuest(playerManager.UnitController.CharacterStats.Level, quest, systemConfigurationManager) + " XP";
+            experienceReward.text += LevelEquations.GetXPAmountForQuest(playerManager.UnitController, quest, systemConfigurationManager) + " XP";
 
             // display currency rewards
 
-            List<CurrencyNode> currencyNodes = quest.GetCurrencyReward();
+            List<CurrencyNode> currencyNodes = quest.GetCurrencyReward(playerManager.UnitController);
 
             // currencies could be different
             if (currencyNodes.Count > 0) {

@@ -42,6 +42,7 @@ namespace AnyRPG {
         public abstract void SetPlayerCharacterClass(string className);
         public abstract void LearnSkill(string skillName);
         public abstract void AcceptQuest(string questName);
+        public abstract void CompleteQuest(string questName, QuestRewardChoices questRewardChoices);
 
         // server functions
         public abstract void StartServer();
@@ -69,6 +70,7 @@ namespace AnyRPG {
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void AdvertiseMessageFeedMessage(int clientId, string message);
+        public abstract void AdvertiseSystemMessage(int clientId, string message);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);

@@ -22,6 +22,7 @@ namespace AnyRPG {
         protected InteractionManager interactionManager = null;
         protected PlayerManager playerManager = null;
         protected SystemAchievementManager systemAchievementManager = null;
+        protected QuestGiverManager questGiverManager = null;
 
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
@@ -43,6 +44,7 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             interactionManager = systemGameManager.InteractionManager;
             systemAchievementManager = systemGameManager.SystemAchievementManager;
+            questGiverManager = systemGameManager.QuestGiverManager;
         }
 
 
@@ -310,7 +312,12 @@ namespace AnyRPG {
             activePlayers[clientId].CharacterQuestLog.AcceptQuest(quest);
         }
 
-
+        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            questGiverManager.CompleteQuestInternal(ActivePlayers[clientId], quest, questRewardChoices);
+        }
     }
 
 }

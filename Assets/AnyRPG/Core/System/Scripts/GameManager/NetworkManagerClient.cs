@@ -427,9 +427,18 @@ namespace AnyRPG {
             networkController.AcceptQuest(quest.ResourceName);
         }
 
+        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices) {
+            networkController.CompleteQuest(quest.ResourceName, questRewardChoices);
+        }
+
         public void AdvertiseMessageFeedMessage(string message) {
             messageFeedManager.WriteMessage(message);
         }
+
+        public void AdvertiseSystemMessage(string message) {
+            logManager.WriteSystemMessage(message);
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AnyRPG {
     //[CreateAssetMenu(fileName = "New Scroll",menuName = "AnyRPG/Inventory/Items/Scroll", order = 1)]
-    public abstract class CastableItem : Item, IUseable {
+    public abstract class CastableItem : Item {
 
         /*
         [SerializeField]
@@ -30,22 +30,6 @@ namespace AnyRPG {
             systemAbilityController = systemGameManager.SystemAbilityController;
         }
 
-        public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log("CastableItem.Use()");
-            if (Ability == null) {
-                Debug.LogError(ResourceName + ".CastableItem.Use(): ability is null.  Please set it in the inspector!");
-                return false;
-            }
-            bool returnValue = base.Use(sourceUnitController);
-            if (returnValue == false) {
-                return false;
-            }
-            if (sourceUnitController.CharacterAbilityManager.BeginAbility(Ability)) {
-                Remove();
-            }
-            return returnValue;
-        }
-
         public override bool HadSpecialIcon(ActionButton actionButton) {
             if (Ability != null) {
                 Ability.UpdateActionButtonVisual(actionButton);
@@ -54,17 +38,9 @@ namespace AnyRPG {
             return base.HadSpecialIcon(actionButton);
         }
 
-        public override Coroutine ChooseMonitorCoroutine(ActionButton actionButton) {
-            //Debug.Log(DisplayName + ".CastableItem.ChooseMonitorCoroutine()");
-            if (Ability == null) {
-                return null;
-            }
-            return systemAbilityController.StartCoroutine(actionButton.MonitorAbility(Ability.DisplayName));
-        }
-
-        public override string GetDescription(ItemQuality usedItemQuality) {
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             //Debug.Log(DisplayName + ".CastableItem.GetSummary()");
-            return base.GetDescription(usedItemQuality) + GetCastableInformation() + GetCooldownString();
+            return base.GetDescription(usedItemQuality, usedItemLevel) + GetCastableInformation() + GetCooldownString();
         }
 
         public virtual string GetCastableInformation() {

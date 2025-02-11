@@ -92,7 +92,7 @@ namespace AnyRPG {
                     quantity.text = string.Empty;
                 }
                 descriptionText.text = vendorItem.Item.Description;
-                if (vendorItem.BuyPrice() > 0
+                if (vendorItem.BuyPrice(playerManager.UnitController) > 0
                     && vendorItem.Item.Currency != null
                     && vendorItem.Item.Currency.ResourceName != null
                     && vendorItem.Item.Currency.ResourceName != string.Empty) {
@@ -100,9 +100,9 @@ namespace AnyRPG {
                     //price.text = "Price:";
                     if (currencyBarController != null) {
                         if (buyBackButton == false) {
-                            currencyBarController.UpdateCurrencyAmount(vendorItem.Item.Currency, vendorItem.BuyPrice());
+                            currencyBarController.UpdateCurrencyAmount(vendorItem.Item.Currency, vendorItem.BuyPrice(playerManager.UnitController));
                         } else {
-                            currencyBarController.UpdateCurrencyAmount(vendorItem.Item.GetSellPrice().Key, vendorItem.Item.GetSellPrice().Value, "Buy Back Price: ");
+                            currencyBarController.UpdateCurrencyAmount(vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController).Key, vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController).Value, "Buy Back Price: ");
                         }
                     }
                 } else {
@@ -122,13 +122,13 @@ namespace AnyRPG {
 
         protected bool CanAfford() {
             if (buyBackButton == false) {
-                if (currencyConverter.GetBaseCurrencyAmount(vendorItem.Item.Currency, vendorItem.BuyPrice()) <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
+                if (currencyConverter.GetBaseCurrencyAmount(vendorItem.Item.Currency, vendorItem.BuyPrice(playerManager.UnitController)) <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
                     return true;
                 }
                 return false;
             }
 
-            if (vendorItem.Item.GetSellPrice().Value <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
+            if (vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController).Value <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
                 return true;
             }
             return false;
@@ -148,26 +148,26 @@ namespace AnyRPG {
         }
 
         public void ProcessMouseClick() {
-            if (vendorItem.BuyPrice() == 0
+            if (vendorItem.BuyPrice(playerManager.UnitController) == 0
                             || vendorItem.Item.Currency == null
                             || CanAfford()) {
-                Item tmpItem = null;
+                InstantiatedItem tmpInstantiatedItem = null;
                 if (buyBackButton == true) {
                     // if this is a buyback, the item has already been instantiated so it is safe to reference it directly
-                    tmpItem = vendorItem.Item;
+                    tmpInstantiatedItem = vendorItem.InstantiatedItem;
                 } else {
                     // if this is a new purchase, a new copy of the item must be instantiated since the button is referring to the original factory item template
-                    tmpItem = systemItemManager.GetNewResource(vendorItem.Item.ResourceName, vendorItem.GetItemQuality());
+                    tmpInstantiatedItem = systemItemManager.GetNewInstantiatedItem(vendorItem.Item.ResourceName, vendorItem.GetItemQuality());
                     //Debug.Log("Instantiated an item with id: " + tmpItem.GetInstanceID().ToString());
                 }
 
-                if (playerManager.UnitController.CharacterInventoryManager.AddItem(tmpItem, false)) {
+                if (playerManager.UnitController.CharacterInventoryManager.AddItem(tmpInstantiatedItem, false)) {
                     if (buyBackButton == false) {
-                        tmpItem.DropLevel = playerManager.UnitController.CharacterStats.Level;
+                        tmpInstantiatedItem.DropLevel = playerManager.UnitController.CharacterStats.Level;
                     }
                     SellItem();
-                    if (tmpItem is CurrencyItem) {
-                        (tmpItem as CurrencyItem).Use(playerManager.UnitController);
+                    if (tmpInstantiatedItem is InstantiatedCurrencyItem) {
+                        (tmpInstantiatedItem as InstantiatedCurrencyItem).Use(playerManager.UnitController);
                     }
                 }
             } else {
@@ -210,15 +210,15 @@ namespace AnyRPG {
         private void SellItem() {
             //Debug.Log("VendorButton.SellItem()");
             string priceString = string.Empty;
-            if (vendorItem.BuyPrice() == 0 || vendorItem.Item.Currency == null) {
+            if (vendorItem.BuyPrice(playerManager.UnitController) == 0 || vendorItem.Item.Currency == null) {
                 priceString = "FREE";
             } else {
                 KeyValuePair<Currency, int> usedSellPrice = new KeyValuePair<Currency, int>();
                 if (buyBackButton == false) {
-                    usedSellPrice = new KeyValuePair<Currency, int>(vendorItem.Item.Currency, vendorItem.BuyPrice());
-                    priceString = vendorItem.BuyPrice() + " " + vendorItem.Item.Currency.DisplayName;
+                    usedSellPrice = new KeyValuePair<Currency, int>(vendorItem.Item.Currency, vendorItem.BuyPrice(playerManager.UnitController));
+                    priceString = vendorItem.BuyPrice(playerManager.UnitController) + " " + vendorItem.Item.Currency.DisplayName;
                 } else {
-                    usedSellPrice = vendorItem.Item.GetSellPrice();
+                    usedSellPrice = vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController);
                     priceString = currencyConverter.GetCombinedPriceString(usedSellPrice);
                 }
                 playerManager.UnitController.CharacterCurrencyManager.SpendCurrency(usedSellPrice.Key, usedSellPrice.Value);

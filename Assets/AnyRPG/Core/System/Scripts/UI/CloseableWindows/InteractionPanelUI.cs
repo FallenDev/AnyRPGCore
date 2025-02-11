@@ -126,7 +126,7 @@ namespace AnyRPG {
             foreach (KeyValuePair<int, InteractableOptionComponent> _interactable in currentInteractables) {
                 // handle questgiver
                 if (_interactable.Value is QuestGiverComponent) {
-                    foreach (QuestNode questNode in (_interactable.Value as QuestGiverComponent).Props.Quests) {
+                    foreach (QuestNode questNode in (_interactable.Value as QuestGiverComponent).QuestGiverProps.Quests) {
                         Quest quest = questNode.Quest;
                         if (quest != null) {
                             string displayText = string.Empty;

@@ -32,7 +32,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
 
         // equipment manager
-        public System.Action<Equipment, Equipment> OnEquipmentChanged = delegate { };
+        public System.Action<InstantiatedEquipment, InstantiatedEquipment> OnEquipmentChanged = delegate { };
 
         public static void StartListening(string eventName, Action<string, EventParamProperties> listener) {
             Action<string, EventParamProperties> thisEvent;
@@ -86,7 +86,7 @@ namespace AnyRPG {
             OnPlayerUnitDespawn(unitController);
         }
 
-        public void NotifyOnEquipmentChanged(Equipment newEquipment, Equipment oldEquipment) {
+        public void NotifyOnEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
             OnEquipmentChanged(newEquipment, oldEquipment);
         }
 

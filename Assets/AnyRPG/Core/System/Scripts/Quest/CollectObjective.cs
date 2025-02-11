@@ -58,9 +58,9 @@ namespace AnyRPG {
         }
 
         public void Complete(UnitController sourceUnitController) {
-            List<Item> items = sourceUnitController.CharacterInventoryManager.GetItems(itemName, Amount);
-            foreach (Item item in items) {
-                item.Remove();
+            List<InstantiatedItem> items = sourceUnitController.CharacterInventoryManager.GetItems(itemName, Amount);
+            foreach (InstantiatedItem instantiatedItem in items) {
+                instantiatedItem.Remove();
             }
         }
 

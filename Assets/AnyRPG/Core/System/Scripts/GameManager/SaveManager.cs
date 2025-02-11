@@ -564,17 +564,17 @@ namespace AnyRPG {
 
         private InventorySlotSaveData GetSlotSaveData(InventorySlot inventorySlot) {
             InventorySlotSaveData saveData = new InventorySlotSaveData();
-            saveData.ItemName = (inventorySlot.Item == null ? string.Empty : inventorySlot.Item.ResourceName);
-            saveData.stackCount = (inventorySlot.Item == null ? 0 : inventorySlot.Count);
-            saveData.DisplayName = (inventorySlot.Item == null ? string.Empty : inventorySlot.Item.DisplayName);
-            if (inventorySlot.Item != null) {
-                if (inventorySlot.Item.ItemQuality != null) {
-                    saveData.itemQuality = (inventorySlot.Item == null ? string.Empty : inventorySlot.Item.ItemQuality.ResourceName);
+            saveData.ItemName = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.ResourceName);
+            saveData.stackCount = (inventorySlot.InstantiatedItem == null ? 0 : inventorySlot.Count);
+            saveData.DisplayName = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.DisplayName);
+            if (inventorySlot.InstantiatedItem != null) {
+                if (inventorySlot.InstantiatedItem.ItemQuality != null) {
+                    saveData.itemQuality = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.ItemQuality.ResourceName);
                 }
-                if ((inventorySlot.Item as Equipment is Equipment)) {
-                    saveData.randomSecondaryStatIndexes = (inventorySlot.Item == null ? null : (inventorySlot.Item as Equipment).RandomStatIndexes);
+                if (inventorySlot.InstantiatedItem is InstantiatedEquipment) {
+                    saveData.randomSecondaryStatIndexes = (inventorySlot.InstantiatedItem == null ? null : (inventorySlot.InstantiatedItem as InstantiatedEquipment).RandomStatIndexes);
                 }
-                saveData.dropLevel = (inventorySlot.Item == null ? 0 : inventorySlot.Item.DropLevel);
+                saveData.dropLevel = (inventorySlot.InstantiatedItem == null ? 0 : inventorySlot.InstantiatedItem.DropLevel);
             }
             return saveData;
         }
@@ -639,8 +639,8 @@ namespace AnyRPG {
 
         private EquippedBagSaveData GetBagSaveData(BagNode bagNode) {
             EquippedBagSaveData saveData = new EquippedBagSaveData();
-            saveData.BagName = (bagNode.Bag != null ? bagNode.Bag.ResourceName : string.Empty);
-            saveData.slotCount = (bagNode.Bag != null ? bagNode.Bag.Slots : 0);
+            saveData.BagName = (bagNode.InstantiatedBag != null ? bagNode.InstantiatedBag.ResourceName : string.Empty);
+            saveData.slotCount = (bagNode.InstantiatedBag != null ? bagNode.InstantiatedBag.Slots : 0);
             
             return saveData;
         }
@@ -666,16 +666,16 @@ namespace AnyRPG {
         public void SaveEquipmentData(AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveEquipmentData()");
             if (playerManager != null && playerManager.UnitController != null && playerManager.UnitController.CharacterEquipmentManager != null) {
-                foreach (Equipment equipment in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                foreach (InstantiatedEquipment instantiatedEquipment in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Values) {
                     EquipmentSaveData saveData = new EquipmentSaveData();
-                    saveData.EquipmentName = (equipment == null ? string.Empty : equipment.ResourceName);
-                    saveData.DisplayName = (equipment == null ? string.Empty : equipment.DisplayName);
-                    if (equipment != null) {
-                        if (equipment.ItemQuality != null) {
-                            saveData.itemQuality = (equipment == null ? string.Empty : equipment.ItemQuality.ResourceName);
+                    saveData.EquipmentName = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.ResourceName);
+                    saveData.DisplayName = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.DisplayName);
+                    if (instantiatedEquipment != null) {
+                        if (instantiatedEquipment.ItemQuality != null) {
+                            saveData.itemQuality = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.ItemQuality.ResourceName);
                         }
-                        saveData.dropLevel = equipment.DropLevel;
-                        saveData.randomSecondaryStatIndexes = (equipment == null ? null : equipment.RandomStatIndexes);
+                        saveData.dropLevel = instantiatedEquipment.DropLevel;
+                        saveData.randomSecondaryStatIndexes = (instantiatedEquipment == null ? null : instantiatedEquipment.RandomStatIndexes);
                     }
                     anyRPGSaveData.equipmentSaveData.Add(saveData);
                 }
@@ -850,28 +850,28 @@ namespace AnyRPG {
         private void LoadSlotData(InventorySlotSaveData inventorySlotSaveData, int counter, bool bank) {
             if (inventorySlotSaveData.ItemName != string.Empty && inventorySlotSaveData.ItemName != null) {
                 for (int i = 0; i < inventorySlotSaveData.stackCount; i++) {
-                    Item newItem = systemItemManager.GetNewResource(inventorySlotSaveData.ItemName);
-                    if (newItem == null) {
+                    InstantiatedItem newInstantiatedItem = systemItemManager.GetNewInstantiatedItem(inventorySlotSaveData.ItemName);
+                    if (newInstantiatedItem == null) {
                         Debug.Log("Savemanager.LoadInventorySlotData(): COULD NOT LOAD ITEM FROM ITEM MANAGER: " + inventorySlotSaveData.ItemName);
                     } else {
-                        newItem.DisplayName = inventorySlotSaveData.DisplayName;
-                        newItem.DropLevel = inventorySlotSaveData.dropLevel;
+                        newInstantiatedItem.DisplayName = inventorySlotSaveData.DisplayName;
+                        newInstantiatedItem.DropLevel = inventorySlotSaveData.dropLevel;
                         // disabled the if condition since all items can now have item quality overrides from vendor
                         //if (newItem.RandomItemQuality == true) {
                         if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {
-                            newItem.ItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
+                            newInstantiatedItem.ItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
                         }
                         //}
-                        if ((newItem as Equipment) is Equipment) {
+                        if (newInstantiatedItem is InstantiatedEquipment) {
                             if (inventorySlotSaveData.randomSecondaryStatIndexes != null) {
-                                (newItem as Equipment).RandomStatIndexes = inventorySlotSaveData.randomSecondaryStatIndexes;
-                                (newItem as Equipment).InitializeRandomStatsFromIndex();
+                                (newInstantiatedItem as InstantiatedEquipment).RandomStatIndexes = inventorySlotSaveData.randomSecondaryStatIndexes;
+                                (newInstantiatedItem as InstantiatedEquipment).InitializeRandomStatsFromIndex();
                             }
                         }
                         if (bank == true) {
-                            playerManager.UnitController.CharacterInventoryManager.AddBankItem(newItem, counter);
+                            playerManager.UnitController.CharacterInventoryManager.AddBankItem(newInstantiatedItem, counter);
                         } else {
-                            playerManager.UnitController.CharacterInventoryManager.AddInventoryItem(newItem, counter);
+                            playerManager.UnitController.CharacterInventoryManager.AddInventoryItem(newInstantiatedItem, counter);
                         }
                     }
                 }
@@ -883,19 +883,19 @@ namespace AnyRPG {
 
             foreach (EquipmentSaveData equipmentSaveData in anyRPGSaveData.equipmentSaveData) {
                 if (equipmentSaveData.EquipmentName != string.Empty) {
-                    Equipment newItem = (systemItemManager.GetNewResource(equipmentSaveData.EquipmentName) as Equipment);
-                    if (newItem != null) {
-                        newItem.DisplayName = equipmentSaveData.DisplayName;
-                        newItem.DropLevel = equipmentSaveData.dropLevel;
+                    InstantiatedEquipment newInstantiatedEquipment = systemItemManager.GetNewInstantiatedItem(equipmentSaveData.EquipmentName) as InstantiatedEquipment;
+                    if (newInstantiatedEquipment != null) {
+                        newInstantiatedEquipment.DisplayName = equipmentSaveData.DisplayName;
+                        newInstantiatedEquipment.DropLevel = equipmentSaveData.dropLevel;
                         if (equipmentSaveData.itemQuality != null && equipmentSaveData.itemQuality != string.Empty) {
-                            newItem.ItemQuality = systemDataFactory.GetResource<ItemQuality>(equipmentSaveData.itemQuality);
+                            newInstantiatedEquipment.ItemQuality = systemDataFactory.GetResource<ItemQuality>(equipmentSaveData.itemQuality);
                         }
                         if (equipmentSaveData.randomSecondaryStatIndexes != null) {
-                            newItem.RandomStatIndexes = equipmentSaveData.randomSecondaryStatIndexes;
-                            newItem.InitializeRandomStatsFromIndex();
+                            newInstantiatedEquipment.RandomStatIndexes = equipmentSaveData.randomSecondaryStatIndexes;
+                            newInstantiatedEquipment.InitializeRandomStatsFromIndex();
                         }
                         if (characterEquipmentManager != null) {
-                            characterEquipmentManager.Equip(newItem, null);
+                            characterEquipmentManager.Equip(newInstantiatedEquipment, null);
                         }
                     }
                 }
@@ -973,7 +973,8 @@ namespace AnyRPG {
                 if (actionBarSaveData.isItem == true) {
                     // find item in bag
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable(" + actionBarSaveData.MyName + ") in inventory");
-                    useable = systemDataFactory.GetResource<Item>(actionBarSaveData.DisplayName);
+                    //useable = systemDataFactory.GetResource<Item>(actionBarSaveData.DisplayName);
+                    useable = systemItemManager.GetNewInstantiatedItem(actionBarSaveData.DisplayName);
                 } else {
                     // find ability from system ability manager
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable in ability manager");
@@ -1009,7 +1010,8 @@ namespace AnyRPG {
                 if (actionBarSaveData.isItem == true) {
                     // find item in bag
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable(" + actionBarSaveData.MyName + ") in inventory");
-                    useable = systemDataFactory.GetResource<Item>(actionBarSaveData.DisplayName);
+                    //useable = systemDataFactory.GetResource<Item>(actionBarSaveData.DisplayName);
+                    useable = systemItemManager.GetNewInstantiatedItem(actionBarSaveData.DisplayName);
                 } else {
                     // find ability from system ability manager
                     //Debug.Log("Savemanager.LoadActionBarData(): searching for usable in ability manager");
@@ -1102,18 +1104,18 @@ namespace AnyRPG {
             for (int i = 0; i < systemConfigurationManager.DefaultBankSlots; i++) {
                 if (systemConfigurationManager.DefaultBankContents.Count > i) {
                     InventorySlotSaveData inventorySlotSaveData = new InventorySlotSaveData();
-                    Item item = systemItemManager.GetNewResource(systemConfigurationManager.DefaultBankContents[i]);
-                    inventorySlotSaveData.ItemName = (item == null ? string.Empty : item.ResourceName);
-                    inventorySlotSaveData.stackCount = (item == null ? 0 : 1);
-                    inventorySlotSaveData.DisplayName = (item == null ? string.Empty : item.DisplayName);
-                    if (item != null) {
-                        if (item.ItemQuality != null) {
-                            inventorySlotSaveData.itemQuality = (item == null ? string.Empty : item.ItemQuality.ResourceName);
+                    InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(systemConfigurationManager.DefaultBankContents[i]);
+                    inventorySlotSaveData.ItemName = (instantiatedItem == null ? string.Empty : instantiatedItem.ResourceName);
+                    inventorySlotSaveData.stackCount = (instantiatedItem == null ? 0 : 1);
+                    inventorySlotSaveData.DisplayName = (instantiatedItem == null ? string.Empty : instantiatedItem.DisplayName);
+                    if (instantiatedItem != null) {
+                        if (instantiatedItem.ItemQuality != null) {
+                            inventorySlotSaveData.itemQuality = (instantiatedItem == null ? string.Empty : instantiatedItem.ItemQuality.ResourceName);
                         }
-                        if ((item as Equipment is Equipment)) {
-                            inventorySlotSaveData.randomSecondaryStatIndexes = (item == null ? null : (item as Equipment).RandomStatIndexes);
+                        if ((instantiatedItem is InstantiatedEquipment)) {
+                            inventorySlotSaveData.randomSecondaryStatIndexes = (instantiatedItem == null ? null : (instantiatedItem as InstantiatedEquipment).RandomStatIndexes);
                         }
-                        inventorySlotSaveData.dropLevel = (item == null ? 0 : item.DropLevel);
+                        inventorySlotSaveData.dropLevel = (instantiatedItem == null ? 0 : instantiatedItem.DropLevel);
                     }
                     anyRPGSaveData.bankSlotSaveData.Add(inventorySlotSaveData);
                 }
@@ -1125,12 +1127,12 @@ namespace AnyRPG {
         public void CreateDefaultBackpack() {
             //Debug.Log("InventoryManager.CreateDefaultBackpack()");
             if (systemConfigurationManager.DefaultBackpackItem != null && systemConfigurationManager.DefaultBackpackItem != string.Empty) {
-                Bag bag = systemItemManager.GetNewResource(systemConfigurationManager.DefaultBackpackItem) as Bag;
-                if (bag == null) {
+                InstantiatedBag instantiatedBag = systemItemManager.GetNewInstantiatedItem(systemConfigurationManager.DefaultBackpackItem) as InstantiatedBag;
+                if (instantiatedBag == null) {
                     Debug.LogError("InventoryManager.CreateDefaultBankBag(): CHECK INVENTORYMANAGER IN INSPECTOR AND SET DEFAULTBACKPACK TO VALID NAME");
                     return;
                 }
-                playerManager.UnitController.CharacterInventoryManager.AddInventoryBag(bag);
+                playerManager.UnitController.CharacterInventoryManager.AddInventoryBag(instantiatedBag);
             }
         }
 

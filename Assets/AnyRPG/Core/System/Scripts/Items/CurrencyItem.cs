@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "CurrencyItem", menuName = "AnyRPG/Inventory/Items/CurrencyItem", order = 1)]
-    public class CurrencyItem : Item, IUseable {
+    public class CurrencyItem : Item {
 
         [Header("Currency")]
 
@@ -19,28 +19,22 @@ namespace AnyRPG {
         //[SerializeField]
         private CurrencyNode currencyNode;
 
-        public CurrencyNode MyCurrencyNode { get => currencyNode; }
+        public CurrencyNode CurrencyNode { get => currencyNode; }
 
-        public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log("CurrencyItem.Use()");
-            bool returnValue = base.Use(sourceUnitController);
-            if (returnValue == false) {
-                return false;
+        public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            if ((item is CurrencyItem) == false) {
+                return null;
             }
-            if (currencyNode.currency != null) {
-                sourceUnitController.CharacterCurrencyManager.AddCurrency(currencyNode.currency, currencyNode.Amount);
-            }
-            Remove();
-            return true;
+            return new InstantiatedCurrencyItem(systemGameManager, itemId, item as CurrencyItem, usedItemQuality);
         }
 
-        public override string GetDescription(ItemQuality usedItemQuality) {
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             //Debug.Log(DisplayName + ".CurrencyItem.GetSummary();");
             string tmpCurrencyName = string.Empty;
             if (currencyNode.currency != null) {
                 tmpCurrencyName = currencyNode.currency.DisplayName;
             }
-            return base.GetDescription(usedItemQuality) + string.Format("\n<color=green>Use: Gain {0} {1}</color>", tmpCurrencyName, currencyNode.Amount);
+            return base.GetDescription(usedItemQuality, usedItemLevel) + string.Format("\n<color=green>Use: Gain {0} {1}</color>", tmpCurrencyName, currencyNode.Amount);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

@@ -15,12 +15,12 @@ namespace AnyRPG {
         private HighlightButton yesButton = null;
         */
 
-        private Item item = null;
+        private InstantiatedItem instantiatedItem = null;
 
         // game manager references
         private UIManager uIManager = null;
 
-        public Item MyItem { get => item; set => item = value; }
+        public InstantiatedItem MyItem { get => instantiatedItem; set => instantiatedItem = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -43,7 +43,7 @@ namespace AnyRPG {
         public void ConfirmAction() {
             //Debug.Log("NewGameMenuController.ConfirmAction()");
             //SystemGameManager.Instance.UIManager.HandScript.DeleteItem();
-            if (item != null) {
+            if (instantiatedItem != null) {
                 (uIManager.vendorWindow.CloseableWindowContents as VendorUI).SellItem(MyItem);
             }
             uIManager.confirmSellItemMenuWindow.CloseWindow();
@@ -51,13 +51,13 @@ namespace AnyRPG {
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
-            item = null;
+            instantiatedItem = null;
         }
 
 
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
-            item = null;
+            instantiatedItem = null;
         }
 
     }

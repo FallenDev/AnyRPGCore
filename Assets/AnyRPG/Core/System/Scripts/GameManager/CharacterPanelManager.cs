@@ -125,7 +125,7 @@ namespace AnyRPG {
             unitController.CharacterStats.SetLevelInternal(newLevel);
         }
 
-        public void HandleEquipmentChanged(Equipment newEquipment, Equipment oldEquipment) {
+        public void HandleEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
             //Debug.Log("CharacterPanelManager.HandleEquipmentChanged(" + (newEquipment == null ? "null" : newEquipment.DisplayName) + ", " + (oldEquipment == null ? "null" : oldEquipment.DisplayName) + ")");
             if (oldEquipment != null) {
                 unitController.CharacterEquipmentManager.Unequip(oldEquipment);

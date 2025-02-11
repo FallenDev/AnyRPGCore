@@ -15,7 +15,7 @@ namespace AnyRPG {
 
 
         // track the equipment that is equipped
-        protected Dictionary<EquipmentSlotProfile, Equipment> equippedEquipment = new Dictionary<EquipmentSlotProfile, Equipment>();
+        protected Dictionary<EquipmentSlotProfile, InstantiatedEquipment> equippedEquipment = new Dictionary<EquipmentSlotProfile, InstantiatedEquipment>();
 
         // game manager references
         protected SaveManager saveManager = null;
@@ -55,7 +55,7 @@ namespace AnyRPG {
             }
         }
 
-        protected virtual Equipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
+        protected virtual InstantiatedEquipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
 
             if (unitModelController.SuppressEquipment == true) {
                 return null;
@@ -64,7 +64,7 @@ namespace AnyRPG {
             return characterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
         }
 
-        private int RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        private int RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             if (equipment == equippedEquipment[equipmentSlotProfile]) {
                 // equipment spawned is the same as what is the character equipment manager, nothing to do
                 return 0;
@@ -83,7 +83,7 @@ namespace AnyRPG {
             equippedEquipment[equipmentSlotProfile] = null;
         }
 
-        public virtual void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        public virtual void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             equippedEquipment[equipmentSlotProfile] = equipment;
         }
 

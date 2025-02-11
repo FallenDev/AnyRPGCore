@@ -13,6 +13,7 @@ namespace AnyRPG {
 
         //[SerializeField]
         private Item item = null;
+        private InstantiatedItem instantiatedItem = null;
 
         [SerializeField]
         private int quantity = 1;
@@ -33,6 +34,16 @@ namespace AnyRPG {
             }
             set {
                 item = value;
+            }
+        }
+
+        public InstantiatedItem InstantiatedItem {
+            get {
+                return instantiatedItem;
+            }
+            set {
+                instantiatedItem = value;
+                item = instantiatedItem.Item;
             }
         }
 
@@ -71,17 +82,16 @@ namespace AnyRPG {
             return item.ItemQuality;
         }
 
-        public int BuyPrice() {
+        public int BuyPrice(UnitController sourceUnitController) {
             if (itemQuality != null) {
-                return item.BuyPrice(itemQuality);
+                return item.BuyPrice(sourceUnitController, itemQuality);
             }
-            return item.BuyPrice();
+            return item.BuyPrice(sourceUnitController);
         }
 
         public void SetupScriptableObjects(SystemDataFactory systemDataFactory, IDescribable describable) {
 
-            item = null;
-            if (itemName != null) {
+            if (itemName != string.Empty) {
                 Item tmpItem = systemDataFactory.GetResource<Item>(itemName);
                 if (tmpItem != null) {
                     item = tmpItem;
@@ -90,8 +100,7 @@ namespace AnyRPG {
                 }
             }
 
-            itemQuality = null;
-            if (itemQualityName != null && itemQualityName != string.Empty) {
+            if (itemQualityName != string.Empty) {
                 ItemQuality tmpItemQuality = systemDataFactory.GetResource<ItemQuality>(itemQualityName);
                 if (tmpItemQuality != null) {
                     itemQuality = tmpItemQuality;
@@ -102,11 +111,11 @@ namespace AnyRPG {
         }
 
         string IDescribable.GetSummary() {
-            return item.GetSummary(GetItemQuality());
+            return item.GetSummary(GetItemQuality(), item.ItemLevel);
         }
 
         string IDescribable.GetDescription() {
-            return item.GetDescription(GetItemQuality());
+            return item.GetDescription(GetItemQuality(), item.ItemLevel);
         }
     }
 

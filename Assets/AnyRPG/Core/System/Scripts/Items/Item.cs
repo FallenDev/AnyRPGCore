@@ -6,13 +6,14 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 namespace AnyRPG {
     /// <summary>
     /// Superclass for all items
     /// </summary>
     [CreateAssetMenu(fileName = "New Item", menuName = "AnyRPG/Inventory/Item")]
-    public class Item : DescribableResource, IRewardable, IMoveable, IUseable {
+    public class Item : DescribableResource, IRewardable {
 
         [Header("Item")]
 
@@ -31,11 +32,6 @@ namespace AnyRPG {
 
         [Header("Item Level")]
 
-        /*
-        [SerializeField]
-        protected ItemLevelProperties itemLevelProperties = new ItemLevelProperties();
-        */
-
         [Tooltip("If true, this item level will scale to match the character level")]
         [SerializeField]
         protected bool dynamicLevel = false;
@@ -43,8 +39,6 @@ namespace AnyRPG {
         [Tooltip("If true, and dynamic level is true, the item level will be frozen at the level it dropped at")]
         [SerializeField]
         protected bool freezeDropLevel = false;
-
-        protected int dropLevel = 1;
 
         [Tooltip("If dynamic level is true and this value is greater than zero, the item scaling will be capped at this level")]
         [SerializeField]
@@ -90,81 +84,48 @@ namespace AnyRPG {
 
         private List<CharacterClass> realCharacterClassRequirementList = new List<CharacterClass>();
 
-        // a reference to the real item quality
-        protected ItemQuality realItemQuality = null;
+        // a reference to the item quality
+        protected ItemQuality itemQualityRef = null;
 
         // a reference to the actual currency
         private Currency currency = null;
 
-        // A reference to the slot that this item is sitting on
-        private InventorySlot slot = null;
-
         // game manager references
-        protected CurrencyConverter currencyConverter = null;
         //protected InventoryManager inventoryManager = null;
         protected MessageFeedManager messageFeedManager = null;
         protected UIManager uIManager = null;
-        protected PlayerManager playerManager = null;
         protected SystemItemManager systemItemManager = null;
+        protected PlayerManager playerManager = null;
+        protected CurrencyConverter currencyConverter = null;
 
         public int MaximumStackSize { get => stackSize; set => stackSize = value; }
-        public InventorySlot Slot { get => slot; set => slot = value; }
-        public virtual float CoolDown { get => 0f; }
-        public virtual bool RequireOutOfCombat { get => false; }
-        public virtual bool RequireStealth { get => false; }
-
-
-        public int BuyPrice() {
-            return BuyPrice(realItemQuality);
-        }
-
-        public int BuyPrice(ItemQuality usedItemQuality) {
-            if (dynamicCurrencyAmount) {
-                //Debug.Log(DisplayName + ".Item.BuyPrice(" + (usedItemQuality == null ? "null" : usedItemQuality.DisplayName) + "): return: " + (int)(((pricePerLevel * GetItemLevel(playerManager.UnitController.CharacterStats.Level)) + basePrice) * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier)));
-                return (int)(((pricePerLevel * GetItemLevel(playerManager.UnitController.CharacterStats.Level)) + basePrice) * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier));
-            }
-            //Debug.Log(DisplayName + ".Item.BuyPrice(" + (usedItemQuality == null ? "null" : usedItemQuality.DisplayName) + "): return: " + (int)(basePrice * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier)));
-            return (int)(basePrice * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier));
-        }
-
+        public List<CharacterClass> CharacterClassRequirementList { get => realCharacterClassRequirementList; set => realCharacterClassRequirementList = value; }
+        public bool RandomItemQuality { get => randomItemQuality; set => randomItemQuality = value; }
+        public bool FreezeDropLevel { get => freezeDropLevel; set => freezeDropLevel = value; }
+        public string ItemQualityName { get => itemQuality; set => itemQuality = value; }
+        public bool DynamicLevel { get => dynamicLevel; set => dynamicLevel = value; }
+        public int LevelCap { get => levelCap; set => levelCap = value; }
+        public int ItemLevel { get => itemLevel; set => itemLevel = value; }
+        public int UseLevel { get => useLevel; set => useLevel = value; }
+        public bool DynamicCurrencyAmount { get => dynamicCurrencyAmount; set => dynamicCurrencyAmount = value; }
+        public int PricePerLevel { get => pricePerLevel; set => pricePerLevel = value; }
         public bool UniqueItem { get => uniqueItem; }
         public Currency Currency { get => currency; set => currency = value; }
-        public ItemQuality ItemQuality { get => realItemQuality; set => realItemQuality = value; }
-        public int GetItemLevel(int characterLevel) {
-            int returnLevel = (int)Mathf.Clamp(itemLevel, 1, Mathf.Infinity);
-
-            // frozen drop level overrides all other calculations
-            if (freezeDropLevel == true) {
-                return (int)Mathf.Clamp(dropLevel, 1, Mathf.Infinity);
-            }
-            if (dynamicLevel == true) {
-                returnLevel = (int)Mathf.Clamp(characterLevel, 1, (levelCap > 0 ? levelCap : Mathf.Infinity));
-            }
-
-            // item quality can override regular individual item scaling (example, heirlooms always scale)
-            if (ItemQuality == null) {
-                return returnLevel;
-            } else {
-                if (ItemQuality.DynamicItemLevel) {
-                    return (int)Mathf.Clamp(characterLevel, 1, (levelCap > 0 ? levelCap : Mathf.Infinity));
-                } else {
-                    return returnLevel;
-                }
-            }
-        }
+        public ItemQuality ItemQuality { get => itemQualityRef; set => itemQualityRef = value; }
+        public int BasePrice { get => basePrice; set => basePrice = value; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             //inventoryManager = systemGameManager.InventoryManager;
-            currencyConverter = systemGameManager.CurrencyConverter;
             uIManager = systemGameManager.UIManager;
             messageFeedManager = uIManager.MessageFeedManager;
-            playerManager = systemGameManager.PlayerManager;
             systemItemManager = systemGameManager.SystemItemManager;
+            playerManager = systemGameManager.PlayerManager;
+            currencyConverter = systemGameManager.CurrencyConverter;
         }
 
         public void GiveReward(UnitController sourceUnitController) {
-            Item newItem = systemItemManager.GetNewResource(ResourceName);
+            InstantiatedItem newItem = systemItemManager.GetNewInstantiatedItem(this, itemQualityRef);
             if (newItem != null) {
                 //Debug.Log("RewardButton.CompleteQuest(): newItem is not null, adding to inventory");
                 newItem.DropLevel = sourceUnitController.CharacterStats.Level;
@@ -176,192 +137,6 @@ namespace AnyRPG {
             // this is not actually checked anywhere, but may need to be changed in the future
             // if anything actually needs to query through IRewardable to see if the character has the item
             return false;
-        }
-
-        public virtual void UpdateChargeCount(ActionButton actionButton) {
-            //Debug.Log(DisplayName + ".Item.UpdateChargeCount()");
-            int chargeCount = playerManager.UnitController.CharacterInventoryManager.GetUseableCount(this);
-            uIManager.UpdateStackSize(actionButton, chargeCount, true);
-        }
-
-        public void UpdateTargetRange(ActionBarManager actionBarManager, ActionButton actionButton) {
-            // do nothing
-        }
-
-        public void AssignToActionButton(ActionButton actionButton) {
-            //Debug.Log("the useable is an item");
-            if (playerManager.UnitController.CharacterInventoryManager.FromSlot != null) {
-                // white, really?  this doesn't actually happen...
-                playerManager.UnitController.CharacterInventoryManager.FromSlot.Icon.color = Color.white;
-                playerManager.UnitController.CharacterInventoryManager.FromSlot = null;
-            } else {
-                //Debug.Log("ActionButton.SetUseable(): This must have come from another actionbar, not the inventory");
-            }
-            uIManager.SetItemBackground(this, actionButton.BackgroundImage, new Color32(0, 0, 0, 255));
-        }
-
-        public void AssignToHandScript(Image backgroundImage) {
-            //Debug.Log("the useable is an item");
-
-            uIManager.SetItemBackground(this, backgroundImage, new Color32(0, 0, 0, 255));
-        }
-
-        public virtual void UpdateActionButtonVisual(ActionButton actionButton) {
-            int count = playerManager.UnitController.CharacterInventoryManager.GetUseableCount(this);
-            // we have to do this to ensure we have a reference to the top item on the stack, otherwise we will try to use an item that has been used already
-            //if ((count == 0 && removeStaleActions) || count > 0) {
-            /*
-            if (count > 0) {
-                Useable = inventoryManager.GetUseable(Useable as IUseable);
-            }
-            */
-            uIManager.UpdateStackSize(actionButton, count, true);
-
-
-            if (count == 0) {
-                actionButton.EnableFullCoolDownIcon();
-            } else {
-
-                // check for ability cooldown here and only disable if no cooldown exists
-                if (!HadSpecialIcon(actionButton)) {
-                    actionButton.DisableCoolDownIcon();
-                }
-            }
-        }
-
-        public virtual bool HadSpecialIcon(ActionButton actionButton) {
-            return false;
-        }
-        /*
-        private int SellPrice() {
-            return SellPrice(realItemQuality);
-        }
-
-        private int SellPrice(ItemQuality usedItemQuality) {
-
-            if (Currency == null) {
-                // there was no sell currency so this item cannot be sold
-                return 0;
-            }
-
-            int sellPrice = 0;
-
-            if (dynamicCurrencyAmount) {
-                sellPrice = (pricePerLevel * GetItemLevel(playerManager.UnitController.CharacterStats.Level)) + basePrice;
-            } else {
-                sellPrice = basePrice;
-            }
-
-            if (sellPrice == 0) {
-                // the item had a currency, but no sell price was set so it cannot be sold
-                return 0;
-            }
-
-            // convert currency to base currency to prevent higher level currencies with a value of 1 from being divided
-            Currency currency = Currency;
-            CurrencyGroup currencyGroup = currencyConverter.FindCurrencyGroup(currency);
-            if (currencyGroup != null) {
-                sellPrice = currencyConverter.GetBaseCurrencyAmount(currency, sellPrice);
-                currency = currencyGroup.MyBaseCurrency;
-            }
-
-            sellPrice = (int)Mathf.Clamp(sellPrice * (usedItemQuality == null ? 1f : usedItemQuality.SellPriceMultiplier) * systemConfigurationManager.VendorPriceMultiplier, 1f, Mathf.Infinity);
-
-            return sellPrice;
-        }
-        */
-
-        /// <summary>
-        /// return the sell price in the base currency
-        /// </summary>
-        /// <returns></returns>
-        public KeyValuePair<Currency, int> GetSellPrice() {
-            Currency currency = Currency;
-
-            if (currency == null) {
-                // there was no sell currency so this item cannot be sold
-                return new KeyValuePair<Currency, int>(currency, 0);
-            }
-
-            int sellPrice = 0;
-
-            if (dynamicCurrencyAmount) {
-                sellPrice = (pricePerLevel * GetItemLevel(playerManager.UnitController.CharacterStats.Level)) + basePrice;
-            } else {
-                sellPrice = basePrice;
-            }
-
-            if (sellPrice == 0) {
-                // the item had a currency, but no sell price was set so it cannot be sold
-                return new KeyValuePair<Currency, int>(currency, 0);
-            }
-
-            // convert currency to base currency to prevent higher level currencies with a value of 1 from not being divided
-            CurrencyGroup currencyGroup = currencyConverter.FindCurrencyGroup(currency);
-            if (currencyGroup != null) {
-                sellPrice = currencyConverter.GetBaseCurrencyAmount(currency, sellPrice);
-                currency = currencyGroup.MyBaseCurrency;
-            }
-
-            sellPrice = (int)Mathf.Clamp(sellPrice * (realItemQuality == null ? 1f : realItemQuality.SellPriceMultiplier) * systemConfigurationManager.VendorPriceMultiplier, 1f, Mathf.Infinity);
-
-            return new KeyValuePair<Currency, int>(currency, sellPrice);
-        }
-
-        public List<CharacterClass> CharacterClassRequirementList { get => realCharacterClassRequirementList; set => realCharacterClassRequirementList = value; }
-        public bool RandomItemQuality { get => randomItemQuality; set => randomItemQuality = value; }
-        public bool FreezeDropLevel { get => freezeDropLevel; set => freezeDropLevel = value; }
-        public int DropLevel {
-            get => dropLevel;
-            set {
-                dropLevel = (int)Mathf.Clamp(Mathf.Min(value, (levelCap > 0 ? levelCap : value)), 1, Mathf.Infinity);
-            }
-        }
-        public string ItemQualityName { get => itemQuality; set => itemQuality = value; }
-        public bool DynamicLevel { get => dynamicLevel; set => dynamicLevel = value; }
-        public int LevelCap { get => levelCap; set => levelCap = value; }
-        public int ItemLevel { set => itemLevel = value; }
-        public int UseLevel { get => useLevel; set => useLevel = value; }
-
-        public IUseable GetFactoryUseable() {
-            return systemDataFactory.GetResource<Item>(ResourceName);
-        }
-
-        public bool ActionButtonUse(UnitController sourceUnitController) {
-            List<Item> itemList = sourceUnitController.CharacterInventoryManager?.GetItems(ResourceName, 1);
-            if (itemList == null || itemList.Count == 0) {
-                return false;
-            }
-            Item newItem = itemList[0];
-            if (newItem == null) {
-                return false;
-            }
-            return newItem.Use(sourceUnitController);
-        }
-
-        public virtual bool IsUseableStale(UnitController sourceUnitController) {
-            // items are never stale
-            // they should stay on action buttons in case the player picks up more
-            return false;
-        }
-
-        public virtual Coroutine ChooseMonitorCoroutine(ActionButton actionButton) {
-            return null;
-        }
-
-        public virtual bool Use(UnitController sourceUnitController) {
-            //Debug.Log("Base item class: using " + itemName);
-            if (!CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
-                messageFeedManager.WriteMessage(sourceUnitController, "You are not the right character class to use " + DisplayName);
-                return false;
-            }
-            //if (GetItemLevel(playerManager.UnitController.CharacterStats.Level) > playerManager.UnitController.CharacterStats.Level) {
-            if (useLevel > sourceUnitController.CharacterStats.Level) {
-                messageFeedManager.WriteMessage(sourceUnitController, "You are too low level to use " + DisplayName);
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -395,31 +170,22 @@ namespace AnyRPG {
             return true;
         }
 
-        /// <summary>
-        /// removes the item from the inventory system
-        /// </summary>
-        public void Remove() {
-            //Debug.Log("Item " + GetInstanceID().ToString() + " is about to ask the slot to remove itself");
-            if (Slot != null) {
-                //Debug.Log("The item's myslot is not null");
-                Slot.RemoveItem(this);
-                Slot = null;
-            } else {
-                //Debug.Log("The item's myslot is null!!!");
-            }
-        }
-
-        public virtual string GetSummary(ItemQuality usedItemQuality) {
-
-            return string.Format("<color={0}>{1}</color>{2}", QualityColor.GetQualityColorString(usedItemQuality), DisplayName, GetDescription(usedItemQuality));
-        }
-
         public override string GetSummary() {
             //Debug.Log(DisplayName + ".Item.GetDescription()");
-            return GetSummary(realItemQuality);
+            return GetSummary(itemQualityRef, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }
 
-        public virtual string GetDescription(ItemQuality usedItemQuality) {
+        public virtual string GetSummary(ItemQuality usedItemQuality, int usedItemLevel) {
+
+            return string.Format("<color={0}>{1}</color>{2}", QualityColor.GetQualityColorString(usedItemQuality), DisplayName, GetDescription(usedItemQuality, usedItemLevel));
+        }
+
+        public override string GetDescription() {
+            //Debug.Log(DisplayName + ".Item.GetDescription()");
+            return GetDescription(itemQualityRef, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
+        }
+
+        public virtual string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             string descriptionString = base.GetDescription();
             if (descriptionString != string.Empty) {
                 descriptionString = string.Format("\n\n<color=yellow><size=14>{0}</size></color>", descriptionString);
@@ -438,18 +204,59 @@ namespace AnyRPG {
             return string.Format("{0}", descriptionString);
         }
 
-        public override string GetDescription() {
-            //Debug.Log(DisplayName + ".Item.GetDescription()");
-            return GetDescription(realItemQuality);
+        public virtual InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            return new InstantiatedItem(systemGameManager, itemId, item, usedItemQuality);
         }
 
-        public virtual void InitializeNewItem(ItemQuality usedItemQuality = null) {
+        /*
+        public bool Use(UnitController sourceUnitController) {
+            return ActionButtonUse(sourceUnitController);
+        }
+        */
+
+        public virtual bool HadSpecialIcon(ActionButton actionButton) {
+            return false;
+        }
+
+        public int BuyPrice(UnitController sourceUnitController) {
+            return BuyPrice(sourceUnitController, itemQualityRef);
+        }
+
+        public int BuyPrice(UnitController sourceUnitController, ItemQuality usedItemQuality) {
+            if (dynamicCurrencyAmount) {
+                //Debug.Log(DisplayName + ".Item.BuyPrice(" + (usedItemQuality == null ? "null" : usedItemQuality.DisplayName) + "): return: " + (int)(((pricePerLevel * GetItemLevel(playerManager.UnitController.CharacterStats.Level)) + basePrice) * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier)));
+                return (int)(((pricePerLevel * GetItemLevel(sourceUnitController.CharacterStats.Level)) + basePrice) * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier));
+            }
+            //Debug.Log(DisplayName + ".Item.BuyPrice(" + (usedItemQuality == null ? "null" : usedItemQuality.DisplayName) + "): return: " + (int)(basePrice * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier)));
+            return (int)(basePrice * (usedItemQuality == null ? 1 : usedItemQuality.BuyPriceMultiplier));
+        }
+
+        public int GetItemLevel(int characterLevel) {
+            int returnLevel = (int)Mathf.Clamp(ItemLevel, 1, Mathf.Infinity);
+
+            if (dynamicLevel == true) {
+                returnLevel = (int)Mathf.Clamp(characterLevel, 1, (levelCap > 0 ? levelCap : Mathf.Infinity));
+            }
+
+            // item quality can override regular individual item scaling (example, heirlooms always scale)
+            if (itemQualityRef == null) {
+                return returnLevel;
+            } else {
+                if (itemQualityRef.DynamicItemLevel) {
+                    return (int)Mathf.Clamp(characterLevel, 1, (levelCap > 0 ? levelCap : Mathf.Infinity));
+                } else {
+                    return returnLevel;
+                }
+            }
+        }
+
+        public virtual void InitializeNewItem(InstantiatedItem instantiatedItem, ItemQuality usedItemQuality) {
             //Debug.Log(DisplayName + ".Item.InitializeNewItem()");
 
             // for now items that have item quality set by non random means (vendor overrides) will not change their display name
             if (usedItemQuality != null) {
-                realItemQuality = usedItemQuality;
-                displayName = DisplayName;
+                instantiatedItem.ItemQuality = usedItemQuality;
+                instantiatedItem.DisplayName = DisplayName;
                 return;
             }
 
@@ -488,16 +295,54 @@ namespace AnyRPG {
                         //rnd -= validItemQualities[i].RandomWeight;
                     }
 
-                    realItemQuality = validItemQualities[usedIndex];
+                    instantiatedItem.ItemQuality = validItemQualities[usedIndex];
 
-                    if (realItemQuality.RandomQualityPrefix != null && realItemQuality.RandomQualityPrefix != string.Empty) {
+                    if (instantiatedItem.ItemQuality.RandomQualityPrefix != null && instantiatedItem.ItemQuality.RandomQualityPrefix != string.Empty) {
                         //Debug.Log(DisplayName + ".Item.InitializeNewItem() setting displayName: " + realItemQuality.RandomQualityPrefix + " " + DisplayName);
-                        displayName = realItemQuality.RandomQualityPrefix + " " + DisplayName;
+                        displayName = $"{instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}";
                         //Debug.Log(DisplayName + ".Item.InitializeNewItem() setting displayName: " + displayName);
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// return the sell price in the base currency
+        /// </summary>
+        /// <returns></returns>
+        public KeyValuePair<Currency, int> GetSellPrice(InstantiatedItem instantiatedItem, UnitController sourceUnitController) {
+            //Currency currency = Currency;
+
+            if (currency == null) {
+                // there was no sell currency so this item cannot be sold
+                return new KeyValuePair<Currency, int>(currency, 0);
+            }
+
+            int sellPrice = 0;
+
+            if (dynamicCurrencyAmount) {
+                sellPrice = (pricePerLevel * instantiatedItem.GetItemLevel(sourceUnitController.CharacterStats.Level)) + basePrice;
+            } else {
+                sellPrice = basePrice;
+            }
+
+            if (sellPrice == 0) {
+                // the item had a currency, but no sell price was set so it cannot be sold
+                return new KeyValuePair<Currency, int>(currency, 0);
+            }
+
+            // convert currency to base currency to prevent higher level currencies with a value of 1 from not being divided
+            CurrencyGroup currencyGroup = currencyConverter.FindCurrencyGroup(currency);
+            if (currencyGroup != null) {
+                sellPrice = currencyConverter.GetBaseCurrencyAmount(currency, sellPrice);
+                currency = currencyGroup.MyBaseCurrency;
+            }
+
+            sellPrice = (int)Mathf.Clamp(sellPrice * (itemQuality == null ? 1f : instantiatedItem.ItemQuality.SellPriceMultiplier) * systemConfigurationManager.VendorPriceMultiplier, 1f, Mathf.Infinity);
+
+            return new KeyValuePair<Currency, int>(currency, sellPrice);
+        }
+
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);
@@ -511,11 +356,11 @@ namespace AnyRPG {
                 }
             }
 
-            realItemQuality = null;
+            itemQualityRef = null;
             if (itemQuality != null && itemQuality != string.Empty) {
                 ItemQuality tmpItemQuality = systemDataFactory.GetResource<ItemQuality>(itemQuality);
                 if (tmpItemQuality != null) {
-                    realItemQuality = tmpItemQuality;
+                    itemQualityRef = tmpItemQuality;
                 } else {
                     Debug.LogError("SystemSkillManager.SetupScriptableObjects(): Could not find item quality : " + itemQuality + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }

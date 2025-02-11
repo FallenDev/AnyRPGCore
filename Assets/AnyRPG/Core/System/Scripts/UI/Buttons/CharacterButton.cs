@@ -21,7 +21,7 @@ namespace AnyRPG {
         /// <summary>
         /// A reference to the equipment that sits on this slot
         /// </summary>
-        protected Equipment equippedEquipment = null;
+        protected InstantiatedEquipment equippedEquipment = null;
 
         [SerializeField]
         protected Image icon = null;
@@ -95,9 +95,9 @@ namespace AnyRPG {
         public override void OnPointerClick(PointerEventData eventData) {
             base.OnPointerClick(eventData);
             if (eventData.button == PointerEventData.InputButton.Left) {
-                if (handScript.Moveable is Equipment) {
-                    Equipment tmp = (Equipment)handScript.Moveable;
-                    if (equipmentSlotProfile.EquipmentSlotTypeList.Contains(tmp.EquipmentSlotType)) {
+                if (handScript.Moveable is InstantiatedEquipment) {
+                    InstantiatedEquipment tmp = (InstantiatedEquipment)handScript.Moveable;
+                    if (equipmentSlotProfile.EquipmentSlotTypeList.Contains(tmp.Equipment.EquipmentSlotType)) {
                         // unequip any existing item in this slot
                         playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile);
                         // equip new item to this slot
@@ -132,7 +132,7 @@ namespace AnyRPG {
         public void UpdateVisual(bool resetDisplay = true) {
             //Debug.Log($"{gameObject.name}CharacterButton.UpdateVisual()");
 
-            Equipment tmpEquipment = equippedEquipment;
+            InstantiatedEquipment tmpEquipment = equippedEquipment;
             if (equipmentSlotProfile != null && playerManager.UnitController != null && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.ContainsKey(equipmentSlotProfile)) {
                 //Debug.Log($"{gameObject.name}CharacterButton.UpdateVisual(): equipmentslotprofile was not null and player has quipment in this slot");
                 equippedEquipment = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
@@ -167,7 +167,7 @@ namespace AnyRPG {
                 icon.color = Color.white;
                 icon.sprite = equippedEquipment.Icon;
 
-                uIManager.SetItemBackground(equippedEquipment, emptySlotImage, fullBackGroundColor);
+                uIManager.SetItemBackground(equippedEquipment.Equipment, emptySlotImage, fullBackGroundColor);
             }
 
             if (playerManager.PlayerUnitSpawned == false) {

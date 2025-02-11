@@ -214,7 +214,7 @@ namespace AnyRPG {
             // nothing to do here for now
         }
 
-        public override void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        public override void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             //Debug.Log($"{unitController.gameObject.name}.SwappableMeshModelController.EquipItemModels()");
 
             base.EquipItemModels(equipmentSlotProfile, equipment);
@@ -223,7 +223,7 @@ namespace AnyRPG {
                 return;
             }
 
-            EquipItemModel(equipment.GetEquipmentModel<SwappableMeshEquipmentModel>());
+            EquipItemModel(equipment.Equipment.GetEquipmentModel<SwappableMeshEquipmentModel>());
 
         }
 
@@ -239,7 +239,7 @@ namespace AnyRPG {
 
         protected override void UnequipItemModels(EquipmentSlotProfile equipmentSlotProfile) {
             if (equippedEquipment[equipmentSlotProfile] != null) {
-                UnequipItemModel(equippedEquipment[equipmentSlotProfile].GetEquipmentModel<SwappableMeshEquipmentModel>());
+                UnequipItemModel(equippedEquipment[equipmentSlotProfile].Equipment.GetEquipmentModel<SwappableMeshEquipmentModel>());
             }
             
             base.UnequipItemModels(equipmentSlotProfile);

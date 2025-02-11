@@ -70,6 +70,7 @@ namespace AnyRPG {
         private CharacterCreatorManager characterCreatorManager = null;
         private UIManager uIManager = null;
         private LevelManager levelManager = null;
+        private SystemItemManager systemItemManager = null;
 
         public Faction Faction { get => faction; }
         public CharacterRace CharacterRace { get => characterRace; set => characterRace = value; }
@@ -77,7 +78,7 @@ namespace AnyRPG {
         public ClassSpecialization ClassSpecialization { get => classSpecialization; set => classSpecialization = value; }
         public UnitProfile UnitProfile { get => unitProfile; }
         public PlayerCharacterSaveData PlayerCharacterSaveData { get => playerCharacterSaveData; set => playerCharacterSaveData = value; }
-        public Dictionary<EquipmentSlotProfile, Equipment> EquipmentList { get => equipmentManager.CurrentEquipment; }
+        public Dictionary<EquipmentSlotProfile, InstantiatedEquipment> EquipmentList { get => equipmentManager.CurrentEquipment; }
         public UnitType UnitType { get => unitType; set => unitType = value; }
         public CapabilityConsumerProcessor CapabilityConsumerProcessor { get => capabilityConsumerProcessor; }
         public string PlayerName { get => playerName; set => playerName = value; }
@@ -90,12 +91,6 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            saveManager = systemGameManager.SaveManager;
-            systemDataFactory = systemGameManager.SystemDataFactory;
-            characterCreatorManager = systemGameManager.CharacterCreatorManager;
-            uIManager = systemGameManager.UIManager;
-            levelManager = systemGameManager.LevelManager;
-
             equipmentManager = new EquipmentManager(systemGameManager);
             if (systemConfigurationManager.DefaultPlayerName != string.Empty &&
                 systemConfigurationManager.PlayerNameSource == PlayerNameSource.DefaultPlayerName) {
@@ -103,6 +98,17 @@ namespace AnyRPG {
             }
 
             GetDefaultMaterials();
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            saveManager = systemGameManager.SaveManager;
+            systemDataFactory = systemGameManager.SystemDataFactory;
+            characterCreatorManager = systemGameManager.CharacterCreatorManager;
+            uIManager = systemGameManager.UIManager;
+            levelManager = systemGameManager.LevelManager;
+            systemItemManager = systemGameManager.SystemItemManager;
         }
 
         public void NewGame() {
@@ -651,7 +657,7 @@ namespace AnyRPG {
                         equipmentList.Add(equipment.EquipmentSlotType, equipment);
                     }
                     */
-                    equipmentManager.EquipEquipment(equipment);
+                    equipmentManager.EquipEquipment(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment);
                 }
             }
 
@@ -664,7 +670,7 @@ namespace AnyRPG {
                         equipmentList.Add(equipment.EquipmentSlotType, equipment);
                     }
                     */
-                    equipmentManager.EquipEquipment(equipment);
+                    equipmentManager.EquipEquipment(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment);
                 }
                 if (systemConfigurationManager.NewGameSpecialization == true && classSpecialization != null) {
                     foreach (Equipment equipment in classSpecialization.EquipmentList) {
@@ -675,7 +681,7 @@ namespace AnyRPG {
                             equipmentList.Add(equipment.EquipmentSlotType, equipment);
                         }
                         */
-                        equipmentManager.EquipEquipment(equipment);
+                        equipmentManager.EquipEquipment(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment);
                     }
                 }
             }
@@ -689,7 +695,7 @@ namespace AnyRPG {
                         equipmentList.Add(equipment.EquipmentSlotType, equipment);
                     }
                     */
-                    equipmentManager.EquipEquipment(equipment);
+                    equipmentManager.EquipEquipment(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment);
                 }
             }
 
@@ -707,7 +713,7 @@ namespace AnyRPG {
                 return;
             }
             playerCharacterSaveData.SaveData.equipmentSaveData = new List<EquipmentSaveData>();
-            foreach (Equipment equipment in equipmentManager.CurrentEquipment.Values) {
+            foreach (InstantiatedEquipment equipment in equipmentManager.CurrentEquipment.Values) {
                 EquipmentSaveData tmpSaveData = new EquipmentSaveData();
                 tmpSaveData.EquipmentName = (equipment == null ? string.Empty : equipment.ResourceName);
                 tmpSaveData.DisplayName = (equipment == null ? string.Empty : equipment.DisplayName);

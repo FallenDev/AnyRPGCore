@@ -428,7 +428,7 @@ namespace AnyRPG {
             }
 
             //Debug.Log("ActionButton.UpdateVisual(): about to get useable count");
-            Useable.UpdateChargeCount(this);
+            UpdateChargeCount();
             Useable.UpdateActionButtonVisual(this);
 
             // if this object is disabled, then there is no reason to process pointer enter
@@ -439,6 +439,10 @@ namespace AnyRPG {
             if (UIManager.MouseInRect(Icon.rectTransform)) {
                 ProcessOnPointerEnter();
             }
+        }
+
+        public void UpdateChargeCount() {
+            uIManager.UpdateStackSize(this, Useable.GetChargeCount(), true);
         }
 
         public void EnableFullCoolDownIcon() {

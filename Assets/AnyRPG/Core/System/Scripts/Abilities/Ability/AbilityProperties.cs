@@ -417,6 +417,7 @@ namespace AnyRPG {
         public bool UseAnimationCastTime { get => useAnimationCastTime; set => useAnimationCastTime = value; }
         public bool RequireStealth { get => requireStealth; set => requireStealth = value; }
         public bool LoopAudio { get => loopAudio; set => loopAudio = value; }
+        public bool AlwaysDisplayCount { get => false; }
 
         /*
         public void GetBaseAbilityProperties(BaseAbility effect) {
@@ -510,8 +511,8 @@ namespace AnyRPG {
             return systemDataFactory.GetResource<Ability>(DisplayName).AbilityProperties;
         }
 
-        public virtual void UpdateChargeCount(ActionButton actionButton) {
-            uIManager.UpdateStackSize(actionButton, 0, false);
+        public virtual int GetChargeCount() {
+            return 0;
         }
 
         public virtual void ProcessUnLearnAbility(CharacterAbilityManager abilityManager) {
@@ -604,7 +605,7 @@ namespace AnyRPG {
                     //Debug.Log("ActionButton.UpdateVisual(): updating auto-attack ability");
                     if (equipmentSlotProfile.MainWeaponSlot == true
                         && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile] != null
-                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile] is Weapon) {
+                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Equipment is Weapon) {
                         if (actionButton.Icon.sprite != playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon) {
                             actionButton.Icon.sprite = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon;
                             break;

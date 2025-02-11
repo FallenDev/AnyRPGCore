@@ -53,10 +53,10 @@ namespace AnyRPG {
 
         public Image Image { get => icon; set => icon = value; }
 
-        public Sprite Icon { get => (BagNode.Bag != null ? BagNode.Bag.Icon : null); }
-        public string ResourceName { get => (BagNode.Bag != null ? BagNode.Bag.ResourceName : null); }
-        public string DisplayName { get => (BagNode.Bag != null ? BagNode.Bag.DisplayName : null); }
-        public string Description { get => (BagNode.Bag != null ? BagNode.Bag.Description : null); }
+        public Sprite Icon { get => (BagNode.InstantiatedBag != null ? BagNode.InstantiatedBag.Icon : null); }
+        public string ResourceName { get => (BagNode.InstantiatedBag != null ? BagNode.InstantiatedBag.ResourceName : null); }
+        public string DisplayName { get => (BagNode.InstantiatedBag != null ? BagNode.InstantiatedBag.DisplayName : null); }
+        public string Description { get => (BagNode.InstantiatedBag != null ? BagNode.InstantiatedBag.Description : null); }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -79,9 +79,9 @@ namespace AnyRPG {
             this.bagPanel = bagPanel;
         }
 
-        public void HandleAddBag(Bag bag) {
+        public void HandleAddBag(InstantiatedBag instantiatedBag) {
             //Debug.Log($"{gameObject.name}.BagButton.HandleAddBag()");
-            icon.sprite = bag.Icon;
+            icon.sprite = instantiatedBag.Icon;
             icon.color = Color.white;
             SetBackGroundColor();
         }
@@ -131,12 +131,12 @@ namespace AnyRPG {
 
             if (eventData.button == PointerEventData.InputButton.Left) {
                 //Debug.Log("BagButton.OnPointerClick() LEFT CLICK DETECTED");
-                if (handScript.Moveable != null && handScript.Moveable is Bag && (playerManager.UnitController.CharacterInventoryManager.FromSlot != null || (handScript.Moveable as Bag).BagNode != null)) {
-                    if (bagNode.Bag != null) {
+                if (handScript.Moveable != null && handScript.Moveable is InstantiatedBag && (playerManager.UnitController.CharacterInventoryManager.FromSlot != null || (handScript.Moveable as InstantiatedBag).BagNode != null)) {
+                    if (bagNode.InstantiatedBag != null) {
                         // bag was moved from a bag bar slot to another bag bar slot with a bag in it, swap bags
-                        playerManager.UnitController.CharacterInventoryManager.SwapBags(BagNode.Bag, handScript.Moveable as Bag);
+                        playerManager.UnitController.CharacterInventoryManager.SwapBags(BagNode.InstantiatedBag, handScript.Moveable as InstantiatedBag);
                     } else {
-                        Bag tmp = (Bag)handScript.Moveable;
+                        InstantiatedBag tmp = (InstantiatedBag)handScript.Moveable;
                         if (tmp.BagNode != null) {
                             // bag was moved from a bag bar slot, to an empty bag bar slot, ensure there is enough space to remove bag from old slot before dropping in this slot
                             if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount(tmp.BagNode.IsBankNode) - tmp.Slots >= 0) {
@@ -158,22 +158,22 @@ namespace AnyRPG {
                 } else if (Input.GetKey(KeyCode.LeftShift)) {
                     //Debug.Log("BagButton.OnPointerClick() LEFT CLICK DETECTED WITH SHIFT KEY on bagNode.mybag: " + bagNode.MyBag.GetInstanceID());
                     //Debug.Log("InventoryManager.RemoveBag(): Found matching bag in bagNode: " + bagNode.MyBag.GetInstanceID() + "; " + bag.GetInstanceID());
-                    handScript.TakeMoveable(BagNode.Bag);
+                    handScript.TakeMoveable(BagNode.InstantiatedBag);
                 }
             }
         }
 
         public string GetSummary() {
-            if (BagNode?.Bag != null) {
-                return BagNode.Bag.GetSummary() + "\n\n<color=#00FFFF>Shift + click to remove</color>";
+            if (BagNode?.InstantiatedBag != null) {
+                return BagNode.InstantiatedBag.GetSummary() + "\n\n<color=#00FFFF>Shift + click to remove</color>";
             }
             // cyan
             return string.Format("<color=#00FFFF>Empty Bag Slot</color>\n{0}", GetDescription());
         }
 
         public string GetDescription() {
-            if (BagNode?.Bag != null) {
-                return BagNode.Bag.GetDescription();
+            if (BagNode?.InstantiatedBag != null) {
+                return BagNode.InstantiatedBag.GetDescription();
             }
             return "Place a bag in this slot to expand your storage";
         }
@@ -202,7 +202,7 @@ namespace AnyRPG {
         }
 
         private void ShowGamepadTooltip() {
-            if (bagNode?.Bag != null) {
+            if (bagNode?.InstantiatedBag != null) {
                 uIManager.ShowGamepadTooltip((bagPanel.ContentArea as RectTransform), transform, this, "Sell Price: ");
                 bagPanel.SetControllerHints("Unequip", "", "", "", "", "");
             } else {
@@ -221,13 +221,13 @@ namespace AnyRPG {
 
         public override void Accept() {
             base.Accept();
-            if (bagNode?.Bag == null) {
+            if (bagNode?.InstantiatedBag == null) {
                 return;
             }
-            if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount((bagPanel is BankPanel)) - bagNode.Bag.Slots > 0) {
+            if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount((bagPanel is BankPanel)) - bagNode.InstantiatedBag.Slots > 0) {
                 //Debug.Log("SlotScript.HandleLeftClick(): We are trying to drop a bag into the inventory. There is enough empty space.");
-                playerManager.UnitController.CharacterInventoryManager.AddItem(bagNode.Bag, (bagPanel is BankPanel));
-                playerManager.UnitController.CharacterInventoryManager.RemoveBag(bagNode.Bag);
+                playerManager.UnitController.CharacterInventoryManager.AddItem(bagNode.InstantiatedBag, (bagPanel is BankPanel));
+                playerManager.UnitController.CharacterInventoryManager.RemoveBag(bagNode.InstantiatedBag);
                 ShowGamepadTooltip();
             } else {
                 messageFeedManager.WriteMessage("Not enough free inventory slots");

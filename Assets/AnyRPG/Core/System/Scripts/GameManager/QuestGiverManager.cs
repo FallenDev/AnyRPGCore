@@ -32,7 +32,7 @@ namespace AnyRPG {
         public List<Quest> GetAvailableQuestList(UnitController sourceUnitController) {
             List<Quest> returnList = new List<Quest>();
 
-            foreach (QuestNode questNode in questGiver.Props.Quests) {
+            foreach (QuestNode questNode in questGiver.QuestGiverProps.Quests) {
                 if (!sourceUnitController.CharacterQuestLog.HasQuest(questNode.Quest.ResourceName)) {
                     returnList.Add(questNode.Quest);
                 }

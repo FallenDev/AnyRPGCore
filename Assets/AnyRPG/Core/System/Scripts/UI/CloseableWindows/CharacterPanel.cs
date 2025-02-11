@@ -186,7 +186,7 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleEquipmentChanged(Equipment newEquipment, Equipment oldEquipment) {
+        public void HandleEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
             //Debug.Log("CharacterPanel.HandleEquipmentChanged(" + (newEquipment == null ? "null" : newEquipment.DisplayName) + ", " + (oldEquipment == null ? "null" : oldEquipment.DisplayName) + ")");
             if (uIManager != null && uIManager.characterPanelWindow != null && uIManager.characterPanelWindow.IsOpen) {
 

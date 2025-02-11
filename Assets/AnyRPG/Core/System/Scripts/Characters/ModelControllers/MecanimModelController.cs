@@ -29,7 +29,7 @@ namespace AnyRPG {
         private Dictionary<EquipmentSlotProfile, Dictionary<AttachmentNode, GameObject>> currentEquipmentPhysicalObjects = new Dictionary<EquipmentSlotProfile, Dictionary<AttachmentNode, GameObject>>();
 
         // track the equipment that is equipped
-        private Dictionary<EquipmentSlotProfile, Equipment> equippedEquipment = new Dictionary<EquipmentSlotProfile, Equipment>();
+        private Dictionary<EquipmentSlotProfile, InstantiatedEquipment> equippedEquipment = new Dictionary<EquipmentSlotProfile, InstantiatedEquipment>();
 
         public MecanimModelController(UnitController unitController, UnitModelController unitModelController, SystemGameManager systemGameManager) {
             this.unitController = unitController;
@@ -58,7 +58,7 @@ namespace AnyRPG {
             this.attachmentProfile = attachmentProfile;
         }
 
-        private void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        private void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.EquipItemModels(" + equipmentSlotProfile.DisplayName + ", " + (equipment == null ? "null" : equipment.DisplayName) +")");
 
             SpawnEquipmentObjects(equipmentSlotProfile, equipment);
@@ -68,18 +68,18 @@ namespace AnyRPG {
             }
         }
 
-        private void SpawnEquipmentObjects(EquipmentSlotProfile equipmentSlotProfile, Equipment newEquipment) {
+        private void SpawnEquipmentObjects(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment newEquipment) {
             //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.SpawnEquipmentObjects({equipmentSlotProfile.DisplayName}, {(newEquipment == null ? "null" : newEquipment.DisplayName)})");
 
             if (newEquipment == null || equipmentSlotProfile == null) {
                 return;
             }
 
-            SpawnEquipmentObjects(equipmentSlotProfile, newEquipment, newEquipment.GetEquipmentModel<PrefabEquipmentModel>());
+            SpawnEquipmentObjects(equipmentSlotProfile, newEquipment, newEquipment.Equipment.GetEquipmentModel<PrefabEquipmentModel>());
             equippedEquipment[equipmentSlotProfile] = newEquipment;
         }
 
-        private void SpawnEquipmentObjects(EquipmentSlotProfile equipmentSlotProfile, Equipment newEquipment, PrefabEquipmentModel prefabEquipmentModel) {
+        private void SpawnEquipmentObjects(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment newEquipment, PrefabEquipmentModel prefabEquipmentModel) {
             if (prefabEquipmentModel == null) {
                 // no prefab model for this equipment
                 return;
@@ -97,7 +97,7 @@ namespace AnyRPG {
             }
         }
 
-        private Dictionary<AttachmentNode, GameObject> SpawnHoldableObjects(EquipmentSlotProfile equipmentSlotProfile, Equipment newEquipment, PrefabEquipmentModel prefabEquipmentModel) {
+        private Dictionary<AttachmentNode, GameObject> SpawnHoldableObjects(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment newEquipment, PrefabEquipmentModel prefabEquipmentModel) {
 
             Dictionary<AttachmentNode, GameObject> holdableObjects = new Dictionary<AttachmentNode, GameObject>();
 
@@ -332,7 +332,7 @@ namespace AnyRPG {
             }
         }
 
-        private Equipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
+        private InstantiatedEquipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
             
             if (unitModelController.SuppressEquipment == true) {
                 return null;
@@ -356,7 +356,7 @@ namespace AnyRPG {
             }
         }
 
-        private void RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        private void RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildSlotAppearance(" + equipmentSlotProfile.ResourceName + ", " + (equipment == null ? "null" : equipment.ResourceName) + ")");
 
             if (equipment == equippedEquipment[equipmentSlotProfile]) {

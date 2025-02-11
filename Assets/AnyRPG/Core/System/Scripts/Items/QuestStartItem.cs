@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "QuestStartItem", menuName = "AnyRPG/Inventory/Items/QuestStartItem", order = 1)]
-    public class QuestStartItem : Item, IUseable, IQuestGiver {
+    public class QuestStartItem : Item {
 
         [Header("Quests")]
 
@@ -14,35 +14,13 @@ namespace AnyRPG {
 
         private QuestGiverProps questGiverProps = new QuestGiverProps();
 
-        public Interactable Interactable { get => null; }
-        public InteractableOptionComponent InteractableOptionComponent { get => null; }
+        public QuestGiverProps QuestGiverProps { get => questGiverProps; set => questGiverProps = value; }
 
-        public QuestGiverProps Props { get => questGiverProps; set => questGiverProps = value; }
-
-        public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log(DisplayName + ".QuestStartItem.Use()");
-            // base is currently empty, so doesn't matter if we call it without checking anything
-            bool returnValue = base.Use(sourceUnitController);
-            if (returnValue == false) {
-                return false;
+        public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            if ((item is QuestStartItem) == false) {
+                return null;
             }
-            if (questGiverProps.Quests != null) {
-                if (sourceUnitController.CharacterQuestLog.HasQuest(questGiverProps.Quests[0].Quest.ResourceName)) {
-                    messageFeedManager.WriteMessage(sourceUnitController, "You are already on that quest");
-                } else if (questGiverProps.Quests[0].Quest.TurnedIn(sourceUnitController) == true && questGiverProps.Quests[0].Quest.RepeatableQuest == false) {
-                    messageFeedManager.WriteMessage(sourceUnitController, "You have already completed that quest");
-                } else {
-                    //Debug.Log(DisplayName + ".QuestStartItem.Use(): showing quests");
-                    //Debug.Log("QuestStartItem.Use(): opening questgiver window");
-                    if (uIManager.questGiverWindow.IsOpen) {
-                        // safety to prevent deletion
-                        return false;
-                    }
-                    //OpenQuestGiverWindow();
-                    sourceUnitController.CharacterQuestLog.ShowQuestGiverDescription(Props.Quests[0].Quest, this);
-                }
-            }
-            return returnValue;
+            return new InstantiatedQuestStartItem(systemGameManager, itemId, item as QuestStartItem, usedItemQuality);
         }
 
         public bool QuestRequirementsAreMet(UnitController sourceUnitController) {
@@ -81,54 +59,8 @@ namespace AnyRPG {
             return base.RequirementsAreMet(sourceUnitController);
         }
 
-        public void HandleAcceptQuest() {
-            //Debug.Log(DisplayName + ".QuestStartItem.HandleAcceptQuest()");
-            Remove();
-        }
-
-        public void HandleCompleteQuest() {
-            //Debug.Log(DisplayName + ".QuestStartItem.HandleCompleteQuest()");
-            Remove();
-        }
-
-        public bool Interact(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
-            // should not need to be used unless a quest item has more than 1 quest, but here for compatibility with IQuestGiver
-            Use(sourceUnitController);
-            return true;
-        }
-
-        /*
-         * now handled through questLog
-        public void OpenQuestGiverWindow() {
-            //Debug.Log(DisplayName + ".QuestStartItem.OpenQuestGiverWindow()");
-            if (!uIManager.questGiverWindow.IsOpen) {
-                //Debug.Log(source + " interacting with " + gameObject.name);
-                //uIManager.questGiverWindow.MyCloseableWindowContents.OnOpenWindowHandler += InitWindow;
-                uIManager.questGiverWindow.OpenWindow();
-            }
-        }
-        */
-
-        public void UpdateQuestStatus(UnitController sourceUnitController) {
-            //Debug.Log(DisplayName + ".QuestStartItem.UpdateQuestStatus()");
-            // do nothing because we don't have an indicator over our head or a minimap icon
-        }
-
-        public override string GetDescription(ItemQuality usedItemQuality) {
-            return base.GetDescription(usedItemQuality) + string.Format("\n<color=green>Use: This item starts a quest</color>");
-        }
-
-        public bool EndsQuest(string questName) {
-            foreach (QuestNode questNode in questGiverProps.Quests) {
-                if (SystemDataUtility.MatchResource(questNode.Quest.ResourceName, questName)) {
-                    if (questNode.EndQuest == true) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-            return false;
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
+            return base.GetDescription(usedItemQuality, usedItemLevel) + string.Format("\n<color=green>Use: This item starts a quest</color>");
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

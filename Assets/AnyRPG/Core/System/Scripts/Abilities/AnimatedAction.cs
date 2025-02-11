@@ -28,6 +28,7 @@ namespace AnyRPG {
         public float CoolDown { get => 0f; }
         public virtual bool RequireOutOfCombat { get => false; }
         public virtual bool RequireStealth { get => false; }
+        public bool AlwaysDisplayCount { get => false; }
 
         /// <summary>
         /// return the casting time of the ability without any speed modifiers applied
@@ -71,8 +72,8 @@ namespace AnyRPG {
             return systemDataFactory.GetResource<Ability>(ResourceName).AbilityProperties;
         }
 
-        public virtual void UpdateChargeCount(ActionButton actionButton) {
-            uIManager.UpdateStackSize(actionButton, 0, false);
+        public virtual int GetChargeCount() {
+            return 0;
         }
 
         public virtual bool HadSpecialIcon(ActionButton actionButton) {

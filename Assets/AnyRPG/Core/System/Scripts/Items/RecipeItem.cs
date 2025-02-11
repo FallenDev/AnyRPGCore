@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "RecipeItem", menuName = "AnyRPG/Inventory/Items/RecipeItem", order = 1)]
-    public class RecipeItem : Item, IUseable {
+    public class RecipeItem : Item {
 
         [Header("Recipe Item")]
 
@@ -16,31 +16,18 @@ namespace AnyRPG {
 
         private Recipe recipe = null;
 
-        public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log(MyDisplayName + ".RecipeItem.Use()");
-            if (!sourceUnitController.CharacterRecipeManager.RecipeList.ContainsValue(recipe)) {
-                //Debug.Log(MyDisplayName + ".RecipeItem.Use(): Player does not have the recipe: " + recipe.MyDisplayName);
-                bool returnValue = base.Use(sourceUnitController);
-                if (returnValue == false) {
-                    return false;
-                }
-                // learn recipe if the character has the right skill
-                if (sourceUnitController.CharacterAbilityManager.AbilityList.ContainsValue(recipe.CraftAbility)) {
-                    sourceUnitController.CharacterRecipeManager.LearnRecipe(recipe);
-                    messageFeedManager.WriteMessage(sourceUnitController, "You learned the recipe " + recipe.DisplayName);
-                    Remove();
-                } else {
-                    messageFeedManager.WriteMessage(sourceUnitController, "To learn this recipe, you must know " + recipe.CraftAbility.DisplayName + "!");
-                }
-                return returnValue;
-            } else {
-                messageFeedManager.WriteMessage(sourceUnitController, "You already know this recipe!");
-                return false;
+        public Recipe Recipe { get => recipe; }
+
+        public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            if ((item is RecipeItem) == false) {
+                return null;
             }
+            return new InstantiatedRecipeItem(systemGameManager, itemId, item as RecipeItem, usedItemQuality);
         }
 
-        public override string GetDescription(ItemQuality usedItemQuality) {
-            string returnString = base.GetDescription(usedItemQuality);
+
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
+            string returnString = base.GetDescription(usedItemQuality, usedItemLevel);
             if (recipe != null) {
                 string alreadyKnownString = string.Empty;
                 if (playerManager.UnitController.CharacterRecipeManager.RecipeList.ContainsValue(recipe)) {

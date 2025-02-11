@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace AnyRPG {
     public interface IQuestGiver {
-        QuestGiverProps Props { get; }
+        QuestGiverProps QuestGiverProps { get; }
         void UpdateQuestStatus(UnitController sourceUnitController);
         Interactable Interactable { get; }
         InteractableOptionComponent InteractableOptionComponent { get; }

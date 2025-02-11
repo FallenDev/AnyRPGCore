@@ -167,8 +167,8 @@ namespace AnyRPG {
 
         public override ItemQuality ItemQuality {
             get {
-                if (Item != null) {
-                    return Item.ItemQuality;
+                if (InstantiatedItem != null) {
+                    return InstantiatedItem.ItemQuality;
                 }
                 return base.ItemQuality;
             }
@@ -176,8 +176,8 @@ namespace AnyRPG {
 
         public override Sprite Icon {
             get {
-                if (Item != null) {
-                    return Item.Icon;
+                if (InstantiatedItem != null) {
+                    return InstantiatedItem.Icon;
                 }
                 return base.Icon;
             }
@@ -185,20 +185,20 @@ namespace AnyRPG {
 
         public override string DisplayName {
             get {
-                if (Item != null) {
-                    return Item.DisplayName;
+                if (InstantiatedItem != null) {
+                    return InstantiatedItem.DisplayName;
                 }
                 return base.DisplayName;
             }
         }
 
-        public Item Item { get; set; }
+        public InstantiatedItem InstantiatedItem { get; set; }
 
         public LootTableState LootTableState { get; set; }
 
-        public ItemLootDrop(Item item, LootTableState lootTableState, SystemGameManager systemGameManager) : base(systemGameManager) {
+        public ItemLootDrop(InstantiatedItem item, LootTableState lootTableState, SystemGameManager systemGameManager) : base(systemGameManager) {
             LootTableState = lootTableState;
-            Item = item;
+            InstantiatedItem = item;
         }
 
         public override void SetGameManagerReferences() {
@@ -210,16 +210,16 @@ namespace AnyRPG {
 
         public override void SetBackgroundImage(Image backgroundImage) {
             base.SetBackgroundImage(backgroundImage);
-            uIManager.SetItemBackground(Item, backgroundImage, new Color32(0, 0, 0, 255));
+            uIManager.SetItemBackground(InstantiatedItem.Item, backgroundImage, new Color32(0, 0, 0, 255));
         }
 
         public override bool HasItem(Item item) {
-            return (Item.ResourceName == item.ResourceName);
+            return (InstantiatedItem.ResourceName == item.ResourceName);
         }
 
         protected override bool ProcessTakeLoot(UnitController sourceUnitController) {
             base.ProcessTakeLoot(sourceUnitController);
-            return sourceUnitController.CharacterInventoryManager.AddItem(Item, false);
+            return sourceUnitController.CharacterInventoryManager.AddItem(InstantiatedItem, false);
         }
 
         public override void Remove() {
@@ -232,23 +232,23 @@ namespace AnyRPG {
 
         public override void AfterLoot(UnitController sourceUnitController) {
             base.AfterLoot(sourceUnitController);
-            if ((Item as CurrencyItem) is CurrencyItem) {
-                (Item as CurrencyItem).Use(sourceUnitController);
-            } else if ((Item as QuestStartItem) is QuestStartItem) {
-                (Item as QuestStartItem).Use(sourceUnitController);
+            if (InstantiatedItem is InstantiatedCurrencyItem) {
+                (InstantiatedItem as InstantiatedCurrencyItem).Use(sourceUnitController);
+            } else if (InstantiatedItem is InstantiatedQuestStartItem) {
+                (InstantiatedItem as InstantiatedQuestStartItem).Use(sourceUnitController);
             }
         }
 
         public override string GetSummary() {
-            if (Item != null) {
-                return Item.GetSummary();
+            if (InstantiatedItem != null) {
+                return InstantiatedItem.GetSummary();
             }
             return base.GetSummary();
         }
 
         public override string GetDescription() {
-            if (Item != null) {
-                return Item.GetDescription();
+            if (InstantiatedItem != null) {
+                return InstantiatedItem.GetDescription();
             }
             return base.GetDescription();
         }

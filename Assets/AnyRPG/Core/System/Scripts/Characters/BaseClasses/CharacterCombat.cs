@@ -753,7 +753,7 @@ namespace AnyRPG {
             defaultHitSoundEffects.Clear();
         }
 
-        public virtual void HandleEquipmentChanged(Equipment newItem, Equipment oldItem, int slotIndex, EquipmentSlotProfile equipmentSlotProfile) {
+        public virtual void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex, EquipmentSlotProfile equipmentSlotProfile) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.HandleEquipmentChanged(" + (newItem == null ? "null" : newItem.DisplayName) + ", " + (oldItem == null ? "null" : oldItem.DisplayName) + ", " + slotIndex + ")");
 
             if (equipmentSlotProfile.MainWeaponSlot == false) {
@@ -762,11 +762,11 @@ namespace AnyRPG {
             }
 
             if (oldItem != null) {
-                oldItem.HandleUnequip(this, equipmentSlotProfile);
+                oldItem.Equipment.HandleUnequip(this, equipmentSlotProfile);
             }
 
             if (newItem != null) {
-                newItem.HandleEquip(this, equipmentSlotProfile);
+                newItem.Equipment.HandleEquip(this, equipmentSlotProfile);
             }
         }
 
@@ -834,9 +834,9 @@ namespace AnyRPG {
 
         public virtual void SetAttackSpeed() {
             float maxAttackSpeed = 0f;
-            foreach (Equipment equipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
-                if ((equipment is Weapon) && (equipment as Weapon).WeaponSkill != null && (equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed > maxAttackSpeed) {
-                    maxAttackSpeed = (equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed;
+            foreach (InstantiatedEquipment instantiatedEquipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                if ((instantiatedEquipment.Equipment is Weapon) && (instantiatedEquipment.Equipment as Weapon).WeaponSkill != null && (instantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed > maxAttackSpeed) {
+                    maxAttackSpeed = (instantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed;
                 }
             }
             attackSpeed = maxAttackSpeed;

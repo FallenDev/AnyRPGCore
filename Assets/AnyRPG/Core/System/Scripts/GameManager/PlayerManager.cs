@@ -897,7 +897,7 @@ namespace AnyRPG {
             actionBarManager.RemoveStaleActions();
         }
 
-        public void HandleEquipmentChanged(Equipment newItem, Equipment oldItem, int slotIndex) {
+        public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
             if (PlayerUnitSpawned) {
                 if (slotIndex != -1) {
                     unitController.CharacterInventoryManager.AddInventoryItem(oldItem, slotIndex);

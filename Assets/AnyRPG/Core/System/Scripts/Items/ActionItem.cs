@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace AnyRPG {
     //[CreateAssetMenu(fileName = "New Scroll",menuName = "AnyRPG/Inventory/Items/Scroll", order = 1)]
-    public abstract class ActionItem : Item, IUseable {
+    public abstract class ActionItem : Item {
 
         [Header("Action Item")]
 
@@ -31,47 +31,13 @@ namespace AnyRPG {
         // game manager references
         protected SystemAbilityController systemAbilityController = null;
 
-        public override float CoolDown { get => coolDown; }
+        public float CoolDown { get => coolDown; }
+        public AnimatedAction AnimatedAction { get => animatedAction; set => animatedAction = value; }
+        public string ToolTip { get => toolTip; set => toolTip = value; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             systemAbilityController = systemGameManager.SystemAbilityController;
-        }
-
-        public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log(DisplayName + ".ActionItem.Use()");
-
-            /*
-            if (ability == null) {
-                Debug.LogError(DisplayName + ".CastableItem.Use(): ability is null.  Please set it in the inspector!");
-                return false;
-            }
-            */
-
-            bool returnValue = base.Use(sourceUnitController);
-            if (returnValue == false) {
-                return false;
-            }
-            if (sourceUnitController.AbilityManager.ControlLocked) {
-                return false;
-            }
-            if (sourceUnitController.AbilityManager.IsOnCoolDown(ResourceName)) {
-                messageFeedManager.WriteMessage(sourceUnitController, "Item is on cooldown");
-                return false;
-            }
-
-            sourceUnitController.UnitActionManager.BeginAction(animatedAction);
-
-            BeginAbilityCoolDown(sourceUnitController, coolDown);
-            Remove();
-
-            return returnValue;
-        }
-
-        public virtual void BeginAbilityCoolDown(IAbilityCaster sourceCharacter, float animationLength = -1f) {
-            if (sourceCharacter != null) {
-                sourceCharacter.AbilityManager.BeginActionCoolDown(this, animationLength);
-            }
         }
 
         public override bool HadSpecialIcon(ActionButton actionButton) {
@@ -82,21 +48,9 @@ namespace AnyRPG {
             //return base.HadSpecialIcon(actionButton);
         }
 
-        public override Coroutine ChooseMonitorCoroutine(ActionButton actionButton) {
-            //Debug.Log(DisplayName + ".CastableItem.ChooseMonitorCoroutine()");
-
-            /*
-            // testing - disable this and always monitor because of the inherent 1 second cooldown to prevent accidental spamming of action items
-            if (coolDown == 0f) {
-                return null;
-            }
-            */
-            return systemAbilityController.StartCoroutine(actionButton.MonitorCooldown(this));
-        }
-
-        public override string GetDescription(ItemQuality usedItemQuality) {
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             //Debug.Log(DisplayName + ".CastableItem.GetSummary()");
-            return base.GetDescription(usedItemQuality) + GetCastableInformation() + GetCooldownString();
+            return base.GetDescription(usedItemQuality, usedItemLevel) + GetCastableInformation() + GetCooldownString();
         }
 
         public virtual string GetCastableInformation() {
@@ -126,47 +80,6 @@ namespace AnyRPG {
                 coolDownString = "\n\nCooldown Remaining: " + SystemAbilityController.GetTimeText(dictionaryCooldown);
             }
             return coolDownString;
-        }
-
-        public override void UpdateActionButtonVisual(ActionButton actionButton) {
-            //Debug.Log(DisplayName + ".ActionItem.UpdateActionButtonVisual()");
-
-            // set cooldown icon on abilities that don't have enough resources to cast
-            base.UpdateActionButtonVisual(actionButton);
-
-            if (playerManager.UnitController.AbilityManager.ControlLocked) {
-                actionButton.EnableFullCoolDownIcon();
-                return;
-            }
-
-            if (playerManager.UnitController.CharacterAbilityManager.AbilityCoolDownDictionary.ContainsKey(ResourceName)) {
-                //Debug.Log(DisplayName + ".BaseAbility.UpdateActionButtonVisual(): Ability is on cooldown");
-                if (actionButton.CoolDownIcon.isActiveAndEnabled != true) {
-                    //Debug.Log("ActionButton.UpdateVisual(): coolDownIcon is not enabled: " + (useable == null ? "null" : useable.DisplayName));
-                    actionButton.CoolDownIcon.enabled = true;
-                }
-                if (actionButton.CoolDownIcon.sprite != actionButton.Icon.sprite) {
-                    actionButton.CoolDownIcon.sprite = actionButton.Icon.sprite;
-                    actionButton.CoolDownIcon.color = new Color32(0, 0, 0, 230);
-                    actionButton.CoolDownIcon.fillMethod = Image.FillMethod.Radial360;
-                    actionButton.CoolDownIcon.fillClockwise = false;
-                }
-                float remainingAbilityCoolDown = 0f;
-                float initialCoolDown = 0f;
-                if (playerManager.UnitController.CharacterAbilityManager.AbilityCoolDownDictionary.ContainsKey(ResourceName)) {
-                    remainingAbilityCoolDown = playerManager.UnitController.CharacterAbilityManager.AbilityCoolDownDictionary[ResourceName].RemainingCoolDown;
-                    initialCoolDown = playerManager.UnitController.CharacterAbilityManager.AbilityCoolDownDictionary[ResourceName].InitialCoolDown;
-                } else {
-                    initialCoolDown = coolDown;
-                }
-                float fillAmount = Mathf.Max(remainingAbilityCoolDown / initialCoolDown);
-                //Debug.Log("Setting fill amount to: " + fillAmount);
-                if (actionButton.CoolDownIcon.fillAmount != fillAmount) {
-                    actionButton.CoolDownIcon.fillAmount = fillAmount;
-                }
-            } else {
-                actionButton.DisableCoolDownIcon();
-            }
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

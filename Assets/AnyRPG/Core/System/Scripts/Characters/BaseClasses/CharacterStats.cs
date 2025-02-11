@@ -512,48 +512,48 @@ namespace AnyRPG {
             NotifyResourceAmountsChanged(statName);
         }
 
-        private void CalculateEquipmentChanged(Equipment newItem, Equipment oldItem) {
+        private void CalculateEquipmentChanged(InstantiatedEquipment newInstantiatedEquipment, InstantiatedEquipment oldInstantiatedEquipment) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.CalculateEquipmentChanged(" + (newItem != null ? newItem.DisplayName : "null") + ", " + (oldItem != null ? oldItem.DisplayName : "null") + ", " + recalculate + ")");
 
             // add modifiers for new item
-            if (newItem != null) {
+            if (newInstantiatedEquipment != null) {
 
-                foreach (ItemPrimaryStatNode itemPrimaryStatNode in newItem.PrimaryStats) {
+                foreach (ItemPrimaryStatNode itemPrimaryStatNode in newInstantiatedEquipment.Equipment.PrimaryStats) {
                     if (primaryStats.ContainsKey(itemPrimaryStatNode.StatName)) {
-                        primaryStats[itemPrimaryStatNode.StatName].AddModifier(newItem.GetPrimaryStatModifier(itemPrimaryStatNode.StatName, Level, unitController.BaseCharacter));
+                        primaryStats[itemPrimaryStatNode.StatName].AddModifier(newInstantiatedEquipment.Equipment.GetPrimaryStatModifier(itemPrimaryStatNode.StatName, Level, unitController.BaseCharacter));
                     }
                 }
 
                 // armor is special because it can come from a base value and from secondary stats
                 // here we add the base value
-                secondaryStats[SecondaryStatType.Armor].AddModifier(newItem.GetArmorModifier(Level));
+                secondaryStats[SecondaryStatType.Armor].AddModifier(newInstantiatedEquipment.Equipment.GetArmorModifier(Level));
 
-                foreach (ItemSecondaryStatNode itemSecondaryStatNode in newItem.SecondaryStats) {
-                    secondaryStats[itemSecondaryStatNode.SecondaryStat].AddModifier(newItem.GetSecondaryStatAddModifier(itemSecondaryStatNode.SecondaryStat, Level));
-                    secondaryStats[itemSecondaryStatNode.SecondaryStat].AddMultiplyModifier(newItem.GetSecondaryStatMultiplyModifier(itemSecondaryStatNode.SecondaryStat));
+                foreach (ItemSecondaryStatNode itemSecondaryStatNode in newInstantiatedEquipment.SecondaryStats) {
+                    secondaryStats[itemSecondaryStatNode.SecondaryStat].AddModifier(newInstantiatedEquipment.Equipment.GetSecondaryStatAddModifier(newInstantiatedEquipment.SecondaryStats, itemSecondaryStatNode.SecondaryStat, Level));
+                    secondaryStats[itemSecondaryStatNode.SecondaryStat].AddMultiplyModifier(newInstantiatedEquipment.Equipment.GetSecondaryStatMultiplyModifier(newInstantiatedEquipment.SecondaryStats, itemSecondaryStatNode.SecondaryStat));
                 }
 
             }
 
             // remove modifiers for old item
-            if (oldItem != null) {
-                secondaryStats[SecondaryStatType.Armor].RemoveModifier(oldItem.GetArmorModifier(Level));
+            if (oldInstantiatedEquipment != null) {
+                secondaryStats[SecondaryStatType.Armor].RemoveModifier(oldInstantiatedEquipment.Equipment.GetArmorModifier(Level));
 
-                foreach (ItemSecondaryStatNode itemSecondaryStatNode in oldItem.SecondaryStats) {
-                    secondaryStats[itemSecondaryStatNode.SecondaryStat].RemoveModifier(oldItem.GetSecondaryStatAddModifier(itemSecondaryStatNode.SecondaryStat, Level));
-                    secondaryStats[itemSecondaryStatNode.SecondaryStat].RemoveMultiplyModifier(oldItem.GetSecondaryStatMultiplyModifier(itemSecondaryStatNode.SecondaryStat));
+                foreach (ItemSecondaryStatNode itemSecondaryStatNode in oldInstantiatedEquipment.SecondaryStats) {
+                    secondaryStats[itemSecondaryStatNode.SecondaryStat].RemoveModifier(oldInstantiatedEquipment.Equipment.GetSecondaryStatAddModifier(oldInstantiatedEquipment.SecondaryStats, itemSecondaryStatNode.SecondaryStat, Level));
+                    secondaryStats[itemSecondaryStatNode.SecondaryStat].RemoveMultiplyModifier(oldInstantiatedEquipment.Equipment.GetSecondaryStatMultiplyModifier(oldInstantiatedEquipment.SecondaryStats, itemSecondaryStatNode.SecondaryStat));
                 }
 
-                foreach (ItemPrimaryStatNode itemPrimaryStatNode in oldItem.PrimaryStats) {
+                foreach (ItemPrimaryStatNode itemPrimaryStatNode in oldInstantiatedEquipment.Equipment.PrimaryStats) {
                     if (primaryStats.ContainsKey(itemPrimaryStatNode.StatName)) {
-                        primaryStats[itemPrimaryStatNode.StatName].RemoveModifier(oldItem.GetPrimaryStatModifier(itemPrimaryStatNode.StatName, Level, unitController.BaseCharacter));
+                        primaryStats[itemPrimaryStatNode.StatName].RemoveModifier(oldInstantiatedEquipment.Equipment.GetPrimaryStatModifier(itemPrimaryStatNode.StatName, Level, unitController.BaseCharacter));
                     }
                 }
             }
 
         }
 
-        public void HandleEquipmentChanged(Equipment newItem, Equipment oldItem, int slotIndex) {
+        public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
             //Debug.Log($"{gameObject.name}.CharacterStats.OnEquipmentChanged(" + (newItem != null ? newItem.DisplayName : "null") + ", " + (oldItem != null ? oldItem.DisplayName : "null") + ")");
 
             CalculateEquipmentChanged(newItem, oldItem);
@@ -1122,7 +1122,7 @@ namespace AnyRPG {
             }
 
             if (unitController.CharacterEquipmentManager != null) {
-                foreach (Equipment equipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                foreach (InstantiatedEquipment equipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
                     //CalculateEquipmentChanged(equipment, null, false);
                     CalculateEquipmentChanged(equipment, null);
                 }

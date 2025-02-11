@@ -798,25 +798,25 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnBeginAbilityCoolDown();
         }
 
-        public void HandleEquipmentChanged(Equipment newItem, Equipment oldItem, int slotIndex) {
+        public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
             //Debug.Log($"{gameObject.name}.CharacterAbilityManager.HandleEquipmentChanged(" + (newItem != null ? newItem.DisplayName : "null") + ", " + (oldItem != null ? oldItem.DisplayName : "null") + ")");
             if (oldItem != null) {
-                if (oldItem.OnEquipAbilityEffect != null) {
-                    unitController.CharacterStats.GetStatusEffectNode(oldItem.OnEquipAbilityEffect.StatusEffectProperties)?.CancelStatusEffect();
+                if (oldItem.Equipment.OnEquipAbilityEffect != null) {
+                    unitController.CharacterStats.GetStatusEffectNode(oldItem.Equipment.OnEquipAbilityEffect.StatusEffectProperties)?.CancelStatusEffect();
                 }
-                foreach (AbilityProperties baseAbility in oldItem.LearnedAbilities) {
+                foreach (AbilityProperties baseAbility in oldItem.Equipment.LearnedAbilities) {
                     UnlearnAbility(baseAbility);
                 }
             }
             UpdateEquipmentTraits(oldItem);
 
             if (newItem != null) {
-                if (newItem.OnEquipAbilityEffect != null) {
+                if (newItem.Equipment.OnEquipAbilityEffect != null) {
                     if (unitController != null) {
-                        newItem.OnEquipAbilityEffect.AbilityEffectProperties.Cast(unitController, unitController, unitController, null);
+                        newItem.Equipment.OnEquipAbilityEffect.AbilityEffectProperties.Cast(unitController, unitController, unitController, null);
                     }
                 }
-                foreach (AbilityProperties baseAbility in newItem.LearnedAbilities) {
+                foreach (AbilityProperties baseAbility in newItem.Equipment.LearnedAbilities) {
                     baseAbility.PrepareToLearnAbility(this);
                     LearnAbility(baseAbility);
                 }
@@ -846,9 +846,9 @@ namespace AnyRPG {
             */
         }
 
-        public void UpdateEquipmentTraits(Equipment equipment) {
+        public void UpdateEquipmentTraits(InstantiatedEquipment equipment) {
 
-            if (equipment == null || equipment.EquipmentSet == null) {
+            if (equipment == null || equipment.Equipment.EquipmentSet == null) {
                 // nothing to do
                 return;
             }
@@ -856,11 +856,11 @@ namespace AnyRPG {
             int equipmentCount = 0;
 
             if (unitController != null && unitController.CharacterEquipmentManager != null) {
-                equipmentCount = unitController.CharacterEquipmentManager.GetEquipmentSetCount(equipment.EquipmentSet);
+                equipmentCount = unitController.CharacterEquipmentManager.GetEquipmentSetCount(equipment.Equipment.EquipmentSet);
             }
 
-            for (int i = 0; i < equipment.EquipmentSet.TraitList.Count; i++) {
-                StatusEffectProperties statusEffect = equipment.EquipmentSet.TraitList[i];
+            for (int i = 0; i < equipment.Equipment.EquipmentSet.TraitList.Count; i++) {
+                StatusEffectProperties statusEffect = equipment.Equipment.EquipmentSet.TraitList[i];
                 if (statusEffect != null) {
                     if (equipmentCount > i) {
                         // we are allowed to have this buff

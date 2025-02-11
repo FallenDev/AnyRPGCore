@@ -6,6 +6,8 @@ using UnityEngine;
 namespace AnyRPG {
     public class SystemItemManager : ConfiguredMonoBehaviour {
 
+        private int itemIdCount = 0;
+
         // game manager references
         SystemDataFactory systemDataFactory = null;
 
@@ -15,26 +17,35 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
         }
 
+        public InstantiatedItem GetNewInstantiatedItem(string itemName, ItemQuality usedItemQuality = null) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Item item = systemDataFactory.GetResource<Item>(itemName);
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedItem(item, usedItemQuality);
+        }
+
         /// <summary>
-        /// Get a new copy of an item based on the factory template.  This is necessary so items can be deleted without deleting the entire item from the database
+        /// Get a new instantiated Item
         /// </summary>
         /// <param name="resourceName"></param>
         /// <returns></returns>
-        public Item GetNewResource(string resourceName, ItemQuality usedItemQuality = null) {
+        public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality usedItemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
-            if (!SystemDataUtility.RequestIsEmpty(resourceName)) {
-                string keyName = SystemDataUtility.PrepareStringForMatch(resourceName);
-                Item itemTemplate = systemDataFactory.GetResource<Item>(keyName);
-                if (itemTemplate != null) {
-                    Item returnValue = ScriptableObject.Instantiate(itemTemplate) as Item;
-                    returnValue.SetupScriptableObjects(systemGameManager);
-                    returnValue.InitializeNewItem(usedItemQuality);
-                    return returnValue;
-                }
-            }
-            return null;
+            InstantiatedItem instantiatedItem = item.GetNewInstantiatedItem(systemGameManager, itemIdCount, item, usedItemQuality);
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            itemIdCount++;
+            return instantiatedItem;
         }
-
+        /*
+        public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality usedItemQuality = null) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            InstantiatedItem instantiatedItem = new InstantiatedItem(systemGameManager, itemIdCount, item, usedItemQuality);
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            return instantiatedItem;
+        }
+        */
 
     }
 

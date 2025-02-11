@@ -210,30 +210,31 @@ namespace AnyRPG {
         }
 
         
-        public void AddToBuyBackCollection(Item newItem) {
+        public void AddToBuyBackCollection(InstantiatedItem newInstantiatedItem) {
             VendorItem newVendorItem = new VendorItem();
             newVendorItem.Quantity = 1;
-            newVendorItem.Item = newItem;
+            // FIX ME - THIS DOES NOT STORE THE INSTANTIATED ITEM SO IT WILL LOSE ANY CUSTOM STATS AND HAVE ITS DROPLEVEL RESET ON BUYBACK
+            newVendorItem.InstantiatedItem = newInstantiatedItem;
             buyBackCollection.VendorItems.Add(newVendorItem);
         }
         
 
-        public bool SellItem(Item item) {
-            if (item.BuyPrice() <= 0 || item.GetSellPrice().Key == null) {
-                messageFeedManager.WriteMessage("The vendor does not want to buy the " + item.DisplayName);
+        public bool SellItem(InstantiatedItem instantiatedItem) {
+            if (instantiatedItem.Item.BuyPrice(playerManager.UnitController) <= 0 || instantiatedItem.Item.GetSellPrice(instantiatedItem, playerManager.UnitController).Key == null) {
+                messageFeedManager.WriteMessage("The vendor does not want to buy the " + instantiatedItem.DisplayName);
                 return false;
             }
-            KeyValuePair<Currency, int> sellAmount = item.GetSellPrice();
+            KeyValuePair<Currency, int> sellAmount = instantiatedItem.Item.GetSellPrice(instantiatedItem, playerManager.UnitController);
 
             playerManager.UnitController.CharacterCurrencyManager.AddCurrency(sellAmount.Key, sellAmount.Value);
-            AddToBuyBackCollection(item);
-            item.Slot.RemoveItem(item);
+            AddToBuyBackCollection(instantiatedItem);
+            instantiatedItem.Slot.RemoveItem(instantiatedItem);
 
             if (systemConfigurationManager.VendorAudioClip != null) {
                 audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
             }
             string priceString = currencyConverter.GetCombinedPriceString(sellAmount.Key, sellAmount.Value);
-            messageFeedManager.WriteMessage("Sold " + item.DisplayName + " for " + priceString);
+            messageFeedManager.WriteMessage("Sold " + instantiatedItem.DisplayName + " for " + priceString);
 
 
             if (dropDownIndex == 0) {

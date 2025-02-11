@@ -165,7 +165,7 @@ namespace AnyRPG {
         public bool UseWeaponTypeObjects { get => useWeaponTypeObjects; set => useWeaponTypeObjects = value; }
 
         public float GetDamagePerSecond(int characterLevel) {
-            return GetDamagePerSecond(characterLevel, realItemQuality);
+            return GetDamagePerSecond(characterLevel, itemQualityRef);
         }
 
         public float GetDamagePerSecond(int characterLevel, ItemQuality usedItemQuality) {
@@ -180,7 +180,7 @@ namespace AnyRPG {
             return baseDamagePerSecond;
         }
 
-        public override string GetDescription(ItemQuality usedItemQuality) {
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
 
             List<string> abilitiesList = new List<string>();
 
@@ -199,12 +199,12 @@ namespace AnyRPG {
 
             if (weaponSkill != null && requireWeaponSkill == true) {
                 string colorString = "white";
-                if (!CanEquip(playerManager.UnitController)) {
+                if (!CanEquip(usedItemLevel, playerManager.UnitController)) {
                     colorString = "red";
                 }
                 abilitiesString += string.Format("\n<color={0}>Required Skill: {1}</color>", colorString, weaponSkill.DisplayName);
             }
-            return base.GetDescription(usedItemQuality) + abilitiesString;
+            return base.GetDescription(usedItemQuality, usedItemLevel) + abilitiesString;
         }
 
         /*

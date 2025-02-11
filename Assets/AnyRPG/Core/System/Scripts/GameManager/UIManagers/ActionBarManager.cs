@@ -636,7 +636,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleEquipmentChange(Equipment newEquipment, Equipment oldEquipment) {
+        public void HandleEquipmentChange(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
             UpdateVisuals();
         }
 

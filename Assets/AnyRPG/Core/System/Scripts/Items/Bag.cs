@@ -6,14 +6,12 @@ using UnityEngine.UI;
 
 namespace AnyRPG {
     [CreateAssetMenu(fileName = "Bag", menuName = "AnyRPG/Inventory/Items/Bag", order = 1)]
-    public class Bag : Item, IUseable {
+    public class Bag : Item {
 
         [Header("Bag")]
 
         [SerializeField]
         private int slots;
-
-        public BagNode BagNode { get; set; }
 
         /// <summary>
         /// Property for getting the slots
@@ -24,6 +22,14 @@ namespace AnyRPG {
             }
         }
 
+        public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            if ((item is Bag) == false) {
+                return null;
+            }
+            return new InstantiatedBag(systemGameManager, itemId, item as Bag, usedItemQuality);
+        }
+
+        /*
         public void Initalize(int slots, string title, Sprite bagIcon) {
             //Debug.Log("Bag.Initialize(" + slots + ", " + title + ")");
             this.slots = slots;
@@ -38,11 +44,11 @@ namespace AnyRPG {
                 }
             }
         }
+        */
 
-        
-        public override string GetDescription(ItemQuality usedItemQuality) {
+        public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             //return base.GetSummary(usedItemQuality) + string.Format("\n<color=green>Use: Equip</color>");
-            return base.GetDescription(usedItemQuality) + string.Format("\n\n{0} slots", slots);
+            return base.GetDescription(usedItemQuality, usedItemLevel) + string.Format("\n\n{0} slots", slots);
         }
         
 

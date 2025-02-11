@@ -343,11 +343,11 @@ namespace AnyRPG {
             base.UnequipItemModels(equipmentSlot);
         }
 
-        private void UnequipeUMARecipes(Equipment equipment) {
-            UnequipUMARecipes(equipment, equipment.GetEquipmentModel<UMAEquipmentModel>());
+        private void UnequipeUMARecipes(InstantiatedEquipment equipment) {
+            UnequipUMARecipes(equipment, equipment.Equipment.GetEquipmentModel<UMAEquipmentModel>());
         }
 
-        private void UnequipUMARecipes(Equipment equipment, UMAEquipmentModel umaEquipmentModel) {
+        private void UnequipUMARecipes(InstantiatedEquipment equipment, UMAEquipmentModel umaEquipmentModel) {
             if (umaEquipmentModel?.Properties.UMARecipes == null) {
                 return;
             }
@@ -378,7 +378,7 @@ namespace AnyRPG {
             }
         }
 
-        private int PreloadItemModels(Equipment equipment) {
+        private int PreloadItemModels(InstantiatedEquipment equipment) {
             //Debug.Log($"{unitController.gameObject.name}.UMAModelController.PreloadItemModels(" + equipment.DisplayName + ")");
 
             int returnValue = 0;
@@ -387,7 +387,7 @@ namespace AnyRPG {
                 return returnValue;
             }
 
-            UMAEquipmentModel umaEquipmentModel = equipment.GetEquipmentModel<UMAEquipmentModel>();
+            UMAEquipmentModel umaEquipmentModel = equipment.Equipment.GetEquipmentModel<UMAEquipmentModel>();
 
             if (umaEquipmentModel == null) {
                 return returnValue;
@@ -466,7 +466,7 @@ namespace AnyRPG {
             }
         }
 
-        public override void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, Equipment equipment) {
+        public override void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
             //Debug.Log($"{unitController.gameObject.name}.UMAModelController.EquipItemModels(" + (equipment == null ? "null" :equipment.DisplayName) + ")");
 
             base.EquipItemModels(equipmentSlotProfile, equipment);
@@ -479,7 +479,7 @@ namespace AnyRPG {
                 return;
             }
 
-            UMAEquipmentModel umaEquipmentModel = equipment.GetEquipmentModel<UMAEquipmentModel>();
+            UMAEquipmentModel umaEquipmentModel = equipment.Equipment.GetEquipmentModel<UMAEquipmentModel>();
 
             if (umaEquipmentModel == null) {
                 return;

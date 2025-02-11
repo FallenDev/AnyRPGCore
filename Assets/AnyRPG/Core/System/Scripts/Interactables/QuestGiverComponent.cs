@@ -15,13 +15,13 @@ namespace AnyRPG {
         // game manager references
         private DialogManager dialogManager = null;
 
-        public QuestGiverProps Props { get => interactableOptionProps as QuestGiverProps; }
+        public QuestGiverProps QuestGiverProps { get => interactableOptionProps as QuestGiverProps; }
         public override int PriorityValue { get => 1; }
         public InteractableOptionComponent InteractableOptionComponent { get => this; }
 
         public QuestGiverComponent(Interactable interactable, QuestGiverProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
-                foreach (QuestNode questNode in Props.Quests) {
+                foreach (QuestNode questNode in QuestGiverProps.Quests) {
                     questNode.Quest.OnQuestStatusUpdated += HandlePrerequisiteUpdates;
                 }
             }
@@ -53,7 +53,7 @@ namespace AnyRPG {
 
         public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
             //Debug.Log($"{gameObject.name}.QuestGiver.CanInteract()");
-            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count == 0) {
+            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count == 0) {
                 return false;
             }
             return base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck);
@@ -67,7 +67,7 @@ namespace AnyRPG {
             }
 
             interactionPanelTitle = "Quests";
-            foreach (QuestNode questNode in Props.Quests) {
+            foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 //Type questType = questNode.MyQuestTemplate.GetType();
                 if (questNode.Quest == null) {
                     //Debug.Log($"{gameObject.name}.InitializeQuestGiver(): questnode.MyQuestTemplate is null!!!!");
@@ -87,7 +87,7 @@ namespace AnyRPG {
 
             base.HandlePlayerUnitSpawn(sourceUnitController);
             InitializeQuestGiver();
-            foreach (QuestNode questNode in Props.Quests) {
+            foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 //if (questNode.MyQuest.TurnedIn != true) {
                     questNode.Quest.UpdatePrerequisites(sourceUnitController, false);
                 //}
@@ -122,12 +122,12 @@ namespace AnyRPG {
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             // this is running locally
-            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count > 1) {
+            if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count > 1) {
                 interactionManager.OpenInteractionWindow(Interactable);
                 return;
-            } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests).Count == 0) {
-                if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
-                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests)[0], Interactable, this, componentIndex, choiceIndex);
+            } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests).Count == 0) {
+                if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
+                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0], Interactable, this, componentIndex, choiceIndex);
                     uIManager.dialogWindow.OpenWindow();
                     return;
                 } else {
@@ -137,7 +137,7 @@ namespace AnyRPG {
             // we got here: we only have a single complete quest, or a single available quest with the opening dialog competed already
             if (!uIManager.questGiverWindow.IsOpen) {
                 //Debug.Log(source + " interacting with " + gameObject.name);
-                sourceUnitController.CharacterQuestLog.ShowQuestGiverDescription(sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Union(sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests)).ToList()[0], this);
+                sourceUnitController.CharacterQuestLog.ShowQuestGiverDescription(sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Union(sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests)).ToList()[0], this);
                 return;
             }
 
@@ -189,7 +189,7 @@ namespace AnyRPG {
             int inProgressCount = 0;
             int availableCount = 0;
             //Debug.Log($"{gameObject.name}QuestGiver.GetIndicatorType(): quests.length: " + quests.Length);
-            foreach (QuestNode questNode in Props.Quests) {
+            foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 if (questNode != null && questNode.Quest != null) {
                     if (playerManager.UnitController.CharacterQuestLog.HasQuest(questNode.Quest.ResourceName)) {
                         if (questNode.Quest.IsComplete(sourceUnitController) && !questNode.Quest.TurnedIn(sourceUnitController) && questNode.EndQuest) {
@@ -273,7 +273,7 @@ namespace AnyRPG {
             if (interactable.CombatOnly) {
                 return 0;
             }
-            return sourceUnitController.CharacterQuestLog.GetCompleteQuests(Props.Quests).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(Props.Quests).Count;
+            return sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count;
         }
 
         public void HandleAcceptQuest() {
@@ -293,7 +293,7 @@ namespace AnyRPG {
         }
 
         public bool EndsQuest(string questName) {
-            foreach (QuestNode questNode in Props.Quests) {
+            foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 if (SystemDataUtility.MatchResource(questNode.Quest.ResourceName, questName)) {
                     if (questNode.EndQuest == true) {
                         return true;
@@ -313,7 +313,7 @@ namespace AnyRPG {
         public override void CleanupScriptableObjects() {
             base.CleanupScriptableObjects();
 
-            foreach (QuestNode questNode in Props.Quests) {
+            foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 questNode.Quest.OnQuestStatusUpdated -= HandlePrerequisiteUpdates;
             }
         }

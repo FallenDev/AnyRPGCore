@@ -58,7 +58,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
         public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
         public event System.Action<UnitController, UnitController, float> OnKillEvent = delegate { };
-        public event System.Action<Equipment, Equipment, int> OnEquipmentChanged = delegate { };
+        public event System.Action<InstantiatedEquipment, InstantiatedEquipment, int> OnEquipmentChanged = delegate { };
         public event System.Action<AbilityProperties> OnAbilityActionCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
         public event System.Action<string, bool> OnBeginAction = delegate { };
@@ -201,7 +201,7 @@ namespace AnyRPG {
             OnAbilityActionCheckFail(baseAbilityProperties);
         }
 
-        public void NotifyOnEquipmentChanged(Equipment newEquipment, Equipment oldEquipment, int slotIndex) {
+        public void NotifyOnEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment, int slotIndex) {
             OnEquipmentChanged(newEquipment, oldEquipment, slotIndex);
         }
 

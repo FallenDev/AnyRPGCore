@@ -91,6 +91,7 @@ namespace AnyRPG {
         protected NewGameManager newGameManager = null;
         protected ObjectPooler objectPooler = null;
         protected NetworkManagerClient networkManagerClient = null;
+        protected SystemItemManager systemItemManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -119,6 +120,7 @@ namespace AnyRPG {
             newGameManager = systemGameManager.NewGameManager;
             objectPooler = systemGameManager.ObjectPooler;
             networkManagerClient = systemGameManager.NetworkManagerClient;
+            systemItemManager = systemGameManager.SystemItemManager;
         }
 
         private void AddDefaultAppearancePanel() {
@@ -653,16 +655,16 @@ namespace AnyRPG {
                 //Debug.Log("NewGameCharacterPanelController.EquipCharacter(): found equipment manager");
 
                 // unequip equipment not in current list
-                List<Equipment> removeList = new List<Equipment>();
-                foreach (Equipment equipment in characterEquipmentManager.CurrentEquipment.Values) {
+                List<InstantiatedEquipment> removeList = new List<InstantiatedEquipment>();
+                foreach (InstantiatedEquipment instantiatedEquipment in characterEquipmentManager.CurrentEquipment.Values) {
                     //Debug.Log("NewGamePanel.EquipCharacter(): checking for removal : " + (equipment == null ? "null" : equipment.DisplayName));
-                    if (equipment != null && !newGameManager.EquipmentList.ContainsValue(equipment)) {
-                        removeList.Add(equipment);
+                    if (instantiatedEquipment != null && !newGameManager.EquipmentList.ContainsValue(instantiatedEquipment)) {
+                        removeList.Add(instantiatedEquipment);
                     }
                 }
-                foreach (Equipment equipment in removeList) {
+                foreach (InstantiatedEquipment instantiatedEquipment in removeList) {
                     //characterEquipmentManager.Unequip(equipment, false, false, false);
-                    characterEquipmentManager.Unequip(equipment);
+                    characterEquipmentManager.Unequip(instantiatedEquipment);
                     changes++;
                 }
 
@@ -673,8 +675,8 @@ namespace AnyRPG {
                         //Debug.Log("NewGameCharacterPanelController.EquipCharacter(): ask to equip: " + equipment.DisplayName);
                         if (characterEquipmentManager.CurrentEquipment.ContainsKey(equipmentSlotProfile) == false
                             || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile] == null
-                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile] != newGameManager.EquipmentList[equipmentSlotProfile]) {
-                            characterEquipmentManager.Equip(newGameManager.EquipmentList[equipmentSlotProfile], equipmentSlotProfile);
+                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Equipment != newGameManager.EquipmentList[equipmentSlotProfile].Equipment) {
+                            characterEquipmentManager.Equip(systemItemManager.GetNewInstantiatedItem(newGameManager.EquipmentList[equipmentSlotProfile].Equipment) as InstantiatedEquipment, equipmentSlotProfile);
                             changes++;
                         }
                     }

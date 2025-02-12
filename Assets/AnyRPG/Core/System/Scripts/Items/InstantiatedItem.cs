@@ -73,6 +73,24 @@ namespace AnyRPG {
             // nothing here in base class for now
         }
 
+        public virtual InventorySlotSaveData GetSlotSaveData() {
+            InventorySlotSaveData saveData = new InventorySlotSaveData();
+            saveData.ItemName = ResourceName;
+            saveData.DisplayName = DisplayName;
+            if (ItemQuality != null) {
+                saveData.itemQuality = ItemQuality.ResourceName;
+            }
+            
+            saveData.dropLevel = DropLevel;
+            return saveData;
+
+        }
+
+        public virtual void LoadSaveData(InventorySlotSaveData inventorySlotSaveData) {
+            displayName = inventorySlotSaveData.DisplayName;
+            dropLevel = inventorySlotSaveData.dropLevel;
+        }
+
         public int GetItemLevel(int characterLevel) {
 
             // frozen drop level overrides all other calculations

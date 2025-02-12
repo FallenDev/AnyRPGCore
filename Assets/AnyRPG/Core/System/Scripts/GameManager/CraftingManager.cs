@@ -134,8 +134,7 @@ namespace AnyRPG {
 
             // PERFORM CHECK FOR MATERIALS IN INVENTORY FIRST IN CASE QUEUE GOT BIGGER THAN MATERIAL AMOUNT BY ACCIDENT / RACE CONDITION, also for bag space
             if (GetMaxCraftAmount(craftingQueue[0]) > 0) {
-                InstantiatedItem tmpItem = systemItemManager.GetNewInstantiatedItem(craftingQueue[0].Output.ResourceName);
-                tmpItem.DropLevel = playerManager.UnitController.CharacterStats.Level;
+                InstantiatedItem tmpItem = playerManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(craftingQueue[0].Output.ResourceName);
                 if (playerManager.UnitController.CharacterInventoryManager.AddItem(tmpItem, false)) {
                     //Debug.Log("CraftingUI.CraftNextItem(): got an item successfully");
                     foreach (CraftingMaterial craftingMaterial in craftingQueue[0].CraftingMaterials) {

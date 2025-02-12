@@ -166,6 +166,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
+            unitController.UnitEventController.OnGetNewInstantiatedItem += HandleGetNewInstantiatedItem;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -205,7 +206,18 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount -= HandleSetQuestObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOptionServer;
+            unitController.UnitEventController.OnGetNewInstantiatedItem -= HandleGetNewInstantiatedItem;
 
+        }
+
+        public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
+            InventorySlotSaveData inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
+            HandleGetNewInstantiatedItemClient(instantiatedItem.InstanceId, inventorySlotSaveData);
+        }
+
+        [ObserversRpc]
+        public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
+            unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(itemInstanceId, inventorySlotSaveData.ItemName, inventorySlotSaveData);
         }
 
         public void HandleMarkQuestCompleteServer(UnitController controller, QuestBase questBase) {

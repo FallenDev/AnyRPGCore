@@ -25,6 +25,8 @@ namespace AnyRPG {
         private List<InventorySlot> inventorySlots = new List<InventorySlot>();
         private List<InventorySlot> bankSlots = new List<InventorySlot>();
 
+        private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
+
         private UnitController unitController = null;
 
         // game manager references
@@ -460,22 +462,45 @@ namespace AnyRPG {
         }
 
         private bool PlaceInStack(InstantiatedItem instantiatedItem, bool addToBank) {
+            int slotIndex = 0;
             if (addToBank == false) {
                 foreach (InventorySlot inventorySlot in inventorySlots) {
-                    if (inventorySlot.StackItem(instantiatedItem)) {
-                        OnItemCountChanged(instantiatedItem.Item);
+                    if (PlaceInStack(inventorySlot, slotIndex, instantiatedItem, addToBank) == true) {
                         return true;
                     }
+                    slotIndex++;
                 }
             } else {
                 foreach (InventorySlot inventorySlot in bankSlots) {
-                    if (inventorySlot.StackItem(instantiatedItem)) {
-                        OnItemCountChanged(instantiatedItem.Item);
+                    if (PlaceInStack(inventorySlot, slotIndex, instantiatedItem, addToBank) == true) {
                         return true;
                     }
+                    slotIndex++;
                 }
             }
 
+            return false;
+        }
+
+        public void PlaceInStack(int slotIndex, InstantiatedItem instantiatedItem, bool addToBank) {
+            if (addToBank == false) {
+                if (inventorySlots.Count > slotIndex) {
+                    PlaceInStack(inventorySlots[slotIndex], slotIndex, instantiatedItem, addToBank);
+                }
+            } else {
+                if (bankSlots.Count > slotIndex) {
+                    PlaceInStack(inventorySlots[slotIndex], slotIndex, instantiatedItem, addToBank);
+                }
+            }
+        }
+
+
+        private bool PlaceInStack(InventorySlot inventorySlot, int slotIndex, InstantiatedItem instantiatedItem, bool addToBank) {
+            if (inventorySlot.StackItem(instantiatedItem)) {
+                unitController.UnitEventController.NotifyOnPlaceInStack(instantiatedItem, addToBank, slotIndex);
+                OnItemCountChanged(instantiatedItem.Item);
+                return true;
+            }
             return false;
         }
 
@@ -561,6 +586,70 @@ namespace AnyRPG {
             return items;
         }
         */
+
+        public InstantiatedItem GetNewInstantiatedItem(string itemName) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Item item = systemDataFactory.GetResource<Item>(itemName);
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedItem(item);
+        }
+
+        public InstantiatedItem GetNewInstantiatedItem(Item item) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(item, null);
+            instantiatedItem.InitializeNewItem(null);
+            instantiatedItem.DropLevel = unitController.CharacterStats.Level;
+            instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            unitController.UnitEventController.NotifyOnGetNewInstantiatedItem(instantiatedItem);
+            return instantiatedItem;
+        }
+
+
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(string itemName, InventorySlotSaveData inventorySlotSaveData) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Item item = systemDataFactory.GetResource<Item>(itemName);
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedItemFromSaveData(item, inventorySlotSaveData);
+        }
+
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, string itemName, InventorySlotSaveData inventorySlotSaveData) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Item item = systemDataFactory.GetResource<Item>(itemName);
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
+        }
+
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, Item item, InventorySlotSaveData inventorySlotSaveData) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            ItemQuality usedItemQuality = null;
+            if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {
+                usedItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
+            }
+            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(itemInstanceId, item, usedItemQuality);
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            instantiatedItem.LoadSaveData(inventorySlotSaveData);
+
+            instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            return instantiatedItem;
+        }
+
+
+        /// <summary>
+        /// Get a new instantiated Item
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns></returns>
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(Item item, InventorySlotSaveData inventorySlotSaveData) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            int itemInstanceId = systemItemManager.GetNewItemInstanceId();
+            return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
+        }
 
 
     }

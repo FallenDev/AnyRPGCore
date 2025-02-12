@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEditor.Overlays;
 
 namespace AnyRPG {
     public class SaveManager : ConfiguredMonoBehaviour /*, ISaveDataOwner*/ {
@@ -564,20 +565,25 @@ namespace AnyRPG {
 
         private InventorySlotSaveData GetSlotSaveData(InventorySlot inventorySlot) {
             InventorySlotSaveData saveData = new InventorySlotSaveData();
-            saveData.ItemName = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.ResourceName);
-            saveData.stackCount = (inventorySlot.InstantiatedItem == null ? 0 : inventorySlot.Count);
-            saveData.DisplayName = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.DisplayName);
             if (inventorySlot.InstantiatedItem != null) {
-                if (inventorySlot.InstantiatedItem.ItemQuality != null) {
-                    saveData.itemQuality = (inventorySlot.InstantiatedItem == null ? string.Empty : inventorySlot.InstantiatedItem.ItemQuality.ResourceName);
-                }
-                if (inventorySlot.InstantiatedItem is InstantiatedEquipment) {
-                    saveData.randomSecondaryStatIndexes = (inventorySlot.InstantiatedItem == null ? null : (inventorySlot.InstantiatedItem as InstantiatedEquipment).RandomStatIndexes);
-                }
-                saveData.dropLevel = (inventorySlot.InstantiatedItem == null ? 0 : inventorySlot.InstantiatedItem.DropLevel);
+                saveData = inventorySlot.InstantiatedItem.GetSlotSaveData();
+            } else {
+                saveData = GetEmptySlotSaveData();
             }
+            saveData.stackCount = (inventorySlot.InstantiatedItem == null ? 0 : inventorySlot.Count);
             return saveData;
         }
+
+        private InventorySlotSaveData GetEmptySlotSaveData() {
+            InventorySlotSaveData saveData = new InventorySlotSaveData();
+            saveData.ItemName = string.Empty;
+            saveData.DisplayName = string.Empty;
+            saveData.itemQuality = string.Empty;
+            saveData.dropLevel = 0;
+
+            return saveData;
+        }
+
 
         public void SaveInventorySlotData(AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveInventorySlotData()");
@@ -850,24 +856,10 @@ namespace AnyRPG {
         private void LoadSlotData(InventorySlotSaveData inventorySlotSaveData, int counter, bool bank) {
             if (inventorySlotSaveData.ItemName != string.Empty && inventorySlotSaveData.ItemName != null) {
                 for (int i = 0; i < inventorySlotSaveData.stackCount; i++) {
-                    InstantiatedItem newInstantiatedItem = systemItemManager.GetNewInstantiatedItem(inventorySlotSaveData.ItemName);
+                    InstantiatedItem newInstantiatedItem = playerManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData.ItemName, inventorySlotSaveData);
                     if (newInstantiatedItem == null) {
                         Debug.Log("Savemanager.LoadInventorySlotData(): COULD NOT LOAD ITEM FROM ITEM MANAGER: " + inventorySlotSaveData.ItemName);
                     } else {
-                        newInstantiatedItem.DisplayName = inventorySlotSaveData.DisplayName;
-                        newInstantiatedItem.DropLevel = inventorySlotSaveData.dropLevel;
-                        // disabled the if condition since all items can now have item quality overrides from vendor
-                        //if (newItem.RandomItemQuality == true) {
-                        if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {
-                            newInstantiatedItem.ItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
-                        }
-                        //}
-                        if (newInstantiatedItem is InstantiatedEquipment) {
-                            if (inventorySlotSaveData.randomSecondaryStatIndexes != null) {
-                                (newInstantiatedItem as InstantiatedEquipment).RandomStatIndexes = inventorySlotSaveData.randomSecondaryStatIndexes;
-                                (newInstantiatedItem as InstantiatedEquipment).InitializeRandomStatsFromIndex();
-                            }
-                        }
                         if (bank == true) {
                             playerManager.UnitController.CharacterInventoryManager.AddBankItem(newInstantiatedItem, counter);
                         } else {

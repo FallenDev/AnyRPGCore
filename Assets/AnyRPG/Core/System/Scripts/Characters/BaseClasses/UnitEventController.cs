@@ -115,6 +115,8 @@ namespace AnyRPG {
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
         public event System.Action<string, string, string, QuestObjectiveSaveData> OnSetQuestObjectiveCurrentAmount = delegate { };
+        public event System.Action<int, bool, int> OnPlaceInStack = delegate { };
+        public event System.Action<InstantiatedItem> OnGetNewInstantiatedItem = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -584,6 +586,14 @@ namespace AnyRPG {
 
         public void NotifyOnTurnInQuest(QuestBase oldQuest) {
             OnTurnInQuest(unitController, oldQuest);
+        }
+
+        public void NotifyOnPlaceInStack(InstantiatedItem instantiatedItem, bool addToBank, int slotIndex) {
+            OnPlaceInStack(instantiatedItem.InstanceId, addToBank, slotIndex);
+        }
+
+        public void NotifyOnGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
+            OnGetNewInstantiatedItem(instantiatedItem);
         }
 
         #endregion

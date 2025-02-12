@@ -2,6 +2,7 @@ using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -44,6 +45,20 @@ namespace AnyRPG {
                 }
             }
             return false;
+        }
+
+        public override InventorySlotSaveData GetSlotSaveData() {
+            InventorySlotSaveData saveData = base.GetSlotSaveData();
+            saveData.randomSecondaryStatIndexes = RandomStatIndexes;
+            return saveData;
+        }
+
+        public override void LoadSaveData(InventorySlotSaveData inventorySlotSaveData) {
+            base.LoadSaveData(inventorySlotSaveData);
+            if (inventorySlotSaveData.randomSecondaryStatIndexes != null) {
+                randomStatIndexes = inventorySlotSaveData.randomSecondaryStatIndexes;
+                InitializeRandomStatsFromIndex();
+            }
         }
 
         public override void PostInitialization() {

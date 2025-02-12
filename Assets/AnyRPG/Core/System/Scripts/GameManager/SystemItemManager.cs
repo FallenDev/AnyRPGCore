@@ -6,15 +6,18 @@ using UnityEngine;
 namespace AnyRPG {
     public class SystemItemManager : ConfiguredMonoBehaviour {
 
-        private int itemIdCount = 0;
+        private int clientItemIdCount = 0;
+        private int serverItemIdCount = 0;
 
         // game manager references
         SystemDataFactory systemDataFactory = null;
+        NetworkManagerServer networkManagerServer = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public InstantiatedItem GetNewInstantiatedItem(string itemName, ItemQuality usedItemQuality = null) {
@@ -33,11 +36,27 @@ namespace AnyRPG {
         /// <returns></returns>
         public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality usedItemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
-            InstantiatedItem instantiatedItem = item.GetNewInstantiatedItem(systemGameManager, itemIdCount, item, usedItemQuality);
-            instantiatedItem.InitializeNewItem(usedItemQuality);
-            itemIdCount++;
+            InstantiatedItem instantiatedItem = GetNewInstantiatedItem(GetNewItemInstanceId(), item, usedItemQuality);
             return instantiatedItem;
         }
+
+        public int GetNewItemInstanceId() {
+            int returnValue = (networkManagerServer.ServerModeActive == true ? serverItemIdCount : clientItemIdCount);
+            if (networkManagerServer.ServerModeActive == true) {
+                serverItemIdCount--;
+            } else {
+                clientItemIdCount++;
+            }
+            return returnValue;
+        }
+
+        public InstantiatedItem GetNewInstantiatedItem(int itemInstanceId, Item item, ItemQuality usedItemQuality = null) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            InstantiatedItem instantiatedItem = item.GetNewInstantiatedItem(systemGameManager, itemInstanceId, item, usedItemQuality);
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            return instantiatedItem;
+        }
+
         /*
         public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality usedItemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");

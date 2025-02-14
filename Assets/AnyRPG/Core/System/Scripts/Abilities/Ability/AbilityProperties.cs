@@ -604,10 +604,10 @@ namespace AnyRPG {
                 foreach (EquipmentSlotProfile equipmentSlotProfile in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Keys) {
                     //Debug.Log("ActionButton.UpdateVisual(): updating auto-attack ability");
                     if (equipmentSlotProfile.MainWeaponSlot == true
-                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile] != null
-                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Equipment is Weapon) {
-                        if (actionButton.Icon.sprite != playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon) {
-                            actionButton.Icon.sprite = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Icon;
+                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment != null
+                        && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment is Weapon) {
+                        if (actionButton.Icon.sprite != playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Icon) {
+                            actionButton.Icon.sprite = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Icon;
                             break;
                         }
                     }

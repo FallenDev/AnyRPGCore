@@ -9,9 +9,13 @@ namespace AnyRPG {
         private int clientItemIdCount = 0;
         private int serverItemIdCount = 0;
 
+        private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
+
         // game manager references
         SystemDataFactory systemDataFactory = null;
         NetworkManagerServer networkManagerServer = null;
+
+        public Dictionary<int, InstantiatedItem> InstantiatedItems { get => instantiatedItems; set => instantiatedItems = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);

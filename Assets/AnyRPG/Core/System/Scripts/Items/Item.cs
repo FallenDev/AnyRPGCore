@@ -125,7 +125,7 @@ namespace AnyRPG {
         }
 
         public void GiveReward(UnitController sourceUnitController) {
-            InstantiatedItem newItem = systemItemManager.GetNewInstantiatedItem(this, itemQualityRef);
+            InstantiatedItem newItem = sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(this, itemQualityRef);
             if (newItem != null) {
                 //Debug.Log("RewardButton.CompleteQuest(): newItem is not null, adding to inventory");
                 newItem.DropLevel = sourceUnitController.CharacterStats.Level;

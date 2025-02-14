@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace AnyRPG {
     public class InventorySlot : ConfiguredClass {
 
         public event System.Action OnUpdateSlot = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnAddItem = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItem = delegate { };
 
         /// <summary>
         /// A stack for all items on this slot
@@ -71,7 +74,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
         }
 
-        private void UpdateSlot() {
+        protected virtual void UpdateSlot() {
             SetSlotOnItems();
             OnUpdateSlot();
         }
@@ -87,9 +90,14 @@ namespace AnyRPG {
         public bool AddItem(InstantiatedItem instantiatedItem) {
             //Debug.Log("Slot " + GetInstanceID().ToString() + " with count " + MyItems.Count.ToString() + " adding item " + item.GetInstanceID().ToString());
             InstantiatedItems.Add(instantiatedItem);
+            NotifyOnAddItem(instantiatedItem);
             UpdateSlot();
             //Debug.Log("Slot " + GetInstanceID().ToString() + " now has count " + MyItems.Count.ToString());
             return true;
+        }
+
+        public virtual void NotifyOnAddItem(InstantiatedItem instantiatedItem) {
+            OnAddItem(this, instantiatedItem);
         }
 
         public bool AddItems(List<InstantiatedItem> newInstantiatedItems) {
@@ -111,9 +119,14 @@ namespace AnyRPG {
         public void RemoveItem(InstantiatedItem instantiatedItem) {
             if (!IsEmpty) {
                 InstantiatedItems.Remove(instantiatedItem);
+                NotifyOnRemoveItem(instantiatedItem);
                 UpdateSlot();
                 playerManager.UnitController.CharacterInventoryManager.OnItemCountChanged(instantiatedItem.Item);
             }
+        }
+
+        public virtual void NotifyOnRemoveItem(InstantiatedItem instantiatedItem) {
+            OnRemoveItem(this, instantiatedItem);
         }
 
         /*

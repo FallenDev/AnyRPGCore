@@ -320,10 +320,10 @@ namespace AnyRPG {
             }
 
             foreach (EquipmentSlotProfile equipmentSlotProfile in characterEquipmentManager.CurrentEquipment.Keys) {
-                if (characterEquipmentManager.CurrentEquipment[equipmentSlotProfile] != null) {
+                if (characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment != null) {
                     // armor and weapon models handling
-                    returnValue += PreloadItemModels(characterEquipmentManager.CurrentEquipment[equipmentSlotProfile]);
-                    equippedEquipment[equipmentSlotProfile] = characterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
+                    returnValue += PreloadItemModels(characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment);
+                    equippedEquipment[equipmentSlotProfile] = characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment;
                 }
             }
             return returnValue;

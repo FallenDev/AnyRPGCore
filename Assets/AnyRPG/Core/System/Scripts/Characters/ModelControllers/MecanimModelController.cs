@@ -338,7 +338,7 @@ namespace AnyRPG {
                 return null;
             }
 
-            return characterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
+            return characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment;
         }
 
         public void RebuildModelAppearance() {

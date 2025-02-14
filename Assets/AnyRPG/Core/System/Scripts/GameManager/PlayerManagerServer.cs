@@ -172,7 +172,7 @@ namespace AnyRPG {
                 return;
             }
 
-            InstantiatedItem tmpItem = systemItemManager.GetNewInstantiatedItem(itemName);
+            InstantiatedItem tmpItem = activePlayers[clientId].CharacterInventoryManager.GetNewInstantiatedItem(itemName);
             if (tmpItem != null) {
                 activePlayers[clientId].CharacterInventoryManager.AddItem(tmpItem, false);
             }

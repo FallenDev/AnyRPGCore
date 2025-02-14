@@ -2,6 +2,7 @@ using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -21,28 +22,38 @@ namespace AnyRPG {
 
         // game manager references
         SystemItemManager systemItemManager = null;
+        NetworkManagerServer networkManagerServer = null;
 
         //public Dictionary<EquipmentSlotProfile, Equipment> CurrentEquipment { get => equipmentManager.CurrentEquipment; set => equipmentManager.CurrentEquipment = value; }
         public List<AbilityAttachmentNode> WeaponAbilityAnimationObjects { get => weaponAbilityAnimationObjects; }
         public List<AbilityAttachmentNode> WeaponAbilityObjects { get => weaponAbilityObjects; }
+        public UnitController UnitController { get => unitController; }
 
         public CharacterEquipmentManager(UnitController unitController, SystemGameManager systemGameManager) : base(systemGameManager) {
             this.unitController = unitController;
+            foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
+                EquipmentInventorySlot equipmentInventorySlot = new EquipmentInventorySlot(systemGameManager);
+                unitController.CharacterInventoryManager.EquipmentSlots.Add(equipmentInventorySlot);
+                equipmentInventorySlot.OnAddEquipment += HandleAddEquipment;
+                equipmentInventorySlot.OnRemoveEquipment += HandleRemoveEquipment;
+            }
             //Configure(systemGameManager);
 
             //equipmentManager = new EquipmentManager(systemGameManager);
         }
 
+
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             systemItemManager = systemGameManager.SystemItemManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void HandleCapabilityConsumerChange() {
             List<InstantiatedEquipment> equipmentToRemove = new List<InstantiatedEquipment>();
-            foreach (InstantiatedEquipment instantiatedEquipment in CurrentEquipment.Values) {
-                if (instantiatedEquipment != null && instantiatedEquipment.Equipment.CanEquip(instantiatedEquipment.GetItemLevel(unitController.CharacterStats.Level), unitController) == false) {
-                    equipmentToRemove.Add(instantiatedEquipment);
+            foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null && equipmentInventorySlot.InstantiatedEquipment.Equipment.CanEquip(equipmentInventorySlot.InstantiatedEquipment.GetItemLevel(unitController.CharacterStats.Level), unitController) == false) {
+                    equipmentToRemove.Add(equipmentInventorySlot.InstantiatedEquipment);
                 }
             }
             if (equipmentToRemove.Count > 0) {
@@ -53,9 +64,9 @@ namespace AnyRPG {
             }
 
             // since all status effects were cancelled on the change, it is necessary to re-apply set bonuses
-            foreach (InstantiatedEquipment instantiatedEquipment in CurrentEquipment.Values) {
-                if (instantiatedEquipment != null) {
-                    unitController.CharacterAbilityManager.UpdateEquipmentTraits(instantiatedEquipment);
+            foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
+                if (equipmentInventorySlot != null) {
+                    unitController.CharacterAbilityManager.UpdateEquipmentTraits(equipmentInventorySlot.InstantiatedEquipment);
                 }
             }
         }
@@ -63,8 +74,8 @@ namespace AnyRPG {
         public float GetWeaponDamage() {
             float returnValue = 0f;
             foreach (EquipmentSlotProfile equipmentSlotProfile in CurrentEquipment.Keys) {
-                if (CurrentEquipment[equipmentSlotProfile] != null && CurrentEquipment[equipmentSlotProfile].Equipment is Weapon) {
-                    returnValue += (CurrentEquipment[equipmentSlotProfile].Equipment as Weapon).GetDamagePerSecond(unitController.CharacterStats.Level);
+                if (CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment is Weapon) {
+                    returnValue += (CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment as Weapon).GetDamagePerSecond(unitController.CharacterStats.Level);
                 }
             }
             return returnValue;
@@ -83,7 +94,8 @@ namespace AnyRPG {
             // load the unit profile equipment
             foreach (Equipment equipment in unitController.UnitProfile.EquipmentList) {
                 if (equipment != null) {
-                    Equip(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
+                    
+                    Equip(unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
                 }
             }
 
@@ -93,23 +105,23 @@ namespace AnyRPG {
 
             if (unitController.BaseCharacter.Faction != null) {
                 foreach (Equipment equipment in unitController.BaseCharacter.Faction.EquipmentList) {
-                    Equip(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
+                    Equip(unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
                 }
             }
 
             if (unitController.BaseCharacter.CharacterRace != null) {
                 foreach (Equipment equipment in unitController.BaseCharacter.CharacterRace.EquipmentList) {
-                    Equip(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
+                    Equip(unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
                 }
             }
 
             if (unitController.BaseCharacter.CharacterClass != null) {
                 foreach (Equipment equipment in unitController.BaseCharacter.CharacterClass.EquipmentList) {
-                    Equip(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
+                    Equip(unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
                 }
                 if (unitController.BaseCharacter.ClassSpecialization != null) {
                     foreach (Equipment equipment in unitController.BaseCharacter.ClassSpecialization.EquipmentList) {
-                        Equip(systemItemManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
+                        Equip(unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment, null);
                     }
                 }
             }
@@ -134,20 +146,28 @@ namespace AnyRPG {
                 return false;
             }
 
-
-            equipmentSlotProfile = base.EquipEquipment(newItem, equipmentSlotProfile);
-
-            if (equipmentSlotProfile == null) {
-                Debug.LogError(unitController.gameObject.name + "CharacterEquipmentManager.Equip() " + newItem.Equipment.ResourceName + " equipmentSlotProfile is null.  CHECK INSPECTOR.");
-                return false;
-            }
-
-            // DO THIS LAST OR YOU WILL SAVE THE UMA DATA BEFORE ANYTHING IS EQUIPPED!
-            NotifyEquipmentChanged(newItem, null, -1, equipmentSlotProfile);
+            EquipEquipment(newItem, equipmentSlotProfile);
 
             //Debug.Log("CharacterEquipmentManager.Equip(" + (newItem != null ? newItem.DisplayName : "null") + "; successfully equipped");
 
             return true;
+        }
+
+        public override EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile = null) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
+                return base.EquipEquipment(newEquipment, equipmentSlotProfile);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestEquipEquipment(newEquipment, equipmentSlotProfile);
+                return null;
+            }
+        }
+
+        public void HandleAddEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
+            EquipmentSlotProfile equipmentSlotProfile = currentEquipmentLookup[equipmentInventorySlot];
+
+            // DO THIS LAST OR YOU WILL SAVE THE UMA DATA BEFORE ANYTHING IS EQUIPPED!
+            NotifyEquipmentChanged(instantiatedEquipment, null, -1, currentEquipmentLookup[equipmentInventorySlot]);
+            unitController.UnitEventController.NotifyOnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
 
         public override void UnequipEquipment(EquipmentSlotProfile equipmentSlotProfile) {
@@ -236,21 +256,36 @@ namespace AnyRPG {
             if (CurrentEquipment.ContainsKey(equipmentSlot) && CurrentEquipment[equipmentSlot] != null) {
                 //Debug.Log("equipment manager trying to unequip item in slot " + equipmentSlot.ToString() + "; currentEquipment has this slot key");
 
-                InstantiatedEquipment oldItem = base.UnequipFromList(equipmentSlot);
+                return UnequipFromList(equipmentSlot);
 
-                NotifyEquipmentChanged(null, oldItem, slotIndex, equipmentSlot);
-                return oldItem;
             }
             return null;
+        }
+
+        public void HandleRemoveEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
+            EquipmentSlotProfile equipmentSlotProfile = currentEquipmentLookup[equipmentInventorySlot];
+            // FIX ME - that slotIndex used to come from the Unequip function above so this will go into the first empty slot in the bag instead of the one the old item came from
+            // during a swap - maybe not such a big deal ?
+            NotifyEquipmentChanged(null, instantiatedEquipment, -1, equipmentSlotProfile);
+            unitController.UnitEventController.NotifyOnRemoveEquipment(equipmentSlotProfile, instantiatedEquipment);
+        }
+
+        public override InstantiatedEquipment UnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
+                return base.UnequipFromList(equipmentSlotProfile);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestUnequipFromList(equipmentSlotProfile);
+                return null;
+            }
         }
 
         public bool HasAffinity(WeaponSkill weaponAffinity) {
             //Debug.Log("EquipmentManager.HasAffinity(" + weaponAffinity.ToString() + ")");
             int weaponCount = 0;
-            foreach (InstantiatedEquipment instantiatedEquipment in CurrentEquipment.Values) {
-                if (instantiatedEquipment.Equipment is Weapon) {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null && equipmentInventorySlot.InstantiatedEquipment.Equipment is Weapon) {
                     weaponCount++;
-                    if (weaponAffinity == (instantiatedEquipment.Equipment as Weapon).WeaponSkill) {
+                    if (weaponAffinity == (equipmentInventorySlot.InstantiatedEquipment.Equipment as Weapon).WeaponSkill) {
                         return true;
                     }
                 }

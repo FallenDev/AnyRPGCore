@@ -1122,9 +1122,9 @@ namespace AnyRPG {
             }
 
             if (unitController.CharacterEquipmentManager != null) {
-                foreach (InstantiatedEquipment equipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                foreach (EquipmentInventorySlot equipmentInventorySlot in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
                     //CalculateEquipmentChanged(equipment, null, false);
-                    CalculateEquipmentChanged(equipment, null);
+                    CalculateEquipmentChanged(equipmentInventorySlot.InstantiatedEquipment, null);
                 }
             }
         }

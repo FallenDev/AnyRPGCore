@@ -78,7 +78,7 @@ namespace AnyRPG {
         public ClassSpecialization ClassSpecialization { get => classSpecialization; set => classSpecialization = value; }
         public UnitProfile UnitProfile { get => unitProfile; }
         public PlayerCharacterSaveData PlayerCharacterSaveData { get => playerCharacterSaveData; set => playerCharacterSaveData = value; }
-        public Dictionary<EquipmentSlotProfile, InstantiatedEquipment> EquipmentList { get => equipmentManager.CurrentEquipment; }
+        public Dictionary<EquipmentSlotProfile, EquipmentInventorySlot> EquipmentList { get => equipmentManager.CurrentEquipment; }
         public UnitType UnitType { get => unitType; set => unitType = value; }
         public CapabilityConsumerProcessor CapabilityConsumerProcessor { get => capabilityConsumerProcessor; }
         public string PlayerName { get => playerName; set => playerName = value; }
@@ -713,16 +713,16 @@ namespace AnyRPG {
                 return;
             }
             playerCharacterSaveData.SaveData.equipmentSaveData = new List<EquipmentSaveData>();
-            foreach (InstantiatedEquipment equipment in equipmentManager.CurrentEquipment.Values) {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in equipmentManager.CurrentEquipment.Values) {
                 EquipmentSaveData tmpSaveData = new EquipmentSaveData();
-                tmpSaveData.EquipmentName = (equipment == null ? string.Empty : equipment.ResourceName);
-                tmpSaveData.DisplayName = (equipment == null ? string.Empty : equipment.DisplayName);
-                if (equipment != null) {
-                    if (equipment.ItemQuality != null) {
-                        tmpSaveData.itemQuality = (equipment == null ? string.Empty : equipment.ItemQuality.ResourceName);
+                tmpSaveData.EquipmentName = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.ResourceName);
+                tmpSaveData.DisplayName = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.DisplayName);
+                if (equipmentInventorySlot.InstantiatedEquipment != null) {
+                    if (equipmentInventorySlot.InstantiatedEquipment.ItemQuality != null) {
+                        tmpSaveData.itemQuality = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.ItemQuality.ResourceName);
                     }
-                    tmpSaveData.dropLevel = equipment.DropLevel;
-                    tmpSaveData.randomSecondaryStatIndexes = (equipment == null ? null : equipment.RandomStatIndexes);
+                    tmpSaveData.dropLevel = equipmentInventorySlot.InstantiatedEquipment.DropLevel;
+                    tmpSaveData.randomSecondaryStatIndexes = (equipmentInventorySlot.InstantiatedEquipment == null ? null : equipmentInventorySlot.InstantiatedEquipment.RandomStatIndexes);
                 }
                 playerCharacterSaveData.SaveData.equipmentSaveData.Add(tmpSaveData);
             }

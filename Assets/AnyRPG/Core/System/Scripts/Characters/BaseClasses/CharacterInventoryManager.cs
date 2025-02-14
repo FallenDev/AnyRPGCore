@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -24,6 +25,7 @@ namespace AnyRPG {
 
         private List<InventorySlot> inventorySlots = new List<InventorySlot>();
         private List<InventorySlot> bankSlots = new List<InventorySlot>();
+        private List<EquipmentInventorySlot> equipmentSlots = new List<EquipmentInventorySlot>();
 
         private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
 
@@ -36,6 +38,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         //private ObjectPooler objectPooler = null;
         private SystemEventManager systemEventManager = null;
+        private LogManager logManager = null;
 
         protected bool eventSubscriptionsInitialized = false;
 
@@ -77,6 +80,7 @@ namespace AnyRPG {
         public List<BagNode> BankNodes { get => bankNodes; set => bankNodes = value; }
         public List<InventorySlot> InventorySlots { get => inventorySlots; set => inventorySlots = value; }
         public List<InventorySlot> BankSlots { get => bankSlots; set => bankSlots = value; }
+        public List<EquipmentInventorySlot> EquipmentSlots { get => equipmentSlots; set => equipmentSlots = value; }
 
         public CharacterInventoryManager(UnitController unitController, SystemGameManager systemGameManager) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats()");
@@ -92,6 +96,7 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
             //objectPooler = systemGameManager.ObjectPooler;
             systemEventManager = systemGameManager.SystemEventManager;
+            logManager = systemGameManager.LogManager;
         }
 
 
@@ -143,7 +148,8 @@ namespace AnyRPG {
             int counter = 0;
             foreach (EquippedBagSaveData saveData in equippedBagSaveData) {
                 if (saveData.slotCount > 0) {
-                    InstantiatedBag newBag = systemItemManager.GetNewInstantiatedItem(saveData.BagName) as InstantiatedBag;
+                    //InstantiatedBag newBag = systemItemManager.GetNewInstantiatedItem(saveData.BagName) as InstantiatedBag;
+                    InstantiatedBag newBag = GetNewInstantiatedItem(saveData.BagName) as InstantiatedBag;
                     if (newBag != null) {
                         if (bank == true) {
                             AddBag(newBag, BankNodes[counter]);
@@ -587,19 +593,19 @@ namespace AnyRPG {
         }
         */
 
-        public InstantiatedItem GetNewInstantiatedItem(string itemName) {
+        public InstantiatedItem GetNewInstantiatedItem(string itemName, ItemQuality itemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
             Item item = systemDataFactory.GetResource<Item>(itemName);
             if (item == null) {
                 return null;
             }
-            return GetNewInstantiatedItem(item);
+            return GetNewInstantiatedItem(item, itemQuality);
         }
 
-        public InstantiatedItem GetNewInstantiatedItem(Item item) {
+        public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality itemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
-            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(item, null);
-            instantiatedItem.InitializeNewItem(null);
+            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(item, itemQuality);
+            instantiatedItem.InitializeNewItem(itemQuality);
             instantiatedItem.DropLevel = unitController.CharacterStats.Level;
             instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
             unitController.UnitEventController.NotifyOnGetNewInstantiatedItem(instantiatedItem);
@@ -651,7 +657,39 @@ namespace AnyRPG {
             return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
         }
 
+        public void RequestDeleteItem(InstantiatedItem instantiatedItem) {
+            if (systemGameManager.GameMode == GameMode.Local ) {
+                // currently this only gets called from the hand script
+                DeleteItem(instantiatedItem);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestDeleteItem(instantiatedItem);
+            }
+        }
 
+        public void DeleteItem(int instanceId) {
+            if (instantiatedItems.ContainsKey(instanceId)) {
+                DeleteItem(instantiatedItems[instanceId]);
+            }
+        }
+
+        public void DeleteItem(InstantiatedItem instantiatedItem) {
+            if (instantiatedItem.Slot != null) {
+                instantiatedItem.Slot.Clear();
+            } else {
+                // first we want to get this items equipment slot
+                // next we want to query the equipmentmanager on the charcter to see if he has an item in this items slot, and if it is the item we are dropping
+                // if it is, then we will unequip it, and then destroy it
+                if (instantiatedItem is InstantiatedEquipment) {
+                    unitController.CharacterEquipmentManager.Unequip(instantiatedItem as InstantiatedEquipment);
+                    if (instantiatedItem.Slot != null) {
+                        instantiatedItem.Slot.Clear();
+                    }
+                    unitController.UnitModelController.RebuildModelAppearance();
+                }
+            }
+            unitController.UnitEventController.NotifyOnDeleteItem(instantiatedItem);
+            logManager.WriteSystemMessage(unitController, $"Destroyed {instantiatedItem.DisplayName}");
+        }
     }
 
 }

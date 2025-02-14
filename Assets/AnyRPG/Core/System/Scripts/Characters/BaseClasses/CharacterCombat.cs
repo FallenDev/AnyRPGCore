@@ -834,9 +834,12 @@ namespace AnyRPG {
 
         public virtual void SetAttackSpeed() {
             float maxAttackSpeed = 0f;
-            foreach (InstantiatedEquipment instantiatedEquipment in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
-                if ((instantiatedEquipment.Equipment is Weapon) && (instantiatedEquipment.Equipment as Weapon).WeaponSkill != null && (instantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed > maxAttackSpeed) {
-                    maxAttackSpeed = (instantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed;
+            foreach (EquipmentInventorySlot equipmentInventorySlot in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null
+                    && (equipmentInventorySlot.InstantiatedEquipment.Equipment is Weapon)
+                    && (equipmentInventorySlot.InstantiatedEquipment.Equipment as Weapon).WeaponSkill != null
+                    && (equipmentInventorySlot.InstantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed > maxAttackSpeed) {
+                    maxAttackSpeed = (equipmentInventorySlot.InstantiatedEquipment.Equipment as Weapon).WeaponSkill.WeaponSkillProps.AttackSpeed;
                 }
             }
             attackSpeed = maxAttackSpeed;

@@ -12,12 +12,21 @@ namespace AnyRPG {
     /// </summary>
     public class EquipmentManager : ConfiguredClass {
 
-        protected Dictionary<EquipmentSlotProfile, InstantiatedEquipment> currentEquipment = new Dictionary<EquipmentSlotProfile, InstantiatedEquipment>();
-        
-        public Dictionary<EquipmentSlotProfile, InstantiatedEquipment> CurrentEquipment { get => currentEquipment; set => currentEquipment = value; }
-        
+        //protected Dictionary<EquipmentSlotProfile, InstantiatedEquipment> currentEquipment = new Dictionary<EquipmentSlotProfile, InstantiatedEquipment>();
+        protected Dictionary<EquipmentSlotProfile, EquipmentInventorySlot> currentEquipment = new Dictionary<EquipmentSlotProfile, EquipmentInventorySlot>();
+        protected Dictionary<EquipmentInventorySlot, EquipmentSlotProfile> currentEquipmentLookup = new Dictionary<EquipmentInventorySlot, EquipmentSlotProfile>();
+
+        //public Dictionary<EquipmentSlotProfile, InstantiatedEquipment> CurrentEquipment { get => currentEquipment; set => currentEquipment = value; }
+        public Dictionary<EquipmentSlotProfile, EquipmentInventorySlot> CurrentEquipment { get => currentEquipment; set => currentEquipment = value; }
+
         public EquipmentManager (SystemGameManager systemGameManager) {
             Configure(systemGameManager);
+            foreach (EquipmentSlotProfile equipmentSlotProfile in systemDataFactory.GetResourceList<EquipmentSlotProfile>()) {
+                //currentEquipment.Add(equipmentSlotProfile, null);
+                EquipmentInventorySlot tmpSlot = new EquipmentInventorySlot(systemGameManager);
+                currentEquipment.Add(equipmentSlotProfile, tmpSlot);
+                currentEquipmentLookup.Add(tmpSlot, equipmentSlotProfile);
+            }
         }
 
         public List<EquipmentSlotProfile> GetExclusiveSlotList(EquipmentSlotType equipmentSlotType) {
@@ -44,7 +53,7 @@ namespace AnyRPG {
                     foreach (EquipmentSlotType exclusiveSlotType in equipmentSlotType.ExclusiveSlotTypeList) {
                         //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.UnequipExclusiveSlots(" + equipmentSlotType.DisplayName + "): exclusive slot type: " + exclusiveSlotType);
                         foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                            if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile].Equipment.EquipmentSlotType == exclusiveSlotType) {
+                            if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment.EquipmentSlotType == exclusiveSlotType) {
                                 exclusiveSlotList.Add(equipmentSlotProfile);
                             }
                         }
@@ -58,7 +67,7 @@ namespace AnyRPG {
         public List<EquipmentSlotProfile> GetCompatibleSlotProfiles(EquipmentSlotType equipmentSlotType) {
             List<EquipmentSlotProfile> returnValue = new List<EquipmentSlotProfile>();
             if (equipmentSlotType != null) {
-                foreach (EquipmentSlotProfile equipmentSlotProfile in systemDataFactory.GetResourceList<EquipmentSlotProfile>()) {
+                foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
                     if (equipmentSlotProfile.EquipmentSlotTypeList != null && equipmentSlotProfile.EquipmentSlotTypeList.Contains(equipmentSlotType)) {
                         returnValue.Add(equipmentSlotProfile);
                     }
@@ -72,7 +81,7 @@ namespace AnyRPG {
             //Debug.Log("EquipmentManager.GetFirstEmptySlot()");
             foreach (EquipmentSlotProfile slotProfile in slotProfileList) {
                 if (slotProfile != null) {
-                    if (currentEquipment.ContainsKey(slotProfile) == false || (currentEquipment.ContainsKey(slotProfile) == true && currentEquipment[slotProfile] == null)) {
+                    if (currentEquipment[slotProfile] == null) {
                         //Debug.Log("EquipmentManager.GetFirstEmptySlot(): " + slotProfile);
                         return slotProfile;
                     }
@@ -100,7 +109,7 @@ namespace AnyRPG {
         }
         */
 
-        public EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newItem, EquipmentSlotProfile equipmentSlotProfile = null) {
+        public virtual EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newItem, EquipmentSlotProfile equipmentSlotProfile = null) {
             //Debug.Log("EquipmentManager.EquipEquipment(" + newItem.DisplayName + ", " + (equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName) + ")");
 
             // unequip any item in an exclusive slot for this item
@@ -134,7 +143,7 @@ namespace AnyRPG {
         }
 
         public void EquipToList(InstantiatedEquipment equipment, EquipmentSlotProfile equipmentSlotProfile) {
-            currentEquipment[equipmentSlotProfile] = equipment;
+            currentEquipment[equipmentSlotProfile].AddItem(equipment);
         }
 
 
@@ -142,14 +151,14 @@ namespace AnyRPG {
             UnequipFromList(equipmentSlotProfile);
         }
 
-        public InstantiatedEquipment UnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
+        public virtual InstantiatedEquipment UnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
             //Debug.Log("EquipmentManager.UnequipFromList(" + equipmentSlotProfile.DisplayName + ")");
 
-            if (currentEquipment.ContainsKey(equipmentSlotProfile) && currentEquipment[equipmentSlotProfile] != null) {
-                InstantiatedEquipment oldItem = currentEquipment[equipmentSlotProfile];
+            if (currentEquipment[equipmentSlotProfile] != null) {
+                InstantiatedEquipment oldItem = currentEquipment[equipmentSlotProfile].InstantiatedEquipment;
 
                 //Debug.Log("zeroing equipment slot: " + equipmentSlot.ToString());
-                currentEquipment[equipmentSlotProfile] = null;
+                currentEquipment[equipmentSlotProfile].RemoveItem(oldItem);
 
                 return oldItem;
             }
@@ -161,8 +170,8 @@ namespace AnyRPG {
             int equipmentCount = 0;
 
             if (equipmentSet != null) {
-                foreach (InstantiatedEquipment tmpEquipment in currentEquipment.Values) {
-                    if (tmpEquipment?.Equipment.EquipmentSet != null && tmpEquipment.Equipment.EquipmentSet == equipmentSet) {
+                foreach (EquipmentInventorySlot tmpEquipmentInventorySlot in currentEquipment.Values) {
+                    if (tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet != null && tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet == equipmentSet) {
                         equipmentCount++;
                     }
                 }
@@ -178,7 +187,7 @@ namespace AnyRPG {
         /// <returns></returns>
         public EquipmentSlotProfile FindEquipmentSlotForEquipment(InstantiatedEquipment instantiatedEquipment) {
             foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile] == instantiatedEquipment) {
+                if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment == instantiatedEquipment) {
                     return equipmentSlotProfile;
                 }
             }
@@ -186,9 +195,9 @@ namespace AnyRPG {
         }
 
         public bool HasEquipment(string equipmentName, bool partialMatch = false) {
-            foreach (InstantiatedEquipment instantiatedEquipment in currentEquipment.Values) {
-                if (instantiatedEquipment != null) {
-                    if (SystemDataUtility.MatchResource(instantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
+                if (equipmentInventorySlot != null) {
+                    if (SystemDataUtility.MatchResource(equipmentInventorySlot.InstantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
                         return true;
                     }
                 }
@@ -198,9 +207,9 @@ namespace AnyRPG {
 
         public int GetEquipmentCount(string equipmentName, bool partialMatch = false) {
             int returnValue = 0;
-            foreach (InstantiatedEquipment instantiatedEquipment in currentEquipment.Values) {
-                if (instantiatedEquipment != null) {
-                    if (SystemDataUtility.MatchResource(instantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
+                if (equipmentInventorySlot != null) {
+                    if (SystemDataUtility.MatchResource(equipmentInventorySlot.InstantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
                         returnValue++;
                     }
                 }

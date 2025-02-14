@@ -126,23 +126,8 @@ namespace AnyRPG {
         public void DeleteItem() {
             //Debug.Log("HandScript.DeleteItem()");
             if (Moveable is InstantiatedItem) {
-                InstantiatedItem instantiatedItem = (InstantiatedItem)Moveable;
-                if (instantiatedItem.Slot != null) {
-                    instantiatedItem.Slot.Clear();
-                } else {
-                    // first we want to get this items equipment slot
-                    // next we want to query the equipmentmanager on the charcter to see if he has an item in this items slot, and if it is the item we are dropping
-                    // if it is, then we will unequip it, and then destroy it
-                    if (instantiatedItem is InstantiatedEquipment) {
-                        playerManager.UnitController.CharacterEquipmentManager.Unequip(instantiatedItem as InstantiatedEquipment);
-                        if (instantiatedItem.Slot != null) {
-                            instantiatedItem.Slot.Clear();
-                        }
-                        playerManager.UnitController.UnitModelController.RebuildModelAppearance();
-                    }
-                }
+                playerManager.UnitController.CharacterInventoryManager.RequestDeleteItem((InstantiatedItem)Moveable);
             }
-            logManager.WriteSystemMessage("Destroyed " + Moveable.DisplayName);
             Drop();
         }
     }

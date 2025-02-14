@@ -110,6 +110,8 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnBeginAbility += HandleBeginAbilityLocal;
                 unitController.UnitEventController.OnSetTarget += HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
+                unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
+                unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -123,6 +125,8 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnBeginAbility -= HandleBeginAbilityLocal;
                 unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
+                unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
+                unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -167,6 +171,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
             unitController.UnitEventController.OnGetNewInstantiatedItem += HandleGetNewInstantiatedItem;
+            unitController.UnitEventController.OnDeleteItem += HandleDeleteItemServer;
+            unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
+            unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -207,7 +214,78 @@ namespace AnyRPG {
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOptionServer;
             unitController.UnitEventController.OnGetNewInstantiatedItem -= HandleGetNewInstantiatedItem;
+            unitController.UnitEventController.OnDeleteItem -= HandleDeleteItemServer;
+            unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
+            unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
+        }
 
+        public void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            HandleRemoveEquipmentClient(profile.ResourceName, equipment.InstanceId);
+        }
+
+        [ObserversRpc]
+        public void HandleRemoveEquipmentClient(string equipmentSlotProfileName, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
+                EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
+                if (equipmentSlotProfile == null) {
+                    return;
+                }
+                unitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].RemoveItem(systemItemManager.InstantiatedItems[itemInstanceId]);
+            }
+
+        }
+
+        public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            HandleAddEquipmentClient(profile.ResourceName, equipment.InstanceId);
+        }
+
+        [ObserversRpc]
+        public void HandleAddEquipmentClient(string equipmentSlotProfileName, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
+                EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
+                if (equipmentSlotProfile == null) {
+                    return;
+                }
+                unitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].AddItem(systemItemManager.InstantiatedItems[itemInstanceId]);
+            }
+        }
+
+        public void HandleRequestUnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
+            RequestUnequipFromList(equipmentSlotProfile.ResourceName);
+        }
+
+        [ServerRpc]
+        public void RequestUnequipFromList(string equipmentSlotProfileName) {
+            EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
+            if (equipmentSlotProfile == null) {
+                return;
+            }
+            unitController.CharacterEquipmentManager.UnequipFromList(equipmentSlotProfile);
+        }
+
+        public void HandleRequestEquipEquipment(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
+            RequestEquipEquipment(equipment.InstanceId, profile.ResourceName);
+        }
+
+        [ServerRpc]
+        public void RequestEquipEquipment(int itemInstanceId, string equipmentSlotProfileName) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
+                EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
+                if (equipmentSlotProfile == null) {
+                    return;
+                }
+                unitController.CharacterEquipmentManager.EquipEquipment(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, equipmentSlotProfile);
+            }
+        }
+
+
+        public void HandleDeleteItemServer(InstantiatedItem item) {
+            HandleDeleteItemClient(item.InstanceId);
+        }
+
+        [ObserversRpc]
+        public void HandleDeleteItemClient(int itemInstanceId) {
+            unitController.CharacterInventoryManager.DeleteItem(itemInstanceId);
         }
 
         public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {

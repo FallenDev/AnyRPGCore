@@ -656,10 +656,11 @@ namespace AnyRPG {
 
                 // unequip equipment not in current list
                 List<InstantiatedEquipment> removeList = new List<InstantiatedEquipment>();
-                foreach (InstantiatedEquipment instantiatedEquipment in characterEquipmentManager.CurrentEquipment.Values) {
+                foreach (EquipmentInventorySlot equipmentInventorySlot in characterEquipmentManager.CurrentEquipment.Values) {
                     //Debug.Log("NewGamePanel.EquipCharacter(): checking for removal : " + (equipment == null ? "null" : equipment.DisplayName));
-                    if (instantiatedEquipment != null && !newGameManager.EquipmentList.ContainsValue(instantiatedEquipment)) {
-                        removeList.Add(instantiatedEquipment);
+                    if (equipmentInventorySlot.InstantiatedEquipment != null
+                        && NewGameManagerEquipmentListContains(equipmentInventorySlot.InstantiatedEquipment.Equipment) == false) {
+                        removeList.Add(equipmentInventorySlot.InstantiatedEquipment);
                     }
                 }
                 foreach (InstantiatedEquipment instantiatedEquipment in removeList) {
@@ -674,9 +675,9 @@ namespace AnyRPG {
                     foreach (EquipmentSlotProfile equipmentSlotProfile in newGameManager.EquipmentList.Keys) {
                         //Debug.Log("NewGameCharacterPanelController.EquipCharacter(): ask to equip: " + equipment.DisplayName);
                         if (characterEquipmentManager.CurrentEquipment.ContainsKey(equipmentSlotProfile) == false
-                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile] == null
-                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].Equipment != newGameManager.EquipmentList[equipmentSlotProfile].Equipment) {
-                            characterEquipmentManager.Equip(systemItemManager.GetNewInstantiatedItem(newGameManager.EquipmentList[equipmentSlotProfile].Equipment) as InstantiatedEquipment, equipmentSlotProfile);
+                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment == null
+                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment != newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment) {
+                            characterEquipmentManager.Equip(characterEquipmentManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment) as InstantiatedEquipment, equipmentSlotProfile);
                             changes++;
                         }
                     }
@@ -686,6 +687,15 @@ namespace AnyRPG {
                     characterCreatorManager.PreviewUnitController.UnitModelController.RebuildModelAppearance();
                 }
             }
+        }
+
+        private bool NewGameManagerEquipmentListContains(Equipment equipment) {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in newGameManager.EquipmentList.Values) {
+                if (equipmentInventorySlot.InstantiatedEquipment!= null && equipmentInventorySlot.InstantiatedEquipment.Equipment == equipment) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void ClosePanel() {

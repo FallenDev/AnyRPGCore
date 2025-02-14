@@ -17,6 +17,7 @@ namespace AnyRPG {
         protected SystemGameManager systemGameManager = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected SystemItemManager systemItemManager = null;
 
         public Interactable Interactable { get => interactable; }
 
@@ -28,6 +29,7 @@ namespace AnyRPG {
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            systemItemManager = systemGameManager.SystemItemManager;
             
             interactable = GetComponent<Interactable>();
         }

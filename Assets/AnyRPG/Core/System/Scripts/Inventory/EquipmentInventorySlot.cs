@@ -1,0 +1,48 @@
+using AnyRPG;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace AnyRPG {
+    public class EquipmentInventorySlot : InventorySlot {
+
+        public event System.Action<EquipmentInventorySlot> OnUpdateEquipmentSlot = delegate { };
+        public event System.Action<EquipmentInventorySlot, InstantiatedEquipment> OnAddEquipment = delegate { };
+        public event System.Action<EquipmentInventorySlot, InstantiatedEquipment> OnRemoveEquipment = delegate { };
+
+        protected InstantiatedEquipment instantiatedEquipment;
+
+        public InstantiatedEquipment InstantiatedEquipment {
+            get { return instantiatedEquipment; }
+        }
+
+        public EquipmentInventorySlot(SystemGameManager systemGameManager) : base(systemGameManager) {
+            Configure(systemGameManager);
+        }
+
+        protected override void UpdateSlot() {
+            if (instantiatedItems.Count > 0 && instantiatedItems[0] is InstantiatedEquipment) {
+                instantiatedEquipment = instantiatedItems[0] as InstantiatedEquipment;
+            }
+            base.UpdateSlot();
+            OnUpdateEquipmentSlot(this);
+        }
+
+        public override void NotifyOnAddItem(InstantiatedItem instantiatedItem) {
+            base.NotifyOnAddItem(instantiatedItem);
+            if (instantiatedItem is InstantiatedEquipment) {
+                OnAddEquipment(this, instantiatedItem as InstantiatedEquipment);
+            }
+        }
+
+        public override void NotifyOnRemoveItem(InstantiatedItem instantiatedItem) {
+            base.NotifyOnRemoveItem(instantiatedItem);
+            if (instantiatedItem is InstantiatedEquipment) {
+                OnRemoveEquipment(this, instantiatedItem as InstantiatedEquipment);
+            }
+        }
+    }
+
+}

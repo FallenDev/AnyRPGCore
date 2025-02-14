@@ -61,7 +61,7 @@ namespace AnyRPG {
                 return null;
             }
 
-            return characterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
+            return characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment;
         }
 
         private int RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {

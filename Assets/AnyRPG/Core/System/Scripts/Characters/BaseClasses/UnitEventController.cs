@@ -117,6 +117,12 @@ namespace AnyRPG {
         public event System.Action<string, string, string, QuestObjectiveSaveData> OnSetQuestObjectiveCurrentAmount = delegate { };
         public event System.Action<int, bool, int> OnPlaceInStack = delegate { };
         public event System.Action<InstantiatedItem> OnGetNewInstantiatedItem = delegate { };
+        public event System.Action<InstantiatedItem> OnRequestDeleteItem = delegate { };
+        public event System.Action<InstantiatedItem> OnDeleteItem = delegate { };
+        public event System.Action<InstantiatedEquipment, EquipmentSlotProfile> OnRequestEquipEquipment = delegate { };
+        public event System.Action<EquipmentSlotProfile> OnRequestUnequipFromList = delegate { };
+        public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
+        public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -594,6 +600,30 @@ namespace AnyRPG {
 
         public void NotifyOnGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
             OnGetNewInstantiatedItem(instantiatedItem);
+        }
+
+        public void NotifyOnRequestDeleteItem(InstantiatedItem instantiatedItem) {
+            OnRequestDeleteItem(instantiatedItem);
+        }
+
+        public void NotifyOnDeleteItem(InstantiatedItem instantiatedItem) {
+            OnDeleteItem(instantiatedItem);
+        }
+
+        public void NotifyOnRequestEquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile) {
+            OnRequestEquipEquipment(newEquipment, equipmentSlotProfile);
+        }
+
+        public void NotifyOnRequestUnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
+            OnRequestUnequipFromList(equipmentSlotProfile);
+        }
+
+        public void NotifyOnRemoveEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
+            OnRemoveEquipment(equipmentSlotProfile, instantiatedEquipment);
+        }
+
+        public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
+            OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
 
         #endregion

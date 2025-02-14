@@ -157,7 +157,7 @@ namespace AnyRPG {
                     tmpInstantiatedItem = vendorItem.InstantiatedItem;
                 } else {
                     // if this is a new purchase, a new copy of the item must be instantiated since the button is referring to the original factory item template
-                    tmpInstantiatedItem = systemItemManager.GetNewInstantiatedItem(vendorItem.Item.ResourceName, vendorItem.GetItemQuality());
+                    tmpInstantiatedItem = playerManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(vendorItem.Item.ResourceName, vendorItem.GetItemQuality());
                     //Debug.Log("Instantiated an item with id: " + tmpItem.GetInstanceID().ToString());
                 }
 

@@ -135,7 +135,7 @@ namespace AnyRPG {
             InstantiatedEquipment tmpEquipment = equippedEquipment;
             if (equipmentSlotProfile != null && playerManager.UnitController != null && playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.ContainsKey(equipmentSlotProfile)) {
                 //Debug.Log($"{gameObject.name}CharacterButton.UpdateVisual(): equipmentslotprofile was not null and player has quipment in this slot");
-                equippedEquipment = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
+                equippedEquipment = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment;
             } else {
                 /*
                 if (equipmentSlotProfile == null) {

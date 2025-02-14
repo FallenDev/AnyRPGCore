@@ -463,6 +463,7 @@ namespace AnyRPG {
 
             baseCharacter = new BaseCharacter(this, systemGameManager);
             characterStats = new CharacterStats(this, systemGameManager);
+            characterInventoryManager = new CharacterInventoryManager(this, systemGameManager);
             characterEquipmentManager = new CharacterEquipmentManager(this, systemGameManager);
             characterFactionManager = new CharacterFactionManager(this, systemGameManager);
             characterPetManager = new CharacterPetManager(this, systemGameManager);
@@ -471,7 +472,6 @@ namespace AnyRPG {
             characterCurrencyManager = new CharacterCurrencyManager(this, systemGameManager);
             characterRecipeManager = new CharacterRecipeManager(this, systemGameManager);
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
-            characterInventoryManager = new CharacterInventoryManager(this, systemGameManager);
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
             characterSaveManager = new CharacterSaveManager(this, systemGameManager);
 

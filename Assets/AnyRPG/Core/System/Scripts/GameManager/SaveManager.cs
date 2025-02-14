@@ -672,16 +672,16 @@ namespace AnyRPG {
         public void SaveEquipmentData(AnyRPGSaveData anyRPGSaveData) {
             //Debug.Log("Savemanager.SaveEquipmentData()");
             if (playerManager != null && playerManager.UnitController != null && playerManager.UnitController.CharacterEquipmentManager != null) {
-                foreach (InstantiatedEquipment instantiatedEquipment in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Values) {
+                foreach (EquipmentInventorySlot equipmentInventorySlot in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Values) {
                     EquipmentSaveData saveData = new EquipmentSaveData();
-                    saveData.EquipmentName = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.ResourceName);
-                    saveData.DisplayName = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.DisplayName);
-                    if (instantiatedEquipment != null) {
-                        if (instantiatedEquipment.ItemQuality != null) {
-                            saveData.itemQuality = (instantiatedEquipment == null ? string.Empty : instantiatedEquipment.ItemQuality.ResourceName);
+                    saveData.EquipmentName = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.ResourceName);
+                    saveData.DisplayName = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.DisplayName);
+                    if (equipmentInventorySlot.InstantiatedEquipment != null) {
+                        if (equipmentInventorySlot.InstantiatedEquipment.ItemQuality != null) {
+                            saveData.itemQuality = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.ItemQuality.ResourceName);
                         }
-                        saveData.dropLevel = instantiatedEquipment.DropLevel;
-                        saveData.randomSecondaryStatIndexes = (instantiatedEquipment == null ? null : instantiatedEquipment.RandomStatIndexes);
+                        saveData.dropLevel = equipmentInventorySlot.InstantiatedEquipment.DropLevel;
+                        saveData.randomSecondaryStatIndexes = (equipmentInventorySlot.InstantiatedEquipment == null ? null : equipmentInventorySlot.InstantiatedEquipment.RandomStatIndexes);
                     }
                     anyRPGSaveData.equipmentSaveData.Add(saveData);
                 }
@@ -875,7 +875,7 @@ namespace AnyRPG {
 
             foreach (EquipmentSaveData equipmentSaveData in anyRPGSaveData.equipmentSaveData) {
                 if (equipmentSaveData.EquipmentName != string.Empty) {
-                    InstantiatedEquipment newInstantiatedEquipment = systemItemManager.GetNewInstantiatedItem(equipmentSaveData.EquipmentName) as InstantiatedEquipment;
+                    InstantiatedEquipment newInstantiatedEquipment = characterEquipmentManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(equipmentSaveData.EquipmentName) as InstantiatedEquipment;
                     if (newInstantiatedEquipment != null) {
                         newInstantiatedEquipment.DisplayName = equipmentSaveData.DisplayName;
                         newInstantiatedEquipment.DropLevel = equipmentSaveData.dropLevel;
@@ -1119,7 +1119,7 @@ namespace AnyRPG {
         public void CreateDefaultBackpack() {
             //Debug.Log("InventoryManager.CreateDefaultBackpack()");
             if (systemConfigurationManager.DefaultBackpackItem != null && systemConfigurationManager.DefaultBackpackItem != string.Empty) {
-                InstantiatedBag instantiatedBag = systemItemManager.GetNewInstantiatedItem(systemConfigurationManager.DefaultBackpackItem) as InstantiatedBag;
+                InstantiatedBag instantiatedBag = playerManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(systemConfigurationManager.DefaultBackpackItem) as InstantiatedBag;
                 if (instantiatedBag == null) {
                     Debug.LogError("InventoryManager.CreateDefaultBankBag(): CHECK INVENTORYMANAGER IN INSPECTOR AND SET DEFAULTBACKPACK TO VALID NAME");
                     return;

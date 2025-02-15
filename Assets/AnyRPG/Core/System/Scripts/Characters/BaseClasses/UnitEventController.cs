@@ -121,8 +121,12 @@ namespace AnyRPG {
         public event System.Action<InstantiatedItem> OnDeleteItem = delegate { };
         public event System.Action<InstantiatedEquipment, EquipmentSlotProfile> OnRequestEquipEquipment = delegate { };
         public event System.Action<EquipmentSlotProfile> OnRequestUnequipFromList = delegate { };
-        public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
         public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
+        public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnAddItemToInventorySlot = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnAddItemToBankSlot = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromInventorySlot = delegate { };
+        public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromBankSlot = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -624,6 +628,22 @@ namespace AnyRPG {
 
         public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
             OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
+        }
+
+        public void NotifyOnAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            OnAddItemToInventorySlot(slot, item);
+        }
+
+        public void NotifyOnRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            OnRemoveItemFromInventorySlot(slot, item);
+        }
+
+        public void NotifyOnAddItemToBankSlot(InventorySlot slot, InstantiatedItem item) {
+            OnAddItemToBankSlot(slot, item);
+        }
+
+        public void NotifyOnRemoveItemFromBankSlot(InventorySlot slot, InstantiatedItem item) {
+            OnRemoveItemFromBankSlot(slot, item);
         }
 
         #endregion

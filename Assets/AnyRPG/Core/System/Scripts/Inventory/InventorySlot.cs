@@ -151,9 +151,9 @@ namespace AnyRPG {
         }
         */
 
-        public int GetCurrentSlotIndex() {
-            for (int i = 0; i < playerManager.UnitController.CharacterInventoryManager.InventorySlots.Count; i++) {
-                if (playerManager.UnitController.CharacterInventoryManager.InventorySlots[i] == this) {
+        public int GetCurrentInventorySlotIndex(UnitController sourceUnitController) {
+            for (int i = 0; i < sourceUnitController.CharacterInventoryManager.InventorySlots.Count; i++) {
+                if (sourceUnitController.CharacterInventoryManager.InventorySlots[i] == this) {
                     return i;
                 }
             }
@@ -161,6 +161,18 @@ namespace AnyRPG {
             // didn't find anything, this will send whatever needs this to the default slot
             return -1;
         }
+
+        public int GetCurrentBankSlotIndex(UnitController sourceUnitController) {
+            for (int i = 0; i < sourceUnitController.CharacterInventoryManager.BankSlots.Count; i++) {
+                if (sourceUnitController.CharacterInventoryManager.BankSlots[i] == this) {
+                    return i;
+                }
+            }
+
+            // didn't find anything, this will send whatever needs this to the default slot
+            return -1;
+        }
+
 
         public void Clear() {
             if (InstantiatedItems.Count > 0) {

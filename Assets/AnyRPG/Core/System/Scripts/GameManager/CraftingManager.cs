@@ -141,7 +141,7 @@ namespace AnyRPG {
                         //Debug.Log("CraftingUI.CraftNextItem(): looping through crafting materials");
                         for (int i = 0; i < craftingMaterial.Count; i++) {
                             //Debug.Log("CraftingUI.CraftNextItem(): about to remove item from inventory");
-                            playerManager.UnitController.CharacterInventoryManager.RemoveItem(playerManager.UnitController.CharacterInventoryManager.GetItems(craftingMaterial.Item.ResourceName, 1)[0]);
+                            playerManager.UnitController.CharacterInventoryManager.RemoveInventoryItem(playerManager.UnitController.CharacterInventoryManager.GetItems(craftingMaterial.Item.ResourceName, 1)[0]);
                         }
                     }
                     craftingQueue.RemoveAt(0);

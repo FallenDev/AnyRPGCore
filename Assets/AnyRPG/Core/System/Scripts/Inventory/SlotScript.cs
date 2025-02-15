@@ -161,7 +161,7 @@ namespace AnyRPG {
                     // the handscript had equipment in it, and therefore we are trying to unequip some equipment
                     Equipment equipment = (Equipment)handScript.Moveable;
                     EquipmentSlotProfile equipmentSlotProfile = playerManager.UnitController.CharacterEquipmentManager.FindEquipmentSlotForEquipment(handScript.Moveable as InstantiatedEquipment);
-                    playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile, inventorySlot.GetCurrentSlotIndex());
+                    playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile, inventorySlot.GetCurrentInventorySlotIndex(playerManager.UnitController));
                     playerManager.UnitController.UnitModelController.RebuildModelAppearance();
                     handScript.Drop();
                 }

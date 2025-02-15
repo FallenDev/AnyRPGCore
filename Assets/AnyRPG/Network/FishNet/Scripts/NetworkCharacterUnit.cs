@@ -174,6 +174,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDeleteItem += HandleDeleteItemServer;
             unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
+            unitController.UnitEventController.OnAddItemToInventorySlot += HandleAddItemToInventorySlot;
+            unitController.UnitEventController.OnRemoveItemFromInventorySlot += HandleRemoveItemFromInventorySlot;
+            unitController.UnitEventController.OnAddItemToBankSlot += HandleAddItemToBankSlot;
+            unitController.UnitEventController.OnRemoveItemFromBankSlot += HandleRemoveItemFromBankSlot;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -217,6 +221,55 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDeleteItem -= HandleDeleteItemServer;
             unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
+            unitController.UnitEventController.OnAddItemToInventorySlot -= HandleAddItemToInventorySlot;
+            unitController.UnitEventController.OnRemoveItemFromInventorySlot -= HandleRemoveItemFromInventorySlot;
+            unitController.UnitEventController.OnAddItemToBankSlot -= HandleAddItemToBankSlot;
+            unitController.UnitEventController.OnRemoveItemFromBankSlot -= HandleRemoveItemFromBankSlot;
+        }
+
+        private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            AddItemToInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
+        }
+
+        [ObserversRpc]
+        private void AddItemToInventorySlotClient(int slotIndex, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
+                unitController.CharacterInventoryManager.AddInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
+            }
+        }
+
+        private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            RemoveItemFromInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
+
+        }
+
+        [ObserversRpc]
+        private void RemoveItemFromInventorySlotClient(int slotIndex, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
+                unitController.CharacterInventoryManager.RemoveInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
+            }
+        }
+
+        private void HandleAddItemToBankSlot(InventorySlot slot, InstantiatedItem item) {
+            AddItemToBankSlotClient(slot.GetCurrentBankSlotIndex(unitController), item.InstanceId);
+        }
+
+        [ObserversRpc]
+        private void AddItemToBankSlotClient(int slotIndex, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
+                unitController.CharacterInventoryManager.AddBankItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
+            }
+        }
+
+        private void HandleRemoveItemFromBankSlot(InventorySlot slot, InstantiatedItem item) {
+            RemoveItemFromBankSlotClient(slot.GetCurrentBankSlotIndex(unitController), item.InstanceId);
+        }
+
+        [ObserversRpc]
+        private void RemoveItemFromBankSlotClient(int slotIndex, int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
+                unitController.CharacterInventoryManager.RemoveBankItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
+            }
         }
 
         public void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {

@@ -167,11 +167,55 @@ namespace AnyRPG {
             List<InventorySlot> returnList = new List<InventorySlot>();
             for (int i = 0; i < numSlots; i++) {
                 InventorySlot inventorySlot = new InventorySlot(systemGameManager);
-                inventorySlots.Add(inventorySlot);
                 returnList.Add(inventorySlot);
-                OnAddInventorySlot(inventorySlot);
+                AddInventorySlot(inventorySlot);
             }
             return returnList;
+        }
+
+        private void AddInventorySlot(InventorySlot inventorySlot) {
+            inventorySlots.Add(inventorySlot);
+            inventorySlot.OnAddItem += HandleAddItemToInventorySlot;
+            inventorySlot.OnRemoveItem += HandleRemoveItemFromInventorySlot;
+            OnAddInventorySlot(inventorySlot);
+        }
+
+        private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            unitController.UnitEventController.NotifyOnRemoveItemFromInventorySlot(slot, item);
+        }
+
+        private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            unitController.UnitEventController.NotifyOnAddItemToInventorySlot(slot, item);
+        }
+
+        private void RemoveInventorySlot(InventorySlot inventorySlot) {
+            inventorySlots.Remove(inventorySlot);
+            inventorySlot.OnAddItem -= HandleAddItemToInventorySlot;
+            inventorySlot.OnRemoveItem -= HandleRemoveItemFromInventorySlot;
+            OnRemoveInventorySlot(inventorySlot);
+        }
+
+        private void AddBankSlot(InventorySlot inventorySlot) {
+            bankSlots.Add(inventorySlot);
+            inventorySlot.OnAddItem += HandleAddItemToBankSlot;
+            inventorySlot.OnRemoveItem += HandleRemoveItemFromBankSlot;
+            OnAddBankSlot(inventorySlot);
+        }
+
+        private void RemoveBankSlot(InventorySlot inventorySlot) {
+            bankSlots.Remove(inventorySlot);
+            inventorySlot.OnAddItem -= HandleAddItemToBankSlot;
+            inventorySlot.OnRemoveItem -= HandleRemoveItemFromBankSlot;
+            OnRemoveBankSlot(inventorySlot);
+        }
+
+        private void HandleRemoveItemFromBankSlot(InventorySlot slot, InstantiatedItem item) {
+            unitController.UnitEventController.NotifyOnRemoveItemFromBankSlot(slot, item);
+
+        }
+
+        private void HandleAddItemToBankSlot(InventorySlot slot, InstantiatedItem item) {
+            unitController.UnitEventController.NotifyOnAddItemToBankSlot(slot, item);
         }
 
         public List<InventorySlot> AddBankSlots(int numSlots) {
@@ -179,9 +223,8 @@ namespace AnyRPG {
             List<InventorySlot> returnList = new List<InventorySlot>();
             for (int i = 0; i < numSlots; i++) {
                 InventorySlot inventorySlot = new InventorySlot(systemGameManager);
-                bankSlots.Add(inventorySlot);
                 returnList.Add(inventorySlot);
-                OnAddBankSlot(inventorySlot);
+                AddBankSlot(inventorySlot);
             }
             return returnList;
         }
@@ -189,12 +232,10 @@ namespace AnyRPG {
         public void ClearSlots(List<InventorySlot> clearSlots) {
             foreach (InventorySlot inventorySlot in clearSlots) {
                 if (inventorySlots.Contains(inventorySlot)) {
-                    inventorySlots.Remove(inventorySlot);
-                    OnRemoveInventorySlot(inventorySlot);
+                    RemoveInventorySlot(inventorySlot);
                 }
                 if (bankSlots.Contains(inventorySlot)) {
-                    bankSlots.Remove(inventorySlot);
-                    OnRemoveBankSlot(inventorySlot);
+                    RemoveBankSlot(inventorySlot);
                 }
             }
         }
@@ -210,16 +251,14 @@ namespace AnyRPG {
         public void InitializeDefaultInventorySlots() {
             for (int i = 0; i < systemConfigurationManager.DefaultInventorySlots; i++) {
                 InventorySlot inventorySlot = new InventorySlot(systemGameManager);
-                inventorySlots.Add(inventorySlot);
-                OnAddInventorySlot(inventorySlot);
+                AddInventorySlot(inventorySlot);
             }
         }
 
         public void InitializeDefaultBankSlots() {
             for (int i = 0; i < systemConfigurationManager.DefaultBankSlots; i++) {
                 InventorySlot inventorySlot = new InventorySlot(systemGameManager);
-                bankSlots.Add(inventorySlot);
-                OnAddBankSlot(inventorySlot);
+                AddBankSlot(inventorySlot);
             }
         }
 
@@ -428,9 +467,21 @@ namespace AnyRPG {
             return AddItem(instantiatedItem, true);
         }
 
-        public void RemoveItem(InstantiatedItem instantiatedItem) {
+        public void RemoveInventoryItem(InstantiatedItem instantiatedItem, int slotIndex) {
+            if (inventorySlots.Count > slotIndex) {
+                inventorySlots[slotIndex].RemoveItem(instantiatedItem);
+            }
+        }
+
+        public void RemoveBankItem(InstantiatedItem instantiatedItem, int slotIndex) {
+            if (bankSlots.Count > slotIndex) {
+                bankSlots[slotIndex].RemoveItem(instantiatedItem);
+            }
+        }
+
+        public void RemoveInventoryItem(InstantiatedItem instantiatedItem) {
             foreach (InventorySlot slot in inventorySlots) {
-                if (!slot.IsEmpty && SystemDataUtility.MatchResource(slot.InstantiatedItem.Item.ResourceName, instantiatedItem.Item.ResourceName)) {
+                if (!slot.IsEmpty && slot.InstantiatedItem == instantiatedItem) {
                     slot.RemoveItem(instantiatedItem);
                     return;
                 }

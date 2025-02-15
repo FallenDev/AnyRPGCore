@@ -55,6 +55,8 @@ namespace AnyRPG {
         private InteractionManager interactionManager = null;
         private LevelManagerServer levelManagerServer = null;
         private SystemDataFactory systemDataFactory = null;
+        private VendorManager vendorManager = null;
+        private SystemItemManager systemItemManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -74,6 +76,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             levelManagerServer = systemGameManager.LevelManagerServer;
             systemDataFactory = systemGameManager.SystemDataFactory;
+            vendorManager = systemGameManager.VendorManager;
 
             networkController?.Configure(systemGameManager);
 
@@ -627,6 +630,16 @@ namespace AnyRPG {
 
         public void AdvertiseSystemMessage(UnitController sourceUnitController, string message) {
             networkController.AdvertiseSystemMessage(playerManagerServer.ActivePlayerLookup[sourceUnitController], message);
+        }
+
+        public void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId, int clientId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) == false) {
+                return;
+            }
+            vendorManager.SellItemServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
         }
 
         /*

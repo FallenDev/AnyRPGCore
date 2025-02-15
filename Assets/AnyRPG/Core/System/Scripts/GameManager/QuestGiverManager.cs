@@ -10,7 +10,6 @@ namespace AnyRPG {
 
         // game manager references
         private PlayerManager playerManager = null;
-        private NetworkManagerClient networkManagerClient = null;
         private NetworkManagerServer networkManagerServer = null;
         private MessageFeedManager messageFeedManager = null;
         private LogManager logManager = null;
@@ -22,7 +21,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
-            networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             logManager = systemGameManager.LogManager;

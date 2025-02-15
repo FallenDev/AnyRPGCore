@@ -26,8 +26,6 @@ namespace AnyRPG {
 
         protected int dropDownIndex = 0;
 
-        VendorCollection buyBackCollection = null;
-
         // track the interactable to send a message back when the window closes
         //InteractableOptionComponent interactableOptionComponent = null;
 
@@ -44,7 +42,6 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
 
             CreateEventSubscriptions();
-            buyBackCollection = ScriptableObject.CreateInstance(typeof(VendorCollection)) as VendorCollection;
 
             currencyBarController.Configure(systemGameManager);
             currencyBarController.SetToolTipTransform(rectTransform);
@@ -173,7 +170,7 @@ namespace AnyRPG {
             UpdateCurrencyAmount();
             dropDownIndex = 1;
             this.vendorCollections = new List<VendorCollection>(1 + vendorCollections.Count);
-            this.vendorCollections.Add(buyBackCollection);
+            this.vendorCollections.Add(vendorManager.VendorComponent.BuyBackCollection);
             this.vendorCollections.AddRange(vendorCollections);
             dropdown.ClearOptions();
             List<string> vendorCollectionNames = new List<string>();
@@ -213,36 +210,19 @@ namespace AnyRPG {
         public void AddToBuyBackCollection(InstantiatedItem newInstantiatedItem) {
             VendorItem newVendorItem = new VendorItem();
             newVendorItem.Quantity = 1;
-            // FIX ME - THIS DOES NOT STORE THE INSTANTIATED ITEM SO IT WILL LOSE ANY CUSTOM STATS AND HAVE ITS DROPLEVEL RESET ON BUYBACK
             newVendorItem.InstantiatedItem = newInstantiatedItem;
-            buyBackCollection.VendorItems.Add(newVendorItem);
+            vendorManager.VendorComponent.BuyBackCollection.VendorItems.Add(newVendorItem);
         }
         
 
         public bool SellItem(InstantiatedItem instantiatedItem) {
-            if (instantiatedItem.Item.BuyPrice(playerManager.UnitController) <= 0 || instantiatedItem.Item.GetSellPrice(instantiatedItem, playerManager.UnitController).Key == null) {
-                messageFeedManager.WriteMessage("The vendor does not want to buy the " + instantiatedItem.DisplayName);
-                return false;
-            }
-            KeyValuePair<Currency, int> sellAmount = instantiatedItem.Item.GetSellPrice(instantiatedItem, playerManager.UnitController);
-
-            playerManager.UnitController.CharacterCurrencyManager.AddCurrency(sellAmount.Key, sellAmount.Value);
-            AddToBuyBackCollection(instantiatedItem);
-            instantiatedItem.Slot.RemoveItem(instantiatedItem);
+            vendorManager.SellItem(playerManager.UnitController, instantiatedItem);
 
             if (systemConfigurationManager.VendorAudioClip != null) {
                 audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
             }
-            string priceString = currencyConverter.GetCombinedPriceString(sellAmount.Key, sellAmount.Value);
-            messageFeedManager.WriteMessage("Sold " + instantiatedItem.DisplayName + " for " + priceString);
-
 
             if (dropDownIndex == 0) {
-                /*
-                CreatePages(vendorCollections[dropDownIndex].MyVendorItems);
-                LoadPage(pageIndex);
-                OnPageCountUpdate(false);
-                */
                 RefreshPage();
             }
             return true;

@@ -7,19 +7,27 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class VendorComponent : InteractableOptionComponent {
 
+        private VendorCollection buyBackCollection = null;
+
         // game manager references
         private VendorManager vendorManager = null;
+        private MessageFeedManager messageFeedManager = null;
+        private CurrencyConverter currencyConverter = null;
 
         public VendorProps Props { get => interactableOptionProps as VendorProps; }
+        public VendorCollection BuyBackCollection { get => buyBackCollection; set => buyBackCollection = value; }
 
         public VendorComponent(Interactable interactable, VendorProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             interactionPanelTitle = "Purchase Items";
+            buyBackCollection = ScriptableObject.CreateInstance(typeof(VendorCollection)) as VendorCollection;
         }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
             vendorManager = systemGameManager.VendorManager;
+            messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
+            currencyConverter = systemGameManager.CurrencyConverter;
         }
 
         /*
@@ -59,7 +67,30 @@ namespace AnyRPG {
             return voiceProps.RandomStartVendorInteract;
         }
 
+        public void AddToBuyBackCollection(InstantiatedItem newInstantiatedItem) {
+            VendorItem newVendorItem = new VendorItem();
+            newVendorItem.Quantity = 1;
+            newVendorItem.InstantiatedItem = newInstantiatedItem;
+            vendorManager.VendorComponent.BuyBackCollection.VendorItems.Add(newVendorItem);
+        }
 
+
+        public bool SellItem(UnitController sourceUnitController, InstantiatedItem instantiatedItem) {
+            if (instantiatedItem.Item.BuyPrice(sourceUnitController) <= 0 || instantiatedItem.Item.GetSellPrice(instantiatedItem, sourceUnitController).Key == null) {
+                messageFeedManager.WriteMessage(sourceUnitController, $"The vendor does not want to buy the {instantiatedItem.DisplayName}");
+                return false;
+            }
+            KeyValuePair<Currency, int> sellAmount = instantiatedItem.Item.GetSellPrice(instantiatedItem, sourceUnitController);
+
+            sourceUnitController.CharacterCurrencyManager.AddCurrency(sellAmount.Key, sellAmount.Value);
+            AddToBuyBackCollection(instantiatedItem);
+            instantiatedItem.Slot.RemoveItem(instantiatedItem);
+
+            string priceString = currencyConverter.GetCombinedPriceString(sellAmount.Key, sellAmount.Value);
+            messageFeedManager.WriteMessage(sourceUnitController, $"Sold {instantiatedItem.DisplayName} for {priceString}");
+
+            return true;
+        }
     }
 
 }

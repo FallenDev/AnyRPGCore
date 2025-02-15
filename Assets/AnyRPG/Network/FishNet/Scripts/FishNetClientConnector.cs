@@ -662,6 +662,24 @@ namespace AnyRPG {
         public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, NetworkConnection networkConnection = null) {
             networkManagerServer.CompleteQuest(questName, questRewardChoices, networkConnection.ClientId);
         }
+        
+        public void SellVendorItemClient(Interactable interactable, int componentIndex, int itemInstanceId) {
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            SellVendorItemServer(networkInteractable, componentIndex, itemInstanceId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SellVendorItemServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int itemInstanceId, NetworkConnection networkConnection = null) {
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.SellVendorItem(interactable, componentIndex, itemInstanceId, networkConnection.ClientId);
+        }
+
 
 
         public void AdvertiseMessageFeedMessage(int clientId, string message) {

@@ -43,6 +43,7 @@ namespace AnyRPG {
         public abstract void LearnSkill(string skillName);
         public abstract void AcceptQuest(string questName);
         public abstract void CompleteQuest(string questName, QuestRewardChoices questRewardChoices);
+        public abstract void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId);
 
         // server functions
         public abstract void StartServer();

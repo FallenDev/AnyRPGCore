@@ -425,6 +425,10 @@ namespace AnyRPG {
             clientConnector.CompleteQuest(questName, questRewardChoices);
         }
 
+        public override void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId) {
+            clientConnector.SellVendorItemClient(interactable, componentIndex, itemInstanceId);
+        }
+
         #endregion
 
         #region server functions

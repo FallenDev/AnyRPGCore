@@ -13,9 +13,11 @@ namespace AnyRPG {
         //public event System.Action OnBeginInteraction = delegate { };
 
         protected InteractableOptionComponent interactableOptionComponent = null;
+        protected int componentIndex;
 
         // game manager references
         protected InteractionManager interactionManager = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();

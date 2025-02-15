@@ -439,6 +439,10 @@ namespace AnyRPG {
             logManager.WriteSystemMessage(message);
         }
 
+        public void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId) {
+            networkController.SellVendorItem(interactable, componentIndex, itemInstanceId);
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

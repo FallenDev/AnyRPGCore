@@ -639,7 +639,22 @@ namespace AnyRPG {
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) == false) {
                 return;
             }
-            vendorManager.SellItemServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
+            vendorManager.SellItemToVendorServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
+        }
+
+        public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
+            networkController.AdvertiseAddToBuyBackCollection(sourceUnitController, playerManagerServer.ActivePlayerLookup[sourceUnitController], interactable, componentIndex, newInstantiatedItem);
+        }
+
+        public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int quantity) {
+            networkController.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, quantity);
+        }
+
+        public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int clientId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            vendorManager.BuyItemFromVendorServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, collectionIndex, itemIndex, resourceName, clientId);
         }
 
         /*

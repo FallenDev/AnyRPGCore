@@ -27,19 +27,44 @@ namespace AnyRPG {
             vendorProps = null;
         }
 
-        public void SellItem(UnitController sourceUnitController, InstantiatedItem instantiatedItem) {
+        public void SellItemToVendor(UnitController sourceUnitController, InstantiatedItem instantiatedItem) {
             if (systemGameManager.GameMode == GameMode.Local) {
-                vendorComponent.SellItem(sourceUnitController, instantiatedItem);
+                vendorComponent.SellItemToVendor(sourceUnitController, componentIndex, instantiatedItem);
             } else {
-                networkManagerClient.SellVendorItem(vendorComponent.Interactable, componentIndex, instantiatedItem.InstanceId);
+                networkManagerClient.SellItemToVendor(vendorComponent.Interactable, componentIndex, instantiatedItem.InstanceId);
             }
         }
 
-        public void SellItemServer(UnitController sourceUnitController, Interactable interactable, int optionIndex, InstantiatedItem instantiatedItem) {
+        public void SellItemToVendorServer(UnitController sourceUnitController, Interactable interactable, int componentIndex, InstantiatedItem instantiatedItem) {
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
-            if (currentInteractables[optionIndex] is VendorComponent) {
-                (currentInteractables[optionIndex] as VendorComponent).SellItem(sourceUnitController, instantiatedItem);
+            if (currentInteractables[componentIndex] is VendorComponent) {
+                (currentInteractables[componentIndex] as VendorComponent).SellItemToVendor(sourceUnitController, componentIndex, instantiatedItem);
             }
+        }
+
+        public void BuyItemFromVendor(UnitController sourceUnitController, VendorItem vendorItem, int collectionIndex, int itemIndex) {
+            Debug.Log($"VendorManager.BuyItemFromVendor({sourceUnitController.gameObject.name}, {vendorItem.Item.ResourceName}, {collectionIndex}, {itemIndex})");
+            if (systemGameManager.GameMode == GameMode.Local) {
+                vendorComponent.BuyItemFromVendor(sourceUnitController, componentIndex, vendorItem, collectionIndex, itemIndex);
+            } else {
+                networkManagerClient.BuyItemFromVendor(vendorComponent.Interactable, componentIndex, collectionIndex, itemIndex, vendorItem.Item.ResourceName);
+            }
+        }
+
+        public void BuyItemFromVendorServer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int clientId) {
+            Debug.Log($"VendorManager.BuyItemFromVendorServer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {clientId})");
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if (currentInteractables[componentIndex] is VendorComponent) {
+                VendorComponent vendorComponent = (currentInteractables[componentIndex] as VendorComponent);
+                List<VendorCollection> localVendorCollections = vendorComponent.GetVendorCollections(clientId);
+                if (localVendorCollections.Count > collectionIndex && localVendorCollections[collectionIndex].VendorItems.Count > itemIndex) {
+                    VendorItem vendorItem = localVendorCollections[collectionIndex].VendorItems[itemIndex];
+                    if (vendorItem.Item.ResourceName == resourceName) {
+                        vendorComponent.BuyItemFromVendor(sourceUnitController, componentIndex, vendorItem, collectionIndex, itemIndex);
+                    }
+                }
+            }
+
         }
     }
 

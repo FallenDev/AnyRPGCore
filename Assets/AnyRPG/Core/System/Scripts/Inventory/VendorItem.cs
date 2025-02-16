@@ -28,6 +28,8 @@ namespace AnyRPG {
 
         private ItemQuality itemQuality = null;
 
+        public int itemIndex = 0;
+
         public Item Item {
             get {
                 return item;
@@ -117,6 +119,7 @@ namespace AnyRPG {
         string IDescribable.GetDescription() {
             return item.GetDescription(GetItemQuality(), item.ItemLevel);
         }
+
     }
 
 }

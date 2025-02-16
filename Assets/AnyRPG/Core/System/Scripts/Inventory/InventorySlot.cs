@@ -88,8 +88,10 @@ namespace AnyRPG {
         }
 
         public bool AddItem(InstantiatedItem instantiatedItem) {
-            //Debug.Log("Slot " + GetInstanceID().ToString() + " with count " + MyItems.Count.ToString() + " adding item " + item.GetInstanceID().ToString());
+            Debug.Log($"InventorySlot.Additem({instantiatedItem.Item.ResourceName})");
+
             InstantiatedItems.Add(instantiatedItem);
+            instantiatedItem.Slot = this;
             NotifyOnAddItem(instantiatedItem);
             UpdateSlot();
             //Debug.Log("Slot " + GetInstanceID().ToString() + " now has count " + MyItems.Count.ToString());
@@ -197,9 +199,7 @@ namespace AnyRPG {
 
         public bool StackItem(InstantiatedItem instantiatedItem) {
             if (!IsEmpty && instantiatedItem.Item.ResourceName == InstantiatedItem.Item.ResourceName && InstantiatedItems.Count < InstantiatedItem.Item.MaximumStackSize) {
-                InstantiatedItems.Add(instantiatedItem);
-                UpdateSlot();
-                instantiatedItem.Slot = this;
+                AddItem(instantiatedItem);
                 return true;
             }
             return false;

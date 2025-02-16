@@ -10,6 +10,8 @@ namespace AnyRPG {
         //public event System.Action<UnitController, int> OnAnimatedObjectChooseMovement = delegate { };
         //public event System.Action<UnitController, int> OnInteractionWithOptionStarted = delegate { };
         public event System.Action<string, int> OnPlayDialogNode = delegate { };
+        public event System.Action<UnitController, InstantiatedItem> OnAddToBuyBackCollection = delegate { };
+        public event System.Action<VendorItem> OnSellItemToPlayer = delegate { };
 
         // interactable this controller is attached to
         private Interactable interactable;
@@ -33,6 +35,14 @@ namespace AnyRPG {
         public void NotifyOnPlayDialogNode(Dialog dialog, int dialogIndex) {
             Debug.Log($"{interactable.gameObject.name}.InteractableEventController.NotifyOnPlayDialogNode({dialog.ResourceName}, {dialogIndex})");
             OnPlayDialogNode(dialog.ResourceName, dialogIndex);
+        }
+
+        public void NotifyOnAddToBuyBackCollection(UnitController sourceUnitController, InstantiatedItem newInstantiatedItem) {
+            OnAddToBuyBackCollection(sourceUnitController, newInstantiatedItem);
+        }
+
+        public void NotifyOnSellItemToPlayer(VendorItem vendorItem) {
+            OnSellItemToPlayer(vendorItem);
         }
 
         // temporarily disabled because this object is not created early enough in the process when its a unitcontroller

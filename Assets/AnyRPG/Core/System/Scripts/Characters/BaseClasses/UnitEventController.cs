@@ -116,6 +116,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
         public event System.Action<string, string, string, QuestObjectiveSaveData> OnSetQuestObjectiveCurrentAmount = delegate { };
         public event System.Action<int, bool, int> OnPlaceInStack = delegate { };
+        public event System.Action<int, bool, int> OnPlaceInEmpty = delegate { };
         public event System.Action<InstantiatedItem> OnGetNewInstantiatedItem = delegate { };
         public event System.Action<InstantiatedItem> OnRequestDeleteItem = delegate { };
         public event System.Action<InstantiatedItem> OnDeleteItem = delegate { };
@@ -602,6 +603,10 @@ namespace AnyRPG {
             OnPlaceInStack(instantiatedItem.InstanceId, addToBank, slotIndex);
         }
 
+        public void NotifyOnPlaceInEmpty(InstantiatedItem instantiatedItem, bool addToBank, int slotIndex) {
+            OnPlaceInEmpty(instantiatedItem.InstanceId, addToBank, slotIndex);
+        }
+
         public void NotifyOnGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
             OnGetNewInstantiatedItem(instantiatedItem);
         }
@@ -631,6 +636,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            Debug.Log($"UnitEventController.NotifyOnAddItemToInventorySlot({item.Item.ResourceName})");
+
             OnAddItemToInventorySlot(slot, item);
         }
 

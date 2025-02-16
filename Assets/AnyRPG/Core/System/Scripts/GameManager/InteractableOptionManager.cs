@@ -23,6 +23,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             interactionManager = systemGameManager.InteractionManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         public virtual void EndInteraction() {
@@ -41,6 +42,7 @@ namespace AnyRPG {
 
         public virtual void BeginInteraction(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex, bool notify) {
             this.interactableOptionComponent = interactableOptionComponent;
+            this.componentIndex = componentIndex;
             interactionManager.BeginInteractionWithOption(interactableOptionComponent, this);
             if (notify == true) {
                 interactableOptionComponent?.ProcessStartInteract(componentIndex, choiceIndex);

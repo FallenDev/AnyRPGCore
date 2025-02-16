@@ -44,6 +44,7 @@ namespace AnyRPG {
         public abstract void AcceptQuest(string questName);
         public abstract void CompleteQuest(string questName, QuestRewardChoices questRewardChoices);
         public abstract void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId);
+        public abstract void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName);
 
         // server functions
         public abstract void StartServer();
@@ -72,6 +73,8 @@ namespace AnyRPG {
         public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void AdvertiseMessageFeedMessage(int clientId, string message);
         public abstract void AdvertiseSystemMessage(int clientId, string message);
+        public abstract void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem);
+        public abstract void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int quantity);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);

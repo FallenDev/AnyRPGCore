@@ -11,6 +11,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.PostProcessing.SubpixelMorphologicalAntialiasing;
 
 namespace AnyRPG {
     public class FishNetNetworkController : NetworkController {
@@ -429,6 +430,10 @@ namespace AnyRPG {
             clientConnector.SellVendorItemClient(interactable, componentIndex, itemInstanceId);
         }
 
+        public override void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
+            clientConnector.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName);
+        }
+
         #endregion
 
         #region server functions
@@ -583,6 +588,14 @@ namespace AnyRPG {
 
         public override void AdvertiseSystemMessage(int clientId, string message) {
             clientConnector.AdvertiseSystemMessage(clientId, message);
+        }
+
+        public override void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
+            clientConnector.AdvertiseAddToBuyBackCollection(sourceUnitController, clientId, interactable, componentIndex, newInstantiatedItem);
+        }
+
+        public override void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            clientConnector.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 
         #endregion

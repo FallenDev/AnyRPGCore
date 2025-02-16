@@ -48,6 +48,7 @@ namespace AnyRPG {
         private LogManager logManager = null;
         private InteractionManager interactionManager = null;
         private MessageFeedManager messageFeedManager = null;
+        private SystemItemManager systemItemManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -70,6 +71,7 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             interactionManager = systemGameManager.InteractionManager;
             messageFeedManager = uIManager.MessageFeedManager;
+            systemItemManager = systemGameManager.SystemItemManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -439,8 +441,37 @@ namespace AnyRPG {
             logManager.WriteSystemMessage(message);
         }
 
-        public void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId) {
+        public void SellItemToVendor(Interactable interactable, int componentIndex, int itemInstanceId) {
             networkController.SellVendorItem(interactable, componentIndex, itemInstanceId);
+        }
+
+        public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, Interactable interactable, int componentIndex, int instantiatedItemId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(instantiatedItemId) == false) {
+                return;
+            }
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if (currentInteractables[componentIndex] is VendorComponent) {
+                (currentInteractables[componentIndex] as VendorComponent).AddToBuyBackCollection(sourceUnitController, componentIndex, systemItemManager.InstantiatedItems[instantiatedItemId]);
+            }
+
+        }
+
+        public void AdvertiseSellItemToPlayerClient(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            if (currentInteractables[componentIndex] is VendorComponent) {
+                VendorComponent vendorComponent = (currentInteractables[componentIndex] as VendorComponent);
+                List<VendorCollection> localVendorCollections = vendorComponent.GetLocalVendorCollections();
+                if (localVendorCollections.Count > collectionIndex && localVendorCollections[collectionIndex].VendorItems.Count > itemIndex) {
+                    VendorItem vendorItem = localVendorCollections[collectionIndex].VendorItems[itemIndex];
+                    if (vendorItem.Item.ResourceName == resourceName) {
+                        vendorComponent.ProcessQuantityNotification(vendorItem, remainingQuantity);
+                    }
+                }
+            }
+        }
+
+        public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
+            networkController.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName);
         }
 
 

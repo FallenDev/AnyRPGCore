@@ -494,6 +494,7 @@ namespace AnyRPG {
             }
 
             SubscribeToPlayerInventoryEvents();
+            // FIX ME - THIS DOESN'T GET CALLED ON THE SERVER SO THE INVENTORY IS NOT INITIALIZED
             unitController.BaseCharacter.Initialize();
             //SubscribeToPlayerEvents();
 

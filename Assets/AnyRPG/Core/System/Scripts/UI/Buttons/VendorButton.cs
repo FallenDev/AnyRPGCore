@@ -36,6 +36,8 @@ namespace AnyRPG {
         protected CurrencyBarController currencyBarController = null;
 
         protected VendorItem vendorItem = null;
+        protected int collectionIndex = 0;
+        protected int itemIndex = 0;
 
         protected bool buyBackButton;
 
@@ -46,6 +48,7 @@ namespace AnyRPG {
         protected MessageFeedManager messageFeedManager = null;
         protected CurrencyConverter currencyConverter = null;
         protected UIManager uIManager = null;
+        protected VendorManager vendorManager = null;
 
         public bool BuyBackButton { get => buyBackButton; set => buyBackButton = value; }
 
@@ -64,6 +67,7 @@ namespace AnyRPG {
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             currencyConverter = systemGameManager.CurrencyConverter;
             uIManager = systemGameManager.UIManager;
+            vendorManager = systemGameManager.VendorManager;
         }
 
         public override void SetController(UINavigationController uINavigationController) {
@@ -71,8 +75,10 @@ namespace AnyRPG {
             currencyBarController.SetToolTipTransform(owner.transform as RectTransform);
         }
 
-        public void AddItem(VendorItem vendorItem, bool buyBackButton = false) {
+        public void AddItem(VendorItem vendorItem, int collectionIndex, int itemIndex, bool buyBackButton = false) {
             this.vendorItem = vendorItem;
+            this.collectionIndex = collectionIndex;
+            this.itemIndex = itemIndex;
             this.buyBackButton = buyBackButton;
 
             if (vendorItem.Quantity > 0 || vendorItem.Unlimited) {
@@ -120,22 +126,6 @@ namespace AnyRPG {
             }
         }
 
-        protected bool CanAfford() {
-            if (buyBackButton == false) {
-                if (currencyConverter.GetBaseCurrencyAmount(vendorItem.Item.Currency, vendorItem.BuyPrice(playerManager.UnitController)) <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
-                    return true;
-                }
-                return false;
-            }
-
-            if (vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController).Value <= playerManager.UnitController.CharacterCurrencyManager.GetBaseCurrencyValue(vendorItem.Item.Currency)) {
-                return true;
-            }
-            return false;
-
-        }
-
-
         public override void OnPointerClick(PointerEventData eventData) {
             base.OnPointerClick(eventData);
             //Debug.Log("VendorButton.OnPointerClick()");
@@ -148,31 +138,7 @@ namespace AnyRPG {
         }
 
         public void ProcessMouseClick() {
-            if (vendorItem.BuyPrice(playerManager.UnitController) == 0
-                            || vendorItem.Item.Currency == null
-                            || CanAfford()) {
-                InstantiatedItem tmpInstantiatedItem = null;
-                if (buyBackButton == true) {
-                    // if this is a buyback, the item has already been instantiated so it is safe to reference it directly
-                    tmpInstantiatedItem = vendorItem.InstantiatedItem;
-                } else {
-                    // if this is a new purchase, a new copy of the item must be instantiated since the button is referring to the original factory item template
-                    tmpInstantiatedItem = playerManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(vendorItem.Item.ResourceName, vendorItem.GetItemQuality());
-                    //Debug.Log("Instantiated an item with id: " + tmpItem.GetInstanceID().ToString());
-                }
-
-                if (playerManager.UnitController.CharacterInventoryManager.AddItem(tmpInstantiatedItem, false)) {
-                    if (buyBackButton == false) {
-                        tmpInstantiatedItem.DropLevel = playerManager.UnitController.CharacterStats.Level;
-                    }
-                    SellItem();
-                    if (tmpInstantiatedItem is InstantiatedCurrencyItem) {
-                        (tmpInstantiatedItem as InstantiatedCurrencyItem).Use(playerManager.UnitController);
-                    }
-                }
-            } else {
-                messageFeedManager.WriteMessage("You cannot afford " + vendorItem.Item.DisplayName);
-            }
+            vendorManager.BuyItemFromVendor(playerManager.UnitController, vendorItem, collectionIndex, itemIndex);
         }
 
         public override void OnPointerEnter(PointerEventData eventData) {
@@ -207,38 +173,7 @@ namespace AnyRPG {
             }
         }
 
-        private void SellItem() {
-            //Debug.Log("VendorButton.SellItem()");
-            string priceString = string.Empty;
-            if (vendorItem.BuyPrice(playerManager.UnitController) == 0 || vendorItem.Item.Currency == null) {
-                priceString = "FREE";
-            } else {
-                KeyValuePair<Currency, int> usedSellPrice = new KeyValuePair<Currency, int>();
-                if (buyBackButton == false) {
-                    usedSellPrice = new KeyValuePair<Currency, int>(vendorItem.Item.Currency, vendorItem.BuyPrice(playerManager.UnitController));
-                    priceString = vendorItem.BuyPrice(playerManager.UnitController) + " " + vendorItem.Item.Currency.DisplayName;
-                } else {
-                    usedSellPrice = vendorItem.Item.GetSellPrice(vendorItem.InstantiatedItem, playerManager.UnitController);
-                    priceString = currencyConverter.GetCombinedPriceString(usedSellPrice);
-                }
-                playerManager.UnitController.CharacterCurrencyManager.SpendCurrency(usedSellPrice.Key, usedSellPrice.Value);
-            }
-            if (systemConfigurationManager.VendorAudioClip != null) {
-                audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
-            }
-            messageFeedManager.WriteMessage("Purchased " + vendorItem.Item.DisplayName + " for " + priceString);
-
-            if (!vendorItem.Unlimited) {
-                vendorItem.Quantity--;
-                quantity.text = vendorItem.Quantity.ToString();
-                if (vendorItem.Quantity == 0) {
-                    gameObject.SetActive(false);
-                    uIManager.HideToolTip();
-                    // if there is no longer anything in this slot, re-create the pages so there is no empty slot in the middle of the page
-                    (uIManager.vendorWindow.CloseableWindowContents as VendorUI).RefreshPage();
-                }
-            }
-        }
+        
 
         public override void Select() {
             //Debug.Log("VendorButton.Select()");

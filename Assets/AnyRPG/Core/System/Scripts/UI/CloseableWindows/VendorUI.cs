@@ -1,10 +1,12 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.PostProcessing.SubpixelMorphologicalAntialiasing;
 
 namespace AnyRPG {
     public class VendorUI : PagedWindowContents {
@@ -87,6 +89,11 @@ namespace AnyRPG {
             //Debug.Log("VendorUI.CreatePages(" + items.Count + ", " + resetPageIndex + ")");
             ClearPages(resetPageIndex);
 
+            // assign an item id based on absolute position (before removing limited quantity items) for sending across the network when using vendor buttons in the UI
+            for (int i = 0; i < items.Count; i++) {
+                items[i].itemIndex = i;
+            }
+
             // remove all items with a quanity of 0 from the list
             items.RemoveAll(item => (item.Unlimited == false && item.Quantity == 0));
 
@@ -114,7 +121,7 @@ namespace AnyRPG {
                 //for (int i = 0; i < (pages[pageIndex] as VendorItemContentList).vendorItems.Count; i++) {
                 for (int i = 0; i < (pages[pageIndex] as VendorItemContentList).vendorItems.Count; i++) {
                     if ((pages[pageIndex] as VendorItemContentList).vendorItems[i] != null) {
-                        vendorButtons[i].AddItem((pages[pageIndex] as VendorItemContentList).vendorItems[i], (dropDownIndex == 0 ? true : false));
+                        vendorButtons[i].AddItem((pages[pageIndex] as VendorItemContentList).vendorItems[i], dropDownIndex, (pages[pageIndex] as VendorItemContentList).vendorItems[i].itemIndex, (dropDownIndex == 0 ? true : false));
                     }
                 }
             }
@@ -135,6 +142,11 @@ namespace AnyRPG {
         public override void ReceiveClosedWindowNotification() {
             //Debug.Log("VendorUI.OnCloseWindow()");
             base.ReceiveClosedWindowNotification();
+            if (vendorManager.VendorComponent != null) {
+                // if we got kicked off the server the window can be closed after the vendor despawns
+                vendorManager.VendorComponent.Interactable.InteractableEventController.OnAddToBuyBackCollection -= HandleAddtoBuyBackCollection;
+                vendorManager.VendorComponent.Interactable.InteractableEventController.OnSellItemToPlayer -= HandleBuyItemFromVendor;
+            }
             ClearButtons();
             ClearPages();
             ClearVendorCollections();
@@ -152,6 +164,8 @@ namespace AnyRPG {
             OnPageCountUpdate(false);
 
             PopulateDropDownList(vendorManager.VendorProps.VendorCollections);
+            vendorManager.VendorComponent.Interactable.InteractableEventController.OnAddToBuyBackCollection += HandleAddtoBuyBackCollection;
+            vendorManager.VendorComponent.Interactable.InteractableEventController.OnSellItemToPlayer += HandleBuyItemFromVendor;
         }
 
         public void UpdateCurrencyAmount() {
@@ -170,7 +184,7 @@ namespace AnyRPG {
             UpdateCurrencyAmount();
             dropDownIndex = 1;
             this.vendorCollections = new List<VendorCollection>(1 + vendorCollections.Count);
-            this.vendorCollections.Add(vendorManager.VendorComponent.BuyBackCollection);
+            this.vendorCollections.Add(vendorManager.VendorComponent.BuyBackCollection[0]);
             this.vendorCollections.AddRange(vendorCollections);
             dropdown.ClearOptions();
             List<string> vendorCollectionNames = new List<string>();
@@ -206,18 +220,10 @@ namespace AnyRPG {
             OnPageCountUpdate(false);
         }
 
-        
-        public void AddToBuyBackCollection(InstantiatedItem newInstantiatedItem) {
-            VendorItem newVendorItem = new VendorItem();
-            newVendorItem.Quantity = 1;
-            newVendorItem.InstantiatedItem = newInstantiatedItem;
-            vendorManager.VendorComponent.BuyBackCollection.VendorItems.Add(newVendorItem);
-        }
-        
-
         public bool SellItem(InstantiatedItem instantiatedItem) {
-            vendorManager.SellItem(playerManager.UnitController, instantiatedItem);
+            vendorManager.SellItemToVendor(playerManager.UnitController, instantiatedItem);
 
+            /*
             if (systemConfigurationManager.VendorAudioClip != null) {
                 audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
             }
@@ -225,7 +231,35 @@ namespace AnyRPG {
             if (dropDownIndex == 0) {
                 RefreshPage();
             }
+            */
             return true;
+        }
+
+        public void HandleAddtoBuyBackCollection(UnitController controller, InstantiatedItem item) {
+            if (systemConfigurationManager.VendorAudioClip != null) {
+                audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
+            }
+
+            if (dropDownIndex == 0) {
+                RefreshPage();
+            }
+        }
+
+        private void HandleBuyItemFromVendor(VendorItem vendorItem) {
+
+            if (systemConfigurationManager.VendorAudioClip != null) {
+                audioManager.PlayEffect(systemConfigurationManager.VendorAudioClip);
+            }
+
+            if (!vendorItem.Unlimited) {
+                //quantity.text = vendorItem.Quantity.ToString();
+                if (vendorItem.Quantity == 0) {
+                    gameObject.SetActive(false);
+                    uIManager.HideToolTip();
+                    // if there is no longer anything in this slot, re-create the pages so there is no empty slot in the middle of the page
+                    RefreshPage();
+                }
+            }
         }
 
         public void RefreshPage() {

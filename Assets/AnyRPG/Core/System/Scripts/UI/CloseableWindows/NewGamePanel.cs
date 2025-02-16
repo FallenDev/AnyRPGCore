@@ -674,10 +674,12 @@ namespace AnyRPG {
                     //Debug.Log("NewGameCharacterPanelController.EquipCharacter(): equipment list is not null");
                     foreach (EquipmentSlotProfile equipmentSlotProfile in newGameManager.EquipmentList.Keys) {
                         //Debug.Log("NewGameCharacterPanelController.EquipCharacter(): ask to equip: " + equipment.DisplayName);
-                        if (characterEquipmentManager.CurrentEquipment.ContainsKey(equipmentSlotProfile) == false
-                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment == null
-                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment != newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment) {
-                            characterEquipmentManager.Equip(characterEquipmentManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment) as InstantiatedEquipment, equipmentSlotProfile);
+                        if (newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment != null &&
+                            (characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment == null
+                            || characterEquipmentManager.CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment != newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment)) {
+                            Equipment equipment = newGameManager.EquipmentList[equipmentSlotProfile].InstantiatedEquipment.Equipment;
+                            InstantiatedEquipment instantiatedEquipment = characterEquipmentManager.UnitController.CharacterInventoryManager.GetNewInstantiatedItem(equipment) as InstantiatedEquipment;
+                            characterEquipmentManager.Equip(instantiatedEquipment, equipmentSlotProfile);
                             changes++;
                         }
                     }

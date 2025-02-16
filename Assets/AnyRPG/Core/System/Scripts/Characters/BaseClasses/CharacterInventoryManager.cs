@@ -185,6 +185,8 @@ namespace AnyRPG {
         }
 
         private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleAddItemToInventorySlot({item.Item.ResourceName})");
+
             unitController.UnitEventController.NotifyOnAddItemToInventorySlot(slot, item);
         }
 
@@ -431,12 +433,13 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="instantiatedItem"></param>
         public bool AddItem(InstantiatedItem instantiatedItem, bool addToBank, bool performUniqueCheck = true) {
-            //Debug.Log("CharacterInventoryManager.AddItem(" + (item == null ? "null" : item.DisplayName) + ", " + addToBank + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddItem({(instantiatedItem == null ? "null" : instantiatedItem.DisplayName)}, {addToBank})");
+
             if (instantiatedItem == null) {
                 return false;
             }
             if (performUniqueCheck == true && instantiatedItem.Item.UniqueItem == true && GetItemCount(instantiatedItem.Item.ResourceName) > 0) {
-                messageFeedManager.WriteMessage(instantiatedItem.DisplayName + " is unique.  You can only carry one at a time.");
+                messageFeedManager.WriteMessage(unitController, $"{instantiatedItem.DisplayName} is unique.  You can only carry one at a time.");
                 return false;
             }
             if (instantiatedItem.Item.MaximumStackSize > 0) {
@@ -489,31 +492,37 @@ namespace AnyRPG {
         }
 
         private bool PlaceInEmpty(InstantiatedItem instantiatedItem, bool addToBank) {
-            //Debug.Log("CharacterInventoryManager.PlaceInEmpty(" + item.name + ", " + addToBank + "): checking slot");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank})");
+
+            int slotIndex = 0;
             if (addToBank == true) {
                 foreach (InventorySlot inventorySlot in bankSlots) {
-                    //Debug.Log("CharacterInventoryManager.PlaceInEmpty(" + item.name + "): checking slot");
+                    Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
                     if (inventorySlot.IsEmpty) {
-                        //Debug.Log("CharacterInventoryManager.PlaceInEmpty(" + item.name + "): checking slot: its empty.  adding item");
+                        Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
+                        unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
                         OnItemCountChanged(instantiatedItem.Item);
                         return true;
                     }
+                    slotIndex++;
                 }
             } else {
                 foreach (InventorySlot inventorySlot in inventorySlots) {
-                    //Debug.Log("BagPanel.AddItem(" + item.name + "): checking slot");
+                    Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
                     if (inventorySlot.IsEmpty) {
-                        //Debug.Log("BagPanel.AddItem(" + item.name + "): checking slot: its empty.  adding item");
+                        Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
+                        unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
                         OnItemCountChanged(instantiatedItem.Item);
                         return true;
                     }
+                    slotIndex++;
                 }
             }
             if (EmptySlotCount(addToBank) == 0) {
-                //Debug.Log("No empty slots");
-                messageFeedManager.WriteMessage((addToBank == false ? "Inventory" : "Bank") + " is full!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank}): no empty slots");
+                messageFeedManager.WriteMessage(unitController, $"{(addToBank == false ? "Inventory" : "Bank")} is full!");
             }
             return false;
         }
@@ -553,6 +562,8 @@ namespace AnyRPG {
 
 
         private bool PlaceInStack(InventorySlot inventorySlot, int slotIndex, InstantiatedItem instantiatedItem, bool addToBank) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInStack({slotIndex}, {instantiatedItem.Item.ResourceName}, {addToBank})");
+
             if (inventorySlot.StackItem(instantiatedItem)) {
                 unitController.UnitEventController.NotifyOnPlaceInStack(instantiatedItem, addToBank, slotIndex);
                 OnItemCountChanged(instantiatedItem.Item);

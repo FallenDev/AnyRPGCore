@@ -2,10 +2,7 @@ using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -680,6 +677,22 @@ namespace AnyRPG {
             networkManagerServer.SellVendorItem(interactable, componentIndex, itemInstanceId, networkConnection.ClientId);
         }
 
+        public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            BuyItemFromVendorServer(networkInteractable, componentIndex, collectionIndex, itemIndex, resourceName);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void BuyItemFromVendorServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, NetworkConnection networkConnection = null) {
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName, networkConnection.ClientId);
+        }
 
 
         public void AdvertiseMessageFeedMessage(int clientId, string message) {
@@ -699,6 +712,41 @@ namespace AnyRPG {
         public void AdvertiseSystemMessageClient(NetworkConnection networkConnection, string message) {
             networkManagerClient.AdvertiseSystemMessage(message);
         }
+
+        public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            NetworkCharacterUnit networkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                networkCharacterUnit = interactable.GetComponent<NetworkCharacterUnit>();
+            }
+            AdvertiseAddToBuyBackCollectionClient(fishNetNetworkManager.ServerManager.Clients[clientId], networkCharacterUnit, networkInteractable, componentIndex, newInstantiatedItem.InstanceId);
+        }
+
+        [TargetRpc]
+        public void AdvertiseAddToBuyBackCollectionClient(NetworkConnection networkConnection, NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int instantiatedItemId) {
+            networkManagerClient.AdvertiseAddToBuyBackCollection(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, instantiatedItemId);
+        }
+
+        public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            NetworkCharacterUnit networkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                networkCharacterUnit = interactable.GetComponent<NetworkCharacterUnit>();
+            }
+            AdvertiseSellItemToPlayerClient(networkCharacterUnit, networkInteractable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
+        }
+
+        [ObserversRpc]
+        public void AdvertiseSellItemToPlayerClient(NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            networkManagerClient.AdvertiseSellItemToPlayerClient(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
+        }
+
 
         /*
         public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {

@@ -1,10 +1,5 @@
-using AnyRPG;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Overlays;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace AnyRPG {
     public class InstantiatedEquipment : InstantiatedItem {

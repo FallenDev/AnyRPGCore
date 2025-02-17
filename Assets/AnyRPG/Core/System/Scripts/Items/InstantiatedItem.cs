@@ -80,8 +80,8 @@ namespace AnyRPG {
             if (ItemQuality != null) {
                 saveData.itemQuality = ItemQuality.ResourceName;
             }
-            
             saveData.dropLevel = DropLevel;
+            saveData.randomSecondaryStatIndexes = new List<int>();
             return saveData;
 
         }

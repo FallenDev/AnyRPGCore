@@ -75,6 +75,8 @@ namespace AnyRPG {
         }
 
         protected virtual void UpdateSlot() {
+            Debug.Log($"InventorySlot.UpdateSlot()");
+
             SetSlotOnItems();
             OnUpdateSlot();
         }
@@ -121,9 +123,8 @@ namespace AnyRPG {
         public void RemoveItem(InstantiatedItem instantiatedItem) {
             if (!IsEmpty) {
                 InstantiatedItems.Remove(instantiatedItem);
-                NotifyOnRemoveItem(instantiatedItem);
                 UpdateSlot();
-                playerManager.UnitController.CharacterInventoryManager.OnItemCountChanged(instantiatedItem.Item);
+                NotifyOnRemoveItem(instantiatedItem);
             }
         }
 
@@ -180,8 +181,8 @@ namespace AnyRPG {
             if (InstantiatedItems.Count > 0) {
                 InstantiatedItem tmpItem = InstantiatedItems[0];
                 InstantiatedItems.Clear();
-                playerManager.UnitController.CharacterInventoryManager.OnItemCountChanged(tmpItem.Item);
                 UpdateSlot();
+                playerManager.UnitController.CharacterInventoryManager.NotifyOnItemCountChanged(tmpItem.Item);
             }
         }
 

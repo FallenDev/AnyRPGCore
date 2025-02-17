@@ -696,11 +696,13 @@ namespace AnyRPG {
 
 
         public void AdvertiseMessageFeedMessage(int clientId, string message) {
+            Debug.Log($"FishNetClientConnector.AdvertiseMessageFeedMessage({clientId}, {message})");
             AdvertiseMessageFeedMessageClient(fishNetNetworkManager.ServerManager.Clients[clientId], message);
         }
 
         [TargetRpc]
         public void AdvertiseMessageFeedMessageClient(NetworkConnection networkConnection, string message) {
+            Debug.Log($"FishNetClientConnector.AdvertiseMessageFeedMessageClient({message})");
             networkManagerClient.AdvertiseMessageFeedMessage(message);
         }
 
@@ -731,6 +733,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            
             NetworkInteractable networkInteractable = null;
             if (interactable != null) {
                 networkInteractable = interactable.GetComponent<NetworkInteractable>();
@@ -744,6 +748,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseSellItemToPlayerClient(NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+            Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({networkCharacterUnit.gameObject.name}, {networkInteractable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             networkManagerClient.AdvertiseSellItemToPlayerClient(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 

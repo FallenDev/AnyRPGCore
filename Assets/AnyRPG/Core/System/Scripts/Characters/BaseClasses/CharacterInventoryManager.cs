@@ -27,7 +27,7 @@ namespace AnyRPG {
         private List<InventorySlot> bankSlots = new List<InventorySlot>();
         private List<EquipmentInventorySlot> equipmentSlots = new List<EquipmentInventorySlot>();
 
-        private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
+        //private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
 
         private UnitController unitController = null;
 
@@ -174,20 +174,24 @@ namespace AnyRPG {
         }
 
         private void AddInventorySlot(InventorySlot inventorySlot) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventorySlot() count: {inventorySlots.Count}");
+
             inventorySlots.Add(inventorySlot);
             inventorySlot.OnAddItem += HandleAddItemToInventorySlot;
             inventorySlot.OnRemoveItem += HandleRemoveItemFromInventorySlot;
             OnAddInventorySlot(inventorySlot);
         }
 
-        private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            unitController.UnitEventController.NotifyOnRemoveItemFromInventorySlot(slot, item);
+        private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem instantiatedItem) {
+            NotifyOnItemCountChanged(instantiatedItem.Item);
+            unitController.UnitEventController.NotifyOnRemoveItemFromInventorySlot(slot, instantiatedItem);
         }
 
-        private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleAddItemToInventorySlot({item.Item.ResourceName})");
+        private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem instantiatedItem) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleAddItemToInventorySlot({slot.GetCurrentInventorySlotIndex(unitController)}, {instantiatedItem.Item.ResourceName})");
 
-            unitController.UnitEventController.NotifyOnAddItemToInventorySlot(slot, item);
+            NotifyOnItemCountChanged(instantiatedItem.Item);
+            unitController.UnitEventController.NotifyOnAddItemToInventorySlot(slot, instantiatedItem);
         }
 
         private void RemoveInventorySlot(InventorySlot inventorySlot) {
@@ -456,6 +460,8 @@ namespace AnyRPG {
         }
 
         public bool AddInventoryItem(InstantiatedItem instantiatedItem, int slotIndex) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventoryItem({instantiatedItem.ResourceName}, {slotIndex})");
+
             if (inventorySlots.Count > slotIndex) {
                 return inventorySlots[slotIndex].AddItem(instantiatedItem);
             }
@@ -502,7 +508,6 @@ namespace AnyRPG {
                         Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
                         unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
-                        OnItemCountChanged(instantiatedItem.Item);
                         return true;
                     }
                     slotIndex++;
@@ -514,7 +519,6 @@ namespace AnyRPG {
                         Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
                         unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
-                        OnItemCountChanged(instantiatedItem.Item);
                         return true;
                     }
                     slotIndex++;
@@ -566,7 +570,6 @@ namespace AnyRPG {
 
             if (inventorySlot.StackItem(instantiatedItem)) {
                 unitController.UnitEventController.NotifyOnPlaceInStack(instantiatedItem, addToBank, slotIndex);
-                OnItemCountChanged(instantiatedItem.Item);
                 return true;
             }
             return false;
@@ -599,7 +602,7 @@ namespace AnyRPG {
             return count;
         }
 
-        public void OnItemCountChanged(Item item) {
+        public void NotifyOnItemCountChanged(Item item) {
             systemEventManager.NotifyOnItemCountChanged(unitController, item);
         }
 
@@ -669,14 +672,15 @@ namespace AnyRPG {
             InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(item, itemQuality);
             instantiatedItem.InitializeNewItem(itemQuality);
             instantiatedItem.DropLevel = unitController.CharacterStats.Level;
-            instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
             unitController.UnitEventController.NotifyOnGetNewInstantiatedItem(instantiatedItem);
             return instantiatedItem;
         }
 
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(string itemName, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemName}, {itemName})");
+
             Item item = systemDataFactory.GetResource<Item>(itemName);
             if (item == null) {
                 return null;
@@ -685,7 +689,8 @@ namespace AnyRPG {
         }
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, string itemName, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {itemName})");
+
             Item item = systemDataFactory.GetResource<Item>(itemName);
             if (item == null) {
                 return null;
@@ -694,7 +699,8 @@ namespace AnyRPG {
         }
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, Item item, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {item.ResourceName})");
+
             ItemQuality usedItemQuality = null;
             if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {
                 usedItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
@@ -703,7 +709,7 @@ namespace AnyRPG {
             instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItem.LoadSaveData(inventorySlotSaveData);
 
-            instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
             return instantiatedItem;
         }
 
@@ -729,8 +735,8 @@ namespace AnyRPG {
         }
 
         public void DeleteItem(int instanceId) {
-            if (instantiatedItems.ContainsKey(instanceId)) {
-                DeleteItem(instantiatedItems[instanceId]);
+            if (systemItemManager.InstantiatedItems.ContainsKey(instanceId)) {
+                DeleteItem(systemItemManager.InstantiatedItems[instanceId]);
             }
         }
 

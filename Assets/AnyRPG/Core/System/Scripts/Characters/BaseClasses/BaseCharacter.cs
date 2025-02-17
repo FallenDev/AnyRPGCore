@@ -90,10 +90,12 @@ namespace AnyRPG {
             unitController.CharacterStats.HandleUpdateStatProviders();
         }
 
+        /*
         public void Initialize() {
             //Debug.Log($"{gameObject.name}: BaseCharacter.Initialize()");
-            unitController.CharacterInventoryManager.PerformSetupActivities();
+            characterInventoryManager.PerformSetupActivities();
         }
+        */
 
         public void SetUnitToughness(UnitToughness newUnitToughness) {
             //Debug.Log($"{gameObject.name}: BaseCharacter.SetUnitToughness(" + (newUnitToughness == null ? "null" : newUnitToughness.DisplayName) + ")");

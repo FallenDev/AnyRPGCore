@@ -608,7 +608,7 @@ namespace AnyRPG {
         }
 
         public Dictionary<int, InteractableOptionComponent> GetCurrentInteractables(UnitController sourceUnitController) {
-            Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables()");
+            //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables()");
 
             if (notInteractable == true) {
                 return new Dictionary<int, InteractableOptionComponent>();
@@ -617,10 +617,10 @@ namespace AnyRPG {
             Dictionary<int, InteractableOptionComponent> currentInteractables = new Dictionary<int, InteractableOptionComponent>();
             foreach (KeyValuePair<int, InteractableOptionComponent> interactableOption in interactables) {
                 if (interactableOption.Value.CanInteract(sourceUnitController, false, false)) {
-                    Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables(): Adding interactable: {interactableOption.ToString()}");
+                    //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables(): Adding interactable: {interactableOption.ToString()}");
                     currentInteractables.Add(interactableOption.Key, interactableOption.Value);
                 } else {
-                    Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): invalid interactable: {interactableOption.ToString()}");
+                    //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): invalid interactable: {interactableOption.ToString()}");
                 }
             }
             return currentInteractables;

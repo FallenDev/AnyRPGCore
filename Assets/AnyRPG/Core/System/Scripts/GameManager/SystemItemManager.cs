@@ -58,6 +58,7 @@ namespace AnyRPG {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
             InstantiatedItem instantiatedItem = item.GetNewInstantiatedItem(systemGameManager, itemInstanceId, item, usedItemQuality);
             instantiatedItem.InitializeNewItem(usedItemQuality);
+            instantiatedItems.Add(itemInstanceId, instantiatedItem);
             return instantiatedItem;
         }
 

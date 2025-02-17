@@ -23,6 +23,7 @@ namespace AnyRPG {
         // game manager references
         protected ObjectPooler objectPooler = null;
         protected InventoryManager inventoryManager = null;
+        protected PlayerManager playerManager = null;
 
         public List<SlotScript> Slots { get => slots; }
         public Transform ContentArea { get => contentArea; }
@@ -32,6 +33,7 @@ namespace AnyRPG {
 
             objectPooler = systemGameManager.ObjectPooler;
             inventoryManager = systemGameManager.InventoryManager;
+            playerManager = systemGameManager.PlayerManager;
         }
         
         protected override void ProcessCreateEventSubscriptions() {
@@ -103,7 +105,8 @@ namespace AnyRPG {
         }
 
         public void HandleAddSlot(InventorySlot inventorySlot) {
-            //Debug.Log($"{gameObject.name}.BagPanel.HandleAddSlot()");
+            Debug.Log($"{gameObject.name}.BagPanel.HandleAddSlot({inventorySlot.GetCurrentInventorySlotIndex(playerManager.UnitController)})");
+
             SlotScript slot = objectPooler.GetPooledObject(slotPrefab, contentArea).GetComponent<SlotScript>();
             slot.Configure(systemGameManager);
             slot.SetInventorySlot(inventorySlot);

@@ -58,13 +58,15 @@ namespace AnyRPG {
         }
 
         public void SetInventorySlot(InventorySlot inventorySlot) {
+            Debug.Log($"{GetInstanceID()}.SlotScript.SetInventorySlot()");
+
             this.inventorySlot = inventorySlot;
             inventorySlot.OnUpdateSlot += UpdateSlot;
         }
 
         
         public void ClearInventorySlot() {
-            //Debug.Log("SlotScript.ClearInventorySlot()");
+            Debug.Log("SlotScript.ClearInventorySlot()");
 
             if (inventorySlot != null) {
                 inventorySlot.OnUpdateSlot -= UpdateSlot;
@@ -514,7 +516,8 @@ namespace AnyRPG {
         /// Updates the Stack Size count graphic
         /// </summary>
         private void UpdateSlot() {
-            //Debug.Log("SlotScript.UpdateSlot(): Update Slot called on slot " + GetInstanceID().ToString() + "; MyItem: " + (MyItem != null ? MyItem.DisplayName : "null"));
+            Debug.Log($"SlotScript.UpdateSlot(): Update Slot called on slot {GetInstanceID().ToString()}");
+
             if (inventorySlot == null) {
                 // the inventory slot that this script was referencing no longer exists
                 return;

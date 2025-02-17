@@ -229,9 +229,11 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName})");
+            Debug.Log($"NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
-            AddItemToInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
+            int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
+            Debug.Log($"NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId})) slotIndex: {slotIndex}");
+            AddItemToInventorySlotClient(slotIndex, item.InstanceId);
         }
 
         [ObserversRpc]
@@ -347,12 +349,16 @@ namespace AnyRPG {
         }
 
         public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem{instantiatedItem.InstanceId}");
+            
             InventorySlotSaveData inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
             HandleGetNewInstantiatedItemClient(instantiatedItem.InstanceId, inventorySlotSaveData);
         }
 
         [ObserversRpc]
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
+            
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(itemInstanceId, inventorySlotSaveData.ItemName, inventorySlotSaveData);
         }
 

@@ -493,9 +493,7 @@ namespace AnyRPG {
                 saveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
             }
 
-            SubscribeToPlayerInventoryEvents();
-            // FIX ME - THIS DOESN'T GET CALLED ON THE SERVER SO THE INVENTORY IS NOT INITIALIZED
-            unitController.BaseCharacter.Initialize();
+            //SubscribeToPlayerInventoryEvents();
             //SubscribeToPlayerEvents();
 
 
@@ -528,6 +526,7 @@ namespace AnyRPG {
                 return;
             }
             SubscribeToPlayerEvents();
+            SubscribeToPlayerInventoryEvents();
             unitController.CharacterUnit.SetCharacterStatsCapabilities();
             //playerManagerServer.AddActivePlayer(0, unitController);
         }
@@ -633,6 +632,8 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerInventoryEvents() {
+            Debug.Log("PlayerManager.SubscribeToPlayerInventoryEvents()");
+
             unitController.CharacterInventoryManager.OnAddInventoryBagNode += HandleAddInventoryBagNode;
             unitController.CharacterInventoryManager.OnAddBankBagNode += HandleAddBankBagNode;
             unitController.CharacterInventoryManager.OnAddInventorySlot += HandleAddInventorySlot;
@@ -787,6 +788,8 @@ namespace AnyRPG {
         }
 
         public void HandleAddInventorySlot(InventorySlot inventorySlot) {
+            Debug.Log("PlayerManager.HandleAddInventorySlot()");
+
             inventoryManager.AddInventorySlot(inventorySlot);
         }
 

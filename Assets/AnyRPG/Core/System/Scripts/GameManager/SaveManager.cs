@@ -577,6 +577,7 @@ namespace AnyRPG {
             saveData.DisplayName = string.Empty;
             saveData.itemQuality = string.Empty;
             saveData.dropLevel = 0;
+            saveData.randomSecondaryStatIndexes = new List<int>();
 
             return saveData;
         }
@@ -1075,7 +1076,7 @@ namespace AnyRPG {
 
                 // add inventory slots from bag
                 for (int i = 0; i < bag.Slots; i++) {
-                    anyRPGSaveData.inventorySlotSaveData.Add(new InventorySlotSaveData());
+                    anyRPGSaveData.inventorySlotSaveData.Add(GetEmptySlotSaveData());
                 }
             }
 
@@ -1092,19 +1093,10 @@ namespace AnyRPG {
             // add default bank contents
             for (int i = 0; i < systemConfigurationManager.DefaultBankSlots; i++) {
                 if (systemConfigurationManager.DefaultBankContents.Count > i) {
-                    InventorySlotSaveData inventorySlotSaveData = new InventorySlotSaveData();
+                    InventorySlotSaveData inventorySlotSaveData = GetEmptySlotSaveData();
                     InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(systemConfigurationManager.DefaultBankContents[i]);
-                    inventorySlotSaveData.ItemName = (instantiatedItem == null ? string.Empty : instantiatedItem.ResourceName);
-                    inventorySlotSaveData.stackCount = (instantiatedItem == null ? 0 : 1);
-                    inventorySlotSaveData.DisplayName = (instantiatedItem == null ? string.Empty : instantiatedItem.DisplayName);
                     if (instantiatedItem != null) {
-                        if (instantiatedItem.ItemQuality != null) {
-                            inventorySlotSaveData.itemQuality = (instantiatedItem == null ? string.Empty : instantiatedItem.ItemQuality.ResourceName);
-                        }
-                        if ((instantiatedItem is InstantiatedEquipment)) {
-                            inventorySlotSaveData.randomSecondaryStatIndexes = (instantiatedItem == null ? null : (instantiatedItem as InstantiatedEquipment).RandomStatIndexes);
-                        }
-                        inventorySlotSaveData.dropLevel = (instantiatedItem == null ? 0 : instantiatedItem.DropLevel);
+                        inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
                     }
                     anyRPGSaveData.bankSlotSaveData.Add(inventorySlotSaveData);
                 }

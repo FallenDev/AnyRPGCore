@@ -478,6 +478,7 @@ namespace AnyRPG {
             // testing moved to SetUnitProfile to give a chance to override baseCharacter if player so equipmentManager reference is correct
             // now that baseCharacter is not overridden, this can probably be moved back here
             //unitModelController.Initialize();
+            //characterInventoryManager.PerformSetupActivities();
         }
 
         public override void SetGameManagerReferences() {
@@ -1116,6 +1117,8 @@ namespace AnyRPG {
             isServer = characterRequestData.isServer;
             isOwner = characterRequestData.isOwner;
             isServerOwned = characterRequestData.isServerOwned;
+
+            characterInventoryManager.PerformSetupActivities();
 
             unitModelController.LoadInitialSavedAppearance(characterConfigurationRequest.characterAppearanceData);
 

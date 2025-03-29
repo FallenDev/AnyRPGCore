@@ -35,16 +35,16 @@ namespace AnyRPG {
             lootManager = systemGameManager.LootManager;
         }
 
-        public void RemoveDroppedItem(ItemLootDrop itemLootDrop) {
-            droppedItems.Remove(itemLootDrop);
+        public void RemoveDroppedItem(LootDrop lootDrop) {
+            droppedItems.Remove(lootDrop);
         }
 
-        private void AddDroppedItem(ItemLootDrop droppedItem) {
+        private void AddDroppedItem(LootDrop droppedItem) {
             droppedItems.Add(droppedItem);
         }
 
-        private void AddDroppedItems(List<ItemLootDrop> itemLootDrops) {
-            droppedItems.AddRange(itemLootDrops);
+        private void AddDroppedItems(List<LootDrop> lootDrops) {
+            droppedItems.AddRange(lootDrops);
         }
 
         private void RollLoot(UnitController sourceUnitController, LootTable lootTable) {
@@ -143,12 +143,12 @@ namespace AnyRPG {
             lootManager.AddLootTableState(this);
         }
 
-        private List<ItemLootDrop> GetLootDrop(UnitController sourceUnitController, Loot loot, bool lootGroupUnlimitedDrops, bool ignoreDropLimit, bool lootTableUnlimitedDrops, ref int lootGroupRemainingDrops) {
-            List<ItemLootDrop> returnValue = new List<ItemLootDrop>();
+        private List<LootDrop> GetLootDrop(UnitController sourceUnitController, Loot loot, bool lootGroupUnlimitedDrops, bool ignoreDropLimit, bool lootTableUnlimitedDrops, ref int lootGroupRemainingDrops) {
+            List<LootDrop> returnValue = new List<LootDrop>();
             int itemCount = Random.Range(loot.MinDrops, loot.MaxDrops + 1);
             //Debug.Log("GatherLootTable.RollLoot(): itemCount: " + itemCount);
             for (int i = 0; i < itemCount; i++) {
-                ItemLootDrop droppedItem = new ItemLootDrop(sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item.ResourceName), this, systemGameManager);
+                LootDrop droppedItem = new LootDrop(sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item.ResourceName), this, systemGameManager);
                 AddDroppedItem(droppedItem);
                 if (lootGroupUnlimitedDrops == false && ignoreDropLimit == false) {
                     lootGroupRemainingDrops = lootGroupRemainingDrops - 1;

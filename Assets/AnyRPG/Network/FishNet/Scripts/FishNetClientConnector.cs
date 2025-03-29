@@ -2,6 +2,7 @@ using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -750,6 +751,27 @@ namespace AnyRPG {
         public void AdvertiseSellItemToPlayerClient(NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
             Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({networkCharacterUnit.gameObject.name}, {networkInteractable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             networkManagerClient.AdvertiseSellItemToPlayerClient(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void TakeAllLoot(NetworkConnection networkConnection = null) {
+            networkManagerServer.TakeAllLoot(networkConnection.ClientId);
+        }
+
+        public void AddDroppedLoot(int clientId, List<LootDrop> items) {
+            List<int> instanceIds = new List<int>();
+            // TO DO : convert loot drop so instantiated item IDs can be referenced
+            /*
+            foreach (LootDrop item in items) {
+                instanceIds.Add(item.instan)
+            }
+            AddDroppedLootClient(ServerManager.Clients[clientId]);
+            */
+        }
+
+        [TargetRpc]
+        public void AddDroppedLootClient(NetworkConnection networkConnection, List<int> instantiatedItemIds) {
+            //networkManagerClient.AddDroppedLootClient(instantiatedItemIds);
         }
 
 

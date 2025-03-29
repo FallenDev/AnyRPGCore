@@ -20,6 +20,8 @@ namespace AnyRPG {
         private CurrencyNode currencyNode;
 
         public CurrencyNode CurrencyNode { get => currencyNode; }
+        public string GainCurrencyName { get => gainCurrencyName; }
+        public int GainCurrencyAmount { get => gainCurrencyAmount; }
 
         public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
             if ((item is CurrencyItem) == false) {

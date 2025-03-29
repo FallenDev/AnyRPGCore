@@ -474,6 +474,10 @@ namespace AnyRPG {
             networkController.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName);
         }
 
+        public void TakeAllLoot() {
+            networkController.TakeAllLoot();
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

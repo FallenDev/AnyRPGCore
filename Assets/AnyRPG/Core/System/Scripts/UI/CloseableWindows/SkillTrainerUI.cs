@@ -1,10 +1,8 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AnyRPG {
     public class SkillTrainerUI : WindowContentController {
@@ -40,6 +38,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private SkillTrainerManager skillTrainerManager = null;
         private PlayerManager playerManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -58,6 +57,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             skillTrainerManager = systemGameManager.SkillTrainerManager;
             playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void SetSelectedButton(SkillTrainerSkillScript selectedSkillTrainerSkillScript) {
@@ -197,7 +197,7 @@ namespace AnyRPG {
                 skillTrainerManager.LearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.Skill);
                 selectedSkillTrainerSkillScript = null;
                 ClearDescription();
-                ShowSkills();
+                //ShowSkills();
             }
         }
 
@@ -206,7 +206,7 @@ namespace AnyRPG {
             if (selectedSkillTrainerSkillScript != null && selectedSkillTrainerSkillScript.Skill != null) {
                 skillTrainerManager.UnlearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.Skill);
                 UpdateButtons(selectedSkillTrainerSkillScript.Skill);
-                ShowSkills();
+                //ShowSkills();
             }
         }
 
@@ -223,7 +223,8 @@ namespace AnyRPG {
             ClearDescription();
 
             ShowSkills();
-
+            systemEventManager.OnLearnSkill += HandleLearnSkill;
+            systemEventManager.OnUnLearnSkill += HandleUnLearnSkill;
         }
 
         public override void ReceiveClosedWindowNotification() {
@@ -232,7 +233,18 @@ namespace AnyRPG {
             DeactivateButtons();
             selectedSkillTrainerSkillScript = null;
             skillTrainerManager.EndInteraction();
+            systemEventManager.OnLearnSkill -= HandleLearnSkill;
+            systemEventManager.OnUnLearnSkill -= HandleUnLearnSkill;
         }
+
+        private void HandleLearnSkill(UnitController controller, Skill skill) {
+            ShowSkills();
+        }
+
+        private void HandleUnLearnSkill(UnitController controller, Skill skill) {
+            ShowSkills();
+        }
+
     }
 
 }

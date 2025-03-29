@@ -26,6 +26,7 @@ namespace AnyRPG {
         // hold the rolled currency amount
         private CurrencyNode currencyNode;
 
+        private LootTable currencyLootTable = null;
         private LootHolder lootHolder = new LootHolder();
 
         // game manager references
@@ -104,6 +105,16 @@ namespace AnyRPG {
 
         public void CreateLootTables() {
             //Debug.Log($"{gameObject.name}.LootableCharacter.CreateLootTables()");
+            if (Props.AutomaticCurrency == true) {
+                currencyLootTable = ScriptableObject.CreateInstance<LootTable>();
+                LootGroup lootGroup = new LootGroup();
+                lootGroup.GuaranteedDrop = true;
+                Loot loot = new Loot();
+                loot.DropChance = 100f;
+                loot.Item = lootManager.CurrencyLootItem;
+                lootGroup.Loot.Add(loot);
+                currencyLootTable.LootGroups.Add(lootGroup);
+            }
             foreach (string lootTableName in Props.LootTableNames) {
                 LootTable lootTable = systemDataFactory.GetResource<LootTable>(lootTableName);
                 if (lootTable != null) {
@@ -120,10 +131,6 @@ namespace AnyRPG {
 
         public void HandleDeath(UnitController sourceUnitController) {
             //Debug.Log(interactable.gameObject.name + "LootableCharacter.HandleDeath()");
-            if (playerManager == null) {
-                // game is exiting
-                return;
-            }
             int lootCount = 0;
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): MyLootTable != null.  Getting loot");
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): characterinAgrotable: " + characterUnit.BaseCharacter.CharacterCombat.MyAggroTable.AggroTableContains(playerManager.UnitController.CharacterUnit));
@@ -212,9 +219,22 @@ namespace AnyRPG {
                 if (lootTable != null) {
                     lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable, !lootCalculated);
                     lootCount += lootHolder.LootTableStates[lootTable].DroppedItems.Count;
+                    
+                    // special case for currency drop.  Maybe this could go in a PostDrop() call on the InstantiatedItems ?  Not sure that makes sense since only currencyItem would
+                    // make use of the call
+                    // This is here rather than the other places GetLootCount() is called because this *should* be the first time that is called immediately after death
+                    if (lootTable == currencyLootTable) {
+                        
+                        if (lootHolder.LootTableStates[lootTable].DroppedItems.Count > 0 && lootHolder.LootTableStates[lootTable].DroppedItems[0].InstantiatedItem is InstantiatedCurrencyItem) {
+                            InstantiatedCurrencyItem currencyItem = lootHolder.LootTableStates[lootTable].DroppedItems[0].InstantiatedItem as InstantiatedCurrencyItem;
+                            currencyItem.GainCurrencyAmount = currencyNode.Amount;
+                            currencyItem.GainCurrencyName = currencyNode.currency.ResourceName;
+                        }
+                    }
                     //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after loot table count: " + lootCount);
                 }
             }
+            /*
             if (Props.AutomaticCurrency == true) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): automatic currency : true");
                 CurrencyNode tmpNode = GetCurrencyLoot();
@@ -223,6 +243,7 @@ namespace AnyRPG {
                     //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after currency count: " + lootCount);
                 }
             }
+            */
             return lootCount;
         }
 
@@ -296,10 +317,13 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): Character is dead.  Showing Loot Window on interaction");
                 base.Interact(sourceUnitController, componentIndex, choiceIndex);
                 // keep track of currency drops for combining after
-                CurrencyLootDrop droppedCurrencies = new CurrencyLootDrop(systemGameManager);
+                //CurrencyLootDrop droppedCurrencies = new CurrencyLootDrop(systemGameManager);
 
+                List<LootDrop> currencyDrops = new List<LootDrop>();
                 List<LootDrop> drops = new List<LootDrop>();
                 List<LootDrop> itemDrops = new List<LootDrop>();
+                
+                // aoe loot
                 foreach (Interactable interactable in GetLootableTargets()) {
                     LootableCharacterComponent lootableCharacter = LootableCharacterComponent.GetLootableCharacterComponent(interactable);
                     if (lootableCharacter != null) {
@@ -308,13 +332,21 @@ namespace AnyRPG {
                             //Debug.Log("Adding drops to loot table from: " + lootableCharacter.gameObject.name);
 
                             // get currency loot
-                            if (Props.AutomaticCurrency == true) {
+                            // disabled since this is now handled by currency being a drop from the special currency loot table.
+                            /*
+                            if (lootableCharacter.Props.AutomaticCurrency == true) {
                                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): automatic currency : true");
                                 CurrencyNode tmpNode = lootableCharacter.GetCurrencyLoot();
                                 if (tmpNode.currency != null) {
-                                    droppedCurrencies.AddCurrencyNode(lootableCharacter, tmpNode);
+                                    InstantiatedCurrencyItem currencyItem = sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(lootManager.CurrencyLootItem) as InstantiatedCurrencyItem;
+                                    currencyItem.OverrideCurrency(tmpNode.currency.ResourceName, tmpNode.Amount);
+                                    //LootDrop lootDrop = new LootDrop(currencyItem, systemGameManager);
+                                    // TO DO : fix this code to drop the currency item from the currency loot table
+                                    //currencyDrops.Add(lootDrop);
+                                    //droppedCurrencies.AddCurrencyNode(lootableCharacter, tmpNode);
                                 }
                             }
+                            */
 
                             // get item loot
                             foreach (LootTable lootTable in lootableCharacter.LootHolder.LootTableStates.Keys) {
@@ -322,31 +354,29 @@ namespace AnyRPG {
                                 // testing - move this outside of loop because otherwise we can subscribe multiple times to loot events, and they will never be cleared
                                 //lootableCharacter.MonitorLootTable();
                             }
-                            if (lootableCharacter.LootHolder.LootTableStates.Count > 0 || Props.AutomaticCurrency == true) {
+                            if (lootableCharacter.LootHolder.LootTableStates.Count > 0/* || Props.AutomaticCurrency == true*/) {
                                 lootableCharacter.MonitorLootTable();
                             }
 
                         }
                     }
                 }
-                // that will ignore the current character because he will have been removed from the interactables list by death
-                // this should take care of that situation
-                //drops.AddRange(MyLootTable.GetLoot());
-                // don't need anymore because of spherecast, not interactables
 
                 // combine all currencies from all lootable targets in range into a single currency lootdrop, and add that as the first lootdrop
                 // in the drops list so it shows up on the first page as the first item
+                /*
                 if (droppedCurrencies.CurrencyNodes.Count > 0) {
                     drops.Add(droppedCurrencies);
                 }
+                */
+                //drops.AddRange(currencyDrops);
                 drops.AddRange(itemDrops);
 
                 if (drops.Count > 0) {
                     //Debug.Log(interactable.gameObject.name + ".LootableCharacter.drops.Count: " + drops.Count);
                     //lootManager.CreatePages(drops);
-                    lootManager.AddLoot(drops);
+                    lootManager.AddLoot(sourceUnitController, drops);
                     //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): about to open window");
-                    uIManager.lootWindow.OpenWindow();
                     return true;
                 } else {
                     //Debug.Log($"{gameObject.name}.LootableCharacter.drops.Count: " + drops.Count);
@@ -359,6 +389,7 @@ namespace AnyRPG {
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
+            uIManager.lootWindow.OpenWindow();
         }
 
         public void MonitorLootTable() {

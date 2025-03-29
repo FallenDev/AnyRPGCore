@@ -157,6 +157,8 @@ namespace AnyRPG {
 
         public int stackCount;
         public List<int> randomSecondaryStatIndexes;
+        public string gainCurrencyName;
+        public int gainCurrencyAmount;
     }
 
     [Serializable]

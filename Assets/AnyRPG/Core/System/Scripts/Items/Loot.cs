@@ -34,7 +34,7 @@ namespace AnyRPG {
 
         public string ItemName { get => itemName; set => itemName = value; }
         public string DisplayName { get => ItemName; }
-        public Item Item { get => item; }
+        public Item Item { get => item; set => item = value; }
         public float DropChance { get => dropChance; set => dropChance = value; }
         public int MinDrops { get => minDrops; set => minDrops = value; }
         public int MaxDrops { get => maxDrops; set => maxDrops = value; }

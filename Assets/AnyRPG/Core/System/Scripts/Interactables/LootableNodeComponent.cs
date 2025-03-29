@@ -90,12 +90,17 @@ namespace AnyRPG {
             spawnCoroutine = null;
 
             //Debug.Log($"{gameObject.name}.LootableNode.StartSpawnCountdown(): countdown complete");
-            //interactable.Spawn();
+            Spawn();
 
             // ENABLE MINIMAP ICON AFTER SPAWN
             HandleOptionStateChange();
         }
 
+        private void Spawn() {
+            if (Props.SpawnObject != null && Props.SpawnObject.activeSelf == false) {
+                Props.SpawnObject.SetActive(true);
+            }
+        }
 
         public virtual void DropLoot(UnitController sourceUnitController) {
             //Debug.Log($"{gameObject.name}.LootableNode.DropLoot()");
@@ -113,7 +118,7 @@ namespace AnyRPG {
                 lootDrops.AddRange(lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable));
             }
             //lootManager.CreatePages(lootDrops);
-            lootManager.AddLoot(lootDrops);
+            lootManager.AddLoot(sourceUnitController, lootDrops);
             lootDropped = true;
         }
 
@@ -177,7 +182,7 @@ namespace AnyRPG {
 
 
                 // testing : monitor if this affects pickup nodes.  Theoretically the HandlePrerequisiteUpdates() call should trigger a despawn anyway
-                //interactable.DestroySpawn();
+                Despawn();
 
                 InitializeLootTableStates();
 
@@ -193,6 +198,13 @@ namespace AnyRPG {
                 HandleOptionStateChange();
             }
         }
+
+        private void Despawn() {
+            if (Props.SpawnObject != null && Props.SpawnObject.activeSelf == true) {
+                Props.SpawnObject.SetActive(false);
+            }
+        }
+
 
         private void InitializeLootTableStates() {
             lootHolder.InitializeLootTableStates();

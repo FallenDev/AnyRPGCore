@@ -58,7 +58,7 @@ namespace AnyRPG {
         }
 
         public void SetInventorySlot(InventorySlot inventorySlot) {
-            Debug.Log($"{GetInstanceID()}.SlotScript.SetInventorySlot()");
+            //Debug.Log($"{GetInstanceID()}.SlotScript.SetInventorySlot()");
 
             this.inventorySlot = inventorySlot;
             inventorySlot.OnUpdateSlot += UpdateSlot;
@@ -66,7 +66,7 @@ namespace AnyRPG {
 
         
         public void ClearInventorySlot() {
-            Debug.Log("SlotScript.ClearInventorySlot()");
+            //Debug.Log("SlotScript.ClearInventorySlot()");
 
             if (inventorySlot != null) {
                 inventorySlot.OnUpdateSlot -= UpdateSlot;

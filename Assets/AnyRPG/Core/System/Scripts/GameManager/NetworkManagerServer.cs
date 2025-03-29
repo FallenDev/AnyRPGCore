@@ -57,6 +57,7 @@ namespace AnyRPG {
         private SystemDataFactory systemDataFactory = null;
         private VendorManager vendorManager = null;
         private SystemItemManager systemItemManager = null;
+        private LootManager lootManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -77,6 +78,7 @@ namespace AnyRPG {
             levelManagerServer = systemGameManager.LevelManagerServer;
             systemDataFactory = systemGameManager.SystemDataFactory;
             vendorManager = systemGameManager.VendorManager;
+            lootManager = systemGameManager.LootManager;
 
             networkController?.Configure(systemGameManager);
 
@@ -656,6 +658,16 @@ namespace AnyRPG {
                 return;
             }
             vendorManager.BuyItemFromVendorServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, collectionIndex, itemIndex, resourceName, clientId);
+        }
+
+        public void TakeAllLoot(int clientId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == true) {
+                lootManager.TakeAllLootInternal(clientId, playerManagerServer.ActivePlayers[clientId]);
+            }
+        }
+
+        public void AddDroppedLoot(int clientId, List<LootDrop> items) {
+            networkController.AddDroppedLoot(clientId, items);
         }
 
         /*

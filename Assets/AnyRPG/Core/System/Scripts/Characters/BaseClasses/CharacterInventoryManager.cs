@@ -174,7 +174,7 @@ namespace AnyRPG {
         }
 
         private void AddInventorySlot(InventorySlot inventorySlot) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventorySlot() count: {inventorySlots.Count}");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventorySlot() count: {inventorySlots.Count}");
 
             inventorySlots.Add(inventorySlot);
             inventorySlot.OnAddItem += HandleAddItemToInventorySlot;

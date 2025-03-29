@@ -14,7 +14,7 @@ namespace AnyRPG {
         protected BagBarController bagBarController;
 
         // game manager references
-        protected PlayerManager playerManager = null;
+        //protected PlayerManager playerManager = null;
 
         public BagBarController BagBarController { get => bagBarController; set => bagBarController = value; }
 
@@ -27,7 +27,7 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            playerManager = systemGameManager.PlayerManager;
+            //playerManager = systemGameManager.PlayerManager;
         }
 
         protected override void ProcessCreateEventSubscriptions() {

@@ -8,6 +8,8 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class GatheringNodeComponent : LootableNodeComponent {
 
+        //private bool available = true;
+
         public GatheringNodeProps GatheringNodeProps { get => interactableOptionProps as GatheringNodeProps; }
 
         public GatheringNodeComponent(Interactable interactable, GatheringNodeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {

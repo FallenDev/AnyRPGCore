@@ -6,8 +6,8 @@ using UnityEngine;
 namespace AnyRPG {
     public class SystemItemManager : ConfiguredMonoBehaviour {
 
-        private int clientItemIdCount = 0;
-        private int serverItemIdCount = 0;
+        private int clientItemIdCount = 1;
+        private int serverItemIdCount = -1;
 
         private Dictionary<int, InstantiatedItem> instantiatedItems = new Dictionary<int, InstantiatedItem>();
 

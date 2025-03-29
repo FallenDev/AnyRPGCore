@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEngine.Rendering.PostProcessing.SubpixelMorphologicalAntialiasing;
@@ -434,6 +435,10 @@ namespace AnyRPG {
             clientConnector.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName);
         }
 
+        public override void TakeAllLoot() {
+            clientConnector.TakeAllLoot();
+        }
+
         #endregion
 
         #region server functions
@@ -597,6 +602,10 @@ namespace AnyRPG {
         public override void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
             Debug.Log($"FishNetNetworkController.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             clientConnector.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
+        }
+
+        public override void AddDroppedLoot(int clientId, List<LootDrop> items) {
+            clientConnector.AddDroppedLoot(clientId, items);
         }
 
         #endregion

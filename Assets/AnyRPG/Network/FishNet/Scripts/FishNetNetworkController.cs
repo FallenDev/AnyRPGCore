@@ -7,12 +7,9 @@ using FishNet.Transporting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.Rendering.PostProcessing.SubpixelMorphologicalAntialiasing;
 
 namespace AnyRPG {
     public class FishNetNetworkController : NetworkController {

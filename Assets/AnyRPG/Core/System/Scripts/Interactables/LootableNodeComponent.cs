@@ -65,13 +65,16 @@ namespace AnyRPG {
             base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             DropLoot(sourceUnitController);
-            PickUp();
+            //PickUp();
             return true;
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
+            OpenLootWindow();
         }
 
         protected IEnumerator StartSpawnCountdown() {
@@ -122,11 +125,9 @@ namespace AnyRPG {
             lootDropped = true;
         }
 
-        /// <summary>
-        /// Pick an item up off the ground and put it in the inventory
-        /// </summary>
-        public void PickUp() {
-            //Debug.Log($"{gameObject.name}.LootableNode.Pickup()");
+        public void OpenLootWindow() {
+            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.OpenLootWindow()");
+
             CreateWindowEventSubscriptions();
             uIManager.lootWindow.CloseableWindowContents.OnCloseWindow += ClearTakeLootHandler;
             uIManager.lootWindow.OpenWindow();

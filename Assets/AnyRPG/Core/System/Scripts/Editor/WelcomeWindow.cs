@@ -53,6 +53,7 @@ namespace AnyRPG {
         private const string contentDemoGameScenePath = "/AnyRPG/Engine/Games/ContentDemo/Scenes/Game/ContentDemoGame/ContentDemoGame.unity";
         private const string featuresDemoGameScenePath = "/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Game/FeaturesDemoGame/FeaturesDemoGame.unity";
         private const string zeroConfigModeGameScenePath = "/AnyRPG/Core/Games/EmptyGame/Scenes/EmptyGame/EmptyGame.unity";
+        private const string mmoDemoGameScenePath = "/AnyRPG/Network/Fishnet/Games/AnyMMODemo/Scenes/AnyMMODemo/AnyMMODemo.unity";
 
         public static Texture2D welcomeBanner = null;
 
@@ -149,7 +150,7 @@ namespace AnyRPG {
                 }
                 EditorGUILayout.HelpBox("The first 2 chapters of the game, 'A Lost Soul', re-created using the open source assets included in AnyRPG", MessageType.None);
                 GUILayout.EndVertical();
-                GUILayout.Space(10);
+                GUILayout.Space(5);
             }
 
             if (System.IO.File.Exists(Application.dataPath + characterDemoGameScenePath)) {
@@ -159,7 +160,7 @@ namespace AnyRPG {
                 }
                 EditorGUILayout.HelpBox("Explore the game world of A Lost Soul by starting as any character model and faction included in the game", MessageType.None);
                 GUILayout.EndVertical();
-                GUILayout.Space(10);
+                GUILayout.Space(5);
             }
 
             if (System.IO.File.Exists(Application.dataPath + contentDemoGameScenePath)) {
@@ -169,7 +170,7 @@ namespace AnyRPG {
                 }
                 EditorGUILayout.HelpBox("A simple demo of all 3d and audio content including\n -Clothing\n -Characters\n -Buildings\n -Props\n -Weapons", MessageType.None);
                 GUILayout.EndVertical();
-                GUILayout.Space(10);
+                GUILayout.Space(5);
             }
 
             if (System.IO.File.Exists(Application.dataPath + featuresDemoGameScenePath)) {
@@ -179,7 +180,7 @@ namespace AnyRPG {
                 }
                 EditorGUILayout.HelpBox("A simple 2 level game that provides examples of the most common features and interactables included in AnyRPG for quick reference when implementing them in your own game", MessageType.None);
                 GUILayout.EndVertical();
-                GUILayout.Space(10);
+                GUILayout.Space(5);
             }
 
             if (System.IO.File.Exists(Application.dataPath + zeroConfigModeGameScenePath)) {
@@ -190,7 +191,17 @@ namespace AnyRPG {
                 EditorGUILayout.HelpBox("A bare bones single scene with no main menu that demonstrates how to use AnyRPG in Zero Config (Controller Only) mode by including an unconfigured " +
                     "GameManager into any scene", MessageType.None);
                 GUILayout.EndVertical();
-                GUILayout.Space(10);
+                GUILayout.Space(5);
+            }
+
+            if (System.IO.File.Exists(Application.dataPath + mmoDemoGameScenePath)) {
+                GUILayout.BeginVertical("box");
+                if (GUILayout.Button("AnyMMO FishNet Demo Game")) {
+                    EditorSceneManager.OpenScene("Assets" + mmoDemoGameScenePath);
+                }
+                EditorGUILayout.HelpBox("A copy of the Features Demo Game designed for play over the network with multiple players.", MessageType.None);
+                GUILayout.EndVertical();
+                GUILayout.Space(5);
             }
 
 

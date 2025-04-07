@@ -121,7 +121,7 @@ namespace AnyRPG {
                 lootDrops.AddRange(lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable));
             }
             //lootManager.CreatePages(lootDrops);
-            lootManager.AddLoot(sourceUnitController, lootDrops);
+            lootManager.AddAvailableLoot(sourceUnitController, lootDrops);
             lootDropped = true;
         }
 

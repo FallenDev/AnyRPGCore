@@ -49,6 +49,7 @@ namespace AnyRPG {
         private InteractionManager interactionManager = null;
         private MessageFeedManager messageFeedManager = null;
         private SystemItemManager systemItemManager = null;
+        private LootManager lootManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -72,6 +73,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             messageFeedManager = uIManager.MessageFeedManager;
             systemItemManager = systemGameManager.SystemItemManager;
+            lootManager = systemGameManager.LootManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -476,6 +478,14 @@ namespace AnyRPG {
 
         public void TakeAllLoot() {
             networkController.TakeAllLoot();
+        }
+
+        public void AddDroppedLoot(int lootDropId, int itemId) {
+            lootManager.AddNetworkLootDrop(lootDropId, itemId);
+        }
+
+        public void AddAvailableDroppedLoot(List<int> lootDropIds) {
+            lootManager.AddAvailableLoot(clientId, lootDropIds);
         }
 
 

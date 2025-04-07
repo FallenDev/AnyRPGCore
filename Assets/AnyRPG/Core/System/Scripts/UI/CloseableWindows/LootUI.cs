@@ -49,7 +49,7 @@ namespace AnyRPG {
 
             pages.Clear();
             LootDropContentList page = new LootDropContentList();
-            foreach (LootDrop lootDrop in lootManager.DroppedLoot[0]) {
+            foreach (LootDrop lootDrop in lootManager.AvailableDroppedLoot[0]) {
                 page.lootDrops.Add(lootDrop);
                 if (page.lootDrops.Count == pageSize) {
                     pages.Add(page);

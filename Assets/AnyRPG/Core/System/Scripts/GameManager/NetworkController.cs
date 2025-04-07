@@ -76,7 +76,8 @@ namespace AnyRPG {
         public abstract void AdvertiseSystemMessage(int clientId, string message);
         public abstract void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem);
         public abstract void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int quantity);
-        public abstract void AddDroppedLoot(int clientId, List<LootDrop> items);
+        public abstract void AddAvailableDroppedLoot(int clientId, List<LootDrop> items);
+        public abstract void AddLootDrop(int clientId, int lootDropId, int itemId);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);

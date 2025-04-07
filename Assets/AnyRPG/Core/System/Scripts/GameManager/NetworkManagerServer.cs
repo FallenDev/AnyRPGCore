@@ -666,8 +666,12 @@ namespace AnyRPG {
             }
         }
 
-        public void AddDroppedLoot(int clientId, List<LootDrop> items) {
-            networkController.AddDroppedLoot(clientId, items);
+        public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
+            networkController.AddAvailableDroppedLoot(clientId, items);
+        }
+
+        public void AddLootDrop(int clientId, int lootDropId, int itemId) {
+            networkController.AddLootDrop(clientId, lootDropId, itemId);
         }
 
         /*

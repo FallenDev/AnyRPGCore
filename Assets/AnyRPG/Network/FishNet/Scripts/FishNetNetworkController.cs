@@ -601,8 +601,12 @@ namespace AnyRPG {
             clientConnector.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 
-        public override void AddDroppedLoot(int clientId, List<LootDrop> items) {
-            clientConnector.AddDroppedLoot(clientId, items);
+        public override void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
+            clientConnector.AddAvailableDroppedLoot(clientId, items);
+        }
+
+        public override void AddLootDrop(int clientId, int lootDropId, int itemId) {
+            clientConnector.AddDroppedLoot(clientId, lootDropId, itemId);
         }
 
         #endregion

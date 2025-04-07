@@ -8,6 +8,8 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class LootDrop : ConfiguredClass, IDescribable {
 
+        private int lootDropId;
+
         // game manager references
         protected LootManager lootManager = null;
         protected UIManager uIManager = null;
@@ -35,10 +37,15 @@ namespace AnyRPG {
 
         public InstantiatedItem InstantiatedItem { get; set; }
 
-        public LootTableState LootTableState { get; set; }
+        public int LootDropId { get => lootDropId; }
 
-        public LootDrop(InstantiatedItem item, LootTableState lootTableState, SystemGameManager systemGameManager) {
-            LootTableState = lootTableState;
+        public LootDrop(InstantiatedItem item, SystemGameManager systemGameManager) {
+            InstantiatedItem = item;
+            Configure(systemGameManager);
+        }
+
+        public LootDrop(int lootDropId, InstantiatedItem item, SystemGameManager systemGameManager) {
+            this.lootDropId = lootDropId;
             InstantiatedItem = item;
             Configure(systemGameManager);
         }
@@ -71,10 +78,7 @@ namespace AnyRPG {
         }
 
         public void Remove() {
-            LootTableState.RemoveDroppedItem(this);
-            if (LootTableState.DroppedItems.Count == 0) {
-                lootManager.RemoveLootTableState(LootTableState);
-            }
+            lootManager.RemoveLootTableStateIndex(lootDropId);
         }
 
         public void AfterLoot(UnitController sourceUnitController) {

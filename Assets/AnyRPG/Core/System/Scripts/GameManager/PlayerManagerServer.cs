@@ -8,7 +8,9 @@ namespace AnyRPG {
 
         // clientId, UnitController
         private Dictionary<int, UnitController> activePlayers = new Dictionary<int, UnitController>();
+        // gameobject, clientId
         private Dictionary<GameObject, int> activePlayerGameObjects = new Dictionary<GameObject, int>();
+        // unitController, clientId
         private Dictionary<UnitController, int> activePlayerLookup = new Dictionary<UnitController, int>();
 
         protected bool eventSubscriptionsInitialized = false;

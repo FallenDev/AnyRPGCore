@@ -758,20 +758,28 @@ namespace AnyRPG {
             networkManagerServer.TakeAllLoot(networkConnection.ClientId);
         }
 
-        public void AddDroppedLoot(int clientId, List<LootDrop> items) {
-            List<int> instanceIds = new List<int>();
-            // TO DO : convert loot drop so instantiated item IDs can be referenced
-            /*
-            foreach (LootDrop item in items) {
-                instanceIds.Add(item.instan)
-            }
-            AddDroppedLootClient(ServerManager.Clients[clientId]);
-            */
+        public void AddDroppedLoot(int clientId, int lootDropId, int itemId) {
+            AddDroppedLootClient(ServerManager.Clients[clientId], lootDropId, itemId);
         }
 
         [TargetRpc]
-        public void AddDroppedLootClient(NetworkConnection networkConnection, List<int> instantiatedItemIds) {
-            //networkManagerClient.AddDroppedLootClient(instantiatedItemIds);
+        public void AddDroppedLootClient(NetworkConnection networkConnection, int lootDropId, int itemId) {
+            networkManagerClient.AddDroppedLoot(lootDropId, itemId);
+        }
+
+        public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
+            List<int> lootDropIds = new List<int>();
+            
+            foreach (LootDrop item in items) {
+                lootDropIds.Add(item.LootDropId);
+            }
+            AddAvailableDroppedLootClient(ServerManager.Clients[clientId], lootDropIds);
+            
+        }
+
+        [TargetRpc]
+        public void AddAvailableDroppedLootClient(NetworkConnection networkConnection, List<int> lootDropIds) {
+            networkManagerClient.AddAvailableDroppedLoot(lootDropIds);
         }
 
 

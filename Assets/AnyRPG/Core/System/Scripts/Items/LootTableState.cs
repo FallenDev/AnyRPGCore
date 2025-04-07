@@ -148,7 +148,10 @@ namespace AnyRPG {
             int itemCount = Random.Range(loot.MinDrops, loot.MaxDrops + 1);
             //Debug.Log("GatherLootTable.RollLoot(): itemCount: " + itemCount);
             for (int i = 0; i < itemCount; i++) {
-                LootDrop droppedItem = new LootDrop(sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item.ResourceName), this, systemGameManager);
+                int lootDropId = systemGameManager.LootManager.GetLootDropId();
+                LootDrop droppedItem = new LootDrop(lootDropId, sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item.ResourceName), systemGameManager);
+                lootManager.AddLootDropToIndex(sourceUnitController, droppedItem);
+                lootManager.AddLootTableStateIndex(droppedItem.LootDropId, this);
                 AddDroppedItem(droppedItem);
                 if (lootGroupUnlimitedDrops == false && ignoreDropLimit == false) {
                     lootGroupRemainingDrops = lootGroupRemainingDrops - 1;

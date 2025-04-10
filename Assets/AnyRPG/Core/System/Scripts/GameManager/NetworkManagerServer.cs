@@ -667,6 +667,8 @@ namespace AnyRPG {
         }
 
         public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
+            Debug.Log($"NetworkManagerServer.AddAvailableDroppedLoot({clientId})");
+
             networkController.AddAvailableDroppedLoot(clientId, items);
         }
 

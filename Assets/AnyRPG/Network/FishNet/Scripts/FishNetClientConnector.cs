@@ -759,15 +759,21 @@ namespace AnyRPG {
         }
 
         public void AddDroppedLoot(int clientId, int lootDropId, int itemId) {
+            Debug.Log($"FishNetClientConnector.AddDroppedLoot({clientId}, {lootDropId}, {itemId})");
+
             AddDroppedLootClient(ServerManager.Clients[clientId], lootDropId, itemId);
         }
 
         [TargetRpc]
         public void AddDroppedLootClient(NetworkConnection networkConnection, int lootDropId, int itemId) {
+            Debug.Log($"FishNetClientConnector.AddDroppedLootClient({networkConnection.ClientId}, {lootDropId}, {itemId})");
+
             networkManagerClient.AddDroppedLoot(lootDropId, itemId);
         }
 
         public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
+            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({clientId}, {items.Count})");
+
             List<int> lootDropIds = new List<int>();
             
             foreach (LootDrop item in items) {
@@ -779,6 +785,8 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AddAvailableDroppedLootClient(NetworkConnection networkConnection, List<int> lootDropIds) {
+            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLootClient({networkConnection.ClientId}, {lootDropIds.Count})");
+
             networkManagerClient.AddAvailableDroppedLoot(lootDropIds);
         }
 

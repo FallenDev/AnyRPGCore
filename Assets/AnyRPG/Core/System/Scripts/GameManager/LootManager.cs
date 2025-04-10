@@ -1,15 +1,13 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.EditorTools;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AnyRPG {
     public class LootManager : ConfiguredMonoBehaviour {
 
         public event System.Action OnTakeLoot = delegate { };
+        public event Action OnAvailableLootAdded = delegate { };
 
         // clientId, LootDrop
         // a list that is reset every time the loot window opens or closes to give the proper list depending on what was looted
@@ -41,6 +39,8 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
             currencyLootItem = ScriptableObject.CreateInstance<CurrencyItem>();
             currencyLootItem.ResourceName = "System Currency Loot Item";
+            // pre populate client id 0 so this works before loot is dropped
+            availableDroppedLoot.Add(0, new List<LootDrop>());
         }
 
         public override void SetGameManagerReferences() {
@@ -49,17 +49,21 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
             systemItemManager = systemGameManager.SystemItemManager;
         }
 
         public void AddAvailableLoot(UnitController sourceUnitController, List<LootDrop> items) {
+            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, {items.Count})");
+
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 AddAvailableLoot(playerManagerServer.ActivePlayerLookup[sourceUnitController], items);
             }
         }
 
         public void AddAvailableLoot(int clientId, List<int> lootDropIds) {
-            //Debug.Log("LootManager.AddLoot()");
+            Debug.Log($"LootManager.AddAvailableLoot({clientId}, {lootDropIds.Count})");
+
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {
                 if (lootDropIndex.ContainsKey(lootDropId)) {
@@ -70,15 +74,19 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int clientId, List<LootDrop> items) {
-            //Debug.Log("LootManager.AddLoot()");
+            Debug.Log($"LootManager.AddAvailableLoot({clientId}, {items.Count})");
+
             if (availableDroppedLoot.ContainsKey(clientId)) {
                 availableDroppedLoot[clientId] = items;
             } else {
                 availableDroppedLoot.Add(clientId, items);
             }
-            // add the code here to copy this data to the client
+            
+            // copy this data to the client
             if (networkManagerServer.ServerModeActive == true) {
                 networkManagerServer.AddAvailableDroppedLoot(clientId, items);
+            } else {
+                OnAvailableLootAdded();
             }
         }
 
@@ -197,6 +205,8 @@ namespace AnyRPG {
         }
 
         public void AddLootDropToIndex(UnitController sourceUnitController, LootDrop lootDrop) {
+            Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
+            
             lootDropIndex.Add(lootDrop.LootDropId, lootDrop);
             if (networkManagerServer.ServerModeActive == true) {
                 networkManagerServer.AddLootDrop(playerManagerServer.ActivePlayerLookup[sourceUnitController], lootDropId, lootDrop.InstantiatedItem.InstanceId);
@@ -204,6 +214,8 @@ namespace AnyRPG {
         }
 
         public void AddNetworkLootDrop(int lootDropId, int itemId) {
+            Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
+
             if (systemItemManager.InstantiatedItems.ContainsKey(itemId) == false) {
                 return;
             }

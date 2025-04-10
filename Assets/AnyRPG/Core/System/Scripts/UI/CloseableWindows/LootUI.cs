@@ -44,7 +44,8 @@ namespace AnyRPG {
         }
 
         protected override void PopulatePages() {
-            //Debug.Log("LootUI.PopulatePages()");
+            Debug.Log("LootUI.PopulatePages()");
+
             base.PopulatePages();
 
             pages.Clear();
@@ -108,7 +109,8 @@ namespace AnyRPG {
         }
 
         public override void ReceiveClosedWindowNotification() {
-            //Debug.Log("LootUI.ReceiveClosedWindowNotification()");
+            Debug.Log("LootUI.ReceiveClosedWindowNotification()");
+
             base.ReceiveClosedWindowNotification();
             foreach (LootButton lootButton in lootButtons) {
                 lootButton.CheckMouse();
@@ -121,7 +123,7 @@ namespace AnyRPG {
             //Debug.Log("LootUI.ProcessOpenWindowNotification()");
             base.ProcessOpenWindowNotification();
             SetBackGroundColor(new Color32(0, 0, 0, (byte)(int)(PlayerPrefs.GetFloat("PopupWindowOpacity") * 255)));
-            BroadcastPageCountUpdate();
+            //BroadcastPageCountUpdate();
         }
 
         public override void AddPageContent() {
@@ -150,13 +152,21 @@ namespace AnyRPG {
         protected override void ProcessCreateEventSubscriptions() {
             base.ProcessCreateEventSubscriptions();
             lootManager.OnTakeLoot += HandleTakeLoot;
+            lootManager.OnAvailableLootAdded += HandleAvailableLootAdded;
         }
 
         protected override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
             lootManager.OnTakeLoot -= HandleTakeLoot;
+            lootManager.OnAvailableLootAdded -= HandleAvailableLootAdded;
         }
 
+        public void HandleAvailableLootAdded() {
+            Debug.Log("LootUI.HandleAvailableLootAdded()");
+
+            CreatePages();
+            BroadcastPageCountUpdate();
+        }
     }
 
     public class LootDropContentList : PagedContentList {

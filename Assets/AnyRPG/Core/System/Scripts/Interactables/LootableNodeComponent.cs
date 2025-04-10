@@ -106,7 +106,7 @@ namespace AnyRPG {
         }
 
         public virtual void DropLoot(UnitController sourceUnitController) {
-            //Debug.Log($"{gameObject.name}.LootableNode.DropLoot()");
+            Debug.Log($"{interactable.gameObject.name}.LootableNode.DropLoot()");
 
             // is the below code necessary?  it was causing stuff that was already dropped but not picked up to not pop a window again and just remain unlootable
             /*

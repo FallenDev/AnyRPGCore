@@ -487,9 +487,11 @@ namespace AnyRPG {
         }
 
         public void AddAvailableDroppedLoot(List<int> lootDropIds) {
-            Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot({lootDropIds.Count})");
+            Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot(count: {lootDropIds.Count})");
 
-            lootManager.AddAvailableLoot(clientId, lootDropIds);
+            //lootManager.AddAvailableLoot(clientId, lootDropIds);
+            // available loot is always clientId 0 on client
+            lootManager.AddAvailableLoot(0, lootDropIds);
         }
 
         public void AdvertiseTakeLoot(int lootDropId) {

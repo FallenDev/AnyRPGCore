@@ -54,7 +54,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(UnitController sourceUnitController, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, {items.Count})");
+            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
 
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 AddAvailableLoot(playerManagerServer.ActivePlayerLookup[sourceUnitController], items);
@@ -62,7 +62,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int clientId, List<int> lootDropIds) {
-            Debug.Log($"LootManager.AddAvailableLoot({clientId}, {lootDropIds.Count})");
+            Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {lootDropIds.Count})");
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {
@@ -74,7 +74,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int clientId, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({clientId}, {items.Count})");
+            Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {items.Count})");
 
             if (availableDroppedLoot.ContainsKey(clientId)) {
                 availableDroppedLoot[clientId] = items;
@@ -93,7 +93,7 @@ namespace AnyRPG {
         public void ClearAvailableDroppedLoot() {
             //Debug.Log("LootManager.ClearDroppedLoot()");
 
-            availableDroppedLoot.Clear();
+            availableDroppedLoot[0].Clear();
         }
 
         public void RequestTakeLoot(LootDrop lootDrop, UnitController sourceUnitController) {

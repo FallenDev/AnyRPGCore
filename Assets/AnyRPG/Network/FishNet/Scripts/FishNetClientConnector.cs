@@ -791,7 +791,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AddAvailableDroppedLootClient(NetworkConnection networkConnection, List<int> lootDropIds) {
-            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLootClient({networkConnection.ClientId}, {lootDropIds.Count})");
+            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLootClient({networkConnection.ClientId}, count: {lootDropIds.Count})");
 
             networkManagerClient.AddAvailableDroppedLoot(lootDropIds);
         }

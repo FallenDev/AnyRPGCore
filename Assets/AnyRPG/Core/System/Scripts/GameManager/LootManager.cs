@@ -90,10 +90,18 @@ namespace AnyRPG {
             }
         }
 
-        public void ClearDroppedLoot() {
+        public void ClearAvailableDroppedLoot() {
             //Debug.Log("LootManager.ClearDroppedLoot()");
 
             availableDroppedLoot.Clear();
+        }
+
+        public void RequestTakeLoot(LootDrop lootDrop, UnitController sourceUnitController) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                lootDrop.TakeLoot(playerManager.UnitController);
+            } else {
+                networkManagerClient.RequestTakeLoot(lootDrop.LootDropId);
+            }
         }
 
         public void TakeLoot(UnitController sourceUnitController, LootDrop lootDrop) {
@@ -102,16 +110,30 @@ namespace AnyRPG {
             }
         }
 
+        public void TakeLoot(int clientId, int lootDropId) {
+            //Debug.Log("LootManager.TakeLoot()");
+            if (lootDropIndex.ContainsKey(lootDropId) == false) {
+                return;
+            }
+            LootDrop lootDrop = lootDropIndex[lootDropId];
+            TakeLoot(clientId, lootDrop);
+        }
+
         public void TakeLoot(int clientId, LootDrop lootDrop) {
             //Debug.Log("LootManager.TakeLoot()");
 
-            RemoveFromDroppedItems(clientId, lootDrop);
+            RemoveLootTableStateIndex(lootDropId);
+            RemoveFromAvailableDroppedItems(clientId, lootDrop);
+
+            if (networkManagerServer.ServerModeActive == true) {
+                networkManagerServer.AdvertiseTakeLoot(clientId, lootDrop.LootDropId);
+            }
 
             SystemEventManager.TriggerEvent("OnTakeLoot", new EventParamProperties());
             OnTakeLoot();
         }
 
-        public void RemoveFromDroppedItems(int clientId, LootDrop lootDrop) {
+        public void RemoveFromAvailableDroppedItems(int clientId, LootDrop lootDrop) {
             //Debug.Log("LootManager.RemoveFromDroppedItems()");
 
             if (availableDroppedLoot.ContainsKey(clientId) && availableDroppedLoot[clientId].Contains(lootDrop)) {

@@ -115,7 +115,9 @@ namespace AnyRPG {
             foreach (LootButton lootButton in lootButtons) {
                 lootButton.CheckMouse();
             }
-            lootManager.ClearDroppedLoot();
+            lootManager.OnTakeLoot -= HandleTakeLoot;
+            lootManager.OnAvailableLootAdded -= HandleAvailableLootAdded;
+            lootManager.ClearAvailableDroppedLoot();
             OnCloseWindow(this);
         }
 
@@ -124,6 +126,8 @@ namespace AnyRPG {
             base.ProcessOpenWindowNotification();
             SetBackGroundColor(new Color32(0, 0, 0, (byte)(int)(PlayerPrefs.GetFloat("PopupWindowOpacity") * 255)));
             //BroadcastPageCountUpdate();
+            lootManager.OnTakeLoot += HandleTakeLoot;
+            lootManager.OnAvailableLootAdded += HandleAvailableLootAdded;
         }
 
         public override void AddPageContent() {
@@ -147,18 +151,6 @@ namespace AnyRPG {
             PopulatePages();
             uINavigationControllers[0].FocusCurrentButton();
             BroadcastPageCountUpdate();
-        }
-
-        protected override void ProcessCreateEventSubscriptions() {
-            base.ProcessCreateEventSubscriptions();
-            lootManager.OnTakeLoot += HandleTakeLoot;
-            lootManager.OnAvailableLootAdded += HandleAvailableLootAdded;
-        }
-
-        protected override void ProcessCleanupEventSubscriptions() {
-            base.ProcessCleanupEventSubscriptions();
-            lootManager.OnTakeLoot -= HandleTakeLoot;
-            lootManager.OnAvailableLootAdded -= HandleAvailableLootAdded;
         }
 
         public void HandleAvailableLootAdded() {

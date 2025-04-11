@@ -666,6 +666,13 @@ namespace AnyRPG {
             }
         }
 
+        public void RequestTakeLoot(int lootDropId, int clientId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == true) {
+                lootManager.TakeLoot(clientId, lootDropId);
+            }
+        }
+
+
         public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
             Debug.Log($"NetworkManagerServer.AddAvailableDroppedLoot({clientId})");
 
@@ -675,6 +682,11 @@ namespace AnyRPG {
         public void AddLootDrop(int clientId, int lootDropId, int itemId) {
             networkController.AddLootDrop(clientId, lootDropId, itemId);
         }
+
+        public void AdvertiseTakeLoot(int clientId, int lootDropId) {
+            networkController.AdvertiseTakeLoot(clientId, lootDropId);
+        }
+
 
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {

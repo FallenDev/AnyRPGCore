@@ -492,6 +492,14 @@ namespace AnyRPG {
             lootManager.AddAvailableLoot(clientId, lootDropIds);
         }
 
+        public void AdvertiseTakeLoot(int lootDropId) {
+            lootManager.TakeLoot(clientId, lootDropId);
+        }
+
+        public void RequestTakeLoot(int lootDropId) {
+            networkController.RequestTakeLoot(lootDropId);
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

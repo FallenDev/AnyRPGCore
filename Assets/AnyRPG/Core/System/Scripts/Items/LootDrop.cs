@@ -60,7 +60,6 @@ namespace AnyRPG {
 
             if (ProcessTakeLoot(sourceUnitController)) {
                 AfterLoot(sourceUnitController);
-                Remove();
                 lootManager.TakeLoot(sourceUnitController, this);
             }
         }
@@ -75,10 +74,6 @@ namespace AnyRPG {
 
         protected bool ProcessTakeLoot(UnitController sourceUnitController) {
             return sourceUnitController.CharacterInventoryManager.AddItem(InstantiatedItem, false);
-        }
-
-        public void Remove() {
-            lootManager.RemoveLootTableStateIndex(lootDropId);
         }
 
         public void AfterLoot(UnitController sourceUnitController) {

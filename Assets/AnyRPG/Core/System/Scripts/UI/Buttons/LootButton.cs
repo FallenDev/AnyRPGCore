@@ -26,6 +26,7 @@ namespace AnyRPG {
 
         // game manager references
         protected PlayerManager playerManager = null;
+        protected LootManager lootManager = null;
 
         public TextMeshProUGUI Title { get => title; }
         public Image Icon { get => icon; }
@@ -35,6 +36,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
+            lootManager = systemGameManager.LootManager;
         }
 
         public void SetLootDrop(LootDrop lootDrop) {
@@ -65,7 +67,7 @@ namespace AnyRPG {
                 return;
             }
 
-            LootDrop.TakeLoot(playerManager.UnitController);
+            lootManager.RequestTakeLoot(LootDrop, playerManager.UnitController);
         }
 
         public override void OnPointerEnter(PointerEventData eventData) {

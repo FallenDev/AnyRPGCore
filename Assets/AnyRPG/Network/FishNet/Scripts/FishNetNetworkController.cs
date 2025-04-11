@@ -436,6 +436,10 @@ namespace AnyRPG {
             clientConnector.TakeAllLoot();
         }
 
+        public override void RequestTakeLoot(int lootDropId) {
+            clientConnector.RequestTakeLoot(lootDropId);
+        }
+
         #endregion
 
         #region server functions
@@ -609,6 +613,10 @@ namespace AnyRPG {
 
         public override void AddLootDrop(int clientId, int lootDropId, int itemId) {
             clientConnector.AddDroppedLoot(clientId, lootDropId, itemId);
+        }
+
+        public override void AdvertiseTakeLoot(int clientId, int lootDropId) {
+            clientConnector.AdvertiseTakeLoot(clientId, lootDropId);
         }
 
         #endregion

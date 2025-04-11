@@ -758,6 +758,12 @@ namespace AnyRPG {
             networkManagerServer.TakeAllLoot(networkConnection.ClientId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestTakeLoot(int lootDropId, NetworkConnection networkConnection = null) {
+            networkManagerServer.RequestTakeLoot(lootDropId, networkConnection.ClientId);
+        }
+
+
         public void AddDroppedLoot(int clientId, int lootDropId, int itemId) {
             Debug.Log($"FishNetClientConnector.AddDroppedLoot({clientId}, {lootDropId}, {itemId})");
 
@@ -789,6 +795,16 @@ namespace AnyRPG {
 
             networkManagerClient.AddAvailableDroppedLoot(lootDropIds);
         }
+
+        public void AdvertiseTakeLoot(int clientId, int lootDropId) {
+            AdvertiseTakeLootClient(ServerManager.Clients[clientId], lootDropId);
+        }
+
+        [TargetRpc]
+        public void AdvertiseTakeLootClient(NetworkConnection networkConnection, int lootDropId) {
+            networkManagerClient.AdvertiseTakeLoot(lootDropId);
+        }
+
 
 
         /*

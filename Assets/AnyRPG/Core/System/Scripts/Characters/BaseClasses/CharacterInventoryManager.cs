@@ -758,6 +758,34 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnDeleteItem(instantiatedItem);
             logManager.WriteSystemMessage(unitController, $"Destroyed {instantiatedItem.DisplayName}");
         }
+
+        public void RequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
+            
+            unitController.UnitEventController.NotifyOnRequestDropItemFromInventorySlot(fromSlot, toSlot);
+            if (systemGameManager.GameMode == GameMode.Local) {
+                DropItemFromInventorySlot(fromSlot, toSlot);
+            }
+        }
+
+        public void DropItemFromInventorySlot(int fromslotIndex, int toSlotIndex) {
+            if (inventorySlots.Count > fromslotIndex && inventorySlots.Count > toSlotIndex) {
+                DropItemFromInventorySlot(inventorySlots[fromslotIndex], inventorySlots[toSlotIndex]);
+            }
+        }
+
+        public void DropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
+            
+            if (toSlot.MergeItems(fromSlot)) {
+                return;
+            }
+            if (toSlot.SwapItems(fromSlot)) {
+                return;
+            }
+
+            // merge and swap failed, so attempt to add items
+            toSlot.AddItems(fromSlot.InstantiatedItems);
+
+        }
     }
 
 }

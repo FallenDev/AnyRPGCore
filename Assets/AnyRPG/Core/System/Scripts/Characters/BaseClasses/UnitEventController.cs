@@ -128,6 +128,7 @@ namespace AnyRPG {
         public event System.Action<InventorySlot, InstantiatedItem> OnAddItemToBankSlot = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromInventorySlot = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromBankSlot = delegate { };
+        public event System.Action<InventorySlot, InventorySlot> OnRequestDropItemFromInventorySlot = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -651,6 +652,10 @@ namespace AnyRPG {
 
         public void NotifyOnRemoveItemFromBankSlot(InventorySlot slot, InstantiatedItem item) {
             OnRemoveItemFromBankSlot(slot, item);
+        }
+
+        public void NotifyOnRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
+            OnRequestDropItemFromInventorySlot(fromSlot, toSlot);
         }
 
         #endregion

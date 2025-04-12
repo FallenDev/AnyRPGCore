@@ -19,6 +19,9 @@ namespace AnyRPG {
         [SerializeField]
         private TMP_InputField serverInput = null;
 
+        [SerializeField]
+        private Toggle toggle = null;
+
         // game manager references
         private UIManager uIManager = null;
         private PlayerManager playerManager = null;
@@ -59,6 +62,13 @@ namespace AnyRPG {
             string username = userNameInput.text;
             string password = passwordInput.text;
             string server = serverInput.text;
+            bool rememberMe = toggle.isOn;
+            if (rememberMe) {
+                PlayerPrefs.SetString("NetworkLoginPanel.username", username);
+                PlayerPrefs.SetInt("NetworkLoginPanel.rememberMe", 1);
+            } else {
+                PlayerPrefs.SetInt("NetworkLoginPanel.rememberMe", 0);
+            }
             /*
             if (textInput.text != null && textInput.text != string.Empty) {
                 nameChangeManager.ChangePlayerName(textInput.text);
@@ -73,6 +83,12 @@ namespace AnyRPG {
         public override void ProcessOpenWindowNotification() {
             //Debug.Log("NetworkLoginPanelController.ProcessOpenWindowNotification()");
             base.ProcessOpenWindowNotification();
+            if (PlayerPrefs.HasKey("NetworkLoginPanel.rememberMe")) {
+                toggle.isOn = PlayerPrefs.GetInt("NetworkLoginPanel.rememberMe") == 1;
+                if (toggle.isOn && PlayerPrefs.HasKey("NetworkLoginPanel.username")) {
+                    userNameInput.text = PlayerPrefs.GetString("NetworkLoginPanel.username");
+                }
+            }
         }
 
         public override void ReceiveClosedWindowNotification() {

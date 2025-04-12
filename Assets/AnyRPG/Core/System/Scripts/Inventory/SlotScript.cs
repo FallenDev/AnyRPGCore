@@ -101,13 +101,9 @@ namespace AnyRPG {
 
         public void DropItemFromInventorySlot() {
             //Debug.Log("Dropping an item from an inventory slot");
-            if (PutItemBack()
-                || inventorySlot.MergeItems(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot)
-                || inventorySlot.SwapItems(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot)
-                || inventorySlot.AddItems(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot.InstantiatedItems)) {
-                handScript.Drop();
-                playerManager.UnitController.CharacterInventoryManager.FromSlot = null;
-            }
+            playerManager.UnitController.CharacterInventoryManager.RequestDropItemFromInventorySlot(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot, inventorySlot);
+            handScript.Drop();
+
         }
         public void HandleLeftClick() {
             // we have something to move and it came from the inventory, therefore we are trying to drop something from this slot or another slot onto this slot

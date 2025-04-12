@@ -112,6 +112,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
                 unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
                 unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
+                unitController.UnitEventController.OnRequestDropItemFromInventorySlot += HandleRequestDropItemFromInventorySlot;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -125,8 +126,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnBeginAbility -= HandleBeginAbilityLocal;
                 unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
-                unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
-                unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
+                unitController.UnitEventController.OnRequestEquipEquipment -= HandleRequestEquipEquipment;
+                unitController.UnitEventController.OnRequestUnequipFromList -= HandleRequestUnequipFromList;
+                unitController.UnitEventController.OnRequestDropItemFromInventorySlot -= HandleRequestDropItemFromInventorySlot;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -322,6 +324,16 @@ namespace AnyRPG {
             }
             unitController.CharacterEquipmentManager.UnequipFromList(equipmentSlotProfile);
         }
+
+        private void HandleRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
+            RequestDropItemFromInventorySlot(fromSlot.GetCurrentInventorySlotIndex(unitController), toSlot.GetCurrentInventorySlotIndex(unitController));
+        }
+
+        [ServerRpc]
+        private void RequestDropItemFromInventorySlot(int fromSlotId, int toSlotId) {
+            unitController.CharacterInventoryManager.DropItemFromInventorySlot(fromSlotId, toSlotId);
+        }
+
 
         public void HandleRequestEquipEquipment(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
             RequestEquipEquipment(equipment.InstanceId, profile.ResourceName);

@@ -105,6 +105,8 @@ namespace AnyRPG {
         }
 
         public bool AddItems(List<InstantiatedItem> newInstantiatedItems) {
+            Debug.Log($"InventorySlot.AddItems({newInstantiatedItems.Count})");
+
             if (IsEmpty || SystemDataUtility.MatchResource(newInstantiatedItems[0].Item.ResourceName, InstantiatedItem.Item.ResourceName)) {
                 int count = newInstantiatedItems.Count;
 
@@ -118,6 +120,13 @@ namespace AnyRPG {
                 return true;
             }
             return false;
+        }
+
+        public void RemoveAllItems() {
+            Debug.Log($"InventorySlot.RemoveAllItems()");
+            while (InstantiatedItems.Count > 0) {
+                RemoveItem(InstantiatedItems[0]);
+            }
         }
 
         public void RemoveItem(InstantiatedItem instantiatedItem) {
@@ -221,17 +230,22 @@ namespace AnyRPG {
         */
 
         public bool SwapItems(InventorySlot from) {
-            //Debug.Log("SlotScript " + this.GetInstanceID().ToString() + " receiving items to swap from slotscript " + from.GetInstanceID().ToString());
+            Debug.Log($"InventorySlot.SwapItems()");
+
             // use a temporary list to swap references to the stacks
             List<InstantiatedItem> tmpFrom = new List<InstantiatedItem>(from.InstantiatedItems);
-            from.InstantiatedItems = InstantiatedItems;
-            InstantiatedItems = tmpFrom;
+            //from.InstantiatedItems = InstantiatedItems;
+            from.RemoveAllItems();
+            from.AddItems(InstantiatedItems);
+            RemoveAllItems();
+            AddItems(tmpFrom);
 
             return true;
         }
 
         public bool MergeItems(InventorySlot from) {
-            //Debug.Log("attempting to merge items");
+            Debug.Log($"InventorySlot.MergeItems()");
+
             if (IsEmpty) {
                 //Debug.Log("This slot is empty, there is nothing to merge.");
                 return false;

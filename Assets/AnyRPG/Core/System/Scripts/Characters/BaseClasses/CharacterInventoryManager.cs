@@ -760,7 +760,8 @@ namespace AnyRPG {
         }
 
         public void RequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
-            
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestDropItemFromInventorySlot()");
+
             unitController.UnitEventController.NotifyOnRequestDropItemFromInventorySlot(fromSlot, toSlot);
             if (systemGameManager.GameMode == GameMode.Local) {
                 DropItemFromInventorySlot(fromSlot, toSlot);
@@ -768,13 +769,16 @@ namespace AnyRPG {
         }
 
         public void DropItemFromInventorySlot(int fromslotIndex, int toSlotIndex) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot({fromslotIndex}, {toSlotIndex})");
+
             if (inventorySlots.Count > fromslotIndex && inventorySlots.Count > toSlotIndex) {
                 DropItemFromInventorySlot(inventorySlots[fromslotIndex], inventorySlots[toSlotIndex]);
             }
         }
 
         public void DropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
-            
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot()");
+
             if (toSlot.MergeItems(fromSlot)) {
                 return;
             }

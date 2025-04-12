@@ -100,6 +100,8 @@ namespace AnyRPG {
         }
 
         public void DropItemFromInventorySlot() {
+            Debug.Log("SlotScript.DropItemFromInventorySlot()");
+
             //Debug.Log("Dropping an item from an inventory slot");
             playerManager.UnitController.CharacterInventoryManager.RequestDropItemFromInventorySlot(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot, inventorySlot);
             handScript.Drop();
@@ -519,7 +521,7 @@ namespace AnyRPG {
                 return;
             }
 
-            SetDescribable(inventorySlot.InstantiatedItem.Item);
+            SetDescribable(inventorySlot.InstantiatedItem?.Item);
             uIManager.UpdateStackSize(this, Count);
             SetBackGroundColor();
 

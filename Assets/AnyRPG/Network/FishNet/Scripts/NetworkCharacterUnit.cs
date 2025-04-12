@@ -361,7 +361,7 @@ namespace AnyRPG {
         }
 
         public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem({instantiatedItem.InstanceId})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem({instantiatedItem.InstanceId})");
             
             InventorySlotSaveData inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
             HandleGetNewInstantiatedItemClient(instantiatedItem.InstanceId, inventorySlotSaveData);
@@ -369,7 +369,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
             
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(itemInstanceId, inventorySlotSaveData.ItemName, inventorySlotSaveData);
         }
@@ -805,12 +805,15 @@ namespace AnyRPG {
         }
 
         public void HandlePerformAbilityCastAnimationServer(AbilityProperties baseAbility, int clipIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationServer({baseAbility.ResourceName}, {clipIndex})");
+
             HandlePerformAbilityCastAnimationClient(baseAbility.ResourceName, clipIndex);
         }
 
         [ObserversRpc]
         public void HandlePerformAbilityCastAnimationClient(string abilityName, int clipIndex) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
+
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
                 return;

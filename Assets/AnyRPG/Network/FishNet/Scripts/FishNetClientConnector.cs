@@ -765,7 +765,7 @@ namespace AnyRPG {
 
 
         public void AddDroppedLoot(int clientId, int lootDropId, int itemId) {
-            Debug.Log($"FishNetClientConnector.AddDroppedLoot({clientId}, {lootDropId}, {itemId})");
+            //Debug.Log($"FishNetClientConnector.AddDroppedLoot({clientId}, {lootDropId}, {itemId})");
 
             AddDroppedLootClient(ServerManager.Clients[clientId], lootDropId, itemId);
         }
@@ -778,7 +778,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
-            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({clientId}, {items.Count})");
+            //Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({clientId}, {items.Count})");
 
             List<int> lootDropIds = new List<int>();
             

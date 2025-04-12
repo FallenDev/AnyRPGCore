@@ -54,7 +54,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(UnitController sourceUnitController, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
+            //Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
 
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 AddAvailableLoot(playerManagerServer.ActivePlayerLookup[sourceUnitController], items);
@@ -62,7 +62,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int clientId, List<int> lootDropIds) {
-            Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {lootDropIds.Count})");
+            //Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {lootDropIds.Count})");
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {
@@ -227,7 +227,7 @@ namespace AnyRPG {
         }
 
         public void AddLootDropToIndex(UnitController sourceUnitController, LootDrop lootDrop) {
-            Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
+            //Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
             
             lootDropIndex.Add(lootDrop.LootDropId, lootDrop);
             if (networkManagerServer.ServerModeActive == true) {

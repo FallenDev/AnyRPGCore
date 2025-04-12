@@ -555,6 +555,8 @@ namespace AnyRPG {
         }
 
         public void SetAnimationClipOverride(string originalClipName, AnimationClip animationClip) {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetAnimationClipOverride({originalClipName}, {animationClip.name})");
+
             unitController.UnitEventController.NotifyOnSetAnimationClipOverride(originalClipName, animationClip);
             
             overrideController[originalClipName] = animationClip;

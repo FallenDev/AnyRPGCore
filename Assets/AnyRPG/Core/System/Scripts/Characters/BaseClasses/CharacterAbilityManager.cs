@@ -419,20 +419,24 @@ namespace AnyRPG {
 
         }
 
-        public override void PerformCastingAnimation(AbilityProperties baseAbility) {
-            base.PerformCastingAnimation(baseAbility);
+        public override void PerformCastingAnimation(AbilityProperties abilityProperties) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.PerformCastingAnimation({abilityProperties.DisplayName})");
+
+            base.PerformCastingAnimation(abilityProperties);
 
             int clipIndex = 0;
-            List<AnimationClip> usedCastAnimationClips = baseAbility.GetAbilityCastClips(unitController);
+            List<AnimationClip> usedCastAnimationClips = abilityProperties.GetAbilityCastClips(unitController);
             if (usedCastAnimationClips == null || usedCastAnimationClips.Count == 0) {
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.PerformCastingAnimation({abilityProperties.DisplayName}): no cast animation clips found");
                 return;
             }
             clipIndex = UnityEngine.Random.Range(0, usedCastAnimationClips.Count);
             if (usedCastAnimationClips[clipIndex] == null) {
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.PerformCastingAnimation({abilityProperties.DisplayName}): cast animation clip is null");
                 return;
             }
 
-            unitController.UnitAnimator.PerformAbilityCast(baseAbility, clipIndex);
+            unitController.UnitAnimator.PerformAbilityCast(abilityProperties, clipIndex);
         }
 
         public override void AddTemporaryPet(UnitProfile unitProfile, UnitController unitController) {

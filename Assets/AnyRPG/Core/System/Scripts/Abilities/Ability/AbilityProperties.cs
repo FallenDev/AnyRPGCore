@@ -1359,6 +1359,9 @@ namespace AnyRPG {
             if (animationProfile == null) {
                 actionClips = new List<AnimationClip>();
                 castClips = new List<AnimationClip>();
+            } else {
+                actionClips = animationProfile.AnimationProps.AttackClips;
+                castClips = animationProfile.AnimationProps.CastClips;
             }
 
             powerResource = null;

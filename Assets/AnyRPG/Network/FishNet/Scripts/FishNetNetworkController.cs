@@ -601,12 +601,13 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
-            Debug.Log($"FishNetNetworkController.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            //Debug.Log($"FishNetNetworkController.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            
             clientConnector.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 
         public override void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
-            Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({clientId}, {items.Count})");
+            //Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({clientId}, {items.Count})");
 
             clientConnector.AddAvailableDroppedLoot(clientId, items);
         }

@@ -29,7 +29,6 @@ MonoBehaviour:
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
-    animationClip: {fileID: 0}
     animationProfileName: 
     useUnitCastAnimations: 0
     isAutoAttack: 0
@@ -85,9 +84,7 @@ MonoBehaviour:
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
     tickRate: 1
-    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    inlineAbilityEffects: []
     castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
@@ -100,11 +97,10 @@ MonoBehaviour:
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
-    animationClip: {fileID: 0}
     animationProfileName: 
     useUnitCastAnimations: 0
     isAutoAttack: 0
-    useUnitAttackAnimations: 1
+    useUnitAttackAnimations: 0
     useAutoAttackAnimations: 0
     useWeaponHitSound: 0
     useWeaponSkillAttackVoiceSetting: 1
@@ -156,12 +152,7 @@ MonoBehaviour:
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
     tickRate: 1
-    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    inlineAbilityEffects: []
     castEndAbilityEffectNames: []
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
-  references:
-    version: 2
-    RefIds: []

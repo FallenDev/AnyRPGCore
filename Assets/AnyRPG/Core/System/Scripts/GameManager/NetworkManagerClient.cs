@@ -481,13 +481,13 @@ namespace AnyRPG {
         }
 
         public void AddDroppedLoot(int lootDropId, int itemId) {
-            Debug.Log($"NetworkManagerClient.AddDroppedLoot({lootDropId}, {itemId})");
+            //Debug.Log($"NetworkManagerClient.AddDroppedLoot({lootDropId}, {itemId})");
 
             lootManager.AddNetworkLootDrop(lootDropId, itemId);
         }
 
         public void AddAvailableDroppedLoot(List<int> lootDropIds) {
-            Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot(count: {lootDropIds.Count})");
+            //Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot(count: {lootDropIds.Count})");
 
             //lootManager.AddAvailableLoot(clientId, lootDropIds);
             // available loot is always clientId 0 on client

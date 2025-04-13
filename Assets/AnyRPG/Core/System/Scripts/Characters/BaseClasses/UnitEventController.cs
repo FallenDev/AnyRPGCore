@@ -526,6 +526,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityCast() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityCast()");
+
             OnAnimatorClearAbilityCast();
         }
 
@@ -562,7 +564,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAcceptQuest(QuestBase questBase) {
-            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnAcceptQuest({questBase.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnAcceptQuest({questBase.ResourceName})");
+
             OnAcceptQuest(unitController, questBase);
         }
 

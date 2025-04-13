@@ -1281,7 +1281,7 @@ namespace AnyRPG {
                 if (!ability.CanSimultaneousCast) {
                     NotifyOnCastComplete();
                     performingCast = false;
-                    unitController.UnitAnimator.SetCasting(false);
+                    unitController.UnitAnimator.ClearCasting();
                 }
                 PerformAbility(ability, target, abilityEffectContext);
             } else {

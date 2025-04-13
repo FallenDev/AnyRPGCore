@@ -236,7 +236,7 @@ namespace AnyRPG {
         }
 
         public void AddNetworkLootDrop(int lootDropId, int itemId) {
-            Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
+            //Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemId) == false) {
                 return;

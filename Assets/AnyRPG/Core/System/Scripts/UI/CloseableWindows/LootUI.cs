@@ -44,7 +44,7 @@ namespace AnyRPG {
         }
 
         protected override void PopulatePages() {
-            Debug.Log("LootUI.PopulatePages()");
+            //Debug.Log("LootUI.PopulatePages()");
 
             base.PopulatePages();
 

@@ -788,7 +788,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddInventorySlot(InventorySlot inventorySlot) {
-            Debug.Log("PlayerManager.HandleAddInventorySlot()");
+            //Debug.Log("PlayerManager.HandleAddInventorySlot()");
 
             inventoryManager.AddInventorySlot(inventorySlot);
         }

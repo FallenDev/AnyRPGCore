@@ -96,7 +96,7 @@ MonoBehaviour:
     - holdableObjectName: MiningPickAxe
       useUniversalAttachment: 1
       attachmentName: Right Hand
-    despawnPrefabsOnCastEnd: 0
+    despawnPrefabsOnCastEnd: 1
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0

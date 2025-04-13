@@ -232,7 +232,8 @@ namespace AnyRPG {
         }
 
         public void SpawnAbilityObjects(int indexValue = -1) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects(" + indexValue + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects({indexValue})");
+
             AbilityProperties usedBaseAbility = null;
             if (currentAbilityEffectContext != null) {
                 usedBaseAbility = currentAbilityEffectContext.baseAbility;
@@ -254,10 +255,14 @@ namespace AnyRPG {
         }
 
         public void SpawnAbilityObjects(AbilityProperties usedBaseAbility) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects({usedBaseAbility.DisplayName})");
+
             SpawnAbilityObjectsInternal(usedBaseAbility, -1);
         }
 
         public void SpawnAbilityObjectsInternal(AbilityProperties ability, int index) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjectsInternal({ability.DisplayName}, {index})");
+
             //ability.abilityProperties.GetHoldableObjectList(unitController)
             if (index == -1) {
                 SpawnAbilityObjects(ability.GetHoldableObjectList(unitController));
@@ -272,7 +277,7 @@ namespace AnyRPG {
         }
 
         public void SpawnAbilityObjects(List<AbilityAttachmentNode> abilityAttachmentNodes) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.SpawnAbilityObjects()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects()");
 
             // ensure that any current ability objects are cleared before spawning new ones
             DespawnAbilityObjects();
@@ -326,7 +331,8 @@ namespace AnyRPG {
         }
 
         public override void DespawnAbilityObjects() {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.DespawnAbilityObjects()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DespawnAbilityObjects()");
+
             base.DespawnAbilityObjects();
 
             if (abilityObjects == null || abilityObjects.Count == 0) {

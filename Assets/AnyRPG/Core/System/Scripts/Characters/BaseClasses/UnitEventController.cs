@@ -532,10 +532,14 @@ namespace AnyRPG {
         }
 
         public void NotifyOnSpawnAbilityObjects(AbilityProperties abilityProperties, int index) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSpawnAbilityObjects({abilityProperties.ResourceName}, {index})");
+
             OnSpawnAbilityObjects(abilityProperties, index);
         }
 
         public void NotifyOnDespawnAbilityObjects() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnAbilityObjects()");
+
             OnDespawnAbilityObjects();
         }
 

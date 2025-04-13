@@ -638,7 +638,7 @@ namespace AnyRPG {
 
             Ability ability = systemGameManager.SystemDataFactory.GetResource<Ability>(abilityName);
             if (ability != null) {
-                unitController.CharacterAbilityManager.SpawnAbilityObjectsInternal(ability.abilityProperties, index);
+                unitController.CharacterAbilityManager.SpawnAbilityObjectsInternal(ability.AbilityProperties, index);
             }
         }
 

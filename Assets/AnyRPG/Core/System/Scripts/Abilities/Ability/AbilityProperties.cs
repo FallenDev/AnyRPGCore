@@ -1089,7 +1089,8 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupAbilityPrefabs(IAbilityCaster sourceCharacter) {
-            //Debug.Log(DisplayName + ".BaseAbility.ProcessAbilityPrefabs()");
+            Debug.Log($"{DisplayName}.BaseAbility.ProcessCleanupAbilityPrefabs()");
+
             if (despawnPrefabsOnCastEnd == false) {
                 return;
             }

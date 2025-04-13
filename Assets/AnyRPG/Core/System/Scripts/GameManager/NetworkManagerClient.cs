@@ -50,6 +50,7 @@ namespace AnyRPG {
         private MessageFeedManager messageFeedManager = null;
         private SystemItemManager systemItemManager = null;
         private LootManager lootManager = null;
+        private CraftingManager craftingManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -74,6 +75,7 @@ namespace AnyRPG {
             messageFeedManager = uIManager.MessageFeedManager;
             systemItemManager = systemGameManager.SystemItemManager;
             lootManager = systemGameManager.LootManager;
+            craftingManager = systemGameManager.CraftingManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -500,6 +502,12 @@ namespace AnyRPG {
 
         public void RequestTakeLoot(int lootDropId) {
             networkController.RequestTakeLoot(lootDropId);
+        }
+
+        public void SetCraftingManagerAbility(CraftAbility craftAbility) {
+            Debug.Log($"NetworkManagerClient.SetCraftingManagerAbility({craftAbility.DisplayName})");
+
+            craftingManager.SetAbility(playerManager.UnitController, craftAbility.CraftAbilityProperties);
         }
 
 

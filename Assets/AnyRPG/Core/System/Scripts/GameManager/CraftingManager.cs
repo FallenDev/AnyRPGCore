@@ -29,6 +29,7 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         //private InventoryManager inventoryManager = null;
         private SystemItemManager systemItemManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public List<Recipe> CraftingQueue { get => craftingQueue; set => craftingQueue = value; }
 
@@ -38,15 +39,22 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             //inventoryManager = systemGameManager.InventoryManager;
             systemItemManager = systemGameManager.SystemItemManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void TriggerCraftAmountUpdated() {
             OnCraftAmountUpdated();
         }
 
-        public void SetAbility(CraftAbilityProperties craftAbility) {
+        public void SetAbility(UnitController sourceUnitController, CraftAbilityProperties craftAbility) {
+            Debug.Log($"CraftingManager.SetAbility({sourceUnitController.gameObject.name}, {craftAbility.DisplayName})");
+
+            if (networkManagerServer.ServerModeActive) {
+                networkManagerServer.SetCraftingManagerAbility(sourceUnitController, craftAbility.ResourceName);
+                return;
+            }
+            // game mode is local or we are a network client
             this.craftAbility = craftAbility;
-            uIManager.craftingWindow.OpenWindow();
             OnSetCraftAbility(this.craftAbility);
         }
 

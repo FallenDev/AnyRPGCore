@@ -805,6 +805,23 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseTakeLoot(lootDropId);
         }
 
+        public void SetCraftingManagerAbility(int clientId, string abilityName) {
+            Debug.Log($"FishNetClientConnector.SetCraftingManagerAbility({clientId}, {abilityName})");
+
+            SetCraftingManagerAbilityClient(ServerManager.Clients[clientId], abilityName);
+        }
+
+        [TargetRpc]
+        public void SetCraftingManagerAbilityClient(NetworkConnection networkConnection, string abilityName) {
+            Debug.Log($"FishNetClientConnector.SetCraftingManagerAbilityClient({networkConnection.ClientId}, {abilityName})");
+
+            CraftAbility craftAbility = systemDataFactory.GetResource<Ability>(abilityName) as CraftAbility;
+            if (craftAbility == null) {
+                return;
+            }
+            networkManagerClient.SetCraftingManagerAbility(craftAbility);
+        }
+
 
 
         /*

@@ -687,6 +687,12 @@ namespace AnyRPG {
             networkController.AdvertiseTakeLoot(clientId, lootDropId);
         }
 
+        public void SetCraftingManagerAbility(UnitController sourceUnitController, string abilityName) {
+            Debug.Log($"NetworkManagerServer.SetCraftingManagerAbility({sourceUnitController.gameObject.name}, {abilityName})");
+
+            networkController.SetCraftingManagerAbility(playerManagerServer.ActivePlayerLookup[sourceUnitController], abilityName);
+        }
+
 
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {

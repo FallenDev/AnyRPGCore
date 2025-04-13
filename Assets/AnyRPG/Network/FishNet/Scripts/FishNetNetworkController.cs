@@ -620,6 +620,12 @@ namespace AnyRPG {
             clientConnector.AdvertiseTakeLoot(clientId, lootDropId);
         }
 
+        public override void SetCraftingManagerAbility(int clientId, string abilityName) {
+            Debug.Log($"FishNetNetworkController.SetCraftingManagerAbility({clientId}, {abilityName})");
+
+            clientConnector.SetCraftingManagerAbility(clientId, abilityName);
+        }
+
         #endregion
 
     }

@@ -66,15 +66,22 @@ namespace AnyRPG {
         }
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+            Debug.Log($"{interactable.gameObject.name}.GatheringNode.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props == null || Props.Ability == null) {
                 Debug.Log("Props is null");
             }
-            craftingManager.SetAbility(Props.Ability);
+            craftingManager.SetAbility(sourceUnitController, Props.Ability);
             //source.MyCharacter.MyCharacterAbilityManager.BeginAbility(ability);
             return true;
             //return PickUp();
+        }
+
+        public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
+            uIManager.craftingWindow.OpenWindow();
         }
 
         public override void StopInteract() {

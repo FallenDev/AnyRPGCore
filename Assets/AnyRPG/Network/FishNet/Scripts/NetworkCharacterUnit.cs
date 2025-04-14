@@ -183,6 +183,9 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnPlaceInEmpty += HandlePlaceInEmpty;
             unitController.UnitEventController.OnSetCraftAbility += HandleSetCraftAbilityServer;
             unitController.UnitEventController.OnCraftItem += HandleCraftItemServer;
+            unitController.UnitEventController.OnRemoveFirstCraftingQueueItem += HandleRemoveFirstCraftingQueueItemServer;
+            unitController.UnitEventController.OnClearCraftingQueue += HandleClearCraftingQueueServer;
+            unitController.UnitEventController.OnAddToCraftingQueue += HandleAddToCraftingQueueServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -232,6 +235,40 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveItemFromBankSlot -= HandleRemoveItemFromBankSlot;
             unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbilityServer;
             unitController.UnitEventController.OnCraftItem -= HandleCraftItemServer;
+            unitController.UnitEventController.OnRemoveFirstCraftingQueueItem -= HandleRemoveFirstCraftingQueueItemServer;
+            unitController.UnitEventController.OnClearCraftingQueue -= HandleClearCraftingQueueServer;
+            unitController.UnitEventController.OnAddToCraftingQueue -= HandleAddToCraftingQueueServer;
+        }
+
+        public void HandleAddToCraftingQueueServer(Recipe recipe) {
+            HandleAddToCraftingQueueClient(recipe.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleAddToCraftingQueueClient(string recipeName) {
+            Recipe recipe = systemDataFactory.GetResource<Recipe>(recipeName);
+            if (recipe == null) {
+                return;
+            }
+            unitController.CharacterCraftingManager.AddToCraftingQueue(recipe);
+        }
+
+        public void HandleClearCraftingQueueServer() {
+            HandleClearCraftingQueueClient();
+        }
+
+        [ObserversRpc]
+        public void HandleClearCraftingQueueClient() {
+            unitController.CharacterCraftingManager.ClearCraftingQueue();
+        }
+
+        public void HandleRemoveFirstCraftingQueueItemServer() {
+            HandleRemoveFirstCraftingQueueItemClient();
+        }
+
+        [ObserversRpc]
+        public void HandleRemoveFirstCraftingQueueItemClient() {
+            unitController.CharacterCraftingManager.RemoveFirstQueueItem();
         }
 
         public void HandleCraftItemServer() {
@@ -257,16 +294,16 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
             int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
-            Debug.Log($"NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId})) slotIndex: {slotIndex}");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId})) slotIndex: {slotIndex}");
             AddItemToInventorySlotClient(slotIndex, item.InstanceId);
         }
 
         [ObserversRpc]
         public void AddItemToInventorySlotClient(int slotIndex, int itemInstanceId) {
-            Debug.Log($"NetworkCharacterUnit.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.AddInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
@@ -274,12 +311,16 @@ namespace AnyRPG {
         }
 
         public void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
+
             RemoveItemFromInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
 
         }
 
         [ObserversRpc]
         public void RemoveItemFromInventorySlotClient(int slotIndex, int itemInstanceId) {
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
+
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.RemoveInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
             }

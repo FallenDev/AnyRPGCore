@@ -131,6 +131,9 @@ namespace AnyRPG {
         public event System.Action<InventorySlot, InventorySlot> OnRequestDropItemFromInventorySlot = delegate { };
         public event System.Action<CraftAbilityProperties> OnSetCraftAbility = delegate { };
         public event System.Action OnCraftItem = delegate { };
+        public event System.Action OnRemoveFirstCraftingQueueItem = delegate { };
+        public event System.Action OnClearCraftingQueue = delegate { };
+        public event System.Action<Recipe> OnAddToCraftingQueue = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -652,6 +655,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            Debug.Log($"UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
+
             OnRemoveItemFromInventorySlot(slot, item);
         }
 
@@ -673,6 +678,18 @@ namespace AnyRPG {
 
         public void NotifyOnCraftItem() {
             OnCraftItem();
+        }
+
+        public void NotifyOnRemoveFirstCraftingQueueItem() {
+            OnRemoveFirstCraftingQueueItem();
+        }
+
+        public void NotifyOnClearCraftingQueue() {
+            OnClearCraftingQueue();
+        }
+
+        public void NotifyOnAddToCraftingQueue(Recipe recipe) {
+            OnAddToCraftingQueue(recipe);
         }
 
         #endregion

@@ -22,8 +22,8 @@ namespace AnyRPG {
 
             if (abilityCaster.AbilityManager.GetCharacterUnit().UnitController.CharacterCraftingManager.CraftingQueue.Count > 0) {
                 List<AbilityAttachmentNode> returnList = new List<AbilityAttachmentNode>();
-                foreach (AbilityAttachmentNode prefabProfile in base.GetHoldableObjectList(abilityCaster)) {
-                    returnList.Add(prefabProfile);
+                foreach (AbilityAttachmentNode abilityAttachmentNode in base.GetHoldableObjectList(abilityCaster)) {
+                    returnList.Add(abilityAttachmentNode);
                 }
                 foreach (AbilityAttachmentNode abilityAttachmentNode in abilityCaster.AbilityManager.GetCharacterUnit().UnitController.CharacterCraftingManager.CraftingQueue[0].HoldableObjectList) {
                     returnList.Add(abilityAttachmentNode);

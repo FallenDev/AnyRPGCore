@@ -69,6 +69,7 @@ namespace AnyRPG {
         public void ClearCraftingQueue() {
             Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.ClearCraftingQueue()");
             craftingQueue.Clear();
+            unitController.UnitEventController.NotifyOnClearCraftingQueue();
         }
 
         public void CraftNextItem() {
@@ -93,7 +94,7 @@ namespace AnyRPG {
                         }
                     }
                     unitController.UnitEventController.NotifyOnCraftItem();
-                    craftingQueue.RemoveAt(0);
+                    RemoveFirstQueueItem();
                     if (craftingQueue.Count > 0) {
                         //Debug.Log("CraftingUI.CraftNextItem(): count: " + craftingQueue.Count);
                         // because this gets called as the last part of the cast, which is still technically in progress, we have to stopcasting first or it will fail to start because the coroutine is not null
@@ -106,6 +107,15 @@ namespace AnyRPG {
                 // empty the queue to prevent repeated loop trying to craft something you don't have materials for
                 ClearCraftingQueue();
             }
+        }
+
+        public void RemoveFirstQueueItem() {
+            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.RemoveFirstQueueItem()");
+            if (craftingQueue.Count > 0) {
+                craftingQueue.RemoveAt(0);
+            }
+            unitController.UnitEventController.NotifyOnRemoveFirstCraftingQueueItem();
+
         }
 
         public void CraftNextItemWait() {
@@ -136,10 +146,14 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.BeginCrafting({recipe.DisplayName}, {craftAmount})");
 
             for (int i = 0; i < craftAmount; i++) {
-                craftingQueue.Add(recipe);
+                AddToCraftingQueue(recipe);
             }
             unitController.CharacterAbilityManager.BeginAbility(craftAbility);
+        }
 
+        public void AddToCraftingQueue(Recipe recipe) {
+            craftingQueue.Add(recipe);
+            unitController.UnitEventController.NotifyOnAddToCraftingQueue(recipe);
         }
     }
 

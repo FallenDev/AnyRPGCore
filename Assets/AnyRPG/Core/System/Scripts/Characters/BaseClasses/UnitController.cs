@@ -74,6 +74,7 @@ namespace AnyRPG {
         private CharacterStats characterStats = null;
         private CharacterCurrencyManager characterCurrencyManager = null;
         private CharacterRecipeManager characterRecipeManager = null;
+        private CharacterCraftingManager characterCraftingManager = null;
         private CharacterInventoryManager characterInventoryManager = null;
         private CharacterQuestLog characterQuestLog = null;
         private CharacterSaveManager characterSaveManager = null;
@@ -432,6 +433,7 @@ namespace AnyRPG {
         public CharacterQuestLog CharacterQuestLog { get => characterQuestLog; }
         public CharacterPetManager CharacterPetManager { get => characterPetManager; set => characterPetManager = value; }
         public CharacterRecipeManager CharacterRecipeManager { get => characterRecipeManager; set => characterRecipeManager = value; }
+        public CharacterCraftingManager CharacterCraftingManager { get => characterCraftingManager; set => characterCraftingManager = value; }
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
         public CharacterSaveManager CharacterSaveManager { get => characterSaveManager; }
         public bool IsOwner { get => isOwner; set => isOwner = value; }
@@ -471,6 +473,7 @@ namespace AnyRPG {
             characterSkillManager = new CharacterSkillManager(this, systemGameManager);
             characterCurrencyManager = new CharacterCurrencyManager(this, systemGameManager);
             characterRecipeManager = new CharacterRecipeManager(this, systemGameManager);
+            characterCraftingManager = new CharacterCraftingManager(this, systemGameManager);
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
             characterSaveManager = new CharacterSaveManager(this, systemGameManager);
@@ -1005,6 +1008,7 @@ namespace AnyRPG {
             characterStats = null;
             characterCurrencyManager = null;
             characterRecipeManager = null;
+            characterCraftingManager = null;
             characterSaveManager = null;
             characterQuestLog = null;
 

@@ -1,5 +1,7 @@
 using AnyRPG;
+using GameKit.Dependencies.Utilities;
 using System;
+using System.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +50,7 @@ namespace AnyRPG {
             if (searchInteractable == null) {
                 return new List<CraftingNodeComponent>();
             }
-            return searchInteractable.GetInteractableOptionList(typeof(CraftingNodeComponent)).Cast<CraftingNodeComponent>().ToList();
+            return searchInteractable.GetInteractableOptionList(typeof(CraftingNodeComponent)).Values.Cast<CraftingNodeComponent>().ToList();
         }
 
         public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
@@ -73,7 +75,7 @@ namespace AnyRPG {
             if (Props == null || Props.Ability == null) {
                 Debug.Log("Props is null");
             }
-            craftingManager.SetAbility(sourceUnitController, Props.Ability);
+            sourceUnitController.CharacterCraftingManager.SetCraftAbility(Props.Ability);
             //source.MyCharacter.MyCharacterAbilityManager.BeginAbility(ability);
             return true;
             //return PickUp();

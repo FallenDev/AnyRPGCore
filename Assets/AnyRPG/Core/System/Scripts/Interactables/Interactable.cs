@@ -337,7 +337,7 @@ namespace AnyRPG {
             Dictionary<int, InteractableOptionComponent> returnList = new Dictionary<int, InteractableOptionComponent>();
 
             foreach (KeyValuePair<int, InteractableOptionComponent> row in interactables) {
-                if (row.Key.GetType() == type) {
+                if (row.Value.GetType() == type) {
                     returnList.Add(row.Key, row.Value);
                 }
             }

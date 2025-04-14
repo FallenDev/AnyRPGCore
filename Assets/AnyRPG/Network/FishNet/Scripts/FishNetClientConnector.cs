@@ -805,6 +805,7 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseTakeLoot(lootDropId);
         }
 
+        /*
         public void SetCraftingManagerAbility(int clientId, string abilityName) {
             Debug.Log($"FishNetClientConnector.SetCraftingManagerAbility({clientId}, {abilityName})");
 
@@ -820,6 +821,24 @@ namespace AnyRPG {
                 return;
             }
             networkManagerClient.SetCraftingManagerAbility(craftAbility);
+        }
+        */
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestBeginCrafting(string recipeName, int craftAmount, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestBeginCrafting({recipeName}, {craftAmount})");
+
+            Recipe recipe = systemDataFactory.GetResource<Recipe>(recipeName);
+            if (recipe == null) {
+                return;
+            }
+            networkManagerServer.RequestBeginCrafting(recipe, craftAmount, networkConnection.ClientId);
+
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestCancelCrafting(NetworkConnection networkConnection = null) {
+            networkManagerServer.RequestCancelCrafting(networkConnection.ClientId);
         }
 
 

@@ -504,10 +504,22 @@ namespace AnyRPG {
             networkController.RequestTakeLoot(lootDropId);
         }
 
+        /*
         public void SetCraftingManagerAbility(CraftAbility craftAbility) {
             Debug.Log($"NetworkManagerClient.SetCraftingManagerAbility({craftAbility.DisplayName})");
 
             craftingManager.SetAbility(playerManager.UnitController, craftAbility.CraftAbilityProperties);
+        }
+        */
+
+        public void RequestBeginCrafting(Recipe recipe, int craftAmount) {
+            Debug.Log($"NetworkManagerClient.RequestBeginCrafting({recipe.DisplayName}, {craftAmount})");
+
+            networkController.RequestBeginCrafting(recipe, craftAmount);
+        }
+
+        public void RequestCancelCrafting() {
+            networkController.RequestCancelCrafting();
         }
 
 

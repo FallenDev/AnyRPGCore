@@ -440,6 +440,16 @@ namespace AnyRPG {
             clientConnector.RequestTakeLoot(lootDropId);
         }
 
+        public override void RequestBeginCrafting(Recipe recipe, int craftAmount) {
+            Debug.Log($"FishNetNetworkController.RequestBeginCrafting({recipe.ResourceName}, {craftAmount})");
+
+            clientConnector.RequestBeginCrafting(recipe.ResourceName, craftAmount);
+        }
+
+        public override void RequestCancelCrafting() {
+            clientConnector.RequestCancelCrafting();
+        }
+
         #endregion
 
         #region server functions
@@ -620,11 +630,13 @@ namespace AnyRPG {
             clientConnector.AdvertiseTakeLoot(clientId, lootDropId);
         }
 
+        /*
         public override void SetCraftingManagerAbility(int clientId, string abilityName) {
             Debug.Log($"FishNetNetworkController.SetCraftingManagerAbility({clientId}, {abilityName})");
 
             clientConnector.SetCraftingManagerAbility(clientId, abilityName);
         }
+        */
 
         #endregion
 

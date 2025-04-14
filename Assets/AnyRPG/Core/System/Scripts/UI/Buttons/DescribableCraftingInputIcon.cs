@@ -45,7 +45,6 @@ namespace AnyRPG {
             //} else {
             //stackSize.text = "";
             //}
-            craftingManager.TriggerCraftAmountUpdated();
         }
 
       

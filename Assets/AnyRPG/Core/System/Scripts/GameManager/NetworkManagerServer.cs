@@ -58,6 +58,7 @@ namespace AnyRPG {
         private VendorManager vendorManager = null;
         private SystemItemManager systemItemManager = null;
         private LootManager lootManager = null;
+        private CraftingManager craftingManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -79,6 +80,7 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
             vendorManager = systemGameManager.VendorManager;
             lootManager = systemGameManager.LootManager;
+            craftingManager = systemGameManager.CraftingManager;
 
             networkController?.Configure(systemGameManager);
 
@@ -672,6 +674,20 @@ namespace AnyRPG {
             }
         }
 
+        public void RequestBeginCrafting(Recipe recipe, int craftAmount, int clientId) {
+            Debug.Log($"NetworkManagerServer.RequestBeginCrafting({recipe.DisplayName}, {craftAmount}, {clientId})");
+
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == true) {
+                craftingManager.BeginCrafting(playerManagerServer.ActivePlayers[clientId], recipe, craftAmount);
+            }
+        }
+
+        public void RequestCancelCrafting(int clientId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == true) {
+                craftingManager.CancelCrafting(playerManagerServer.ActivePlayers[clientId]);
+            }
+        }
+
 
         public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
             //Debug.Log($"NetworkManagerServer.AddAvailableDroppedLoot({clientId}, count: {items.Count})");
@@ -687,12 +703,14 @@ namespace AnyRPG {
             networkController.AdvertiseTakeLoot(clientId, lootDropId);
         }
 
+
+        /*
         public void SetCraftingManagerAbility(UnitController sourceUnitController, string abilityName) {
             Debug.Log($"NetworkManagerServer.SetCraftingManagerAbility({sourceUnitController.gameObject.name}, {abilityName})");
 
             networkController.SetCraftingManagerAbility(playerManagerServer.ActivePlayerLookup[sourceUnitController], abilityName);
         }
-
+        */
 
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(int clientId, Interactable interactable, int optionIndex) {

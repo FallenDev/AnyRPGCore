@@ -47,6 +47,8 @@ namespace AnyRPG {
         public abstract void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName);
         public abstract void TakeAllLoot();
         public abstract void RequestTakeLoot(int lootDropId);
+        public abstract void RequestBeginCrafting(Recipe recipe, int craftAmount);
+        public abstract void RequestCancelCrafting();
 
         // server functions
         public abstract void StartServer();
@@ -80,7 +82,7 @@ namespace AnyRPG {
         public abstract void AddAvailableDroppedLoot(int clientId, List<LootDrop> items);
         public abstract void AddLootDrop(int clientId, int lootDropId, int itemId);
         public abstract void AdvertiseTakeLoot(int clientId, int lootDropId);
-        public abstract void SetCraftingManagerAbility(int clientId, string abilityName);
+        //public abstract void SetCraftingManagerAbility(int clientId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);

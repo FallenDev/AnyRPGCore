@@ -1480,13 +1480,15 @@ namespace AnyRPG {
                 return false;
             }
             if (unitController.ControlLocked == true) {
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) control locked");
                 return false;
             }
 
             if (!CanCastAbility(ability, playerInitiated)) {
                 if (playerInitiated) {
-                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + ability.DisplayName + ", " + (target != null ? target.name : "null") + ") cannot cast");
+                    //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 }
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 return false;
             }
 
@@ -1528,14 +1530,16 @@ namespace AnyRPG {
 
             if (finalTarget == null && ability.GetTargetOptions(unitController).RequireTarget == true) {
                 if (playerInitiated) {
-                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(): finalTarget is null. exiting");
+                    Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
                 }
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
                 return false;
             }
             if (finalTarget != null && PerformLOSCheck(finalTarget, ability) == false) {
                 if (playerInitiated) {
                     ReceiveCombatMessage("Target is not in line of sight");
                 }
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is not in line of sight. exiting");
                 return false;
             }
 
@@ -1563,10 +1567,10 @@ namespace AnyRPG {
                     currentCastCoroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCast(ability, finalTarget, abilityEffectContext));
                 } else {
                     // return false so that items in the inventory don't get used if this came from a castable item
+                    Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): A cast was already in progress!");
                     return false;
                     //systemGameManager.LogManager.WriteCombatMessage("A cast was already in progress WE SHOULD NOT BE HERE BECAUSE WE CHECKED FIRST! iscasting: " + isCasting + "; currentcast==null? " + (currentCast == null));
                     // unless.... we got here from the crafting queue, which launches the next item as the last step of the currently in progress cast
-                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(): A cast was already in progress!");
                 }
             }
 
@@ -1597,7 +1601,7 @@ namespace AnyRPG {
 
         // this only checks if the ability is able to be cast based on character state.  It does not check validity of target or ability specific requirements
         public override bool CanCastAbility(AbilityProperties ability, bool playerInitiated = false) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName})");
 
             // check if the ability is learned yet
             if (!PerformLearnedCheck(ability)) {

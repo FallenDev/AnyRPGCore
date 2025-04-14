@@ -129,6 +129,8 @@ namespace AnyRPG {
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromInventorySlot = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromBankSlot = delegate { };
         public event System.Action<InventorySlot, InventorySlot> OnRequestDropItemFromInventorySlot = delegate { };
+        public event System.Action<CraftAbilityProperties> OnSetCraftAbility = delegate { };
+        public event System.Action OnCraftItem = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -663,6 +665,14 @@ namespace AnyRPG {
 
         public void NotifyOnRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
             OnRequestDropItemFromInventorySlot(fromSlot, toSlot);
+        }
+
+        public void NotifyOnSetCraftAbility(CraftAbilityProperties craftAbility) {
+            OnSetCraftAbility(craftAbility);
+        }
+
+        public void NotifyOnCraftItem() {
+            OnCraftItem();
         }
 
         #endregion

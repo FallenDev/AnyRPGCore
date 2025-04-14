@@ -181,6 +181,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnAddItemToBankSlot += HandleAddItemToBankSlot;
             unitController.UnitEventController.OnRemoveItemFromBankSlot += HandleRemoveItemFromBankSlot;
             //unitController.UnitEventController.OnPlaceInEmpty += HandlePlaceInEmpty;
+            unitController.UnitEventController.OnSetCraftAbility += HandleSetCraftAbilityServer;
+            unitController.UnitEventController.OnCraftItem += HandleCraftItemServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -228,6 +230,30 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveItemFromInventorySlot -= HandleRemoveItemFromInventorySlot;
             unitController.UnitEventController.OnAddItemToBankSlot -= HandleAddItemToBankSlot;
             unitController.UnitEventController.OnRemoveItemFromBankSlot -= HandleRemoveItemFromBankSlot;
+            unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbilityServer;
+            unitController.UnitEventController.OnCraftItem -= HandleCraftItemServer;
+        }
+
+        public void HandleCraftItemServer() {
+            HandleCraftItemClient();
+        }
+
+        [ObserversRpc]
+        public void HandleCraftItemClient() {
+            unitController.UnitEventController.NotifyOnCraftItem();
+        }
+
+        public void HandleSetCraftAbilityServer(CraftAbilityProperties abilityProperties) {
+            HandleSetCraftAbilityClient(abilityProperties.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleSetCraftAbilityClient(string craftAbilityName) {
+            CraftAbility craftAbility = systemDataFactory.GetResource<Ability>(craftAbilityName) as CraftAbility;
+            if (craftAbility == null) {
+                return;
+            }
+            unitController.CharacterCraftingManager.SetCraftAbility(craftAbility.CraftAbilityProperties);
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {

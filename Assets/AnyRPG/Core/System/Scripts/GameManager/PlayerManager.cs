@@ -695,6 +695,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkill;
             unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
+            unitController.UnitEventController.OnSetCraftAbility += HandleSetCraftAbility;
+            unitController.UnitEventController.OnCraftItem += HandleCraftItem;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -741,6 +743,16 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkill;
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkill;
             unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOption;
+            unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbility;
+            unitController.UnitEventController.OnCraftItem -= HandleCraftItem;
+        }
+
+        public void HandleCraftItem() {
+            systemEventManager.NotifyOnCraftItem();
+        }
+
+        public void HandleSetCraftAbility(CraftAbilityProperties abilityProperties) {
+            systemEventManager.NotifyOnSetCraftAbility(unitController, abilityProperties);
         }
 
         public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {

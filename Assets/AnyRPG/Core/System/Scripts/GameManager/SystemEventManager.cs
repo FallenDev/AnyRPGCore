@@ -30,6 +30,8 @@ namespace AnyRPG {
         public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
+        public event System.Action<UnitController, CraftAbilityProperties> OnSetCraftAbility = delegate { };
+        public event System.Action OnCraftItem = delegate { };
 
         // equipment manager
         public System.Action<InstantiatedEquipment, InstantiatedEquipment> OnEquipmentChanged = delegate { };
@@ -169,6 +171,14 @@ namespace AnyRPG {
 
         public void NotifyOnUnLearnSkill(UnitController sourceUnitController, Skill skill) {
             OnUnLearnSkill(sourceUnitController, skill);
+        }
+
+        public void NotifyOnSetCraftAbility(UnitController sourceUnitController, CraftAbilityProperties abilityProperties) {
+            OnSetCraftAbility(sourceUnitController, abilityProperties);
+        }
+
+        public void NotifyOnCraftItem() {
+            OnCraftItem();
         }
     }
 

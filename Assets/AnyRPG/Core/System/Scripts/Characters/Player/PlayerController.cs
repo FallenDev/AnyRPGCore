@@ -1150,7 +1150,7 @@ namespace AnyRPG {
 
         public void HandleCastCancel() {
             //Debug.Log("PlayerController.HandleCastCancel()");
-            craftingManager.ClearCraftingQueue();
+            playerManager.UnitController.CharacterCraftingManager.ClearCraftingQueue();
         }
 
         public void HandleInitializeNamePlate() {

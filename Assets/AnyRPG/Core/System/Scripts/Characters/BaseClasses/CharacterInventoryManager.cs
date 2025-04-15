@@ -190,7 +190,7 @@ namespace AnyRPG {
         }
 
         private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem instantiatedItem) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleAddItemToInventorySlot({slot.GetCurrentInventorySlotIndex(unitController)}, {instantiatedItem.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleAddItemToInventorySlot({slot.GetCurrentInventorySlotIndex(unitController)}, {instantiatedItem.Item.ResourceName})");
 
             NotifyOnItemCountChanged(instantiatedItem.Item);
             unitController.UnitEventController.NotifyOnAddItemToInventorySlot(slot, instantiatedItem);
@@ -500,14 +500,14 @@ namespace AnyRPG {
         }
 
         private bool PlaceInEmpty(InstantiatedItem instantiatedItem, bool addToBank) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank})");
 
             int slotIndex = 0;
             if (addToBank == true) {
                 foreach (InventorySlot inventorySlot in bankSlots) {
-                    Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
+                    //Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
                     if (inventorySlot.IsEmpty) {
-                        Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
+                        //Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
                         unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
                         return true;
@@ -516,9 +516,9 @@ namespace AnyRPG {
                 }
             } else {
                 foreach (InventorySlot inventorySlot in inventorySlots) {
-                    Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
+                    //Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot");
                     if (inventorySlot.IsEmpty) {
-                        Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
+                        //Debug.Log($"CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}): checking slot: its empty.  adding item");
                         inventorySlot.AddItem(instantiatedItem);
                         unitController.UnitEventController.NotifyOnPlaceInEmpty(instantiatedItem, addToBank, slotIndex);
                         return true;
@@ -527,7 +527,7 @@ namespace AnyRPG {
                 }
             }
             if (EmptySlotCount(addToBank) == 0) {
-                Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank}): no empty slots");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank}): no empty slots");
                 messageFeedManager.WriteMessage(unitController, $"{(addToBank == false ? "Inventory" : "Bank")} is full!");
             }
             return false;

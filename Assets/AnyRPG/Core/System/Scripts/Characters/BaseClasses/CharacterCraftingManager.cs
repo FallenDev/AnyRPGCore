@@ -73,7 +73,7 @@ namespace AnyRPG {
         }
 
         public void CraftNextItem() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItem()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItem()");
 
             if (craftingQueue.Count == 0) {
                 //Debug.Log("CraftingUI.CraftNextItem(): no more items to craft");
@@ -119,7 +119,7 @@ namespace AnyRPG {
         }
 
         public void CraftNextItemWait() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItemWait()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItemWait()");
 
             // add delay to avoid issues with cast in progress from current crafting item
             if (waitCoroutine == null) {
@@ -128,7 +128,7 @@ namespace AnyRPG {
         }
 
         private IEnumerator CraftNextItemDelay() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItemDelay()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.CraftNextItemDelay()");
 
             yield return null;
             waitCoroutine = null;

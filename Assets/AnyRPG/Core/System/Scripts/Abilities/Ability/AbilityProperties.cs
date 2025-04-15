@@ -1019,6 +1019,9 @@ namespace AnyRPG {
                     sourceCharacter.AbilityManager.ProcessAbilityCoolDowns(this, animationLength, abilityCoolDown);
                 }
 
+            } else {
+                // since there is no action phase to despawn the objects, do it here
+                sourceCharacter.AbilityManager.DespawnAbilityObjects();
             }
             return true;
             // notify subscribers
@@ -1069,7 +1072,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="sourceCharacter"></param>
         public virtual void ProcessGCDAuto(IAbilityCaster sourceCharacter) {
-            Debug.Log($"{ResourceName}.AbilityProperties.ProcessGCDAuto(" + (sourceCharacter == null ? "null" : sourceCharacter.gameObject.name) + ")");
+            //Debug.Log($"{ResourceName}.AbilityProperties.ProcessGCDAuto(" + (sourceCharacter == null ? "null" : sourceCharacter.gameObject.name) + ")");
 
             if (GetAbilityActionClips(sourceCharacter).Count > 0) {
                 // cooldown length will be based on action animation length

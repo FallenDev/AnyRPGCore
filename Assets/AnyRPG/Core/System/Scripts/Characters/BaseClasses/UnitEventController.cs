@@ -649,7 +649,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"UnitEventController.NotifyOnAddItemToInventorySlot({item.Item.ResourceName})");
+            //Debug.Log($"UnitEventController.NotifyOnAddItemToInventorySlot({item.Item.ResourceName})");
 
             OnAddItemToInventorySlot(slot, item);
         }

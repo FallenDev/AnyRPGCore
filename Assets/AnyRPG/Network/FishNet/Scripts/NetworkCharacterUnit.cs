@@ -328,10 +328,9 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
+            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
             int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId})) slotIndex: {slotIndex}");
             AddItemToInventorySlotClient(slotIndex, item.InstanceId);
         }
 
@@ -345,7 +344,7 @@ namespace AnyRPG {
         }
 
         public void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             RemoveItemFromInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
 

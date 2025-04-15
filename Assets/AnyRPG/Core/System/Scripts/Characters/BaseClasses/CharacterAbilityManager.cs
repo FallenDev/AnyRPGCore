@@ -1266,7 +1266,6 @@ namespace AnyRPG {
 
                         // call this first because it updates the cast bar
                         //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastTime: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.GetAbilityCastingTime(baseCharacter) + "; calling OnCastTimeChanged()");
-                        unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability, currentCastPercent);
                         if (unitController != null) {
                             unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability, currentCastPercent);
                         }

@@ -51,7 +51,7 @@ namespace AnyRPG {
         }
 
         public int GetMaxCraftAmount(Recipe checkRecipe) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.GetMaxCraftAmount({checkRecipe.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.GetMaxCraftAmount({checkRecipe.DisplayName})");
 
             int maxAmount = -1;
             for (int i = 0; i < checkRecipe.CraftingMaterials.Count; i++) {
@@ -110,7 +110,7 @@ namespace AnyRPG {
         }
 
         public void RemoveFirstQueueItem() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.RemoveFirstQueueItem()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.RemoveFirstQueueItem()");
             if (craftingQueue.Count > 0) {
                 craftingQueue.RemoveAt(0);
             }

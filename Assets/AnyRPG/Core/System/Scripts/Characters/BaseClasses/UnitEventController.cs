@@ -655,7 +655,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            //Debug.Log($"UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             OnRemoveItemFromInventorySlot(slot, item);
         }

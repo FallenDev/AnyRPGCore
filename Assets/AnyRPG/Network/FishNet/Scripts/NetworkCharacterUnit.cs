@@ -186,6 +186,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveFirstCraftingQueueItem += HandleRemoveFirstCraftingQueueItemServer;
             unitController.UnitEventController.OnClearCraftingQueue += HandleClearCraftingQueueServer;
             unitController.UnitEventController.OnAddToCraftingQueue += HandleAddToCraftingQueueServer;
+            unitController.UnitEventController.OnCastTimeChanged += HandleCastTimeChanged;
+            unitController.UnitEventController.OnCastComplete += HandleCastComplete;
+            unitController.UnitEventController.OnCastCancel += HandleCastCancel;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -238,6 +241,37 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveFirstCraftingQueueItem -= HandleRemoveFirstCraftingQueueItemServer;
             unitController.UnitEventController.OnClearCraftingQueue -= HandleClearCraftingQueueServer;
             unitController.UnitEventController.OnAddToCraftingQueue -= HandleAddToCraftingQueueServer;
+            unitController.UnitEventController.OnCastTimeChanged -= HandleCastTimeChanged;
+            unitController.UnitEventController.OnCastComplete -= HandleCastComplete;
+            unitController.UnitEventController.OnCastCancel -= HandleCastCancel;
+        }
+
+        public void HandleCastTimeChanged(IAbilityCaster abilityCaster, AbilityProperties abilityProperties, float castPercent) {
+            HandleCastTimeChangedClient(abilityProperties.ResourceName, castPercent);
+        }
+
+        [ObserversRpc]
+        public void HandleCastTimeChangedClient(string abilityName, float castPercent) {
+            Ability ability = systemDataFactory.GetResource<Ability>(abilityName);
+            unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability.AbilityProperties, castPercent);
+        }
+
+        public void HandleCastComplete() {
+            HandleCastCompleteClient();
+        }
+
+        [ObserversRpc]
+        public void HandleCastCompleteClient() {
+            unitController.UnitEventController.NotifyOnCastComplete();
+        }
+
+        public void HandleCastCancel() {
+            HandleCastCancelClient();
+        }
+
+        [ObserversRpc]
+        public void HandleCastCancelClient() {
+            unitController.UnitEventController.NotifyOnCastCancel();
         }
 
         public void HandleAddToCraftingQueueServer(Recipe recipe) {
@@ -319,7 +353,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void RemoveItemFromInventorySlotClient(int slotIndex, int itemInstanceId) {
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
+            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.RemoveInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);

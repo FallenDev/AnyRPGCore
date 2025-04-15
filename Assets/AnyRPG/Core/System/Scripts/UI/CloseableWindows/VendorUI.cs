@@ -142,7 +142,7 @@ namespace AnyRPG {
         public override void ReceiveClosedWindowNotification() {
             //Debug.Log("VendorUI.OnCloseWindow()");
             base.ReceiveClosedWindowNotification();
-            if (vendorManager.VendorComponent != null) {
+            if (vendorManager.VendorComponent?.Interactable != null) {
                 // if we got kicked off the server the window can be closed after the vendor despawns
                 vendorManager.VendorComponent.Interactable.InteractableEventController.OnAddToBuyBackCollection -= HandleAddtoBuyBackCollection;
                 vendorManager.VendorComponent.Interactable.InteractableEventController.OnSellItemToPlayer -= HandleBuyItemFromVendor;

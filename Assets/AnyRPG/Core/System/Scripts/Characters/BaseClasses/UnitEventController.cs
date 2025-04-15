@@ -128,12 +128,15 @@ namespace AnyRPG {
         public event System.Action<InventorySlot, InstantiatedItem> OnAddItemToBankSlot = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromInventorySlot = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnRemoveItemFromBankSlot = delegate { };
-        public event System.Action<InventorySlot, InventorySlot> OnRequestDropItemFromInventorySlot = delegate { };
+        public event System.Action<InventorySlot, InventorySlot, bool, bool> OnRequestDropItemFromInventorySlot = delegate { };
         public event System.Action<CraftAbilityProperties> OnSetCraftAbility = delegate { };
         public event System.Action OnCraftItem = delegate { };
         public event System.Action OnRemoveFirstCraftingQueueItem = delegate { };
         public event System.Action OnClearCraftingQueue = delegate { };
         public event System.Action<Recipe> OnAddToCraftingQueue = delegate { };
+        public event System.Action<int> OnRequestMoveFromBankToInventory = delegate { };
+        public event System.Action<int> OnRequestMoveFromInventoryToBank = delegate { };
+        public event System.Action<int> OnRequestUseItem = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -668,8 +671,8 @@ namespace AnyRPG {
             OnRemoveItemFromBankSlot(slot, item);
         }
 
-        public void NotifyOnRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
-            OnRequestDropItemFromInventorySlot(fromSlot, toSlot);
+        public void NotifyOnRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot, bool fromSlotIsInventory, bool toSlotIsInventory) {
+            OnRequestDropItemFromInventorySlot(fromSlot, toSlot, fromSlotIsInventory, toSlotIsInventory);
         }
 
         public void NotifyOnSetCraftAbility(CraftAbilityProperties craftAbility) {
@@ -690,6 +693,18 @@ namespace AnyRPG {
 
         public void NotifyOnAddToCraftingQueue(Recipe recipe) {
             OnAddToCraftingQueue(recipe);
+        }
+
+        public void NotifyOnRequestMoveFromBankToInventory(int slotIndex) {
+            OnRequestMoveFromBankToInventory(slotIndex);
+        }
+
+        public void NotifyOnRequestMoveFromInventoryToBank(int slotIndex) {
+            OnRequestMoveFromInventoryToBank(slotIndex);
+        }
+
+        public void NotifyOnRequestUseItem(int slotIndex) {
+            OnRequestUseItem(slotIndex);
         }
 
         #endregion

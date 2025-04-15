@@ -95,7 +95,7 @@ MonoBehaviour:
   noWeatherWeight: 10
   weatherWeights:
   - weather: Fog
-    weight: 10
+    weight: 0
   - weather: Rain
     weight: 10
   - weather: Snow

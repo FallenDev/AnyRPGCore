@@ -761,21 +761,48 @@ namespace AnyRPG {
             logManager.WriteSystemMessage(unitController, $"Destroyed {instantiatedItem.DisplayName}");
         }
 
-        public void RequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
+        public void RequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot, bool fromSlotIsInventory, bool toSlotIsInventory) {
             Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestDropItemFromInventorySlot()");
 
-            unitController.UnitEventController.NotifyOnRequestDropItemFromInventorySlot(fromSlot, toSlot);
+            unitController.UnitEventController.NotifyOnRequestDropItemFromInventorySlot(fromSlot, toSlot, fromSlotIsInventory, toSlotIsInventory);
             if (systemGameManager.GameMode == GameMode.Local) {
                 DropItemFromInventorySlot(fromSlot, toSlot);
             }
         }
 
-        public void DropItemFromInventorySlot(int fromslotIndex, int toSlotIndex) {
+        public void DropItemFromInventorySlot(int fromslotIndex, int toSlotIndex, bool fromSlotIsInventory, bool toSlotIsInventory) {
             Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot({fromslotIndex}, {toSlotIndex})");
-
-            if (inventorySlots.Count > fromslotIndex && inventorySlots.Count > toSlotIndex) {
-                DropItemFromInventorySlot(inventorySlots[fromslotIndex], inventorySlots[toSlotIndex]);
+            if (fromSlotIsInventory) {
+                if (inventorySlots.Count <= fromslotIndex) {
+                    return;
+                }
+            } else {
+                if (bankSlots.Count <= fromslotIndex) {
+                    return;
+                }
             }
+            if (toSlotIsInventory) {
+                if (inventorySlots.Count <= toSlotIndex) {
+                    return;
+                }
+            } else {
+                if (bankSlots.Count <= toSlotIndex) {
+                    return;
+                }
+            }
+            InventorySlot fromSlot;
+            InventorySlot toSlot;
+            if (fromSlotIsInventory) {
+                fromSlot = inventorySlots[fromslotIndex];
+            } else {
+                fromSlot = bankSlots[fromslotIndex];
+            }
+            if (toSlotIsInventory) {
+                toSlot = inventorySlots[toSlotIndex];
+            } else {
+                toSlot = bankSlots[toSlotIndex];
+            }
+            DropItemFromInventorySlot(fromSlot, toSlot);
         }
 
         public void DropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
@@ -791,6 +818,84 @@ namespace AnyRPG {
             // merge and swap failed, so attempt to add items
             toSlot.AddItems(fromSlot.InstantiatedItems);
 
+        }
+
+        public void RequestMoveFromBankToInventory(InventorySlot inventorySlot) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                MoveFromBankToInventory(inventorySlot);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestMoveFromBankToInventory(inventorySlot.GetCurrentBankSlotIndex(unitController));
+            }
+        }
+
+        public void MoveFromBankToInventory(InventorySlot inventorySlot) {
+            List<InstantiatedItem> moveList = new List<InstantiatedItem>();
+            //Debug.Log("SlotScript.InteractWithSlot(): interacting with item in bank");
+            foreach (InstantiatedItem instantiatedItem in inventorySlot.InstantiatedItems) {
+                moveList.Add(instantiatedItem);
+            }
+            foreach (InstantiatedItem instantiatedItem in moveList) {
+                if (AddItem(instantiatedItem, false, false)) {
+                    inventorySlot.RemoveItem(instantiatedItem);
+                }
+            }
+        }
+
+        public void MoveFromBankToInventory(int slotIndex) {
+            Debug.Log($"CharacterInventoryManager.MoveFromBankToInventory({slotIndex})");
+
+            if (bankSlots.Count > slotIndex) {
+                MoveFromBankToInventory(bankSlots[slotIndex]);
+            }
+        }
+
+        public void RequestMoveFromInventoryToBank(InventorySlot inventorySlot) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                MoveFromInventoryToBank(inventorySlot);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestMoveFromInventoryToBank(inventorySlot.GetCurrentInventorySlotIndex(unitController));
+            }
+        }
+
+        public void MoveFromInventoryToBank(InventorySlot inventorySlot) {
+            List<InstantiatedItem> moveList = new List<InstantiatedItem>();
+            foreach (InstantiatedItem instantiatedItem in inventorySlot.InstantiatedItems) {
+                moveList.Add(instantiatedItem);
+            }
+            foreach (InstantiatedItem instantiatedItem in moveList) {
+                if (AddItem(instantiatedItem, true, false)) {
+                    inventorySlot.RemoveItem(instantiatedItem);
+                }
+            }
+        }
+
+        public void MoveFromInventoryToBank(int slotIndex) {
+            Debug.Log($"CharacterInventoryManager.MoveFromInventoryToBank({slotIndex})");
+            if (inventorySlots.Count > slotIndex) {
+                MoveFromInventoryToBank(inventorySlots[slotIndex]);
+            }
+        }
+
+        public void RequestUseItem(InventorySlot inventorySlot) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                UseItem(inventorySlot);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestUseItem(inventorySlot.GetCurrentInventorySlotIndex(unitController));
+            }
+        }
+
+        public void UseItem(InventorySlot inventorySlot) {
+            //Debug.Log($"{unitController.gameobject.name}.CharacterInventoryManager.UseItem()");
+            if (inventorySlot.InstantiatedItem != null) {
+                inventorySlot.UseItem(unitController);
+            }
+        }
+
+        public void UseItem(int slotIndex) {
+            //Debug.Log($"{unitController.gameobject.name}.CharacterInventoryManager.UseItem(" + slotIndex + ")");
+            if (inventorySlots.Count > slotIndex) {
+                UseItem(inventorySlots[slotIndex]);
+            }
         }
     }
 

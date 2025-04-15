@@ -120,7 +120,7 @@ namespace AnyRPG {
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.UnsubscribeFromPlayerEvents({unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.UnsubscribeFromPlayerEvents({unitController.gameObject.name})");
 
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTrigger;

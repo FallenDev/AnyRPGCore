@@ -103,7 +103,7 @@ namespace AnyRPG {
             Debug.Log("SlotScript.DropItemFromInventorySlot()");
 
             //Debug.Log("Dropping an item from an inventory slot");
-            playerManager.UnitController.CharacterInventoryManager.RequestDropItemFromInventorySlot(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot, inventorySlot);
+            playerManager.UnitController.CharacterInventoryManager.RequestDropItemFromInventorySlot(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot, inventorySlot, playerManager.UnitController.CharacterInventoryManager.FromSlot.BagPanel is InventoryPanel, BagPanel is InventoryPanel);
             handScript.Drop();
 
         }
@@ -184,41 +184,17 @@ namespace AnyRPG {
 
             // send items back and forth between bank and inventory if they are both open
             if (BagPanel is BankPanel) {
-                List<InstantiatedItem> moveList = new List<InstantiatedItem>();
-                //Debug.Log("SlotScript.InteractWithSlot(): interacting with item in bank");
-                foreach (InstantiatedItem instantiatedItem in inventorySlot.InstantiatedItems) {
-                    moveList.Add(instantiatedItem);
-                }
-                foreach (InstantiatedItem instantiatedItem in moveList) {
-                    if (playerManager.UnitController.CharacterInventoryManager.AddItem(instantiatedItem, false, false)) {
-                        inventorySlot.RemoveItem(instantiatedItem);
-                    }
-                }
+                playerManager.UnitController.CharacterInventoryManager.RequestMoveFromBankToInventory(inventorySlot);
                 return;
             }
 
             // send items back and forth between inventory and bank if they are both open
             if (uIManager.inventoryWindow.IsOpen == true && uIManager.bankWindow.IsOpen == true) {
-                List<InstantiatedItem> moveList = new List<InstantiatedItem>();
                 if (BagPanel is InventoryPanel) {
-                    //Debug.Log("SlotScript.InteractWithSlot(): interacting with item in inventory");
-                    /*
-                    if (inventoryManager.AddItem(MyItem, true)) {
-                        Clear();
-                    }
-                    */
-                    foreach (InstantiatedItem instantiatedItem in inventorySlot.InstantiatedItems) {
-                        moveList.Add(instantiatedItem);
-                    }
-                    foreach (InstantiatedItem instantiatedItem in moveList) {
-                        if (playerManager.UnitController.CharacterInventoryManager.AddItem(instantiatedItem, true, false)) {
-                            inventorySlot.RemoveItem(instantiatedItem);
-                        }
-                    }
+                    playerManager.UnitController.CharacterInventoryManager.RequestMoveFromInventoryToBank(inventorySlot);
                 } /*else {
                     Debug.Log("SlotScript.InteractWithSlot(): We clicked on something in a chest or bag");
                 }*/
-                // default case to prevent using an item when the bank window is open but bank was full
                 return;
             } else if (uIManager.inventoryWindow.IsOpen == true && uIManager.bankWindow.IsOpen == false && uIManager.vendorWindow.IsOpen) {
                 // SELL THE ITEM
@@ -238,7 +214,7 @@ namespace AnyRPG {
             }
 
             // if we got to here, nothing left to do but use the item
-            inventorySlot.UseItem(playerManager.UnitController);
+            playerManager.UnitController.CharacterInventoryManager.RequestUseItem(inventorySlot);
         }
 
         public override void Accept() {
@@ -471,44 +447,6 @@ namespace AnyRPG {
             }
             return false;
         }
-
-        /*
-        private bool SwapItems(SlotScript from) {
-            //Debug.Log("SlotScript " + this.GetInstanceID().ToString() + " receiving items to swap from slotscript " + from.GetInstanceID().ToString());
-            // use a temporary list to swap references to the stacks
-            List<Item> tmpFrom = new List<Item>(from.Items);
-            from.Items = Items;
-            Items = tmpFrom;
-
-            return true;
-        }
-        */
-
-        /*
-        private bool MergeItems(SlotScript from) {
-            //Debug.Log("attempting to merge items");
-            if (IsEmpty) {
-                //Debug.Log("This slot is empty, there is nothing to merge.");
-                return false;
-            }
-            if (SystemDataUtility.MatchResource(from.Item.DisplayName, Item.DisplayName) && !IsFull) {
-                // how many free slots there are in the new stack
-                int free = Item.MaximumStackSize - Count;
-                if (free >= from.Count) {
-                    int maxCount = from.Count;
-                    for (int i = 0; i < maxCount; i++) {
-                        AddItem(from.Items[0]);
-                        from.RemoveItem(from.Items[0]);
-                    }
-                    return true;
-                } else {
-                    //Debug.Log("There is not enough space in this slot to merge items.");
-                }
-
-            }
-            return false;
-        }
-        */
 
         /// <summary>
         /// Updates the Stack Size count graphic

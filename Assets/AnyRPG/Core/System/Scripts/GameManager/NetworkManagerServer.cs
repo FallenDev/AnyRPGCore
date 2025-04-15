@@ -199,7 +199,7 @@ namespace AnyRPG {
         }
 
         public void ProcessStopNetworkUnitServer(UnitController unitController) {
-            Debug.Log($"NetworkManagerServer.ProcessStopServer({unitController.gameObject.name})");
+            //Debug.Log($"NetworkManagerServer.ProcessStopNetworkUnitServer({unitController.gameObject.name})");
 
             if (SystemGameManager.IsShuttingDown == true) {
                 return;

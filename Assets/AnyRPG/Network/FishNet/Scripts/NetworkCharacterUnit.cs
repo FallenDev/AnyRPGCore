@@ -113,6 +113,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
                 unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot += HandleRequestDropItemFromInventorySlot;
+                unitController.UnitEventController.OnRequestMoveFromBankToInventory += HandleRequestMoveFromBankToInventory;
+                unitController.UnitEventController.OnRequestMoveFromInventoryToBank += HandleRequestMoveFromInventoryToBank;
+                unitController.UnitEventController.OnRequestUseItem += HandleRequestUseItemClient;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -129,6 +132,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestEquipEquipment -= HandleRequestEquipEquipment;
                 unitController.UnitEventController.OnRequestUnequipFromList -= HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot -= HandleRequestDropItemFromInventorySlot;
+                unitController.UnitEventController.OnRequestMoveFromBankToInventory -= HandleRequestMoveFromBankToInventory;
+                unitController.UnitEventController.OnRequestMoveFromInventoryToBank -= HandleRequestMoveFromInventoryToBank;
+                unitController.UnitEventController.OnRequestUseItem -= HandleRequestUseItemClient;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -425,13 +431,52 @@ namespace AnyRPG {
             unitController.CharacterEquipmentManager.UnequipFromList(equipmentSlotProfile);
         }
 
-        private void HandleRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
-            RequestDropItemFromInventorySlot(fromSlot.GetCurrentInventorySlotIndex(unitController), toSlot.GetCurrentInventorySlotIndex(unitController));
+        private void HandleRequestMoveFromBankToInventory(int slotIndex) {
+            RequestMoveFromBankToInventory(slotIndex);
         }
 
         [ServerRpc]
-        private void RequestDropItemFromInventorySlot(int fromSlotId, int toSlotId) {
-            unitController.CharacterInventoryManager.DropItemFromInventorySlot(fromSlotId, toSlotId);
+        private void RequestMoveFromBankToInventory(int slotIndex) {
+            unitController.CharacterInventoryManager.MoveFromBankToInventory(slotIndex);
+        }
+
+        public void HandleRequestUseItemClient(int slotIndex) {
+            RequestUseItemClient(slotIndex);
+        }
+
+        [ServerRpc]
+        private void RequestUseItemClient(int slotIndex) {
+            unitController.CharacterInventoryManager.UseItem(slotIndex);
+        }
+
+        public void HandleRequestMoveFromInventoryToBank(int slotIndex) {
+            RequestMoveFromInventoryToBank(slotIndex);
+        }
+
+        [ServerRpc]
+        private void RequestMoveFromInventoryToBank(int slotIndex) {
+            unitController.CharacterInventoryManager.MoveFromInventoryToBank(slotIndex);
+        }
+
+        private void HandleRequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot, bool fromSlotIsInventory, bool toSlotIsInventory) {
+            int fromSlotIndex;
+            if (fromSlotIsInventory) {
+                fromSlotIndex = fromSlot.GetCurrentInventorySlotIndex(unitController);
+            } else {
+                fromSlotIndex = fromSlot.GetCurrentBankSlotIndex(unitController);
+            }
+            int toSlotIndex;
+            if (toSlotIsInventory) {
+                toSlotIndex = toSlot.GetCurrentInventorySlotIndex(unitController);
+            } else {
+                toSlotIndex = toSlot.GetCurrentBankSlotIndex(unitController);
+            }
+            RequestDropItemFromInventorySlot(fromSlotIndex, toSlotIndex, fromSlotIsInventory, toSlotIsInventory);
+        }
+
+        [ServerRpc]
+        private void RequestDropItemFromInventorySlot(int fromSlotId, int toSlotId, bool fromSlotIsInventory, bool toSlotIsInventory) {
+            unitController.CharacterInventoryManager.DropItemFromInventorySlot(fromSlotId, toSlotId, fromSlotIsInventory, toSlotIsInventory);
         }
 
 

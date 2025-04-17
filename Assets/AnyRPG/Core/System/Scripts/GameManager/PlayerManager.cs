@@ -667,7 +667,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss += HandleCombatMiss;
-            //unitController.UnitEventController.OnEquipmentChanged += HandleEquipmentChanged;
             unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
             unitController.UnitEventController.OnUnlearnAbilities += HandleUnlearnClassAbilities;
@@ -717,7 +716,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss -= HandleCombatMiss;
-            //unitController.UnitEventController.OnEquipmentChanged -= HandleEquipmentChanged;
             unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
             unitController.UnitEventController.OnUnlearnAbilities -= HandleUnlearnClassAbilities;
@@ -914,19 +912,6 @@ namespace AnyRPG {
             // now perform a single action bar update
             actionBarManager.RemoveStaleActions();
         }
-
-        /*
-        public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
-            if (PlayerUnitSpawned) {
-                if (slotIndex != -1) {
-                    unitController.CharacterInventoryManager.AddInventoryItem(oldItem, slotIndex);
-                } else if (oldItem != null) {
-                    unitController.CharacterInventoryManager.AddItem(oldItem, false);
-                }
-            }
-            systemEventManager.NotifyOnEquipmentChanged(newItem, oldItem);
-        }
-        */
 
         private void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
             systemEventManager.NotifyOnAddEquipment(profile, equipment);

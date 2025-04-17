@@ -73,7 +73,6 @@ namespace AnyRPG {
             }
 
             SpawnUnit(characterConfigurationRequest);
-            //systemEventManager.OnEquipmentChanged += HandleEquipmentChanged;
             playerManager.ActiveUnitController.UnitEventController.OnUnitTypeChange += HandleUnitTypeChange;
             //playerManager.ActiveUnitController.UnitEventController.OnRaceChange += HandleRaceChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange += HandleFactionChange;
@@ -111,7 +110,6 @@ namespace AnyRPG {
 
         public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
             //Debug.Log("CharacterPanel.HandlePlayerUnitDespawn()");
-            //systemEventManager.OnEquipmentChanged -= HandleEquipmentChanged;
             playerManager.ActiveUnitController.UnitEventController.OnUnitTypeChange -= HandleUnitTypeChange;
             //playerManager.ActiveUnitController.UnitEventController.OnRaceChange -= HandleRaceChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange -= HandleFactionChange;

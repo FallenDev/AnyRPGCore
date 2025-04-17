@@ -61,7 +61,7 @@ namespace AnyRPG {
                     foreach (EquipmentSlotType exclusiveSlotType in equipmentSlotType.ExclusiveSlotTypeList) {
                         //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.UnequipExclusiveSlots(" + equipmentSlotType.DisplayName + "): exclusive slot type: " + exclusiveSlotType);
                         foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                            if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment.EquipmentSlotType == exclusiveSlotType) {
+                            if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment.EquipmentSlotType == exclusiveSlotType) {
                                 exclusiveSlotList.Add(equipmentSlotProfile);
                             }
                         }
@@ -206,7 +206,7 @@ namespace AnyRPG {
         /// <returns></returns>
         public EquipmentSlotProfile FindEquipmentSlotForEquipment(InstantiatedEquipment instantiatedEquipment) {
             foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                if (currentEquipment[equipmentSlotProfile] != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment == instantiatedEquipment) {
+                if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment == instantiatedEquipment) {
                     return equipmentSlotProfile;
                 }
             }

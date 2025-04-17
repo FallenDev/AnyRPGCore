@@ -110,12 +110,14 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnBeginAbility += HandleBeginAbilityLocal;
                 unitController.UnitEventController.OnSetTarget += HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
-                unitController.UnitEventController.OnRequestEquipEquipment += HandleRequestEquipEquipment;
+                unitController.UnitEventController.OnRequestEquipToSlot += HandleRequestEquipToSlot;
                 unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot += HandleRequestDropItemFromInventorySlot;
                 unitController.UnitEventController.OnRequestMoveFromBankToInventory += HandleRequestMoveFromBankToInventory;
                 unitController.UnitEventController.OnRequestMoveFromInventoryToBank += HandleRequestMoveFromInventoryToBank;
-                unitController.UnitEventController.OnRequestUseItem += HandleRequestUseItemClient;
+                unitController.UnitEventController.OnRequestUseItem += HandleRequestUseItem;
+                unitController.UnitEventController.OnRequestSwapInventoryEquipment += HandleRequestSwapInventoryEquipment;
+                unitController.UnitEventController.OnRequestUnequipToSlot += HandleRequestUnequipToSlot;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -129,12 +131,15 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnBeginAbility -= HandleBeginAbilityLocal;
                 unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
-                unitController.UnitEventController.OnRequestEquipEquipment -= HandleRequestEquipEquipment;
+                unitController.UnitEventController.OnRequestEquipToSlot -= HandleRequestEquipToSlot;
                 unitController.UnitEventController.OnRequestUnequipFromList -= HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot -= HandleRequestDropItemFromInventorySlot;
                 unitController.UnitEventController.OnRequestMoveFromBankToInventory -= HandleRequestMoveFromBankToInventory;
                 unitController.UnitEventController.OnRequestMoveFromInventoryToBank -= HandleRequestMoveFromInventoryToBank;
-                unitController.UnitEventController.OnRequestUseItem -= HandleRequestUseItemClient;
+                unitController.UnitEventController.OnRequestUseItem -= HandleRequestUseItem;
+                unitController.UnitEventController.OnRequestSwapInventoryEquipment -= HandleRequestSwapInventoryEquipment;
+                unitController.UnitEventController.OnRequestUnequipToSlot -= HandleRequestUnequipToSlot;
+
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -455,7 +460,7 @@ namespace AnyRPG {
             unitController.CharacterInventoryManager.MoveFromBankToInventory(slotIndex);
         }
 
-        public void HandleRequestUseItemClient(int slotIndex) {
+        public void HandleRequestUseItem(int slotIndex) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestUseItemClient({slotIndex})");
 
             RequestUseItemClient(slotIndex);
@@ -465,6 +470,29 @@ namespace AnyRPG {
         private void RequestUseItemClient(int slotIndex) {
             unitController.CharacterInventoryManager.UseItem(slotIndex);
         }
+
+        public void HandleRequestSwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
+            RequestSwapInventoryEquipment(oldEquipment.InstanceId, newEquipment.InstanceId);
+        }
+
+        [ServerRpc]
+        public void RequestSwapInventoryEquipment(int oldEquipmentInstanceId, int newEquipmentInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(oldEquipmentInstanceId) && systemItemManager.InstantiatedItems[oldEquipmentInstanceId] is InstantiatedEquipment) {
+                unitController.CharacterEquipmentManager.SwapInventoryEquipment(systemItemManager.InstantiatedItems[oldEquipmentInstanceId] as InstantiatedEquipment, systemItemManager.InstantiatedItems[newEquipmentInstanceId] as InstantiatedEquipment);
+            }
+        }
+
+        public void HandleRequestUnequipToSlot(InstantiatedEquipment equipment, int inventorySlotId) {
+            RequestUnequipToSlot(equipment.InstanceId, inventorySlotId);
+        }
+
+        [ServerRpc]
+        public void RequestUnequipToSlot(int itemInstanceId, int inventorySlotId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
+                unitController.CharacterEquipmentManager.UnequipToSlot(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, inventorySlotId);
+            }
+        }
+
 
         public void HandleRequestMoveFromInventoryToBank(int slotIndex) {
             RequestMoveFromInventoryToBank(slotIndex);
@@ -497,18 +525,18 @@ namespace AnyRPG {
         }
 
 
-        public void HandleRequestEquipEquipment(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
-            RequestEquipEquipment(equipment.InstanceId, profile.ResourceName);
+        public void HandleRequestEquipToSlot(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
+            RequestEquipToSlot(equipment.InstanceId, profile.ResourceName);
         }
 
         [ServerRpc]
-        public void RequestEquipEquipment(int itemInstanceId, string equipmentSlotProfileName) {
+        public void RequestEquipToSlot(int itemInstanceId, string equipmentSlotProfileName) {
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
                 if (equipmentSlotProfile == null) {
                     return;
                 }
-                unitController.CharacterEquipmentManager.EquipEquipment(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, equipmentSlotProfile);
+                unitController.CharacterEquipmentManager.EquipToSlot(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, equipmentSlotProfile);
             }
         }
 

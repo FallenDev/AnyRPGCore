@@ -333,10 +333,10 @@ namespace AnyRPG {
         }
 
         private InstantiatedEquipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
-            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName})");
 
             if (unitModelController.SuppressEquipment == true) {
-                Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName}) SuppressEquipment is true");
+                //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName}) SuppressEquipment is true");
                 return null;
             }
 
@@ -344,7 +344,7 @@ namespace AnyRPG {
         }
 
         public void RebuildModelAppearance() {
-            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance()");
+            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance()");
 
             if (unitModelController.IsBuilding() == true) {
                 // let model appearance get built first (in case of UMA without bones being ready)
@@ -354,7 +354,7 @@ namespace AnyRPG {
             SynchronizeEquipmentDictionaryKeys();
 
             foreach (EquipmentSlotProfile equipmentSlotProfile in characterEquipmentManager.CurrentEquipment.Keys) {
-                Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance() slot: {equipmentSlotProfile.ResourceName} item:)");
+                //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance() slot: {equipmentSlotProfile.ResourceName} item:)");
                 RebuildSlotAppearance(equipmentSlotProfile, GetEquipmentForSlot(equipmentSlotProfile));
             }
         }

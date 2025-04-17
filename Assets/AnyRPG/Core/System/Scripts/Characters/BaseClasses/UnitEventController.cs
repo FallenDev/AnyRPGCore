@@ -120,7 +120,7 @@ namespace AnyRPG {
         public event System.Action<InstantiatedItem> OnGetNewInstantiatedItem = delegate { };
         public event System.Action<InstantiatedItem> OnRequestDeleteItem = delegate { };
         public event System.Action<InstantiatedItem> OnDeleteItem = delegate { };
-        public event System.Action<InstantiatedEquipment, EquipmentSlotProfile> OnRequestEquipEquipment = delegate { };
+        public event System.Action<InstantiatedEquipment, EquipmentSlotProfile> OnRequestEquipToSlot = delegate { };
         public event System.Action<EquipmentSlotProfile> OnRequestUnequipFromList = delegate { };
         public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
         public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
@@ -138,6 +138,8 @@ namespace AnyRPG {
         public event System.Action<int> OnRequestMoveFromInventoryToBank = delegate { };
         public event System.Action<int> OnRequestUseItem = delegate { };
         public event System.Action OnRebuildModelAppearance = delegate { };
+        public event System.Action<InstantiatedEquipment, InstantiatedEquipment> OnRequestSwapInventoryEquipment = delegate { };
+        public event System.Action<InstantiatedEquipment, int> OnRequestUnequipToSlot = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -638,8 +640,8 @@ namespace AnyRPG {
             OnDeleteItem(instantiatedItem);
         }
 
-        public void NotifyOnRequestEquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile) {
-            OnRequestEquipEquipment(newEquipment, equipmentSlotProfile);
+        public void NotifyOnRequestEquipToSlot(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile) {
+            OnRequestEquipToSlot(newEquipment, equipmentSlotProfile);
         }
 
         public void NotifyOnRequestUnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
@@ -718,6 +720,15 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRebuildModelAppearance()");
 
             OnRebuildModelAppearance();
+        }
+
+        public void NotifyOnRequestSwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
+            OnRequestSwapInventoryEquipment(oldEquipment, newEquipment);
+        }
+
+        public void NotifyOnRequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
+            OnRequestUnequipToSlot(instantiatedEquipment, inventorySlotId);
         }
 
         #endregion

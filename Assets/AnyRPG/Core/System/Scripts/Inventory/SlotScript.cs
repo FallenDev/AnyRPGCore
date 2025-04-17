@@ -133,13 +133,7 @@ namespace AnyRPG {
                     // the handscript has equipment in it
                     if (inventorySlot.InstantiatedItem is InstantiatedEquipment && (inventorySlot.InstantiatedItem as InstantiatedEquipment).Equipment.EquipmentSlotType == (handScript.Moveable as InstantiatedEquipment).Equipment.EquipmentSlotType) {
                         // this slot has equipment in it, and the equipment matches the slot of the item in the handscript.  swap them
-                        EquipmentSlotProfile equipmentSlotProfile = playerManager.UnitController.CharacterEquipmentManager.FindEquipmentSlotForEquipment(handScript.Moveable as InstantiatedEquipment);
-                        playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile);
-                        playerManager.UnitController.CharacterEquipmentManager.Equip(inventorySlot.InstantiatedItem as InstantiatedEquipment, equipmentSlotProfile);
-                        playerManager.UnitController.UnitModelController.RebuildModelAppearance();
-                        inventorySlot.InstantiatedItem.Remove();
-                       //UseItem();
-                        //uIManager.RefreshTooltip();
+                        playerManager.UnitController.CharacterEquipmentManager.RequestSwapInventoryEquipment(handScript.Moveable as InstantiatedEquipment, inventorySlot.InstantiatedItem as InstantiatedEquipment);
                         handScript.Drop();
                     }
                 }
@@ -159,10 +153,7 @@ namespace AnyRPG {
                     }
                 } else if (handScript.Moveable is InstantiatedEquipment) {
                     // the handscript had equipment in it, and therefore we are trying to unequip some equipment
-                    Equipment equipment = (Equipment)handScript.Moveable;
-                    EquipmentSlotProfile equipmentSlotProfile = playerManager.UnitController.CharacterEquipmentManager.FindEquipmentSlotForEquipment(handScript.Moveable as InstantiatedEquipment);
-                    playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile, inventorySlot.GetCurrentInventorySlotIndex(playerManager.UnitController));
-                    playerManager.UnitController.UnitModelController.RebuildModelAppearance();
+                    playerManager.UnitController.CharacterEquipmentManager.RequestUnequipToSlot(handScript.Moveable as InstantiatedEquipment, inventorySlot.GetCurrentInventorySlotIndex(playerManager.UnitController));
                     handScript.Drop();
                 }
             }

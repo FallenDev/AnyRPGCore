@@ -98,17 +98,8 @@ namespace AnyRPG {
                 if (handScript.Moveable is InstantiatedEquipment) {
                     InstantiatedEquipment tmp = (InstantiatedEquipment)handScript.Moveable;
                     if (equipmentSlotProfile.EquipmentSlotTypeList.Contains(tmp.Equipment.EquipmentSlotType)) {
-                        // unequip any existing item in this slot
-                        playerManager.UnitController.CharacterEquipmentManager.Unequip(equipmentSlotProfile);
-                        // equip new item to this slot
-                        playerManager.UnitController.CharacterEquipmentManager.Equip(tmp, equipmentSlotProfile);
-                        playerManager.UnitController.UnitModelController.RebuildModelAppearance();
-
-                        // call remove
-                        tmp.Remove();
-
+                        playerManager.UnitController.CharacterEquipmentManager.RequestEquipToSlot(tmp, equipmentSlotProfile);
                         handScript.Drop();
-
                         uIManager.RefreshTooltip(tmp);
                     }
                 } else if (handScript.Moveable == null && equippedEquipment != null) {

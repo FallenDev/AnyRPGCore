@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -162,12 +163,7 @@ namespace AnyRPG {
         public override EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile = null) {
             Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.EquipEquipment({(newEquipment != null ? newEquipment.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
-                return base.EquipEquipment(newEquipment, equipmentSlotProfile);
-            } else {
-                unitController.UnitEventController.NotifyOnRequestEquipEquipment(newEquipment, equipmentSlotProfile);
-                return null;
-            }
+            return base.EquipEquipment(newEquipment, equipmentSlotProfile);
         }
 
         public void HandleAddEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
@@ -310,6 +306,66 @@ namespace AnyRPG {
                 }
             }
             return false;
+        }
+
+        public void RequestSwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestSwapInventoryEquipment()");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                SwapInventoryEquipment(oldEquipment, newEquipment);
+            }
+            unitController.UnitEventController.NotifyOnRequestSwapInventoryEquipment(oldEquipment, newEquipment);
+        }
+
+        public void SwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.SwapInventoryEquipment()");
+
+            EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(oldEquipment);
+            if (equipmentSlotProfile != null) {
+                newEquipment.Remove();
+                Unequip(equipmentSlotProfile);
+                Equip(newEquipment, equipmentSlotProfile);
+                unitController.UnitModelController.RebuildModelAppearance();
+            }
+        }
+
+        public void RequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestUnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+            if (systemGameManager.GameMode == GameMode.Local) {
+                UnequipToSlot(instantiatedEquipment, inventorySlotId);
+            }
+            unitController.UnitEventController.NotifyOnRequestUnequipToSlot(instantiatedEquipment, inventorySlotId);
+        }
+
+        public void UnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+            EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(instantiatedEquipment);
+            if (equipmentSlotProfile != null) {
+                Unequip(equipmentSlotProfile, inventorySlotId);
+                unitController.UnitModelController.RebuildModelAppearance();
+            }
+        }
+
+        public void RequestEquipToSlot(InstantiatedEquipment tmp, EquipmentSlotProfile equipmentSlotProfile) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestEquip({tmp.ResourceName}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
+            if (systemGameManager.GameMode == GameMode.Local) {
+                EquipToSlot(tmp, equipmentSlotProfile);
+            }
+            unitController.UnitEventController.NotifyOnRequestEquipToSlot(tmp, equipmentSlotProfile);
+        }
+
+        public void EquipToSlot(InstantiatedEquipment tmp, EquipmentSlotProfile equipmentSlotProfile) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.EquipToSlot({tmp.ResourceName}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
+            if (tmp != null && tmp.Equipment.CanEquip(tmp.GetItemLevel(unitController.CharacterStats.Level), unitController) == true) {
+                // unequip any existing item in this slot
+                Unequip(equipmentSlotProfile);
+                InventorySlot oldSlot = tmp.Slot;
+                // equip new item to this slot
+                if (Equip(tmp, equipmentSlotProfile)) {
+                    tmp.RemoveFrom(oldSlot);
+                }
+                unitController.UnitModelController.RebuildModelAppearance();
+            }
         }
 
         /*

@@ -398,10 +398,10 @@ namespace AnyRPG {
         }
 
         public override List<AnimationClip> GetUnitCastAnimations() {
-            Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations()");
+            //Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations()");
 
             if (unitController.UnitAnimator.CurrentAnimations != null) {
-                Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations() returning {unitController.UnitAnimator.CurrentAnimations.CastClips.Count}");
+                //Debug.Log($"{unitController.gameObject.name}.GetUnitCastAnimations() returning {unitController.UnitAnimator.CurrentAnimations.CastClips.Count}");
                 return unitController.UnitAnimator.CurrentAnimations.CastClips;
             }
             return base.GetUnitCastAnimations();

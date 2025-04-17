@@ -1,9 +1,7 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace AnyRPG {
     public class PlayerManager : ConfiguredMonoBehaviour, ICharacterRequestor {
@@ -669,7 +667,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss += HandleCombatMiss;
-            unitController.UnitEventController.OnEquipmentChanged += HandleEquipmentChanged;
+            //unitController.UnitEventController.OnEquipmentChanged += HandleEquipmentChanged;
+            unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
+            unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
             unitController.UnitEventController.OnUnlearnAbilities += HandleUnlearnClassAbilities;
             unitController.UnitEventController.OnLearnedCheckFail += HandleLearnedCheckFail;
             unitController.UnitEventController.OnPowerResourceCheckFail += HandlePowerResourceCheckFail;
@@ -717,7 +717,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
             unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss -= HandleCombatMiss;
-            unitController.UnitEventController.OnEquipmentChanged -= HandleEquipmentChanged;
+            //unitController.UnitEventController.OnEquipmentChanged -= HandleEquipmentChanged;
+            unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
+            unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
             unitController.UnitEventController.OnUnlearnAbilities -= HandleUnlearnClassAbilities;
             unitController.UnitEventController.OnLearnedCheckFail -= HandleLearnedCheckFail;
             unitController.UnitEventController.OnPowerResourceCheckFail -= HandlePowerResourceCheckFail;
@@ -913,6 +915,7 @@ namespace AnyRPG {
             actionBarManager.RemoveStaleActions();
         }
 
+        /*
         public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
             if (PlayerUnitSpawned) {
                 if (slotIndex != -1) {
@@ -923,6 +926,16 @@ namespace AnyRPG {
             }
             systemEventManager.NotifyOnEquipmentChanged(newItem, oldItem);
         }
+        */
+
+        private void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            systemEventManager.NotifyOnAddEquipment(profile, equipment);
+        }
+
+        private void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            systemEventManager.NotifyOnRemoveEquipment(profile, equipment);
+        }
+
 
         /// <summary>
         /// trigger events with new speed information, mostly for third party controllers to pick up the new values

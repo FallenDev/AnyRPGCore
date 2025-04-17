@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,7 +107,8 @@ namespace AnyRPG {
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
-            systemEventManager.OnEquipmentChanged += HandleEquipmentChange;
+            systemEventManager.OnAddEquipment += HandleAddEquipment;
+            systemEventManager.OnRemoveEquipment += HandleRemoveEquipment;
             eventSubscriptionsInitialized = true;
         }
 
@@ -118,7 +120,8 @@ namespace AnyRPG {
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             SystemEventManager.StopListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
-            systemEventManager.OnEquipmentChanged -= HandleEquipmentChange;
+            systemEventManager.OnAddEquipment -= HandleAddEquipment;
+            systemEventManager.OnRemoveEquipment -= HandleRemoveEquipment;
             eventSubscriptionsInitialized = false;
         }
 
@@ -636,7 +639,11 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleEquipmentChange(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
+        private void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            UpdateVisuals();
+        }
+
+        private void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
             UpdateVisuals();
         }
 

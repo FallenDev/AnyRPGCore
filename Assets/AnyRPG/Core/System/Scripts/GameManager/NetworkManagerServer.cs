@@ -79,6 +79,7 @@ namespace AnyRPG {
             levelManagerServer = systemGameManager.LevelManagerServer;
             systemDataFactory = systemGameManager.SystemDataFactory;
             vendorManager = systemGameManager.VendorManager;
+            systemItemManager = systemGameManager.SystemItemManager;
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
 

@@ -121,8 +121,8 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("CharacterPanel.HandlePlayerUnitSpawn(): could not find characterstats");
             }
-            systemEventManager.OnEquipmentChanged += HandleEquipmentChanged;
-
+            systemEventManager.OnAddEquipment += HandleAddEquipment;
+            systemEventManager.OnRemoveEquipment += HandleRemoveEquipment;
         }
 
         public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
@@ -130,7 +130,8 @@ namespace AnyRPG {
             if (playerManager != null && playerManager.UnitController != null && playerManager.UnitController.CharacterStats != null) {
                 playerManager.UnitController.UnitEventController.OnStatChanged -= UpdateStatsDescription;
             }
-            systemEventManager.OnEquipmentChanged -= HandleEquipmentChanged;
+            systemEventManager.OnAddEquipment -= HandleAddEquipment;
+            systemEventManager.OnRemoveEquipment -= HandleRemoveEquipment;
         }
 
         public void UpdateCharacterButtons() {
@@ -186,12 +187,20 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
+        public void HandleEquipmentChanged() {
             //Debug.Log("CharacterPanel.HandleEquipmentChanged(" + (newEquipment == null ? "null" : newEquipment.DisplayName) + ", " + (oldEquipment == null ? "null" : oldEquipment.DisplayName) + ")");
             if (uIManager != null && uIManager.characterPanelWindow != null && uIManager.characterPanelWindow.IsOpen) {
 
                 UpdateStatsDescription();
             }
+        }
+
+        private void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            HandleEquipmentChanged();
+        }
+
+        private void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            HandleEquipmentChanged();
         }
 
         public void UpdateStatsDescription() {

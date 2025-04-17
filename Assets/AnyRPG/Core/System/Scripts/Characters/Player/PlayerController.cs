@@ -1145,7 +1145,9 @@ namespace AnyRPG {
         }
 
         public void HandleModelUpdated() {
-            saveManager.SaveAppearanceData(playerManager.PlayerCharacterSaveData.SaveData);
+            if (systemGameManager.GameMode == GameMode.Local) {
+                saveManager.SaveAppearanceData(playerManager.PlayerCharacterSaveData.SaveData);
+            }
         }
 
         public void HandleCastCancel() {

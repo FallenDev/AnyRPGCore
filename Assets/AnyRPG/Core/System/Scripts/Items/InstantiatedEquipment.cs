@@ -26,14 +26,17 @@ namespace AnyRPG {
         }
 
         public override bool Use(UnitController sourceUnitController) {
+            Debug.Log($"{ResourceName}.InstantiatedEquipment.Use({sourceUnitController.gameObject.name})");
+
             if (sourceUnitController?.CharacterEquipmentManager != null) {
                 bool returnValue = base.Use(sourceUnitController);
                 if (returnValue == false) {
                     return false;
                 }
+                InventorySlot oldSlot = Slot;
                 if (sourceUnitController.CharacterEquipmentManager.Equip(this) == true) {
                     sourceUnitController.UnitModelController.RebuildModelAppearance();
-                    Remove();
+                    RemoveFrom(oldSlot);
                     return true;
                 } else {
                     return false;

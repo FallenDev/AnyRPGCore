@@ -90,12 +90,12 @@ namespace AnyRPG {
         }
 
         public bool AddItem(InstantiatedItem instantiatedItem) {
-            //Debug.Log($"InventorySlot.Additem({instantiatedItem.Item.ResourceName})");
+            Debug.Log($"InventorySlot.Additem({instantiatedItem.Item.ResourceName}) (instance: {GetHashCode()})");
 
             InstantiatedItems.Add(instantiatedItem);
             instantiatedItem.Slot = this;
-            NotifyOnAddItem(instantiatedItem);
             UpdateSlot();
+            NotifyOnAddItem(instantiatedItem);
             //Debug.Log("Slot " + GetInstanceID().ToString() + " now has count " + MyItems.Count.ToString());
             return true;
         }
@@ -130,6 +130,8 @@ namespace AnyRPG {
         }
 
         public void RemoveItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"InventorySlot.RemoveItem({instantiatedItem.Item.ResourceName})");
+
             if (!IsEmpty) {
                 InstantiatedItems.Remove(instantiatedItem);
                 UpdateSlot();
@@ -138,6 +140,8 @@ namespace AnyRPG {
         }
 
         public virtual void NotifyOnRemoveItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"InventorySlot.NotifyOnRemoveItem({instantiatedItem.Item.ResourceName})");
+
             OnRemoveItem(this, instantiatedItem);
         }
 
@@ -199,12 +203,11 @@ namespace AnyRPG {
         /// Uses the item if it is useable
         /// </summary>
         public void UseItem(UnitController sourceUnitController) {
-            //Debug.Log("SlotScript.HandleRightClick()");
-            if (InstantiatedItem is InstantiatedEquipment) {
-                (InstantiatedItem as InstantiatedEquipment).Use(sourceUnitController);
-            } else if (InstantiatedItem is IUseable) {
-                (InstantiatedItem as IUseable).Use(sourceUnitController);
-            } 
+            Debug.Log($"InventorySlot.UseItem({sourceUnitController.gameObject.name})");
+
+            if (InstantiatedItem != null) {
+                InstantiatedItem.Use(sourceUnitController);
+            }
         }
 
         public bool StackItem(InstantiatedItem instantiatedItem) {

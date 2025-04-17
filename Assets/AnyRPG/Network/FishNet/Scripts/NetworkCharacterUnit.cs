@@ -195,6 +195,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCastTimeChanged += HandleCastTimeChanged;
             unitController.UnitEventController.OnCastComplete += HandleCastComplete;
             unitController.UnitEventController.OnCastCancel += HandleCastCancel;
+            unitController.UnitEventController.OnRebuildModelAppearance += HandleRebuildModelAppearanceServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -250,6 +251,16 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCastTimeChanged -= HandleCastTimeChanged;
             unitController.UnitEventController.OnCastComplete -= HandleCastComplete;
             unitController.UnitEventController.OnCastCancel -= HandleCastCancel;
+            unitController.UnitEventController.OnRebuildModelAppearance -= HandleRebuildModelAppearanceServer;
+        }
+
+        public void HandleRebuildModelAppearanceServer() {
+            HandleRebuildModelAppearanceClient();
+        }
+
+        [ObserversRpc]
+        public void HandleRebuildModelAppearanceClient() {
+            unitController.UnitModelController.RebuildModelAppearance();
         }
 
         public void HandleCastTimeChanged(IAbilityCaster abilityCaster, AbilityProperties abilityProperties, float castPercent) {
@@ -350,7 +361,7 @@ namespace AnyRPG {
         }
 
         public void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             RemoveItemFromInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
 
@@ -358,7 +369,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void RemoveItemFromInventorySlotClient(int slotIndex, int itemInstanceId) {
-            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.RemoveInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
@@ -404,11 +415,15 @@ namespace AnyRPG {
         }
 
         public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddEquipment({profile.ResourceName}, {equipment.Equipment.ResourceName})");
+
             HandleAddEquipmentClient(profile.ResourceName, equipment.InstanceId);
         }
 
         [ObserversRpc]
         public void HandleAddEquipmentClient(string equipmentSlotProfileName, int itemInstanceId) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddEquipmentClient({equipmentSlotProfileName}, {itemInstanceId})");
+
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
                 if (equipmentSlotProfile == null) {
@@ -441,6 +456,8 @@ namespace AnyRPG {
         }
 
         public void HandleRequestUseItemClient(int slotIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestUseItemClient({slotIndex})");
+
             RequestUseItemClient(slotIndex);
         }
 

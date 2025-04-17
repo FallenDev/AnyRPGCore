@@ -58,7 +58,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
         public event System.Action<Interactable, AbilityEffectContext> OnReceiveCombatMiss = delegate { };
         public event System.Action<UnitController, UnitController, float> OnKillEvent = delegate { };
-        public event System.Action<InstantiatedEquipment, InstantiatedEquipment, int> OnEquipmentChanged = delegate { };
+        //public event System.Action<InstantiatedEquipment, InstantiatedEquipment, int> OnEquipmentChanged = delegate { };
         public event System.Action<AbilityProperties> OnAbilityActionCheckFail = delegate { };
         public event System.Action<string> OnCombatMessage = delegate { };
         public event System.Action<string, bool> OnBeginAction = delegate { };
@@ -137,6 +137,7 @@ namespace AnyRPG {
         public event System.Action<int> OnRequestMoveFromBankToInventory = delegate { };
         public event System.Action<int> OnRequestMoveFromInventoryToBank = delegate { };
         public event System.Action<int> OnRequestUseItem = delegate { };
+        public event System.Action OnRebuildModelAppearance = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -223,9 +224,11 @@ namespace AnyRPG {
             OnAbilityActionCheckFail(baseAbilityProperties);
         }
 
+        /*
         public void NotifyOnEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment, int slotIndex) {
             OnEquipmentChanged(newEquipment, oldEquipment, slotIndex);
         }
+        */
 
         public void NotifyOnKillEvent(UnitController killedCharacter, float creditPercent) {
             OnKillEvent(unitController, killedCharacter, creditPercent);
@@ -648,6 +651,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
+
             OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
 
@@ -658,7 +663,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            //Debug.Log($"UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             OnRemoveItemFromInventorySlot(slot, item);
         }
@@ -704,7 +709,15 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestUseItem(int slotIndex) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUseItem({slotIndex})");
+
             OnRequestUseItem(slotIndex);
+        }
+
+        public void NotifyOnRebuildModelAppearance() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRebuildModelAppearance()");
+
+            OnRebuildModelAppearance();
         }
 
         #endregion

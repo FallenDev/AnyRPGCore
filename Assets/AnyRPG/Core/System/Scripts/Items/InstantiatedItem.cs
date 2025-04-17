@@ -220,6 +220,12 @@ namespace AnyRPG {
             }
         }
 
+        public void RemoveFrom(InventorySlot inventorySlot) {
+            if (inventorySlot != null) {
+                inventorySlot.RemoveItem(this);
+            }
+        }
+
         public virtual string GetSummary() {
             return item.GetSummary(itemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }

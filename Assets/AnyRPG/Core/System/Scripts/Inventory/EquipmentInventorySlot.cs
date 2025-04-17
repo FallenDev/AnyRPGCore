@@ -31,6 +31,8 @@ namespace AnyRPG {
         }
 
         public override void NotifyOnAddItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"EquipmentInventorySlot.NotifyOnAddItem({instantiatedItem.ResourceName}) (instance: {GetHashCode()})");
+
             base.NotifyOnAddItem(instantiatedItem);
             if (instantiatedItem is InstantiatedEquipment) {
                 OnAddEquipment(this, instantiatedItem as InstantiatedEquipment);
@@ -38,6 +40,8 @@ namespace AnyRPG {
         }
 
         public override void NotifyOnRemoveItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"EquipmentInventorySlot.NotifyOnRemoveItem({instantiatedItem.ResourceName})");
+
             base.NotifyOnRemoveItem(instantiatedItem);
             if (instantiatedItem is InstantiatedEquipment) {
                 OnRemoveEquipment(this, instantiatedItem as InstantiatedEquipment);

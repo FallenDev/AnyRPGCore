@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ namespace AnyRPG {
             }
 
             SpawnUnit(characterConfigurationRequest);
-            systemEventManager.OnEquipmentChanged += HandleEquipmentChanged;
+            //systemEventManager.OnEquipmentChanged += HandleEquipmentChanged;
             playerManager.ActiveUnitController.UnitEventController.OnUnitTypeChange += HandleUnitTypeChange;
             //playerManager.ActiveUnitController.UnitEventController.OnRaceChange += HandleRaceChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange += HandleFactionChange;
@@ -110,7 +111,7 @@ namespace AnyRPG {
 
         public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
             //Debug.Log("CharacterPanel.HandlePlayerUnitDespawn()");
-            systemEventManager.OnEquipmentChanged -= HandleEquipmentChanged;
+            //systemEventManager.OnEquipmentChanged -= HandleEquipmentChanged;
             playerManager.ActiveUnitController.UnitEventController.OnUnitTypeChange -= HandleUnitTypeChange;
             //playerManager.ActiveUnitController.UnitEventController.OnRaceChange -= HandleRaceChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange -= HandleFactionChange;
@@ -125,15 +126,16 @@ namespace AnyRPG {
             unitController.CharacterStats.SetLevelInternal(newLevel);
         }
 
-        public void HandleEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
-            //Debug.Log("CharacterPanelManager.HandleEquipmentChanged(" + (newEquipment == null ? "null" : newEquipment.DisplayName) + ", " + (oldEquipment == null ? "null" : oldEquipment.DisplayName) + ")");
-            if (oldEquipment != null) {
-                unitController.CharacterEquipmentManager.Unequip(oldEquipment);
-            }
-            if (newEquipment != null) {
-                unitController.CharacterEquipmentManager.Equip(newEquipment, null);
-            }
-            //unitController.UnitModelController.BuildModelAppearance();
+
+        public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            Debug.Log($"CharacterPanel.HandleAddEquipment({profile.ResourceName}, {equipment.ResourceName})");
+
+            unitController.UnitModelController.RebuildModelAppearance();
+        }
+
+        public void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            Debug.Log($"CharacterPanel.HandleRemoveEquipment({profile.ResourceName}, {equipment.ResourceName})");
+
             unitController.UnitModelController.RebuildModelAppearance();
         }
 
@@ -152,15 +154,20 @@ namespace AnyRPG {
 
                     //characterEquipmentManager.CurrentEquipment = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment;
                     // testing new code to avoid just making a pointer to the player gear, which results in equip/unequip not working properly
-                    characterEquipmentManager.CurrentEquipment.Clear();
+                    characterEquipmentManager.ClearSubscriptions();
                     foreach (EquipmentSlotProfile equipmentSlotProfile in playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment.Keys) {
-                        characterEquipmentManager.CurrentEquipment.Add(equipmentSlotProfile, playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile]);
+                        //characterEquipmentManager.CurrentEquipment[equipmentSlotProfile] = playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile];
+                        characterEquipmentManager.AddCurrentEquipmentSlot(equipmentSlotProfile, playerManager.UnitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile]);
                     }
+                    characterEquipmentManager.CreateSubscriptions();
                 }
+                unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
+                unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
             } else {
                 Debug.Log("CharacterPanel.HandleTargetCreated(): could not find a characterEquipmentManager");
             }
         }
+
 
         protected virtual void OnDestroy() {
             //Debug.Log("WindowContentController.OnDestroy()");

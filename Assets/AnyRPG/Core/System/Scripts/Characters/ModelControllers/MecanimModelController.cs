@@ -59,7 +59,7 @@ namespace AnyRPG {
         }
 
         private void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
-            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.EquipItemModels(" + equipmentSlotProfile.DisplayName + ", " + (equipment == null ? "null" : equipment.DisplayName) +")");
+            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.EquipItemModels({equipmentSlotProfile.DisplayName}, {(equipment == null ? "null" : equipment.DisplayName)})");
 
             SpawnEquipmentObjects(equipmentSlotProfile, equipment);
 
@@ -333,8 +333,10 @@ namespace AnyRPG {
         }
 
         private InstantiatedEquipment GetEquipmentForSlot(EquipmentSlotProfile equipmentSlotProfile) {
-            
+            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName})");
+
             if (unitModelController.SuppressEquipment == true) {
+                Debug.Log($"{unitController.gameObject.name}.MecanimModelController.GetEquipmentForSlot({equipmentSlotProfile.ResourceName}) SuppressEquipment is true");
                 return null;
             }
 
@@ -342,7 +344,7 @@ namespace AnyRPG {
         }
 
         public void RebuildModelAppearance() {
-            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance()");
+            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance()");
 
             if (unitModelController.IsBuilding() == true) {
                 // let model appearance get built first (in case of UMA without bones being ready)
@@ -352,12 +354,13 @@ namespace AnyRPG {
             SynchronizeEquipmentDictionaryKeys();
 
             foreach (EquipmentSlotProfile equipmentSlotProfile in characterEquipmentManager.CurrentEquipment.Keys) {
+                Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildModelAppearance() slot: {equipmentSlotProfile.ResourceName} item:)");
                 RebuildSlotAppearance(equipmentSlotProfile, GetEquipmentForSlot(equipmentSlotProfile));
             }
         }
 
         private void RebuildSlotAppearance(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
-            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildSlotAppearance(" + equipmentSlotProfile.ResourceName + ", " + (equipment == null ? "null" : equipment.ResourceName) + ")");
+            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.RebuildSlotAppearance({equipmentSlotProfile.ResourceName}, {(equipment == null ? "null" : equipment.ResourceName)})");
 
             if (equipment == equippedEquipment[equipmentSlotProfile]) {
                 // equipment spawned is the same as what is the character equipment manager, nothing to do

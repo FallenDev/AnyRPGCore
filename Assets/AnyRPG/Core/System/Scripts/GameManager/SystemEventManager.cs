@@ -34,7 +34,8 @@ namespace AnyRPG {
         public event System.Action OnCraftItem = delegate { };
 
         // equipment manager
-        public System.Action<InstantiatedEquipment, InstantiatedEquipment> OnEquipmentChanged = delegate { };
+        public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
+        public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
 
         public static void StartListening(string eventName, Action<string, EventParamProperties> listener) {
             Action<string, EventParamProperties> thisEvent;
@@ -88,8 +89,12 @@ namespace AnyRPG {
             OnPlayerUnitDespawn(unitController);
         }
 
-        public void NotifyOnEquipmentChanged(InstantiatedEquipment newEquipment, InstantiatedEquipment oldEquipment) {
-            OnEquipmentChanged(newEquipment, oldEquipment);
+        public void NotifyOnAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            OnAddEquipment(profile, equipment);
+        }
+
+        public void NotifyOnRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            OnRemoveEquipment(profile, equipment);
         }
 
         public void NotifyOnClassChange(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {

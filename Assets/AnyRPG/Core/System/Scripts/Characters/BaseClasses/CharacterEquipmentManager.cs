@@ -27,22 +27,32 @@ namespace AnyRPG {
 
         public CharacterEquipmentManager(UnitController unitController, SystemGameManager systemGameManager) : base(systemGameManager) {
             this.unitController = unitController;
-            foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                EquipmentInventorySlot equipmentInventorySlot = new EquipmentInventorySlot(systemGameManager);
-                unitController.CharacterInventoryManager.EquipmentSlots.Add(equipmentInventorySlot);
-                equipmentInventorySlot.OnAddEquipment += HandleAddEquipment;
-                equipmentInventorySlot.OnRemoveEquipment += HandleRemoveEquipment;
-            }
-            //Configure(systemGameManager);
-
-            //equipmentManager = new EquipmentManager(systemGameManager);
+            CreateSubscriptions();
         }
-
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             systemItemManager = systemGameManager.SystemItemManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+        }
+
+        public void ClearSubscriptions() {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.ClearSubscriptions()");
+
+            unitController.CharacterInventoryManager.EquipmentSlots.Clear();
+            foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
+                equipmentInventorySlot.OnAddEquipment -= HandleAddEquipment;
+                equipmentInventorySlot.OnRemoveEquipment -= HandleRemoveEquipment;
+            }
+            ClearCurrentEquipment();
+        }
+
+        public void CreateSubscriptions() {
+            foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
+                unitController.CharacterInventoryManager.EquipmentSlots.Add(equipmentInventorySlot);
+                equipmentInventorySlot.OnAddEquipment += HandleAddEquipment;
+                equipmentInventorySlot.OnRemoveEquipment += HandleRemoveEquipment;
+            }
         }
 
         public void HandleCapabilityConsumerChange() {
@@ -125,7 +135,7 @@ namespace AnyRPG {
         }
 
         public bool Equip(InstantiatedEquipment newItem, EquipmentSlotProfile equipmentSlotProfile = null) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.Equip(" + (newItem != null ? newItem.DisplayName : "null") + ", " + (equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Equip({(newItem != null ? newItem.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
 
             if (newItem == null) {
                 Debug.Log("Instructed to Equip a null item!");
@@ -150,6 +160,8 @@ namespace AnyRPG {
         }
 
         public override EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile = null) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.EquipEquipment({(newEquipment != null ? newEquipment.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
+
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
                 return base.EquipEquipment(newEquipment, equipmentSlotProfile);
             } else {
@@ -159,10 +171,13 @@ namespace AnyRPG {
         }
 
         public void HandleAddEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.HandleAddEquipment({equipmentInventorySlot.ToString()}, {(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
+
             EquipmentSlotProfile equipmentSlotProfile = currentEquipmentLookup[equipmentInventorySlot];
 
             // DO THIS LAST OR YOU WILL SAVE THE UMA DATA BEFORE ANYTHING IS EQUIPPED!
-            NotifyEquipmentChanged(instantiatedEquipment, null, -1, currentEquipmentLookup[equipmentInventorySlot]);
+            NotifyEquipmentChanged(instantiatedEquipment, null, -1, equipmentSlotProfile);
+            // now that all stats have been recalculated, it's safe to fire this event, so things that listen will show the correct values
             unitController.UnitEventController.NotifyOnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
 
@@ -210,15 +225,15 @@ namespace AnyRPG {
         }
 
         public void NotifyEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex, EquipmentSlotProfile equipmentSlotProfile) {
+
             HandleWeaponHoldableObjects(newItem, oldItem);
-            //OnEquipmentChanged(newItem, oldItem, slotIndex);
             unitController.CharacterStats.HandleEquipmentChanged(newItem, oldItem, slotIndex);
             unitController.CharacterCombat.HandleEquipmentChanged(newItem, oldItem, slotIndex, equipmentSlotProfile);
             unitController.CharacterAbilityManager.HandleEquipmentChanged(newItem, oldItem, slotIndex);
             unitController.UnitAnimator.HandleEquipmentChanged(newItem, oldItem, slotIndex);
 
             // now that all stats have been recalculated, it's safe to fire this event, so things that listen will show the correct values
-            unitController.UnitEventController.NotifyOnEquipmentChanged(newItem, oldItem, slotIndex);
+            //unitController.UnitEventController.NotifyOnEquipmentChanged(newItem, oldItem, slotIndex);
         }
 
         /*
@@ -263,6 +278,7 @@ namespace AnyRPG {
             // FIX ME - that slotIndex used to come from the Unequip function above so this will go into the first empty slot in the bag instead of the one the old item came from
             // during a swap - maybe not such a big deal ?
             NotifyEquipmentChanged(null, instantiatedEquipment, -1, equipmentSlotProfile);
+            // now that all stats have been recalculated, it's safe to fire this event, so things that listen will show the correct values
             unitController.UnitEventController.NotifyOnRemoveEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
 

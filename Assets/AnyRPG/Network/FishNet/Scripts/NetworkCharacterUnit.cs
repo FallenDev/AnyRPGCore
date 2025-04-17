@@ -111,7 +111,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnSetTarget += HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget += HandleClearTargetClient;
                 unitController.UnitEventController.OnRequestEquipToSlot += HandleRequestEquipToSlot;
-                unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
+                //unitController.UnitEventController.OnRequestUnequipFromList += HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot += HandleRequestDropItemFromInventorySlot;
                 unitController.UnitEventController.OnRequestMoveFromBankToInventory += HandleRequestMoveFromBankToInventory;
                 unitController.UnitEventController.OnRequestMoveFromInventoryToBank += HandleRequestMoveFromInventoryToBank;
@@ -132,7 +132,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnSetTarget -= HandleSetTargetClient;
                 unitController.UnitEventController.OnClearTarget -= HandleClearTargetClient;
                 unitController.UnitEventController.OnRequestEquipToSlot -= HandleRequestEquipToSlot;
-                unitController.UnitEventController.OnRequestUnequipFromList -= HandleRequestUnequipFromList;
+                //unitController.UnitEventController.OnRequestUnequipFromList -= HandleRequestUnequipFromList;
                 unitController.UnitEventController.OnRequestDropItemFromInventorySlot -= HandleRequestDropItemFromInventorySlot;
                 unitController.UnitEventController.OnRequestMoveFromBankToInventory -= HandleRequestMoveFromBankToInventory;
                 unitController.UnitEventController.OnRequestMoveFromInventoryToBank -= HandleRequestMoveFromInventoryToBank;
@@ -438,6 +438,7 @@ namespace AnyRPG {
             }
         }
 
+        /*
         public void HandleRequestUnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
             RequestUnequipFromList(equipmentSlotProfile.ResourceName);
         }
@@ -450,6 +451,7 @@ namespace AnyRPG {
             }
             unitController.CharacterEquipmentManager.UnequipFromList(equipmentSlotProfile);
         }
+        */
 
         private void HandleRequestMoveFromBankToInventory(int slotIndex) {
             RequestMoveFromBankToInventory(slotIndex);
@@ -468,6 +470,8 @@ namespace AnyRPG {
 
         [ServerRpc]
         private void RequestUseItemClient(int slotIndex) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestUseItemClient({slotIndex})");
+
             unitController.CharacterInventoryManager.UseItem(slotIndex);
         }
 

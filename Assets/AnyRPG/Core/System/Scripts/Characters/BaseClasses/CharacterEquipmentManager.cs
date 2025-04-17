@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace AnyRPG {
     public class CharacterEquipmentManager : EquipmentManager {
@@ -178,6 +179,7 @@ namespace AnyRPG {
         }
 
         public override void UnequipEquipment(EquipmentSlotProfile equipmentSlotProfile) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipEquipment({(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.ResourceName)})");
             // intentionally not calling base
             // this override exists to intercept a list-only update and perform more character level log
             //base.UnequipFromList(equipmentSlotProfile);
@@ -248,7 +250,7 @@ namespace AnyRPG {
         */
 
         public InstantiatedEquipment Unequip(InstantiatedEquipment instantiatedEquipment) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.Unequip(" + (equipment == null ? "null" : equipment.DisplayName) + ", " + unequipModels + ", " + unequipAppearance + ", " + rebuildAppearance + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Unequip({(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
 
             EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(instantiatedEquipment);
             if (equipmentSlotProfile != null) {
@@ -258,12 +260,18 @@ namespace AnyRPG {
         }
 
         public InstantiatedEquipment Unequip(EquipmentSlotProfile equipmentSlot, int slotIndex = -1) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.Unequip(" + equipmentSlot.ToString() + ", " + slotIndex + ", " + unequipModels + ", " + unequipAppearance + ", " + rebuildAppearance + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Unequip({(equipmentSlot == null ? "null" : equipmentSlot.ResourceName)}, {slotIndex})");
 
-            if (CurrentEquipment.ContainsKey(equipmentSlot) && CurrentEquipment[equipmentSlot] != null) {
+            if (CurrentEquipment.ContainsKey(equipmentSlot) && CurrentEquipment[equipmentSlot].InstantiatedEquipment != null) {
                 //Debug.Log("equipment manager trying to unequip item in slot " + equipmentSlot.ToString() + "; currentEquipment has this slot key");
 
-                return UnequipFromList(equipmentSlot);
+                InstantiatedEquipment oldItem = UnequipFromList(equipmentSlot);
+                if (slotIndex != -1) {
+                    unitController.CharacterInventoryManager.AddInventoryItem(oldItem, slotIndex);
+                } else if (oldItem != null) {
+                    unitController.CharacterInventoryManager.AddItem(oldItem, false);
+                }
+                return oldItem;
 
             }
             return null;
@@ -279,12 +287,14 @@ namespace AnyRPG {
         }
 
         public override InstantiatedEquipment UnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
+            //if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || unitController.UnitControllerMode == UnitControllerMode.Preview) {
                 return base.UnequipFromList(equipmentSlotProfile);
+            /*
             } else {
                 unitController.UnitEventController.NotifyOnRequestUnequipFromList(equipmentSlotProfile);
                 return null;
             }
+            */
         }
 
         public bool HasAffinity(WeaponSkill weaponAffinity) {

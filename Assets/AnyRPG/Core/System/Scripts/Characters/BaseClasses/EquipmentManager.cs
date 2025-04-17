@@ -165,13 +165,15 @@ namespace AnyRPG {
 
 
         public virtual void UnequipEquipment(EquipmentSlotProfile equipmentSlotProfile) {
+            Debug.Log($"EquipmentManager.UnequipEquipment({equipmentSlotProfile.DisplayName}) (instance: {GetHashCode()})");
+
             UnequipFromList(equipmentSlotProfile);
         }
 
         public virtual InstantiatedEquipment UnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
-            //Debug.Log("EquipmentManager.UnequipFromList(" + equipmentSlotProfile.DisplayName + ")");
+            Debug.Log($"EquipmentManager.UnequipFromList({equipmentSlotProfile.ResourceName}) (instance: {GetHashCode()})");
 
-            if (currentEquipment[equipmentSlotProfile] != null) {
+            if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null) {
                 InstantiatedEquipment oldItem = currentEquipment[equipmentSlotProfile].InstantiatedEquipment;
 
                 //Debug.Log("zeroing equipment slot: " + equipmentSlot.ToString());

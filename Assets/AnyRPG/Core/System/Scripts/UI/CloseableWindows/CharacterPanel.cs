@@ -188,7 +188,8 @@ namespace AnyRPG {
         */
 
         public void HandleEquipmentChanged() {
-            //Debug.Log("CharacterPanel.HandleEquipmentChanged(" + (newEquipment == null ? "null" : newEquipment.DisplayName) + ", " + (oldEquipment == null ? "null" : oldEquipment.DisplayName) + ")");
+            Debug.Log("CharacterPanel.HandleEquipmentChanged()");
+
             if (uIManager != null && uIManager.characterPanelWindow != null && uIManager.characterPanelWindow.IsOpen) {
 
                 UpdateStatsDescription();
@@ -204,7 +205,7 @@ namespace AnyRPG {
         }
 
         public void UpdateStatsDescription() {
-            //Debug.Log("CharacterPanel.UpdateStatsDescription");
+            Debug.Log("CharacterPanel.UpdateStatsDescription");
 
             if (uIManager.characterPanelWindow.IsOpen == false) {
                 return;

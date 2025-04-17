@@ -25,6 +25,8 @@ namespace AnyRPG {
         protected override void UpdateSlot() {
             if (instantiatedItems.Count > 0 && instantiatedItems[0] is InstantiatedEquipment) {
                 instantiatedEquipment = instantiatedItems[0] as InstantiatedEquipment;
+            } else {
+                instantiatedEquipment = null;
             }
             base.UpdateSlot();
             OnUpdateEquipmentSlot(this);

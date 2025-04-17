@@ -121,7 +121,7 @@ namespace AnyRPG {
         public event System.Action<InstantiatedItem> OnRequestDeleteItem = delegate { };
         public event System.Action<InstantiatedItem> OnDeleteItem = delegate { };
         public event System.Action<InstantiatedEquipment, EquipmentSlotProfile> OnRequestEquipToSlot = delegate { };
-        public event System.Action<EquipmentSlotProfile> OnRequestUnequipFromList = delegate { };
+        //public event System.Action<EquipmentSlotProfile> OnRequestUnequipFromList = delegate { };
         public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
         public event System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnRemoveEquipment = delegate { };
         public event System.Action<InventorySlot, InstantiatedItem> OnAddItemToInventorySlot = delegate { };
@@ -644,9 +644,11 @@ namespace AnyRPG {
             OnRequestEquipToSlot(newEquipment, equipmentSlotProfile);
         }
 
+        /*
         public void NotifyOnRequestUnequipFromList(EquipmentSlotProfile equipmentSlotProfile) {
             OnRequestUnequipFromList(equipmentSlotProfile);
         }
+        */
 
         public void NotifyOnRemoveEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
             OnRemoveEquipment(equipmentSlotProfile, instantiatedEquipment);

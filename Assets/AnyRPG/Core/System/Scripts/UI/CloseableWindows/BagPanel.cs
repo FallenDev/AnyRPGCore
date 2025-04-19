@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddSlot(InventorySlot inventorySlot) {
-            //Debug.Log($"{gameObject.name}.BagPanel.HandleAddSlot({inventorySlot.GetCurrentInventorySlotIndex(playerManager.UnitController)})");
+            Debug.Log($"{gameObject.name}.BagPanel.HandleAddSlot()");
 
             SlotScript slot = objectPooler.GetPooledObject(slotPrefab, contentArea).GetComponent<SlotScript>();
             slot.Configure(systemGameManager);

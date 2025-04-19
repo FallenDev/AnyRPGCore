@@ -118,6 +118,11 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestUseItem += HandleRequestUseItem;
                 unitController.UnitEventController.OnRequestSwapInventoryEquipment += HandleRequestSwapInventoryEquipment;
                 unitController.UnitEventController.OnRequestUnequipToSlot += HandleRequestUnequipToSlot;
+                unitController.UnitEventController.OnRequestSwapBags += HandleRequestSwapBags;
+                unitController.UnitEventController.OnRequestUnequipBagToSlot += HandleRequestUnequipBagToSlot;
+                unitController.UnitEventController.OnRequestUnequipBag += HandleRequestUnequipBag;
+                unitController.UnitEventController.OnRequestMoveBag += HandleRequestMoveBag;
+                unitController.UnitEventController.OnRequestAddBag += HandleRequestAddBagFromInventory;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -139,7 +144,11 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestUseItem -= HandleRequestUseItem;
                 unitController.UnitEventController.OnRequestSwapInventoryEquipment -= HandleRequestSwapInventoryEquipment;
                 unitController.UnitEventController.OnRequestUnequipToSlot -= HandleRequestUnequipToSlot;
-
+                unitController.UnitEventController.OnRequestSwapBags -= HandleRequestSwapBags;
+                unitController.UnitEventController.OnRequestUnequipBagToSlot -= HandleRequestUnequipBagToSlot;
+                unitController.UnitEventController.OnRequestUnequipBag -= HandleRequestUnequipBag;
+                unitController.UnitEventController.OnRequestMoveBag -= HandleRequestMoveBag;
+                unitController.UnitEventController.OnRequestAddBag -= HandleRequestAddBagFromInventory;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -201,6 +210,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCastComplete += HandleCastComplete;
             unitController.UnitEventController.OnCastCancel += HandleCastCancel;
             unitController.UnitEventController.OnRebuildModelAppearance += HandleRebuildModelAppearanceServer;
+            unitController.UnitEventController.OnRemoveBag += HandleRemoveBagServer;
+            unitController.UnitEventController.OnAddBag += HandleAddBagServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -257,6 +268,43 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCastComplete -= HandleCastComplete;
             unitController.UnitEventController.OnCastCancel -= HandleCastCancel;
             unitController.UnitEventController.OnRebuildModelAppearance -= HandleRebuildModelAppearanceServer;
+            unitController.UnitEventController.OnRemoveBag -= HandleRemoveBagServer;
+            unitController.UnitEventController.OnAddBag -= HandleAddBagServer;
+        }
+
+        public void HandleAddBagServer(InstantiatedBag instantiatedBag, BagNode node) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagServer({instantiatedBag.Bag.ResourceName}, {node.NodeIndex})");
+
+            HandleAddBagClient(instantiatedBag.InstanceId, node.NodeIndex, node.IsBankNode);
+        }
+
+        [ObserversRpc]
+        public void HandleAddBagClient(int itemInstanceId, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagClient({itemInstanceId}, {nodeIndex}, {isBankNode})");
+
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                BagNode bagNode = null;
+                if (isBankNode && unitController.CharacterInventoryManager.BankNodes.Count > nodeIndex) {
+                    bagNode = unitController.CharacterInventoryManager.BankNodes[nodeIndex];
+                } else if (isBankNode == false && unitController.CharacterInventoryManager.BagNodes.Count > nodeIndex) {
+                    bagNode = unitController.CharacterInventoryManager.BagNodes[nodeIndex];
+                } else {
+                    // invalid index
+                    return;
+                }
+                unitController.CharacterInventoryManager.AddBag(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, bagNode);
+            }
+        }
+
+        public void HandleRemoveBagServer(InstantiatedBag bag) {
+            HandleRemoveBagClient(bag.InstanceId);
+        }
+
+        [ObserversRpc]
+        public void HandleRemoveBagClient(int itemInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.RemoveBag(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, true);
+            }
         }
 
         public void HandleRebuildModelAppearanceServer() {
@@ -497,6 +545,65 @@ namespace AnyRPG {
             }
         }
 
+        public void HandleRequestSwapBags(InstantiatedBag oldBag, InstantiatedBag newBag) {
+            RequestSwapBags(oldBag.InstanceId, newBag.InstanceId);
+        }
+
+        [ServerRpc]
+        public void RequestSwapBags(int oldBagInstanceId, int newBagInstanceId) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(oldBagInstanceId)
+                && systemItemManager.InstantiatedItems[oldBagInstanceId] is InstantiatedBag
+                && systemItemManager.InstantiatedItems.ContainsKey(newBagInstanceId)
+                && systemItemManager.InstantiatedItems[newBagInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.SwapEquippedOrUnequippedBags(systemItemManager.InstantiatedItems[oldBagInstanceId] as InstantiatedBag, systemItemManager.InstantiatedItems[newBagInstanceId] as InstantiatedBag);
+            }
+        }
+
+        public void HandleRequestUnequipBagToSlot(InstantiatedBag bag, int slotIndex, bool isBank) {
+            RequestUnequipBagToSlot(bag.InstanceId, slotIndex, isBank);
+        }
+
+        [ServerRpc]
+        public void RequestUnequipBagToSlot(int itemInstanceId, int slotIndex, bool isBank) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.UnequipBagToSlot(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, slotIndex, isBank);
+            }
+        }
+
+        public void HandleRequestUnequipBag(InstantiatedBag bag, bool isBank) {
+            RequestUnequipBag(bag.InstanceId, isBank);
+        }
+
+        [ServerRpc]
+        public void RequestUnequipBag(int itemInstanceId, bool isBank) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.UnequipBag(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, isBank);
+            }
+        }
+
+        public void HandleRequestMoveBag(InstantiatedBag bag, int nodeIndex, bool isBankNode) {
+            RequestMoveBag(bag.InstanceId, nodeIndex, isBankNode);
+        }
+
+        [ServerRpc]
+        public void RequestMoveBag(int itemInstanceId, int nodeIndex, bool isBankNode) {
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.MoveBag(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, nodeIndex, isBankNode);
+            }
+        }
+
+        public void HandleRequestAddBagFromInventory(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestAddBagFromInventory({instantiatedBag.InstanceId}, {nodeIndex}, {isBankNode})");
+            RequestAddBagFromInventory(instantiatedBag.InstanceId, nodeIndex, isBankNode);
+        }
+
+        [ServerRpc]
+        public void RequestAddBagFromInventory(int itemInstanceId, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestAddBagFromInventory({itemInstanceId}, {nodeIndex}, {isBankNode})");
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
+                unitController.CharacterInventoryManager.AddBagFromInventory(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, nodeIndex, isBankNode);
+            }
+        }
 
         public void HandleRequestMoveFromInventoryToBank(int slotIndex) {
             RequestMoveFromInventoryToBank(slotIndex);

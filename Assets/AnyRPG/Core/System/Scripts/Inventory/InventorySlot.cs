@@ -192,10 +192,8 @@ namespace AnyRPG {
 
         public void Clear() {
             if (InstantiatedItems.Count > 0) {
-                InstantiatedItem tmpItem = InstantiatedItems[0];
                 InstantiatedItems.Clear();
                 UpdateSlot();
-                playerManager.UnitController.CharacterInventoryManager.NotifyOnItemCountChanged(tmpItem.Item);
             }
         }
 

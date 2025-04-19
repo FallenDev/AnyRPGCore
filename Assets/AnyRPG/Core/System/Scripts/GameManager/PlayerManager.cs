@@ -638,6 +638,7 @@ namespace AnyRPG {
             unitController.CharacterInventoryManager.OnAddBankSlot += HandleAddBankSlot;
             unitController.CharacterInventoryManager.OnRemoveInventorySlot += HandleRemoveInventorySlot;
             unitController.CharacterInventoryManager.OnRemoveBankSlot += HandleRemoveBankSlot;
+            unitController.UnitEventController.OnAddBag += HandleAddBag;
         }
 
         public void UnsubscribeFromPlayerInventoryEvents() {
@@ -647,6 +648,7 @@ namespace AnyRPG {
             unitController.CharacterInventoryManager.OnAddBankSlot -= HandleAddBankSlot;
             unitController.CharacterInventoryManager.OnRemoveInventorySlot -= HandleRemoveInventorySlot;
             unitController.CharacterInventoryManager.OnRemoveBankSlot -= HandleRemoveBankSlot;
+            unitController.UnitEventController.OnAddBag -= HandleAddBag;
         }
 
         public void SubscribeToPlayerEvents() {
@@ -683,7 +685,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnAbility += HandleLearnAbility;
             unitController.UnitEventController.OnActivateTargetingMode += HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage += HandleCombatMessage;
-            unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRange;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
@@ -732,7 +733,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnAbility -= HandleLearnAbility;
             unitController.UnitEventController.OnActivateTargetingMode -= HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage -= HandleCombatMessage;
-            unitController.UnitEventController.OnMessageFeedMessage -= HandleMessageFeedMessage;
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRange;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRange;
             unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuest;
@@ -746,6 +746,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbility;
             unitController.UnitEventController.OnCraftItem -= HandleCraftItem;
         }
+
+        public void HandleAddBag(InstantiatedBag bag, BagNode node) {
+            systemEventManager.NotifyOnAddBag();
+        }
+
 
         public void HandleCraftItem() {
             systemEventManager.NotifyOnCraftItem();
@@ -800,12 +805,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddInventorySlot(InventorySlot inventorySlot) {
-            //Debug.Log("PlayerManager.HandleAddInventorySlot()");
+            Debug.Log("PlayerManager.HandleAddInventorySlot()");
 
             inventoryManager.AddInventorySlot(inventorySlot);
         }
 
         public void HandleAddBankSlot(InventorySlot inventorySlot) {
+            Debug.Log("PlayerManager.HandleAddBankSlot()");
+
             inventoryManager.AddBankSlot(inventorySlot);
         }
 
@@ -823,10 +830,6 @@ namespace AnyRPG {
 
         public void HandleCombatMessage(string messageText) {
             logManager.WriteCombatMessage(messageText);
-        }
-
-        public void HandleMessageFeedMessage(string messageText) {
-            messageFeedManager.WriteMessage(messageText);
         }
 
         public void HandleCombatMiss(Interactable targetObject, AbilityEffectContext abilityEffectContext) {

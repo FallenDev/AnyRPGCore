@@ -634,7 +634,12 @@ namespace AnyRPG {
             SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
             SystemEventManager.StartListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
+            systemEventManager.OnAddBag += HandleAddBag;
             eventSubscriptionsInitialized = true;
+        }
+
+        private void HandleAddBag() {
+            UpdateInventoryOpacity();
         }
 
         private void CleanupEventSubscriptions() {

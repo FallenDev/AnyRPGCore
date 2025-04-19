@@ -17,6 +17,7 @@ namespace AnyRPG {
         private InstantiatedBag instantiatedBag;
 
         private bool isBankNode = false;
+        private int nodeIndex;
 
         //private BagPanel bagPanel;
 
@@ -27,17 +28,20 @@ namespace AnyRPG {
         //public List<SlotScript> InventorySlots { get => inventorySlots; set => inventorySlots = value; }
         public List<InventorySlot> InventorySlots { get => inventorySlots; set => inventorySlots = value; }
         public bool IsBankNode { get => isBankNode; }
+        public int NodeIndex { get => nodeIndex; }
 
         public BagNode() {
         }
 
-        public BagNode(CharacterInventoryManager characterInventoryManager, bool isBankNode) {
+        public BagNode(CharacterInventoryManager characterInventoryManager, bool isBankNode, int nodeIndex) {
             this.characterInventoryManager = characterInventoryManager;
             this.isBankNode = isBankNode;
+            this.nodeIndex = nodeIndex;
         }
 
         public void AddBag(InstantiatedBag instantiatedBag) {
-            //Debug.Log("BagNode.AddBag()");
+            Debug.Log("BagNode.AddBag()");
+
             this.instantiatedBag = instantiatedBag;
             //inventorySlots = bagPanel.AddSlots(bag.Slots);
             if (isBankNode) {

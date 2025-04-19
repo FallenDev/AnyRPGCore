@@ -69,7 +69,8 @@ namespace AnyRPG {
         }
 
         public void TakeMoveable(IMoveable moveable) {
-            //Debug.Log("HandScript.TakeMoveable(" + moveable.ToString() + ")");
+            Debug.Log($"HandScript.TakeMoveable({moveable.DisplayName})");
+
             this.Moveable = moveable;
 
             moveable.AssignToHandScript(backgroundImage);

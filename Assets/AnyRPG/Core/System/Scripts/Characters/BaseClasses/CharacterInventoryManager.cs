@@ -32,11 +32,7 @@ namespace AnyRPG {
         private UnitController unitController = null;
 
         // game manager references
-        private HandScript handScript = null;
-        private MessageFeedManager messageFeedManager = null;
         private SystemItemManager systemItemManager = null;
-        private UIManager uIManager = null;
-        //private ObjectPooler objectPooler = null;
         private SystemEventManager systemEventManager = null;
         private LogManager logManager = null;
 
@@ -90,11 +86,7 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            uIManager = systemGameManager.UIManager;
-            handScript = uIManager.HandScript;
-            messageFeedManager = uIManager.MessageFeedManager;
             systemItemManager = systemGameManager.SystemItemManager;
-            //objectPooler = systemGameManager.ObjectPooler;
             systemEventManager = systemGameManager.SystemEventManager;
             logManager = systemGameManager.LogManager;
         }
@@ -163,7 +155,8 @@ namespace AnyRPG {
         }
 
         public List<InventorySlot> AddInventorySlots(int numSlots) {
-            //Debug.Log("CharacterInventoryManager.AddInventorySlots(" + numSlots + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventorySlots({numSlots})");
+
             List<InventorySlot> returnList = new List<InventorySlot>();
             for (int i = 0; i < numSlots; i++) {
                 InventorySlot inventorySlot = new InventorySlot(systemGameManager);
@@ -272,12 +265,12 @@ namespace AnyRPG {
 
         public void InitializeBagNodes() {
             //Debug.Log("InventoryManager.InitializeBagNodes()");
-            if (bankNodes.Count > 0) {
+            if (bagNodes.Count > 0) {
                 //Debug.Log("InventoryManager.InitializeBagNodes(): already initialized.  exiting!");
                 return;
             }
             for (int i = 0; i < systemConfigurationManager.MaxInventoryBags; i++) {
-                BagNode bagNode = new BagNode(this, false);
+                BagNode bagNode = new BagNode(this, false, i);
                 bagNodes.Add(bagNode);
                 OnAddInventoryBagNode(bagNode);
             }
@@ -290,7 +283,7 @@ namespace AnyRPG {
                 return;
             }
             for (int i = 0; i < systemConfigurationManager.MaxBankBags; i++) {
-                BagNode bagNode = new BagNode(this, true);
+                BagNode bagNode = new BagNode(this, true, i);
                 bankNodes.Add(bagNode);
                 OnAddBankBagNode(bagNode);
             }
@@ -320,6 +313,7 @@ namespace AnyRPG {
         public void AddBag(InstantiatedBag instantiatedBag, BagNode bagNode) {
             //Debug.Log("CharacterInventoryManager.AddBag(Bag, BagNode)");
             PopulateBagNode(bagNode, instantiatedBag);
+            unitController.UnitEventController.NotifyOnAddBag(instantiatedBag, bagNode);
         }
 
         private void PopulateBagNode(BagNode bagNode, InstantiatedBag instantiatedBag) {
@@ -329,8 +323,6 @@ namespace AnyRPG {
             }
 
             //Debug.Log("InventoryManager.PopulateBagNode(): bagNode.MyBag: " + bagNode.MyBag.GetInstanceID() + "; bagNode.MyBag.MyBagPanel: " + bagNode.MyBag.MyBagPanel.GetInstanceID() + "; bag" + bag.GetInstanceID() + "; bag.MyBagPanel: " + bag.MyBagPanel.GetInstanceID());
-
-            uIManager.UpdateInventoryOpacity();
 
         }
 
@@ -380,7 +372,40 @@ namespace AnyRPG {
                     instantiatedBag.BagNode = null;
                 }
             }
+            unitController.UnitEventController.NotifyOnRemoveBag(instantiatedBag);
+        }
 
+        public void RequestSwapBags(InstantiatedBag oldInstantiatedBag, InstantiatedBag newInstantiatedBag) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                SwapEquippedOrUnequippedBags(oldInstantiatedBag, newInstantiatedBag);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestSwapBags(oldInstantiatedBag, newInstantiatedBag);
+            }
+        }
+
+        public void SwapEquippedOrUnequippedBags(InstantiatedBag oldInstantiatedBag, InstantiatedBag newInstantiatedBag) {
+            if (oldInstantiatedBag.BagNode != null && newInstantiatedBag.BagNode != null) {
+                SwapEquippedBags(oldInstantiatedBag, newInstantiatedBag);
+            } else {
+                SwapBags(oldInstantiatedBag, newInstantiatedBag);
+            }
+        }
+
+        public void SwapEquippedBags(InstantiatedBag oldInstantiatedBag, InstantiatedBag newInstantiatedBag) {
+            int newSlotCount = TotalSlotCount - (oldInstantiatedBag.Slots + newInstantiatedBag.Slots);
+
+            // if there will not be enough space in the inventory after the bag swap, don't swap
+            if (newSlotCount - FullSlotCount < 0) {
+                return;
+            }
+
+            BagNode oldBagNode = oldInstantiatedBag.BagNode;
+            BagNode newBagNode = newInstantiatedBag.BagNode;
+
+            RemoveBag(oldInstantiatedBag);
+            RemoveBag(newInstantiatedBag);
+            AddBag(oldInstantiatedBag, newBagNode);
+            AddBag(newInstantiatedBag, oldBagNode);
         }
 
         public void SwapBags(InstantiatedBag oldInstantiatedBag, InstantiatedBag newInstantiatedBag) {
@@ -410,7 +435,8 @@ namespace AnyRPG {
             RemoveBag(oldInstantiatedBag, true);
 
             // clear the slot the new bag is in so the bag doesn't get duplicated
-            newInstantiatedBag.Slot.Clear();
+            //newInstantiatedBag.Slot.Clear();
+            newInstantiatedBag.Remove();
 
             // make space by adding the new bag
             AddBag(newInstantiatedBag, oldBagNode);
@@ -429,9 +455,6 @@ namespace AnyRPG {
                     AddItem(instantiatedItem, newInstantiatedBag.BagNode.IsBankNode);
                 }
             }
-
-            handScript.Drop();
-            fromSlot = null;
         }
 
         /// <summary>
@@ -445,7 +468,7 @@ namespace AnyRPG {
                 return false;
             }
             if (performUniqueCheck == true && instantiatedItem.Item.UniqueItem == true && GetItemCount(instantiatedItem.Item.ResourceName) > 0) {
-                messageFeedManager.WriteMessage(unitController, $"{instantiatedItem.DisplayName} is unique.  You can only carry one at a time.");
+                unitController.UnitEventController.NotifyOnMessageFeedMessage($"{instantiatedItem.DisplayName} is unique.  You can only carry one at a time.");
                 return false;
             }
             if (instantiatedItem.Item.MaximumStackSize > 0) {
@@ -530,7 +553,7 @@ namespace AnyRPG {
             }
             if (EmptySlotCount(addToBank) == 0) {
                 //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.PlaceInEmpty({instantiatedItem.ResourceName}, {addToBank}): no empty slots");
-                messageFeedManager.WriteMessage(unitController, $"{(addToBank == false ? "Inventory" : "Bank")} is full!");
+                unitController.UnitEventController.NotifyOnMessageFeedMessage($"{(addToBank == false ? "Inventory" : "Bank")} is full!");
             }
             return false;
         }
@@ -747,6 +770,7 @@ namespace AnyRPG {
         public void DeleteItem(InstantiatedItem instantiatedItem) {
             if (instantiatedItem.Slot != null) {
                 instantiatedItem.Slot.Clear();
+                NotifyOnItemCountChanged(instantiatedItem.Item);
             } else {
                 // first we want to get this items equipment slot
                 // next we want to query the equipmentmanager on the charcter to see if he has an item in this items slot, and if it is the item we are dropping
@@ -755,6 +779,7 @@ namespace AnyRPG {
                     unitController.CharacterEquipmentManager.Unequip(instantiatedItem as InstantiatedEquipment);
                     if (instantiatedItem.Slot != null) {
                         instantiatedItem.Slot.Clear();
+                        NotifyOnItemCountChanged(instantiatedItem.Item);
                     }
                     unitController.UnitModelController.RebuildModelAppearance();
                 }
@@ -901,6 +926,124 @@ namespace AnyRPG {
 
             if (inventorySlots.Count > slotIndex) {
                 UseItem(inventorySlots[slotIndex]);
+            }
+        }
+
+        public void RequestUnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUnequipBag({instantiatedBag.DisplayName}, {isBank})");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                UnequipBag(instantiatedBag, isBank);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestUnequipBag(instantiatedBag, isBank);
+            }
+        }
+
+        public void UnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UnequipBag({instantiatedBag.DisplayName}, {isBank})");
+            AddItem(instantiatedBag, isBank);
+            RemoveBag(instantiatedBag);
+        }
+
+        public void RequestUnequipBagToSlot(InstantiatedBag instantiatedBag, InventorySlot inventorySlot, bool isBankSlot) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUnequipBag({instantiatedBag.DisplayName}, inventoryslot, {isBankSlot})");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                UnequipBagToSlot(instantiatedBag, inventorySlot);
+            } else {
+                int slotIndex;
+                if (isBankSlot) {
+                    slotIndex = inventorySlot.GetCurrentBankSlotIndex(unitController);
+                } else {
+                    slotIndex = inventorySlot.GetCurrentInventorySlotIndex(unitController);
+                }
+
+                unitController.UnitEventController.NotifyOnRequestUnequipBagToSlot(instantiatedBag, slotIndex, isBankSlot);
+            }
+        }
+
+        public void UnequipBagToSlot(InstantiatedBag instantiatedBag, int slotIndex, bool isBank) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UnequipBag({instantiatedBag.DisplayName}, {slotIndex}, {isBank})");
+
+            InventorySlot inventorySlot;
+            if (isBank && bankSlots.Count > slotIndex) {
+                inventorySlot = bankSlots[slotIndex];
+            } else if (isBank == false && inventorySlots.Count > slotIndex) {
+                inventorySlot = inventorySlots[slotIndex];
+            } else {
+                return;
+            }
+            UnequipBagToSlot(instantiatedBag, inventorySlot);
+        }
+
+        public void UnequipBagToSlot(InstantiatedBag instantiatedBag, InventorySlot inventorySlot) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UnequipBag({instantiatedBag.DisplayName})");
+
+            inventorySlot.AddItem(instantiatedBag);
+            RemoveBag(instantiatedBag);
+        }
+
+        public void RequestMoveBag(InstantiatedBag bag, BagNode bagNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestMoveBag({bag.DisplayName}, {bagNode.NodeIndex})");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                MoveBag(bag, bagNode);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestMoveBag(bag, bagNode.NodeIndex, bagNode.IsBankNode);
+            }
+        }
+
+        public void MoveBag(InstantiatedBag bag, BagNode bagNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.MoveBag({bag.DisplayName}, {bagNode.NodeIndex})");
+
+            if (EmptySlotCount(bag.BagNode.IsBankNode) - bag.Slots >= 0) {
+                RemoveBag(bag);
+                AddBag(bag, bagNode);
+            }
+        }
+
+        public void MoveBag(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.MoveBag({instantiatedBag.DisplayName}, {nodeIndex}, {isBankNode})");
+
+            if (isBankNode) {
+                if (bankNodes.Count > nodeIndex) {
+                    MoveBag(instantiatedBag, bankNodes[nodeIndex]);
+                }
+            } else {
+                if (bagNodes.Count > nodeIndex) {
+                    MoveBag(instantiatedBag, bagNodes[nodeIndex]);
+                }
+            }
+        }
+
+        public void RequestAddBagFromInventory(InstantiatedBag instantiatedBag, BagNode bagNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestAddBagFromInventory({instantiatedBag.DisplayName}, {bagNode})");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                AddBagFromInventory(instantiatedBag, bagNode);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestAddBagFromInventory(instantiatedBag, bagNode.NodeIndex, bagNode.IsBankNode);
+            }
+        }
+
+        public void AddBagFromInventory(InstantiatedBag instantiatedBag, BagNode bagNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddBagFromInventory({instantiatedBag.DisplayName}, {bagNode})");
+
+            AddBag(instantiatedBag, bagNode);
+            instantiatedBag.Remove();
+        }
+
+        public void AddBagFromInventory(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddBagFromInventory({instantiatedBag.DisplayName}, {nodeIndex}, {isBankNode})");
+
+            if (isBankNode) {
+                if (bankNodes.Count > nodeIndex) {
+                    AddBagFromInventory(instantiatedBag, bankNodes[nodeIndex]);
+                }
+            } else {
+                if (bagNodes.Count > nodeIndex) {
+                    AddBagFromInventory(instantiatedBag, bagNodes[nodeIndex]);
+                }
             }
         }
     }

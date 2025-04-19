@@ -37,7 +37,6 @@ namespace AnyRPG {
         public event System.Action<UnitProfile> OnUnitDestroy = delegate { };
         public event System.Action<UnitController> OnActivateMountedState = delegate { };
         public event System.Action OnDeActivateMountedState = delegate { };
-        public event System.Action<string> OnMessageFeed = delegate { };
         public event System.Action OnStartInteract = delegate { };
         public event System.Action OnStopInteract = delegate { };
         public event System.Action<UnitController, InteractableOptionComponent, int, int> OnStartInteractWithOption = delegate { };
@@ -69,7 +68,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, AbilityProperties> OnLearnAbility = delegate { };
         public event System.Action<bool> OnUnlearnAbility = delegate { };
         public event System.Action<AbilityProperties> OnAttemptPerformAbility = delegate { };
-        public event System.Action<string> OnMessageFeedMessage = delegate { };
+        public event System.Action<UnitController, string> OnMessageFeedMessage = delegate { };
         public event System.Action<AbilityProperties> OnLearnedCheckFail = delegate { };
         public event System.Action<AbilityProperties> OnCombatCheckFail = delegate { };
         public event System.Action<AbilityProperties> OnStealthCheckFail = delegate { };
@@ -140,6 +139,14 @@ namespace AnyRPG {
         public event System.Action OnRebuildModelAppearance = delegate { };
         public event System.Action<InstantiatedEquipment, InstantiatedEquipment> OnRequestSwapInventoryEquipment = delegate { };
         public event System.Action<InstantiatedEquipment, int> OnRequestUnequipToSlot = delegate { };
+        public event System.Action<InstantiatedBag, InstantiatedBag> OnRequestSwapBags = delegate { };
+        public event System.Action<InstantiatedBag, int, bool> OnRequestUnequipBagToSlot = delegate { };
+        public event System.Action<InstantiatedBag, bool> OnRequestUnequipBag = delegate { };
+        public event System.Action<InstantiatedBag> OnRemoveBag = delegate { };
+        public event System.Action<InstantiatedBag, BagNode> OnAddBag = delegate { };
+        public event System.Action<InstantiatedBag, int, bool> OnRequestMoveBag = delegate { };
+        public event System.Action<InstantiatedBag, int, bool> OnRequestAddBag = delegate { };
+
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -181,7 +188,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnMessageFeedMessage(string message) {
-            OnMessageFeedMessage(message);
+            OnMessageFeedMessage(unitController, message);
         }
 
         public void NotifyOnAttemptPerformAbility(AbilityProperties abilityProperties) {
@@ -440,10 +447,6 @@ namespace AnyRPG {
         }
         public void NotifyOnDeActivateMountedState() {
             OnDeActivateMountedState();
-        }
-        public void NotifyOnMessageFeed(string message) {
-            //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
-            OnMessageFeed(message);
         }
         public void NotifyOnBeginChatMessage(string message) {
             //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
@@ -731,6 +734,35 @@ namespace AnyRPG {
         public void NotifyOnRequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
             //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
             OnRequestUnequipToSlot(instantiatedEquipment, inventorySlotId);
+        }
+
+        public void NotifyOnRequestSwapBags(InstantiatedBag oldInstantiatedBag, InstantiatedBag newInstantiatedBag) {
+            OnRequestSwapBags(oldInstantiatedBag, newInstantiatedBag);
+        }
+
+        public void NotifyOnRequestUnequipBagToSlot(InstantiatedBag instantiatedBag, int slotIndex, bool isBankSlot) {
+            OnRequestUnequipBagToSlot(instantiatedBag, slotIndex, isBankSlot);
+        }
+
+        public void NotifyOnRemoveBag(InstantiatedBag instantiatedBag) {
+            OnRemoveBag(instantiatedBag);
+        }
+
+        public void NotifyOnAddBag(InstantiatedBag instantiatedBag, BagNode bagNode) {
+            OnAddBag(instantiatedBag, bagNode);
+        }
+
+        public void NotifyOnRequestMoveBag(InstantiatedBag bag, int nodeIndex, bool isBankNode) {
+            OnRequestMoveBag(bag, nodeIndex, isBankNode);
+        }
+
+        public void NotifyOnRequestAddBagFromInventory(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestAddBagFromInventory({instantiatedBag.Item.ResourceName}, {nodeIndex}, {isBankNode})");
+            OnRequestAddBag(instantiatedBag, nodeIndex, isBankNode);
+        }
+
+        public void NotifyOnRequestUnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
+            OnRequestUnequipBag(instantiatedBag, isBank);
         }
 
         #endregion

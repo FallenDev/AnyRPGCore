@@ -121,7 +121,7 @@ namespace AnyRPG {
 
             if (validInteractables.Count > 0 && inRangeInteractables.Count == 0) {
                 if (passedRangeCheck == false) {
-                    sourceUnitController.UnitEventController.NotifyOnMessageFeed($"{targetInteractable.DisplayName} is out of range");
+                    sourceUnitController.UnitEventController.NotifyOnMessageFeedMessage($"{targetInteractable.DisplayName} is out of range");
                 }
             }
             return false;

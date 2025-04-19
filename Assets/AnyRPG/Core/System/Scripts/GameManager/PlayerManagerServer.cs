@@ -25,6 +25,7 @@ namespace AnyRPG {
         protected PlayerManager playerManager = null;
         protected SystemAchievementManager systemAchievementManager = null;
         protected QuestGiverManager questGiverManager = null;
+        protected MessageFeedManager messageFeedManager = null;
 
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
@@ -47,6 +48,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             systemAchievementManager = systemGameManager.SystemAchievementManager;
             questGiverManager = systemGameManager.QuestGiverManager;
+            messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
         }
 
 
@@ -117,6 +119,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnKillEvent += HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTrigger;
             unitController.UnitEventController.OnExitInteractableTrigger += HandleExitInteractableTrigger;
+            unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
@@ -125,6 +128,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTrigger;
             unitController.UnitEventController.OnExitInteractableTrigger -= HandleExitInteractableTrigger;
+            unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
+        }
+
+        public void HandleMessageFeedMessage(UnitController unitController, string message) {
+            messageFeedManager.WriteMessage(unitController, message);
         }
 
         private void HandleEnterInteractableTrigger(UnitController unitController, Interactable interactable) {

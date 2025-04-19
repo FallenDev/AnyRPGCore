@@ -11,9 +11,10 @@ namespace AnyRPG {
         private Bag bag = null;
 
         private int slots;
-        private Sprite icon = null;
+        //private Sprite icon = null;
 
         public BagNode BagNode { get; set; }
+        /*
         public override Sprite Icon {
             get {
                 if (icon == null) {
@@ -22,6 +23,7 @@ namespace AnyRPG {
                 return base.Icon;
             }
         }
+        */
 
         /// <summary>
         /// Property for getting the slots
@@ -31,6 +33,7 @@ namespace AnyRPG {
 
         public InstantiatedBag(SystemGameManager systemGameManager, int instanceId, Bag bag, ItemQuality itemQuality) : base(systemGameManager, instanceId, bag, itemQuality) {
             this.bag = bag;
+            this.slots = bag.Slots;
         }
 
         /*

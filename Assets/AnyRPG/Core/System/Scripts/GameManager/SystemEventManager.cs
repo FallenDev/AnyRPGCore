@@ -32,6 +32,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
         public event System.Action<UnitController, CraftAbilityProperties> OnSetCraftAbility = delegate { };
         public event System.Action OnCraftItem = delegate { };
+        public event System.Action OnAddBag = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -184,6 +185,10 @@ namespace AnyRPG {
 
         public void NotifyOnCraftItem() {
             OnCraftItem();
+        }
+
+        public void NotifyOnAddBag() {
+            OnAddBag();
         }
     }
 

@@ -127,7 +127,8 @@ namespace AnyRPG {
                     // the handscript has a bag in it
                     if (inventorySlot.InstantiatedItem is InstantiatedBag) {
                         // This slot also has a bag in it, so swap the 2 bags
-                        playerManager.UnitController.CharacterInventoryManager.SwapBags(handScript.Moveable as InstantiatedBag, inventorySlot.InstantiatedItem as InstantiatedBag);
+                        playerManager.UnitController.CharacterInventoryManager.RequestSwapBags(handScript.Moveable as InstantiatedBag, inventorySlot.InstantiatedItem as InstantiatedBag);
+                        handScript.Drop();
                     }
                 } else if (handScript.Moveable is InstantiatedEquipment) {
                     // the handscript has equipment in it
@@ -147,8 +148,7 @@ namespace AnyRPG {
                     if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount(instantiatedBag.BagNode.IsBankNode) - instantiatedBag.Slots > 0) {
                         //if (playerManager.UnitController.CharacterInventoryManager.EmptySlotCount() - bag.Slots > 0) {
                         //Debug.Log("SlotScript.HandleLeftClick(): We are trying to drop a bag into the inventory. There is enough empty space.");
-                        inventorySlot.AddItem(instantiatedBag);
-                        playerManager.UnitController.CharacterInventoryManager.RemoveBag(instantiatedBag);
+                        playerManager.UnitController.CharacterInventoryManager.RequestUnequipBagToSlot(instantiatedBag, inventorySlot, BagPanel is BankPanel);
                         handScript.Drop();
                     }
                 } else if (handScript.Moveable is InstantiatedEquipment) {

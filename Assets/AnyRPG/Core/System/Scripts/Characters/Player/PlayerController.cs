@@ -1107,7 +1107,6 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange += HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState += HandleActivateMountedState;
             playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState += HandleDeActivateMountedState;
-            playerManager.ActiveUnitController.UnitEventController.OnMessageFeed += HandleMessageFeed;
             playerManager.ActiveUnitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel += HandleCastCancel;
             playerManager.ActiveUnitController.UnitModelController.OnModelUpdated += HandleModelUpdated;
@@ -1136,7 +1135,6 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState -= HandleActivateMountedState;
             playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState -= HandleDeActivateMountedState;
-            playerManager.ActiveUnitController.UnitEventController.OnMessageFeed -= HandleMessageFeed;
             playerManager.ActiveUnitController.OnInitializeNamePlate -= HandleInitializeNamePlate;
             playerManager.ActiveUnitController.UnitEventController.OnUnitDestroy -= HandleUnitDestroy;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel -= HandleCastCancel;

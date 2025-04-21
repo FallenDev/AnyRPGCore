@@ -1974,10 +1974,16 @@ namespace AnyRPG {
             BeginAbilityCoolDown(baseAbility, Mathf.Max(animationLength, abilityCoolDown));
         }
 
-        public override Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+        public override Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectContext) {
             //Dictionary<PrefabProfile, List<GameObject>> returnList = new Dictionary<PrefabProfile, List<GameObject>>();
-            unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
-            return base.SpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
+            unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
+            return base.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
+        }
+
+        public override Dictionary<PrefabProfile, List<GameObject>> SpawnStatusEffectPrefabs(Interactable target, StatusEffectProperties statusEffectProperties, AbilityEffectContext abilityEffectContext) {
+            //Dictionary<PrefabProfile, List<GameObject>> returnList = new Dictionary<PrefabProfile, List<GameObject>>();
+            //unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, statusEffectProperties, abilityEffectContext);
+            return base.SpawnStatusEffectPrefabs(target, statusEffectProperties, abilityEffectContext);
         }
 
     }

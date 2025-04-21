@@ -212,6 +212,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRebuildModelAppearance += HandleRebuildModelAppearanceServer;
             unitController.UnitEventController.OnRemoveBag += HandleRemoveBagServer;
             unitController.UnitEventController.OnAddBag += HandleAddBagServer;
+            unitController.UnitEventController.OnStatusEffectAdd += HandleStatusEffectAddServer;
+            unitController.UnitEventController.OnAddStatusEffectStack += HandleAddStatusEffectStackServer;
+            unitController.UnitEventController.OnCancelStatusEffect += HandleCancelStatusEffectServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -270,6 +273,60 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRebuildModelAppearance -= HandleRebuildModelAppearanceServer;
             unitController.UnitEventController.OnRemoveBag -= HandleRemoveBagServer;
             unitController.UnitEventController.OnAddBag -= HandleAddBagServer;
+            unitController.UnitEventController.OnStatusEffectAdd -= HandleStatusEffectAddServer;
+            unitController.UnitEventController.OnAddStatusEffectStack -= HandleAddStatusEffectStackServer;
+            unitController.UnitEventController.OnCancelStatusEffect -= HandleCancelStatusEffectServer;
+        }
+
+        public void HandleCancelStatusEffectServer(StatusEffectProperties properties) {
+            CancelStatusEffectClient(properties.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void CancelStatusEffectClient(string resourceName) {
+            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            if (statusEffect == null) {
+                return;
+            }
+            unitController.CharacterStats.CancelStatusEffect(statusEffect.StatusEffectProperties);
+        }
+
+        public void HandleAddStatusEffectStackServer(string resourceName) {
+            AddStatusEffectStackClient(resourceName);
+        }
+
+        [ObserversRpc]
+        public void AddStatusEffectStackClient(string resourceName) {
+            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            if (statusEffect == null) {
+                return;
+            }
+            unitController.CharacterStats.AddStatusEffectStack(statusEffect.StatusEffectProperties);
+        }
+
+        public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
+
+            NetworkCharacterUnit sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<NetworkCharacterUnit>();
+            
+            AddStatusEffectClient(statusEffectNode.StatusEffect.ResourceName, sourceNetworkCharacterUnit);
+        }
+
+        [ObserversRpc]
+        public void AddStatusEffectClient(string resourceName, NetworkCharacterUnit sourceNetworkCharacterUnit) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+
+            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            if (statusEffect == null) {
+                return;
+            }
+            IAbilityCaster abilityCaster = null;
+            if (sourceNetworkCharacterUnit != null) {
+                abilityCaster = sourceNetworkCharacterUnit.UnitController;
+            } else {
+                abilityCaster = systemGameManager.SystemAbilityController;
+            }
+            unitController.CharacterStats.AddNewStatusEffect(statusEffect.StatusEffectProperties, abilityCaster, new AbilityEffectContext(abilityCaster));
         }
 
         public void HandleAddBagServer(InstantiatedBag instantiatedBag, BagNode node) {
@@ -912,8 +969,8 @@ namespace AnyRPG {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
 
             AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
-            LengthEffectProperties lengthEffectProperties = abilityEffect.AbilityEffectProperties as LengthEffectProperties;
-            if (abilityEffect == null || lengthEffectProperties == null) {
+            FixedLengthEffectProperties fixedLengthEffectProperties = abilityEffect.AbilityEffectProperties as FixedLengthEffectProperties;
+            if (abilityEffect == null || fixedLengthEffectProperties == null) {
                 return;
             }
             Interactable target = null;
@@ -924,7 +981,7 @@ namespace AnyRPG {
             if (networkOriginalTarget != null) {
                 originalTarget = networkOriginalTarget.Interactable;
             }
-            unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, new AbilityEffectContext(unitController));
+            unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, new AbilityEffectContext(unitController));
         }
 
         public void HandleSpawnAbilityObjectsServer(AbilityProperties ability, int index) {

@@ -31,6 +31,8 @@ namespace AnyRPG {
         public event System.Action<string> OnTitleChange = delegate { };
         public event System.Action<PowerResource, int, int> OnResourceAmountChanged = delegate { };
         public event System.Action<StatusEffectNode> OnStatusEffectAdd = delegate { };
+        public event System.Action<string> OnAddStatusEffectStack = delegate { };
+        public event System.Action<StatusEffectProperties> OnCancelStatusEffect = delegate { };
         public event System.Action<IAbilityCaster, AbilityProperties, float> OnCastTimeChanged = delegate { };
         public event System.Action OnCastComplete = delegate { };
         public event System.Action OnCastCancel = delegate { };
@@ -430,7 +432,8 @@ namespace AnyRPG {
             OnResourceAmountChanged(powerResource, maxAmount, currentAmount);
         }
         public void NotifyOnStatusEffectAdd(StatusEffectNode statusEffectNode) {
-            //Debug.Log($"{gameObject.name}.NotifyOnStatusEffectAdd()");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName})");
+
             OnStatusEffectAdd(statusEffectNode);
         }
         public void NotifyOnCastTimeChanged(IAbilityCaster source, AbilityProperties baseAbility, float castPercent) {
@@ -763,6 +766,14 @@ namespace AnyRPG {
 
         public void NotifyOnRequestUnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
             OnRequestUnequipBag(instantiatedBag, isBank);
+        }
+
+        public void NotifyOnAddStatusEffectStack(string resourceName) {
+            OnAddStatusEffectStack(resourceName);
+        }
+
+        public void NotifyOnCancelStatusEffect(StatusEffectProperties statusEffect) {
+            OnCancelStatusEffect(statusEffect);
         }
 
         #endregion

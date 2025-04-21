@@ -31,7 +31,7 @@ namespace AnyRPG {
         private ObjectPooler objectPooler = null;
 
         public StatusEffectProperties StatusEffect { get => statusEffect; set => statusEffect = value; }
-        public Coroutine MyMonitorCoroutine { get => monitorCoroutine; set => monitorCoroutine = value; }
+        public Coroutine MonitorCoroutine { get => monitorCoroutine; set => monitorCoroutine = value; }
         public AbilityEffectContext AbilityEffectContext { get => abilityEffectContext; set => abilityEffectContext = value; }
         public Dictionary<PrefabProfile, List<GameObject>> PrefabObjects { get => prefabObjects; set => prefabObjects = value; }
         public int CurrentStacks { get => currentStacks; set => currentStacks = value; }
@@ -61,7 +61,8 @@ namespace AnyRPG {
                 foreach (List<GameObject> gameObjectList in prefabObjects.Values) {
                     foreach (GameObject go in gameObjectList) {
                         //Debug.Log("StatusEffectNode.ClearEffectPrefabs() statusEffect: " + statusEffect.DisplayName + "; Destroy: " + go.name);
-                        objectPooler.ReturnObjectToPool(go, StatusEffect.PrefabDestroyDelay);
+                        //objectPooler.ReturnObjectToPool(go, StatusEffect.PrefabDestroyDelay);
+                        objectPooler.ReturnObjectToPool(go);
                     }
 
                 }
@@ -72,7 +73,8 @@ namespace AnyRPG {
         public void CancelStatusEffect() {
             //Debug.Log("StatusEffectNode.CancelStatusEffect(): " + StatusEffect.DisplayName);
             ClearEffectPrefabs();
-            StatusEffect.CancelEffect(unitController);
+            statusEffect.CancelEffect(unitController);
+            unitController.UnitEventController.NotifyOnCancelStatusEffect(statusEffect);
             unitController.CharacterStats.HandleStatusEffectRemoval(statusEffect);
             ClearNodeScripts();
         }

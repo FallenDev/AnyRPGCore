@@ -14,6 +14,10 @@ namespace AnyRPG {
 
         [Header("Status Effect")]
 
+        [Tooltip("Prefabs to spawn when this effect is cast")]
+        [SerializeField]
+        private List<AbilityAttachmentNode> statusEffectObjectList = new List<AbilityAttachmentNode>();
+
         [SerializeField]
         private StatusEffectAlignment statusEffectAlignment = StatusEffectAlignment.None;
 
@@ -242,6 +246,7 @@ namespace AnyRPG {
         public StatusEffectGroup StatusEffectGroup { get => statusEffectGroup; set => statusEffectGroup = value; }
         public bool SaveEffect { get => saveEffect; set => saveEffect = value; }
         public bool RequireOutOfCombat { get => requireOutOfCombat; set => requireOutOfCombat = value; }
+        public List<AbilityAttachmentNode> StatusEffectObjectList { get => statusEffectObjectList; set => statusEffectObjectList = value; }
 
         /*
         public void GetStatusEffectProperties(StatusEffect effect) {
@@ -368,19 +373,14 @@ namespace AnyRPG {
             if (_statusEffectNode == null) {
                 //Debug.Log(DisplayName + ".StatusEffect.Cast(). statuseffect was null.  This could likely happen if the character already had the status effect max stack on them");
             } else {
-                returnObjects = base.Cast(source, target, originalTarget, abilityEffectContext);
-                if (returnObjects != null) {
-                    // pass in the ability effect object so we can independently destroy it and let it last as long as the status effect (which could be refreshed).
-                    _statusEffectNode.PrefabObjects = returnObjects;
-                }
-                PerformMaterialChange(target);
+                base.Cast(source, target, originalTarget, abilityEffectContext);
                 PerformAbilityHit(source, target, abilityEffectContext);
 
             }
             return returnObjects;
         }
 
-        void PerformMaterialChange(Interactable target) {
+        public void PerformMaterialChange(UnitController target) {
             //Debug.Log(ResourceName + ".AbilityEffectProperties.PerformMaterialChange(" + (target == null ? "null" : target.gameObject.name) + ")");
 
             if (effectMaterial == null) {
@@ -392,7 +392,7 @@ namespace AnyRPG {
                 return;
             }
 
-            ApplyMaterialChange(target as UnitController);
+            ApplyMaterialChange(target);
         }
 
         private void ApplyMaterialChange(UnitController unitController) {
@@ -635,6 +635,15 @@ namespace AnyRPG {
                     Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find material profile: " + effectMaterialName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }
             }
+
+            if (statusEffectObjectList != null) {
+                foreach (AbilityAttachmentNode abilityAttachmentNode in statusEffectObjectList) {
+                    if (abilityAttachmentNode != null) {
+                        abilityAttachmentNode.SetupScriptableObjects(DisplayName, systemGameManager);
+                    }
+                }
+            }
+
 
 
         }

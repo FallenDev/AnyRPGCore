@@ -958,6 +958,8 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAdd(StatusEffectNode statusEffectNode) {
+            Debug.Log("PlayerManager.HandleStatusEffectAdd()");
+
             if (statusEffectNode == null) {
                 return;
             }

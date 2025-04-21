@@ -32,15 +32,14 @@ MonoBehaviour:
     abilityPrefabSource: 0
     animatorCreatePrefabs: 0
     prefabDestroyDelay: 0
-    animationClip: {fileID: 0}
     animationProfileName: Cast 2H Up
     useUnitCastAnimations: 0
     isAutoAttack: 0
-    useUnitAttackAnimations: 1
+    useUnitAttackAnimations: 0
     useAutoAttackAnimations: 0
     useWeaponHitSound: 0
-    useWeaponSkillAttackVoiceSetting: 1
-    playAttackVoice: 1
+    useWeaponSkillAttackVoiceSetting: 0
+    playAttackVoice: 0
     animationHitAudioProfileName: 
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: Restore Spell
@@ -88,13 +87,8 @@ MonoBehaviour:
       groundTargetColor: {r: 0.2028302, g: 1, b: 0.5373162, a: 1}
       groundTargetRadius: 2
     tickRate: 1
-    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    inlineAbilityEffects: []
     castEndAbilityEffectNames:
     - Healing Circle AOE
     actionHitAbilityEffectNames: []
     actionEndAbilityEffectNames: []
-  references:
-    version: 2
-    RefIds: []

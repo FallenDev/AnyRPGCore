@@ -10,7 +10,7 @@ namespace AnyRPG {
 
     [System.Serializable]
     public class LengthEffectProperties : AbilityEffectProperties {
-
+        /*
         [Header("Prefab")]
 
         [Tooltip("Ability: use ability prefabs, Both: use weapon and ability prefabs, Weapon: use only weapon prefabs")]
@@ -40,6 +40,7 @@ namespace AnyRPG {
         [Tooltip("If true, the prefab will be destroyed when casting ends, regardless of prefab lifetime")]
         [SerializeField]
         protected bool destroyOnEndCast = false;
+        */
 
         [Header("Tick")]
 
@@ -86,11 +87,7 @@ namespace AnyRPG {
         public List<AbilityEffectProperties> TickAbilityEffectList { get => tickAbilityEffectList; set => tickAbilityEffectList = value; }
         public List<AbilityEffectProperties> CompleteAbilityEffectList { get => completeAbilityEffectList; set => completeAbilityEffectList = value; }
         public float TickRate { get => tickRate; set => tickRate = value; }
-        public float PrefabDestroyDelay { get => prefabDestroyDelay; set => prefabDestroyDelay = value; }
-        public PrefabSpawnLocation PrefabSpawnLocation { get => prefabSpawnLocation; set => prefabSpawnLocation = value; }
         public bool CastZeroTick { get => castZeroTick; set => castZeroTick = value; }
-        public bool DestroyOnEndCast { get => destroyOnEndCast; set => destroyOnEndCast = value; }
-        public bool RandomPrefabs { get => randomPrefabs; set => randomPrefabs = value; }
 
         /*
         public void GetLengthEffectProperties(LengthEffect effect) {
@@ -117,42 +114,6 @@ namespace AnyRPG {
             objectPooler = systemGameManager.ObjectPooler;
         }
 
-        public List<AbilityAttachmentNode> GetPrefabProfileList(IAbilityCaster abilityCaster) {
-            if (abilityPrefabSource == AbilityPrefabSource.Both) {
-                List<AbilityAttachmentNode> returnList = new List<AbilityAttachmentNode>();
-                returnList.AddRange(abilityObjectList);
-                foreach (AbilityAttachmentNode abilityAttachmentNode in abilityCaster.AbilityManager.GetWeaponAbilityObjectList()) {
-                    if (abilityAttachmentNode.HoldableObject != null) {
-                        returnList.Add(abilityAttachmentNode);
-                    }
-                }
-                return returnList;
-            }
-            if (abilityPrefabSource == AbilityPrefabSource.Weapon) {
-                List<AbilityAttachmentNode> returnList = new List<AbilityAttachmentNode>();
-                foreach (AbilityAttachmentNode abilityAttachmentNode in abilityCaster.AbilityManager.GetWeaponAbilityObjectList()) {
-                    if (abilityAttachmentNode.HoldableObject != null) {
-                        returnList.Add(abilityAttachmentNode);
-                    }
-                }
-                return returnList;
-            }
-
-            // abilityPrefabSource is AbilityPrefabSource.Ability since there are only 3 options
-            return abilityObjectList;
-
-        }
-
-        public override Dictionary<PrefabProfile, List<GameObject>> Cast(IAbilityCaster source, Interactable target, Interactable originalTarget, AbilityEffectContext abilityEffectInput) {
-            //Debug.Log(DisplayName + ".LengthEffect.Cast(" + (source == null ? "null" : source.AbilityManager.Name) + ", " + (target == null ? "null" : target.gameObject.name) + ", " + (originalTarget == null ? "null" : originalTarget.name) + ")");
-
-            //Dictionary<PrefabProfile, List<GameObject>> prefabObjects = base.Cast(source, target, originalTarget, abilityEffectInput);
-
-            Dictionary<PrefabProfile, List<GameObject>> prefabObjects = source.AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
-
-            //abilityEffectInput.PrefabObjects = prefabObjects;
-            return prefabObjects;
-        }
 
         public virtual void CastTick(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
             //Debug.Log(DisplayName + ".AbilityEffect.CastTick(" +source.AbilityManager.Name + ", " + (target ? target.name : "null") + ")");
@@ -241,14 +202,6 @@ namespace AnyRPG {
                         onTickAudioProfiles.Add(audioProfile);
                     } else {
                         Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find audio profile: " + audioProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
-                    }
-                }
-            }
-
-            if (abilityObjectList != null) {
-                foreach (AbilityAttachmentNode abilityAttachmentNode in abilityObjectList) {
-                    if (abilityAttachmentNode != null) {
-                        abilityAttachmentNode.SetupScriptableObjects(DisplayName, systemGameManager);
                     }
                 }
             }

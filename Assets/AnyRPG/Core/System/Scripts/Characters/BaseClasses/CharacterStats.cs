@@ -1,4 +1,3 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -350,7 +349,7 @@ namespace AnyRPG {
         /// </summary>
         public void HandleCharacterUnitSpawn() {
             foreach (StatusEffectNode statusEffectNode in StatusEffects.Values) {
-                if (statusEffectNode.StatusEffect.GetPrefabProfileList(unitController).Count > 0
+                if (statusEffectNode.StatusEffect.StatusEffectObjectList.Count > 0
                     && (statusEffectNode.PrefabObjects == null || statusEffectNode.PrefabObjects.Count == 0)) {
                     statusEffectNode.PrefabObjects = statusEffectNode.StatusEffect.RawCast(unitController, unitController, unitController, new AbilityEffectContext(unitController));
                 }
@@ -828,7 +827,14 @@ namespace AnyRPG {
         }
 
         public StatusEffectNode ApplyStatusEffect(StatusEffectProperties statusEffect, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.ApplyStatusEffect(" + statusEffect.DisplayName + ", " + sourceCharacter.AbilityManager.Name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ApplyStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
+
+            // add to effect list since it was not in there
+            if (statusEffect == null) {
+                Debug.LogError("CharacterStats.ApplyStatusEffect(): Could not get status effect " + statusEffect.DisplayName);
+                return null;
+            }
+
             if (IsAlive == false && statusEffect.GetTargetOptions(sourceCharacter).RequireLiveTarget == true && statusEffect.GetTargetOptions(sourceCharacter).RequireDeadTarget == false) {
                 //Debug.Log("Cannot apply status effect to dead character. return null.");
                 return null;
@@ -884,70 +890,91 @@ namespace AnyRPG {
                 }
             }
 
+            // attempt to add a stack to an existing effect
+            if (AddStatusEffectStack(statusEffect)) { 
+                return null;
+            }
+
+            StatusEffectNode _statusEffectNode = AddNewStatusEffect(statusEffect, sourceCharacter, abilityEffectContext);
+            return _statusEffectNode;
+        }
+
+        public StatusEffectNode AddNewStatusEffect(StatusEffectProperties statusEffect, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddNewStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
+
+            StatusEffectNode newStatusEffectNode = new StatusEffectNode(systemGameManager);
+            statusEffects.Add(statusEffect.ResourceName, newStatusEffectNode);
+
+            // set base ability to null so that all damage taken by a status effect tick is considered ability damage for combat text purposes
+            abilityEffectContext.baseAbility = null;
+
+            newStatusEffectNode.Setup(unitController, statusEffect, abilityEffectContext);
+            Coroutine newCoroutine = unitController.StartCoroutine(Tick(sourceCharacter, abilityEffectContext, statusEffect, newStatusEffectNode));
+            newStatusEffectNode.MonitorCoroutine = newCoroutine;
+            //newStatusEffectNode.Setup(this, _statusEffect, newCoroutine);
+
+            HandleAddNotifications(newStatusEffectNode);
+
+            if (newStatusEffectNode.StatusEffect.ControlTarget == true) {
+                sourceCharacter.AbilityManager.AddTemporaryPet(unitController.UnitProfile, unitController);
+
+                // any control effect will add the pet to the pet journal if this is used.  This is already done in capture pet effect so should not be needed
+                // see if leaving it commented out breaks anything
+                //sourceCharacter.AbilityManager.AddPet(baseCharacter.CharacterUnit);
+
+            }
+
+            if (newStatusEffectNode != null) {
+                Dictionary<PrefabProfile, List<GameObject>> returnObjects = unitController.CharacterAbilityManager.SpawnStatusEffectPrefabs(unitController, statusEffect, abilityEffectContext);
+                if (returnObjects != null) {
+                    // pass in the ability effect object so we can independently destroy it and let it last as long as the status effect (which could be refreshed).
+                    newStatusEffectNode.PrefabObjects = returnObjects;
+                }
+                statusEffect.PerformMaterialChange(unitController);
+
+            }
+
+            return newStatusEffectNode;
+        }
+
+        public bool AddStatusEffectStack(StatusEffectProperties statusEffect) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddStatusEffectStack({statusEffect.ResourceName})");
 
             // check if status effect already exists on target
             StatusEffectProperties comparedStatusEffect = null;
-            string peparedString = SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName);
-            if (statusEffects.ContainsKey(peparedString)) {
-                comparedStatusEffect = statusEffects[peparedString].StatusEffect;
+            if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
+                comparedStatusEffect = statusEffects[statusEffect.ResourceName].StatusEffect;
             }
 
             //Debug.Log("comparedStatusEffect: " + comparedStatusEffect);
             if (comparedStatusEffect != null) {
-                if (!statusEffects[peparedString].AddStack()) {
+                if (!statusEffects[statusEffect.ResourceName].AddStack()) {
                     //Debug.Log("Could not apply " + statusEffect.MyAbilityEffectName + ".  Max stack reached");
                 } else {
                     //AddStatusEffectModifiers(statusEffect);
                     ProcessStatusEffectChanges(comparedStatusEffect);
+                    unitController.UnitEventController.NotifyOnAddStatusEffectStack(statusEffect.ResourceName);
                 }
-                return null;
-            } else {
-
-                // add to effect list since it was not in there
-                if (statusEffect == null) {
-                    Debug.LogError("CharacterStats.ApplyStatusEffect(): Could not get status effect " + statusEffect.DisplayName);
-                    return null;
-                }
-                StatusEffectNode newStatusEffectNode = new StatusEffectNode(systemGameManager);
-                statusEffects.Add(SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName), newStatusEffectNode);
-
-                // set base ability to null so that all damage taken by a status effect tick is considered ability damage for combat text purposes
-                abilityEffectContext.baseAbility = null;
-
-                newStatusEffectNode.Setup(unitController, statusEffect, abilityEffectContext);
-                Coroutine newCoroutine = unitController.StartCoroutine(Tick(sourceCharacter, abilityEffectContext, statusEffect, newStatusEffectNode));
-                newStatusEffectNode.MyMonitorCoroutine = newCoroutine;
-                //newStatusEffectNode.Setup(this, _statusEffect, newCoroutine);
-
-                HandleAddNotifications(newStatusEffectNode);
-
-                if (newStatusEffectNode.StatusEffect.ControlTarget == true) {
-                    sourceCharacter.AbilityManager.AddTemporaryPet(unitController.UnitProfile, unitController);
-
-                    // any control effect will add the pet to the pet journal if this is used.  This is already done in capture pet effect so should not be needed
-                    // see if leaving it commented out breaks anything
-                    //sourceCharacter.AbilityManager.AddPet(baseCharacter.CharacterUnit);
-
-                }
-
-                return newStatusEffectNode;
+                return true;
             }
+
+            return false;
         }
 
         public bool HasStatusEffect(StatusEffectProperties statusEffect) {
-            return HasStatusEffect(statusEffect.DisplayName);
+            return HasStatusEffect(statusEffect.ResourceName);
         }
 
         public bool HasStatusEffect(string statusEffectName) {
-            if (statusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffectName))) {
+            if (statusEffects.ContainsKey(statusEffectName)) {
                 return true;
             }
             return false;
         }
 
         public StatusEffectNode GetStatusEffectNode(StatusEffectProperties statusEffect) {
-            if (statusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName))) {
-                return StatusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName)];
+            if (statusEffects.ContainsKey(statusEffect.DisplayName)) {
+                return StatusEffects[statusEffect.DisplayName];
             }
             return null;
         }
@@ -1010,12 +1037,11 @@ namespace AnyRPG {
 
         public void HandleStatusEffectRemoval(StatusEffectProperties statusEffect) {
             //Debug.Log("CharacterStats.HandleStatusEffectRemoval(" + statusEffect.name + ")");
-            string preparedString = SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName);
-            if (statusEffects.ContainsKey(preparedString)) {
-                if (statusEffects[preparedString].MyMonitorCoroutine != null) {
-                    unitController.StopCoroutine(statusEffects[preparedString].MyMonitorCoroutine);
+            if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
+                if (statusEffects[statusEffect.ResourceName].MonitorCoroutine != null) {
+                    unitController.StopCoroutine(statusEffects[statusEffect.ResourceName].MonitorCoroutine);
                 }
-                statusEffects.Remove(preparedString);
+                statusEffects.Remove(statusEffect.ResourceName);
             }
 
             // should reset resources back down after buff expires
@@ -1438,8 +1464,8 @@ namespace AnyRPG {
                 statusEffect.CastComplete(characterSource, unitController, abilityEffectContext);
             }
 
-            if (statusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName))) {
-                statusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName)].CancelStatusEffect();
+            if (statusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName))) {
+                statusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName)].CancelStatusEffect();
             }
         }
 
@@ -1562,6 +1588,13 @@ namespace AnyRPG {
                         }
                     }
                 }
+            }
+        }
+
+        public void CancelStatusEffect(StatusEffectProperties statusEffect) {
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.CancelStatusEffect(" + statusEffect.DisplayName + ")");
+            if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
+                statusEffects[statusEffect.ResourceName].CancelStatusEffect();
             }
         }
     }

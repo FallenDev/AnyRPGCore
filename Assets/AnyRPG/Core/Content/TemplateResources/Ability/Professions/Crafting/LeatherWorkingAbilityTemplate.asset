@@ -109,8 +109,8 @@ MonoBehaviour:
     useUnitAttackAnimations: 0
     useAutoAttackAnimations: 0
     useWeaponHitSound: 0
-    useWeaponSkillAttackVoiceSetting: 1
-    playAttackVoice: 1
+    useWeaponSkillAttackVoiceSetting: 0
+    playAttackVoice: 0
     animationHitAudioProfileName: LeatherWorking
     castingAudioClip: {fileID: 0}
     castingAudioProfileName: 

@@ -8,16 +8,16 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 namespace AnyRPG {
-    public class ConvertAbilityEffectWizard : ScriptableWizard {
+    public class ConvertStatusEffectWizard : ScriptableWizard {
 
         // the used asset path for the Unit Profile
         private string scriptableObjectPath = string.Empty;
 
-        public List<AbilityEffect> abilityEffects = new List<AbilityEffect>();
+        public List<StatusEffect> statusEffects = new List<StatusEffect>();
 
-        //[MenuItem("Tools/AnyRPG/Wizard/Convert Ability Effect Wizard")]
+        [MenuItem("Tools/AnyRPG/Wizard/Utility/Convert Status Effect Wizard")]
         public static void CreateWizard() {
-            ScriptableWizard.DisplayWizard<ConvertAbilityEffectWizard>("New Convert Ability Effect Wizard", "Create");
+            ScriptableWizard.DisplayWizard<ConvertStatusEffectWizard>("New Convert Status Effect Wizard", "Create");
         }
 
         void OnEnable() {
@@ -31,17 +31,16 @@ namespace AnyRPG {
 
         void OnWizardCreate() {
 
-            EditorUtility.DisplayProgressBar("Convert Ability Effect Wizard", "Beginning Conversion...", 0f);
+            EditorUtility.DisplayProgressBar("Convert Status Effect Wizard", "Beginning Conversion...", 0f);
 
             int i = 0;
-            foreach (AbilityEffect abilityEffect in abilityEffects) {
+            foreach (StatusEffect statusEffect in statusEffects) {
                 i++;
-                EditorUtility.DisplayProgressBar("Convert Ability Effect Wizard", "Beginning Conversion...", (float)i / (float)abilityEffects.Count);
+                EditorUtility.DisplayProgressBar("Convert Status Effect Wizard", "Beginning Conversion...", (float)i / (float)statusEffects.Count);
 
+                //statusEffect.statusEffectProperties.StatusEffectObjectList = statusEffect.statusEffectProperties.AbilityObjectList;
 
-                //abilityEffect.p
-
-                EditorUtility.SetDirty(abilityEffect);
+                EditorUtility.SetDirty(statusEffect);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
@@ -66,12 +65,12 @@ namespace AnyRPG {
             */
 
             EditorUtility.ClearProgressBar();
-            EditorUtility.DisplayDialog("Convert Ability Effect Wizard", "Conversion Complete!", "OK");
+            EditorUtility.DisplayDialog("Convert Status Effect Wizard", "Conversion Complete!", "OK");
 
         }
 
         void OnWizardUpdate() {
-            helpString = "Converts an Ability Effect";
+            helpString = "Converts an Status Effect";
 
             errorString = Validate();
             isValid = (errorString == null || errorString == "");

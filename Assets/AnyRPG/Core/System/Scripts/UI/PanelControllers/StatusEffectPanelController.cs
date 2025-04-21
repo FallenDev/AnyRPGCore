@@ -64,7 +64,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAdd(StatusEffectNode statusEffectNode) {
-            //Debug.Log($"{gameObject.name}.StatusEffectPanelController.HandleStatusEffectAdd(" + statusEffectNode.StatusEffect.DisplayName + "): character: " + (targetUnitController == null ? "null" : targetUnitController.DisplayName));
+            Debug.Log($"{gameObject.name}.StatusEffectPanelController.HandleStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName}): character: {(targetUnitController == null ? "null" : targetUnitController.DisplayName)}");
 
             AddStatusNode(statusEffectNode);
         }

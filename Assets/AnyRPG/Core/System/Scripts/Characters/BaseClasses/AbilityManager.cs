@@ -427,17 +427,17 @@ namespace AnyRPG {
             return;
         }
 
-        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectInput) {
             
             Dictionary<PrefabProfile, List<GameObject>> prefabObjects = new Dictionary<PrefabProfile, List<GameObject>>();
 
-            if (lengthEffectProperties.GetPrefabProfileList(abilityCaster) != null) {
+            if (fixedLengthEffectProperties.GetPrefabProfileList(abilityCaster) != null) {
                 List<AbilityAttachmentNode> usedAbilityAttachmentNodeList = new List<AbilityAttachmentNode>();
-                if (lengthEffectProperties.RandomPrefabs == false) {
-                    usedAbilityAttachmentNodeList = lengthEffectProperties.GetPrefabProfileList(abilityCaster);
+                if (fixedLengthEffectProperties.RandomPrefabs == false) {
+                    usedAbilityAttachmentNodeList = fixedLengthEffectProperties.GetPrefabProfileList(abilityCaster);
                 } else {
                     //PrefabProfile copyProfile = prefabProfileList[UnityEngine.Random.Range(0, prefabProfileList.Count -1)];
-                    usedAbilityAttachmentNodeList.Add(lengthEffectProperties.GetPrefabProfileList(abilityCaster)[UnityEngine.Random.Range(0, lengthEffectProperties.GetPrefabProfileList(abilityCaster).Count)]);
+                    usedAbilityAttachmentNodeList.Add(fixedLengthEffectProperties.GetPrefabProfileList(abilityCaster)[UnityEngine.Random.Range(0, fixedLengthEffectProperties.GetPrefabProfileList(abilityCaster).Count)]);
                 }
                 foreach (AbilityAttachmentNode abilityAttachmentNode in usedAbilityAttachmentNodeList) {
                     if (abilityAttachmentNode.HoldableObject != null && abilityAttachmentNode.HoldableObject.Prefab != null) {
@@ -446,21 +446,21 @@ namespace AnyRPG {
                         Vector3 nodePosition = abilityAttachmentNode.HoldableObject.Position;
                         Vector3 nodeRotation = abilityAttachmentNode.HoldableObject.Rotation;
                         Vector3 nodeScale = abilityAttachmentNode.HoldableObject.Scale;
-                        if (lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.GroundTarget) {
+                        if (fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.GroundTarget) {
                             spawnLocation = abilityEffectInput.groundTargetLocation;
                             prefabParent = null;
                         }
-                        if (lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.TargetPoint && target != null) {
+                        if (fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.TargetPoint && target != null) {
                             spawnLocation = target.transform.position;
                             prefabParent = null;
                         }
-                        if ((lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.Caster || lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.CasterPoint) && (target != null || lengthEffectProperties.GetTargetOptions(abilityCaster).RequireTarget == false)) {
+                        if ((fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.Caster || fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.CasterPoint) && (target != null || fixedLengthEffectProperties.GetTargetOptions(abilityCaster).RequireTarget == false)) {
                             //Debug.Log(DisplayName + ".LengthEffect.Cast(): PrefabSpawnLocation is Caster");
                             AttachmentPointNode attachmentPointNode = GetHeldAttachmentPointNode(abilityAttachmentNode);
                             nodeRotation = attachmentPointNode.Rotation;
                             nodeScale = attachmentPointNode.Scale;
                             spawnLocation = UnitGameObject.transform.position;
-                            if (lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.CasterPoint) {
+                            if (fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.CasterPoint) {
                                 // transform node position here to ensure that the position is not calculated later on with world coordinates
                                 nodePosition = UnitGameObject.transform.TransformDirection(attachmentPointNode.Position);
                                 prefabParent = null;
@@ -476,18 +476,18 @@ namespace AnyRPG {
                                 }
                             }
                         }
-                        if (lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.Target && target != null) {
+                        if (fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.Target && target != null) {
                             //spawnLocation = target.GetComponent<Collider>().bounds.center;
                             spawnLocation = target.transform.position;
                             prefabParent = target.transform;
                         }
-                        if (lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.OriginalTarget && target != null) {
+                        if (fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.OriginalTarget && target != null) {
                             //spawnLocation = target.GetComponent<Collider>().bounds.center;
                             spawnLocation = originalTarget.transform.position;
                             prefabParent = originalTarget.transform;
                         }
-                        if (lengthEffectProperties.PrefabSpawnLocation != PrefabSpawnLocation.None &&
-                            (target != null || lengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.GroundTarget || lengthEffectProperties.GetTargetOptions(abilityCaster).RequireTarget == false)) {
+                        if (fixedLengthEffectProperties.PrefabSpawnLocation != PrefabSpawnLocation.None &&
+                            (target != null || fixedLengthEffectProperties.PrefabSpawnLocation == PrefabSpawnLocation.GroundTarget || fixedLengthEffectProperties.GetTargetOptions(abilityCaster).RequireTarget == false)) {
                             float finalX = (prefabParent == null ? spawnLocation.x + nodePosition.x : prefabParent.TransformPoint(nodePosition).x);
                             float finalY = (prefabParent == null ? spawnLocation.y + nodePosition.y : prefabParent.TransformPoint(nodePosition).y);
                             float finalZ = (prefabParent == null ? spawnLocation.z + nodePosition.z : prefabParent.TransformPoint(nodePosition).z);
@@ -510,15 +510,60 @@ namespace AnyRPG {
                                 prefabObjects[abilityAttachmentNode.HoldableObject] = new List<GameObject>();
                             }
                             prefabObjects[abilityAttachmentNode.HoldableObject].Add(prefabObject);
-                            if (lengthEffectProperties.DestroyOnEndCast) {
+                            if (fixedLengthEffectProperties.DestroyOnEndCast) {
                                 AddAbilityObject(abilityAttachmentNode, prefabObject);
                             }
                         }
                     }
                 }
                 abilityEffectInput.PrefabObjects = prefabObjects;
-                lengthEffectProperties.BeginMonitoring(prefabObjects, abilityCaster, target, abilityEffectInput);
+                fixedLengthEffectProperties.BeginMonitoring(prefabObjects, abilityCaster, target, abilityEffectInput);
             }
+            return prefabObjects;
+        }
+
+        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnStatusEffectPrefabs(Interactable target, StatusEffectProperties statusEffectProperties, AbilityEffectContext abilityEffectContext) {
+
+            Dictionary<PrefabProfile, List<GameObject>> prefabObjects = new Dictionary<PrefabProfile, List<GameObject>>();
+            foreach (AbilityAttachmentNode abilityAttachmentNode in statusEffectProperties.StatusEffectObjectList) {
+                if (abilityAttachmentNode.HoldableObject != null && abilityAttachmentNode.HoldableObject.Prefab != null) {
+                    Transform prefabParent = null;
+                    Vector3 nodePosition = abilityAttachmentNode.HoldableObject.Position;
+                    Vector3 nodeRotation = abilityAttachmentNode.HoldableObject.Rotation;
+                    Vector3 nodeScale = abilityAttachmentNode.HoldableObject.Scale;
+                    if (target != null) {
+                        AttachmentPointNode attachmentPointNode = GetHeldAttachmentPointNode(abilityAttachmentNode);
+                        nodeRotation = attachmentPointNode.Rotation;
+                        nodeScale = attachmentPointNode.Scale;
+                        nodePosition = attachmentPointNode.Position;
+                        prefabParent = target.transform;
+                        Transform usedPrefabSourceBone = null;
+                        if (attachmentPointNode.TargetBone != null && attachmentPointNode.TargetBone != string.Empty) {
+                            usedPrefabSourceBone = prefabParent.FindChildByRecursive(attachmentPointNode.TargetBone);
+                        }
+                        if (usedPrefabSourceBone != null) {
+                            prefabParent = usedPrefabSourceBone;
+                        }
+                        float finalX = (prefabParent.TransformPoint(nodePosition).x);
+                        float finalY = (prefabParent.TransformPoint(nodePosition).y);
+                        float finalZ = (prefabParent.TransformPoint(nodePosition).z);
+                        Vector3 finalSpawnLocation = new Vector3(finalX, finalY, finalZ);
+                        //Debug.Log("Instantiating Ability Effect Prefab for: " + DisplayName + " at " + finalSpawnLocation + "; prefabParent: " + (prefabParent == null ? "null " : prefabParent.name) + ";");
+                        Vector3 usedForwardDirection = prefabParent.transform.forward;
+                        GameObject prefabObject = objectPooler.GetPooledObject(abilityAttachmentNode.HoldableObject.Prefab,
+                            finalSpawnLocation,
+                            Quaternion.LookRotation(usedForwardDirection) * Quaternion.Euler(nodeRotation),
+                            prefabParent);
+                        prefabObject.transform.localScale = nodeScale;
+                        if (prefabObjects.ContainsKey(abilityAttachmentNode.HoldableObject) == false) {
+                            prefabObjects[abilityAttachmentNode.HoldableObject] = new List<GameObject>();
+                        }
+                        prefabObjects[abilityAttachmentNode.HoldableObject].Add(prefabObject);
+                    }
+                }
+            }
+            abilityEffectContext.PrefabObjects = prefabObjects;
+            statusEffectProperties.BeginMonitoring(prefabObjects, abilityCaster, target, abilityEffectContext);
             return prefabObjects;
         }
 

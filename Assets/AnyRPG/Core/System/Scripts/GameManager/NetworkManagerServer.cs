@@ -604,6 +604,22 @@ namespace AnyRPG {
             playerManagerServer.SetPlayerCharacterClass(characterClass, clientId);
         }
 
+        public void SetPlayerCharacterSpecialization(string specializationName, int clientId) {
+            ClassSpecialization classSpecialization = systemDataFactory.GetResource<ClassSpecialization>(specializationName);
+            if (classSpecialization == null) {
+                return;
+            }
+            playerManagerServer.SetPlayerCharacterSpecialization(classSpecialization, clientId);
+        }
+
+        public void SetPlayerFaction(string factionName, int clientId) {
+            Faction faction = systemDataFactory.GetResource<Faction>(factionName);
+            if (faction == null) {
+                return;
+            }
+            playerManagerServer.SetPlayerFaction(faction, clientId);
+        }
+
         public void LearnSkill(string skillName, int clientId) {
             Skill skill = systemDataFactory.GetResource<Skill>(skillName);
             if (skill == null) {

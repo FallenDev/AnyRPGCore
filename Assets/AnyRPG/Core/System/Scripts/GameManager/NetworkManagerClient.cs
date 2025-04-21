@@ -419,6 +419,14 @@ namespace AnyRPG {
             networkController.SetPlayerCharacterClass(className);
         }
 
+        public void SetPlayerCharacterSpecialization(string specializationName) {
+            networkController.SetPlayerCharacterSpecialization(specializationName);
+        }
+
+        public void SetPlayerFaction(string factionName) {
+            networkController.SetPlayerFaction(factionName);
+        }
+
         /*
         public void AdvertiseInteractWithSkillTrainerComponent(Interactable interactable, int optionIndex) {
             interactionManager.InteractWithSkillTrainerComponentClient(interactable, optionIndex);

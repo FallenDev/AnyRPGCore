@@ -305,8 +305,22 @@ namespace AnyRPG {
                 return;
             }
             activePlayers[clientId].BaseCharacter.ChangeCharacterClass(characterClass);
-
         }
+
+        public void SetPlayerCharacterSpecialization(ClassSpecialization classSpecialization, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].BaseCharacter.ChangeClassSpecialization(classSpecialization);
+        }
+
+        public void SetPlayerFaction(Faction faction, int clientId) {
+            if (activePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            activePlayers[clientId].BaseCharacter.ChangeCharacterFaction(faction);
+        }
+
 
         public void LearnSkill(Skill skill, int clientId) {
             if (activePlayers.ContainsKey(clientId) == false) {

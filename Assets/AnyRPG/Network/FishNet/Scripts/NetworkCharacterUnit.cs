@@ -180,6 +180,7 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTriggerServer;
             unitController.UnitEventController.OnClassChange += HandleClassChangeServer;
             unitController.UnitEventController.OnSpecializationChange += HandleSpecializationChangeServer;
+            unitController.UnitEventController.OnFactionChange += HandleFactionChangeServer;
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
@@ -215,6 +216,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStatusEffectAdd += HandleStatusEffectAddServer;
             unitController.UnitEventController.OnAddStatusEffectStack += HandleAddStatusEffectStackServer;
             unitController.UnitEventController.OnCancelStatusEffect += HandleCancelStatusEffectServer;
+            unitController.UnitEventController.OnCombatMessage += HandleCombatMessageServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -242,6 +244,7 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTriggerServer;
             unitController.UnitEventController.OnClassChange -= HandleClassChangeServer;
             unitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChangeServer;
+            unitController.UnitEventController.OnFactionChange -= HandleFactionChangeServer;
             unitController.UnitEventController.OnEnterInteractableRange -= HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange -= HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest -= HandleAcceptQuestServer;
@@ -276,6 +279,16 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStatusEffectAdd -= HandleStatusEffectAddServer;
             unitController.UnitEventController.OnAddStatusEffectStack -= HandleAddStatusEffectStackServer;
             unitController.UnitEventController.OnCancelStatusEffect -= HandleCancelStatusEffectServer;
+            unitController.UnitEventController.OnCombatMessage -= HandleCombatMessageServer;
+        }
+
+        public void HandleCombatMessageServer(string message) {
+            HandleCombatMessageClient(message);
+        }
+
+        [ObserversRpc]
+        public void HandleCombatMessageClient(string message) {
+            unitController.UnitEventController.NotifyOnCombatMessage(message);
         }
 
         public void HandleCancelStatusEffectServer(StatusEffectProperties properties) {
@@ -887,6 +900,20 @@ namespace AnyRPG {
             ClassSpecialization newSpecialization = systemDataFactory.GetResource<ClassSpecialization>(newSpecializationName);
             unitController.BaseCharacter.ChangeClassSpecialization(newSpecialization);
         }
+
+        public void HandleFactionChangeServer(Faction newFaction, Faction oldFaction) {
+            HandleFactionChangeClient(newFaction.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleFactionChangeClient(string newFactionName) {
+            Faction newFaction = systemDataFactory.GetResource<Faction>(newFactionName);
+            if (newFaction == null) {
+                return;
+            }
+            unitController.BaseCharacter.ChangeCharacterFaction(newFaction);
+        }
+
 
         public void HandleClassChangeServer(UnitController sourceUnitController, CharacterClass newCharacterClass, CharacterClass oldCharacterClass) {
             HandleClassChangeClient(newCharacterClass.ResourceName);

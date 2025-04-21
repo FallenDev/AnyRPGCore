@@ -40,6 +40,8 @@ namespace AnyRPG {
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex);
         public abstract void SetPlayerCharacterClass(string className);
+        public abstract void SetPlayerCharacterSpecialization(string specializationName);
+        public abstract void SetPlayerFaction(string factionName);
         public abstract void LearnSkill(string skillName);
         public abstract void AcceptQuest(string questName);
         public abstract void CompleteQuest(string questName, QuestRewardChoices questRewardChoices);

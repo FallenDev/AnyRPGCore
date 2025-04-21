@@ -205,7 +205,7 @@ namespace AnyRPG {
         }
 
         public void UpdateStatsDescription() {
-            Debug.Log("CharacterPanel.UpdateStatsDescription");
+            //Debug.Log("CharacterPanel.UpdateStatsDescription");
 
             if (uIManager.characterPanelWindow.IsOpen == false) {
                 return;

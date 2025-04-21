@@ -228,8 +228,12 @@ namespace AnyRPG {
 
         public void SetPlayerCharacterSpecialization(ClassSpecialization newClassSpecialization) {
             //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.SetPlayerCharacterSpecialization(newClassSpecialization.ResourceName);
+                return;
+            }
             if (newClassSpecialization != null) {
-                unitController.BaseCharacter.ChangeClassSpecialization(newClassSpecialization);
+                playerManagerServer.SetPlayerCharacterSpecialization(newClassSpecialization, 0);
             }
         }
 
@@ -246,10 +250,13 @@ namespace AnyRPG {
 
         public void SetPlayerFaction(Faction newFaction) {
             //Debug.Log("PlayerManager.SetPlayerFaction(" + factionName + ")");
-            if (newFaction != null) {
-                unitController.BaseCharacter.ChangeCharacterFaction(newFaction);
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.SetPlayerFaction(newFaction.ResourceName);
+                return;
             }
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            if (newFaction != null) {
+                playerManagerServer.SetPlayerFaction(newFaction, 0);
+            }
         }
 
         public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
@@ -697,6 +704,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
             unitController.UnitEventController.OnSetCraftAbility += HandleSetCraftAbility;
             unitController.UnitEventController.OnCraftItem += HandleCraftItem;
+            unitController.UnitEventController.OnFactionChange += HandleFactionChange;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -745,6 +753,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOption;
             unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbility;
             unitController.UnitEventController.OnCraftItem -= HandleCraftItem;
+            unitController.UnitEventController.OnFactionChange -= HandleFactionChange;
+        }
+
+        public void HandleFactionChange(Faction newFaction, Faction oldFaction) {
+            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
         }
 
         public void HandleAddBag(InstantiatedBag bag, BagNode node) {
@@ -805,13 +818,13 @@ namespace AnyRPG {
         }
 
         public void HandleAddInventorySlot(InventorySlot inventorySlot) {
-            Debug.Log("PlayerManager.HandleAddInventorySlot()");
+            //Debug.Log("PlayerManager.HandleAddInventorySlot()");
 
             inventoryManager.AddInventorySlot(inventorySlot);
         }
 
         public void HandleAddBankSlot(InventorySlot inventorySlot) {
-            Debug.Log("PlayerManager.HandleAddBankSlot()");
+            //Debug.Log("PlayerManager.HandleAddBankSlot()");
 
             inventoryManager.AddBankSlot(inventorySlot);
         }

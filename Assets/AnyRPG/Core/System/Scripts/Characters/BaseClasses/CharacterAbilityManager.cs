@@ -1209,7 +1209,7 @@ namespace AnyRPG {
         /// <returns></returns>
         public IEnumerator PerformAbilityCast(AbilityProperties ability, Interactable target, AbilityEffectContext abilityEffectContext) {
             float startTime = Time.time;
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.PerformAbilityCast({ability.ResourceName}, " + (target == null ? "null" : target.name) + ") Enter Ienumerator with tag: " + startTime);
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.PerformAbilityCast({ability.ResourceName}, {(target == null ? "null" : target.name)}) Enter Ienumerator with start time: {startTime}");
 
             bool canCast = true;
 
@@ -1472,7 +1472,7 @@ namespace AnyRPG {
         }
 
         protected bool BeginAbilityCommon(AbilityProperties ability, Interactable target, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, " + (target == null ? "null" : target.gameObject.name) + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target == null ? "null" : target.gameObject.name)}, {playerInitiated})");
 
             if (ability == null) {
                 Debug.LogError("CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.name) + ") NO ABILITY FOUND");
@@ -1605,36 +1605,33 @@ namespace AnyRPG {
             // check if the ability is learned yet
             if (!PerformLearnedCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): Have not learned ability!");
-                if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName} Have not learned ability!");
-                }
+                unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName} Have not learned ability!");
                 return false;
             }
 
             // check if the ability is on cooldown
             if (!PerformCooldownCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): ability is on cooldown!");
-                if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage("Cannot cast " + ability.DisplayName + "): ability is on cooldown!");
-                }
+                unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: ability is on cooldown!");
                 return false;
             }
 
             // check if auto-attack cooldown based on attack speed applies
             if (ability.ReadyToCast(unitController.CharacterCombat) == false) {
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): auto-attack cooldown based on attack speed applies!");
                 return false;
             }
 
             // check if we have enough mana
             if (!PerformPowerResourceCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): do not have sufficient power resource to cast!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): do not have sufficient power resource to cast!");
                 return false;
             }
 
             if (!PerformCombatCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast ability in combat!");
                 if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage("Cannot cast " + ability.DisplayName + "): cannot cast ability in combat!");
+                    unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast ability in combat!");
                 }
                 return false;
             }
@@ -1642,7 +1639,7 @@ namespace AnyRPG {
             if (!PerformStealthCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast ability in combat!");
                 if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage("Cannot cast " + ability.DisplayName + "): cannot cast ability unless stealthed!");
+                    unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast ability unless stealthed!");
                 }
                 return false;
             }
@@ -1651,7 +1648,7 @@ namespace AnyRPG {
             if (!PerformLivenessCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast while dead!");
                 if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage("Cannot cast " + ability.DisplayName + "): cannot cast while dead!");
+                    unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast while dead!");
                 }
                 return false;
             }
@@ -1660,9 +1657,7 @@ namespace AnyRPG {
             // this check is designed to prevent players from casting anything other than instant casts while running
             if (playerInitiated && !PerformMovementCheck(ability)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): velocity too high to cast!");
-                if (playerInitiated) {
-                    unitController.UnitEventController.NotifyOnCombatMessage("Cannot cast " + ability.DisplayName + "): cannot cast while moving!");
-                }
+                unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast while moving!");
                 return false;
             }
 

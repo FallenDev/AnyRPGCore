@@ -412,6 +412,14 @@ namespace AnyRPG {
             clientConnector.SetPlayerCharacterClass(className);
         }
 
+        public override void SetPlayerCharacterSpecialization(string specializationName) {
+            clientConnector.SetPlayerCharacterSpecialization(specializationName);
+        }
+
+        public override void SetPlayerFaction(string factionName) {
+            clientConnector.SetPlayerFaction(factionName);
+        }
+
         public override void LearnSkill(string skillName) {
             clientConnector.LearnSkill(skillName);
         }

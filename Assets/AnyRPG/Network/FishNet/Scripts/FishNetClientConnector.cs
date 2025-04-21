@@ -647,6 +647,16 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void SetPlayerCharacterSpecialization(string specializationName, NetworkConnection networkConnection = null) {
+            networkManagerServer.SetPlayerCharacterSpecialization(specializationName, networkConnection.ClientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SetPlayerFaction(string factionName, NetworkConnection networkConnection = null) {
+            networkManagerServer.SetPlayerFaction(factionName, networkConnection.ClientId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void LearnSkill(string skillName, NetworkConnection networkConnection = null) {
             networkManagerServer.LearnSkill(skillName, networkConnection.ClientId);
         }

@@ -57,6 +57,7 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected PlayerManager playerManager = null;
         protected CombatTextManager combatTextManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public float WalkSpeed { get => walkSpeed; }
         public float RunSpeed { get => currentRunSpeed; }
@@ -182,6 +183,7 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             playerManager = systemGameManager.PlayerManager;
             combatTextManager = systemGameManager.UIManager.CombatTextManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         /*
@@ -1409,7 +1411,7 @@ namespace AnyRPG {
             }
             foreach (StatusEffectNode statusEffectNode in statusEffectNodes) {
                 statusEffectNode.CancelStatusEffect();
-                statusEffects.Remove(SystemDataUtility.PrepareStringForMatch(statusEffectNode.StatusEffect.DisplayName));
+                statusEffects.Remove(statusEffectNode.StatusEffect.ResourceName);
             }
             //statusEffects.Clear();
         }
@@ -1441,7 +1443,7 @@ namespace AnyRPG {
                 statusEffectNode.SetRemainingDuration(statusEffect.Duration);
             }
             if (statusEffect.CastZeroTick) {
-                if (characterSource != null) {
+                if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
                     statusEffect.CastTick(characterSource, unitController, abilityEffectContext);
                 }
             }
@@ -1454,18 +1456,20 @@ namespace AnyRPG {
 
                 if (elapsedTime >= statusEffect.TickRate && statusEffect.TickRate != 0) {
                     if (characterSource != null) {
-                        statusEffect.CastTick(characterSource, unitController, abilityEffectContext);
+                        if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                            statusEffect.CastTick(characterSource, unitController, abilityEffectContext);
+                        }
                         elapsedTime -= statusEffect.TickRate;
                     }
                 }
                 statusEffectNode.UpdateStatusNode();
             }
-            if (characterSource != null) {
+            if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
                 statusEffect.CastComplete(characterSource, unitController, abilityEffectContext);
             }
 
-            if (statusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName))) {
-                statusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName)].CancelStatusEffect();
+            if (statusEffects.ContainsKey(statusEffect.ResourceName) && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
+                statusEffects[statusEffect.ResourceName].CancelStatusEffect();
             }
         }
 

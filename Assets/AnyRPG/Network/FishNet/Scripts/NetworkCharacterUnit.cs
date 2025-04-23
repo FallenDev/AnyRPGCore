@@ -174,6 +174,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityObjects += HandleSpawnAbilityObjectsServer;
             unitController.UnitEventController.OnDespawnAbilityObjects += HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs += HandleSpawnAbilityEffectPrefabsServer;
+            unitController.UnitEventController.OnSpawnProjectileEffectPrefabs += HandleSpawnProjectileEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP += HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
@@ -238,6 +239,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSpawnAbilityObjects -= HandleSpawnAbilityObjectsServer;
             unitController.UnitEventController.OnDespawnAbilityObjects -= HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
+            unitController.UnitEventController.OnSpawnProjectileEffectPrefabs -= HandleSpawnProjectileEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged -= HandleLevelChanged;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
@@ -993,11 +995,14 @@ namespace AnyRPG {
         [ObserversRpc]
         //public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, AbilityEffectContext abilityEffectContext) {
         public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
+            if (abilityEffect == null) {
+                return;
+            }
             FixedLengthEffectProperties fixedLengthEffectProperties = abilityEffect.AbilityEffectProperties as FixedLengthEffectProperties;
-            if (abilityEffect == null || fixedLengthEffectProperties == null) {
+            if (fixedLengthEffectProperties == null) {
                 return;
             }
             Interactable target = null;
@@ -1010,6 +1015,45 @@ namespace AnyRPG {
             }
             unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, new AbilityEffectContext(unitController));
         }
+
+        public void HandleSpawnProjectileEffectPrefabsServer(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {projectileEffectProperties.ResourceName})");
+
+            NetworkInteractable networkTarget = null;
+            if (target != null) {
+                networkTarget = target.GetComponent<NetworkInteractable>();
+            }
+            NetworkInteractable networkOriginalTarget = null;
+            if (target != null) {
+                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+            }
+            HandleSpawnProjectileEffectPrefabsClient(networkTarget, networkOriginalTarget, projectileEffectProperties.ResourceName);
+        }
+
+        [ObserversRpc]
+        //public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, AbilityEffectContext abilityEffectContext) {
+        public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
+
+            ProjectileEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ProjectileEffect;
+            if (abilityEffect == null) {
+                return;
+            }
+            ProjectileEffectProperties projectileEffectProperties = abilityEffect.AbilityEffectProperties as ProjectileEffectProperties;
+            if (projectileEffectProperties == null) {
+                return;
+            }
+            Interactable target = null;
+            Interactable originalTarget = null;
+            if (networkTarget != null) {
+                target = networkTarget.Interactable;
+            }
+            if (networkOriginalTarget != null) {
+                originalTarget = networkOriginalTarget.Interactable;
+            }
+            unitController.CharacterAbilityManager.SpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, new AbilityEffectContext(unitController));
+        }
+
 
         public void HandleSpawnAbilityObjectsServer(AbilityProperties ability, int index) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
@@ -1029,7 +1073,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleDespawnAbilityObjects() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjects()");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnAbilityObjects()");
 
             unitController.CharacterAbilityManager.DespawnAbilityObjects();
         }

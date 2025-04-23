@@ -88,6 +88,8 @@ namespace AnyRPG {
         }
 
         public void HandleLobbyLogin(int clientId, string userName) {
+            Debug.Log($"ClientLobbyPanel.HandleLobbyLogin({clientId}, {userName})");
+
             AddPlayerToList(clientId, userName);
         }
 
@@ -135,7 +137,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int clientId, string userName) {
-            //Debug.Log($"ClientLobbyPanelController.AddPlayerToList({userName})");
+            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({clientId}, {userName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyConnectionButton clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButton>();
@@ -242,8 +244,8 @@ namespace AnyRPG {
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
             networkManagerClient.OnSendLobbyChatMessage -= HandleSendLobbyChatMessage;
-            networkManagerClient.OnLobbyLogin += HandleLobbyLogin;
-            networkManagerClient.OnLobbyLogout += HandleLobbyLogout;
+            networkManagerClient.OnLobbyLogin -= HandleLobbyLogin;
+            networkManagerClient.OnLobbyLogout -= HandleLobbyLogout;
             networkManagerClient.OnCreateLobbyGame -= HandleCreateLobbyGame;
             networkManagerClient.OnCancelLobbyGame -= HandleCancelLobbyGame;
             networkManagerClient.OnSetLobbyGameList -= HandleSetLobbyGameList;

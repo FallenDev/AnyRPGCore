@@ -36854,7 +36854,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.955383
+      value: 56.54303
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36864,12 +36864,12 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 16.165894
+      value: 7.4767456
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.00000058114523
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36879,7 +36879,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000014901159
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36894,7 +36894,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -48668,7 +48668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 23ab2a83-6ac3-4864-bea6-1b79df0d28b5
+  m_UUID: 7b488fe7-665e-4b5e-8c5f-2775c40b718d
   forceUpdateUUID: 0
 --- !u!54 &1448223535
 Rigidbody:
@@ -62377,7 +62377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 5ed31773-a0b4-45ed-be2d-c1fc138b9cc9
+  m_UUID: 14dd09a6-e5ac-4fdd-9ca8-9a0714a0db61
   forceUpdateUUID: 0
 --- !u!54 &1813795260
 Rigidbody:

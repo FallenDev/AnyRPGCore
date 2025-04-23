@@ -25,7 +25,7 @@ namespace AnyRPG {
         }
 
         public void AddInventorySlot(InventorySlot inventorySlot) {
-            Debug.Log("InventoryManager.AddInventorySlot()");
+            //Debug.Log("InventoryManager.AddInventorySlot()");
 
             OnAddInventorySlot(inventorySlot);
         }

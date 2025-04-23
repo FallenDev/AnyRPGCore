@@ -1970,15 +1970,27 @@ namespace AnyRPG {
         }
 
         public override Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectContext) {
-            //Dictionary<PrefabProfile, List<GameObject>> returnList = new Dictionary<PrefabProfile, List<GameObject>>();
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityEffectPrefabs({target?.name}, {originalTarget?.name}, {fixedLengthEffectProperties.ResourceName})");
+
+            Dictionary<PrefabProfile, List<GameObject>> returnValue = base.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
             unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
-            return base.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
+            
+            return returnValue;
         }
 
         public override Dictionary<PrefabProfile, List<GameObject>> SpawnStatusEffectPrefabs(Interactable target, StatusEffectProperties statusEffectProperties, AbilityEffectContext abilityEffectContext) {
             //Dictionary<PrefabProfile, List<GameObject>> returnList = new Dictionary<PrefabProfile, List<GameObject>>();
             //unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, statusEffectProperties, abilityEffectContext);
             return base.SpawnStatusEffectPrefabs(target, statusEffectProperties, abilityEffectContext);
+        }
+
+        public override Dictionary<PrefabProfile, List<GameObject>> SpawnProjectileEffectPrefabs(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnProjectileEffectPrefabs({target?.name}, {originalTarget?.name}, {projectileEffectProperties.ResourceName})");
+            
+            Dictionary<PrefabProfile, List<GameObject>> returnValue = base.SpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, abilityEffectContext);
+            unitController.UnitEventController.NotifyOnSpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, abilityEffectContext);
+            
+            return returnValue;
         }
 
     }

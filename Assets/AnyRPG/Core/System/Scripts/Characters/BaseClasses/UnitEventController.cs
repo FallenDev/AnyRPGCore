@@ -103,6 +103,7 @@ namespace AnyRPG {
         public event System.Action<AbilityProperties, int> OnSpawnAbilityObjects = delegate { };
         public event System.Action OnDespawnAbilityObjects = delegate { };
         public event System.Action<Interactable, Interactable, LengthEffectProperties, AbilityEffectContext> OnSpawnAbilityEffectPrefabs = delegate { };
+        public event System.Action<Interactable, Interactable, ProjectileEffectProperties, AbilityEffectContext> OnSpawnProjectileEffectPrefabs = delegate { };
         public event System.Action<UnitController, Interactable> OnEnterInteractableTrigger = delegate { };
         public event System.Action<UnitController, Interactable> OnExitInteractableTrigger = delegate { };
         public event System.Action<UnitController, Interactable> OnEnterInteractableRange = delegate { };
@@ -774,6 +775,10 @@ namespace AnyRPG {
 
         public void NotifyOnCancelStatusEffect(StatusEffectProperties statusEffect) {
             OnCancelStatusEffect(statusEffect);
+        }
+
+        public void NotifyOnSpawnProjectileEffectPrefabs(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
+            OnSpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, abilityEffectContext);
         }
 
         #endregion

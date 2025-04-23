@@ -26,18 +26,24 @@ namespace AnyRPG {
 
         private bool initialized = false;
 
+        private ProjectileEffectProperties projectileEffectProperties = null;
+
         private AbilityEffectContext abilityEffectContext = null;
+
+        public ProjectileEffectProperties ProjectileEffectProperties { get => projectileEffectProperties; }
 
         private void Update() {
             //Debug.Log($"{gameObject.name}.ProjectileScript.Update()");
             MoveTowardTarget();
         }
 
-        public void Initialize(float velocity, IAbilityCaster source, Interactable target, Vector3 positionOffset, GameObject go, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log($"{gameObject.name}.ProjectileScript.Initialize(" + velocity + ", " + source.AbilityManager.Name + ", " + (target == null ? "null" : target.name) + ", " + positionOffset + ")");
+        public void Initialize(ProjectileEffectProperties projectileEffectProperties, IAbilityCaster source, Interactable target, Vector3 positionOffset, GameObject go, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{gameObject.name}.ProjectileScript.Initialize({projectileEffectProperties.ResourceName}, {source.AbilityManager.Name}, {(target == null ? "null" : target.name)}, {positionOffset}, {go.name})");
+
             projectileGameObject = go;
             this.source = source;
-            this.velocity = velocity;
+            this.projectileEffectProperties = projectileEffectProperties;
+            this.velocity = projectileEffectProperties.ProjectileSpeed;
             this.target = target;
             this.positionOffset = positionOffset;
             this.abilityEffectContext = abilityEffectContext;

@@ -1,4 +1,3 @@
-using FishNet.Managing.Object;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +23,7 @@ namespace AnyRPG {
 
         // game manager references
         protected ObjectPooler objectPooler = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public virtual bool ControlLocked {
             get {
@@ -85,6 +85,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public virtual CharacterUnit GetCharacterUnit() {
@@ -427,8 +428,13 @@ namespace AnyRPG {
             return;
         }
 
-        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectInput) {
-            
+        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectContext) {
+            return ProcessSpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
+        }
+
+        public virtual Dictionary<PrefabProfile, List<GameObject>> ProcessSpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.ProcessSpawnAbilityEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {fixedLengthEffectProperties.ResourceName})");
+
             Dictionary<PrefabProfile, List<GameObject>> prefabObjects = new Dictionary<PrefabProfile, List<GameObject>>();
 
             if (fixedLengthEffectProperties.GetPrefabProfileList(abilityCaster) != null) {
@@ -566,6 +572,47 @@ namespace AnyRPG {
             statusEffectProperties.BeginMonitoring(prefabObjects, abilityCaster, target, abilityEffectContext);
             return prefabObjects;
         }
+
+        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnProjectileEffectPrefabs(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {projectileEffectProperties.ResourceName})");
+
+            Dictionary<PrefabProfile, List<GameObject>> prefabObjects = ProcessSpawnAbilityEffectPrefabs(target, originalTarget, projectileEffectProperties, abilityEffectContext);
+            
+            if (prefabObjects != null) {
+                foreach (List<GameObject> gameObjectList in prefabObjects.Values) {
+                    foreach (GameObject go in gameObjectList) {
+                        Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs(): found gameobject: " + go.name);
+                        //go.transform.parent = playerManager.EffectPrefabParent.transform;
+                        go.transform.parent = null;
+                        ProjectileScript projectileScript = go.GetComponentInChildren<ProjectileScript>();
+                        if (projectileScript != null) {
+                            //Debug.Log(DisplayName + ".ProjectileEffect.Cast(): found gameobject: " + go.name + " and it has projectile script");
+                            abilityEffectContext = projectileEffectProperties.ApplyInputMultiplier(abilityEffectContext);
+                            projectileScript.Initialize(projectileEffectProperties, abilityCaster, target, new Vector3(0, 1, 0), go, abilityEffectContext);
+                            if (networkManagerServer.ServerModeActive == false) { 
+                                if (projectileEffectProperties.FlightAudioProfiles != null && projectileEffectProperties.FlightAudioProfiles.Count > 0) {
+                                    projectileScript.PlayFlightAudio(projectileEffectProperties.FlightAudioProfiles, projectileEffectProperties.RandomFlightAudioProfiles);
+                                }
+                            }
+                            projectileScript.OnCollission += HandleProjectileCollision;
+                        }
+                    }
+                }
+            }
+            
+            return prefabObjects;
+        }
+
+        public void HandleProjectileCollision(IAbilityCaster source, Interactable target, GameObject abilityEffectObject, AbilityEffectContext abilityEffectInput, ProjectileScript projectileScript) {
+            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.HandleProjectileCollision({source.AbilityManager.Name}, {(target == null ? "null" : target.gameObject.name)}, {abilityEffectObject.name}, {projectileScript.ProjectileEffectProperties.ResourceName})");
+
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                projectileScript.ProjectileEffectProperties.PerformAbilityHit(source, target, abilityEffectInput);
+            }
+            projectileScript.OnCollission -= HandleProjectileCollision;
+            objectPooler.ReturnObjectToPool(abilityEffectObject);
+        }
+
 
     }
 }

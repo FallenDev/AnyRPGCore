@@ -12,7 +12,7 @@ namespace AnyRPG {
         [Header("Projectile")]
 
         [SerializeField]
-        private float projectileSpeed = 0;
+        protected float projectileSpeed = 0;
 
         [Header("Flight Audio")]
 
@@ -29,6 +29,10 @@ namespace AnyRPG {
 
         // game manager references
         protected PlayerManager playerManager = null;
+
+        public float ProjectileSpeed { get => projectileSpeed; }
+        public bool RandomFlightAudioProfiles { get => randomFlightAudioProfiles; }
+        public List<AudioProfile> FlightAudioProfiles { get => flightAudioProfiles; }
 
         /*
         public void GetProjectileEffectProperties(ProjectileEffect effect) {
@@ -48,33 +52,8 @@ namespace AnyRPG {
 
         public override Dictionary<PrefabProfile, List<GameObject>> Cast(IAbilityCaster source, Interactable target, Interactable originalTarget, AbilityEffectContext abilityEffectContext) {
             //Debug.Log(DisplayName + ".ProjectileEffect.Cast(" + source.AbilityManager.Name + ", " + (target == null ? "null" : target.name) + ")");
-            Dictionary<PrefabProfile, List<GameObject>> returnObjects = base.Cast(source, target, originalTarget, abilityEffectContext);
-            if (returnObjects != null) {
-                foreach (List<GameObject> gameObjectList in returnObjects.Values) {
-                    foreach (GameObject go in gameObjectList) {
-                        //Debug.Log(DisplayName + ".ProjectileEffect.Cast(): found gameobject: " + go.name);
-                        go.transform.parent = playerManager.EffectPrefabParent.transform;
-                        ProjectileScript projectileScript = go.GetComponentInChildren<ProjectileScript>();
-                        if (projectileScript != null) {
-                            //Debug.Log(DisplayName + ".ProjectileEffect.Cast(): found gameobject: " + go.name + " and it has projectile script");
-                            abilityEffectContext = ApplyInputMultiplier(abilityEffectContext);
-                            projectileScript.Initialize(projectileSpeed, source, target, new Vector3(0, 1, 0), go, abilityEffectContext);
-                            if (flightAudioProfiles != null && flightAudioProfiles.Count > 0) {
-                                projectileScript.PlayFlightAudio(flightAudioProfiles, randomFlightAudioProfiles);
-                            }
-                            projectileScript.OnCollission += HandleCollission;
-                        }
-                    }
-                }
-            }
+            Dictionary<PrefabProfile, List<GameObject>> returnObjects = source.AbilityManager.SpawnProjectileEffectPrefabs(target, originalTarget, this, abilityEffectContext);
             return returnObjects;
-        }
-
-        public void HandleCollission(IAbilityCaster source, Interactable target, GameObject _abilityEffectObject, AbilityEffectContext abilityEffectInput, ProjectileScript projectileScript) {
-            //Debug.Log(DisplayName + ".ProjectileEffect.HandleCollission()");
-            PerformAbilityHit(source, target, abilityEffectInput);
-            projectileScript.OnCollission -= HandleCollission;
-            objectPooler.ReturnObjectToPool(_abilityEffectObject);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {

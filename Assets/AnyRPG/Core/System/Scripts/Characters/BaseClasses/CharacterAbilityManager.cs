@@ -1993,6 +1993,15 @@ namespace AnyRPG {
             return returnValue;
         }
 
+        public override Dictionary<PrefabProfile, List<GameObject>> SpawnChanneledEffectPrefabs(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnProjectileEffectPrefabs({target?.name}, {originalTarget?.name}, {channeledEffectProperties.ResourceName})");
+
+            Dictionary<PrefabProfile, List<GameObject>> returnValue = base.SpawnChanneledEffectPrefabs(target, originalTarget, channeledEffectProperties, abilityEffectContext);
+            unitController.UnitEventController.NotifyOnSpawnChanneledEffectPrefabs(target, originalTarget, channeledEffectProperties, abilityEffectContext);
+
+            return returnValue;
+        }
+
     }
 
 }

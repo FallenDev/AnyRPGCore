@@ -175,6 +175,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDespawnAbilityObjects += HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs += HandleSpawnAbilityEffectPrefabsServer;
             unitController.UnitEventController.OnSpawnProjectileEffectPrefabs += HandleSpawnProjectileEffectPrefabsServer;
+            unitController.UnitEventController.OnSpawnChanneledEffectPrefabs += HandleSpawnChanneledEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP += HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged += HandleLevelChanged;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
@@ -240,6 +241,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDespawnAbilityObjects -= HandleDespawnAbilityObjects;
             unitController.UnitEventController.OnSpawnAbilityEffectPrefabs -= HandleSpawnAbilityEffectPrefabsServer;
             unitController.UnitEventController.OnSpawnProjectileEffectPrefabs -= HandleSpawnProjectileEffectPrefabsServer;
+            unitController.UnitEventController.OnSpawnChanneledEffectPrefabs -= HandleSpawnChanneledEffectPrefabsServer;
             unitController.UnitEventController.OnGainXP -= HandleGainXPServer;
             unitController.UnitEventController.OnLevelChanged -= HandleLevelChanged;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
@@ -977,7 +979,7 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnGainXP(gainedXP, currentXP);
         }
 
-        public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
+        public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityEffectPrefabsServer()");
 
             NetworkInteractable networkTarget = null;
@@ -988,13 +990,11 @@ namespace AnyRPG {
             if (target != null) {
                 networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
             }
-            //HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName, abilityEffectInput);
-            HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName);
+            HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
         }
 
         [ObserversRpc]
-        //public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, AbilityEffectContext abilityEffectContext) {
-        public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName) {
+        public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
@@ -1013,7 +1013,7 @@ namespace AnyRPG {
             if (networkOriginalTarget != null) {
                 originalTarget = networkOriginalTarget.Interactable;
             }
-            unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, new AbilityEffectContext(unitController));
+            unitController.CharacterAbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, new AbilityEffectContext(unitController, originalTarget, serializableAbilityEffectContext, systemGameManager));
         }
 
         public void HandleSpawnProjectileEffectPrefabsServer(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
@@ -1027,12 +1027,11 @@ namespace AnyRPG {
             if (target != null) {
                 networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
             }
-            HandleSpawnProjectileEffectPrefabsClient(networkTarget, networkOriginalTarget, projectileEffectProperties.ResourceName);
+            HandleSpawnProjectileEffectPrefabsClient(networkTarget, networkOriginalTarget, projectileEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
         }
 
         [ObserversRpc]
-        //public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, AbilityEffectContext abilityEffectContext) {
-        public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName) {
+        public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             ProjectileEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ProjectileEffect;
@@ -1051,7 +1050,44 @@ namespace AnyRPG {
             if (networkOriginalTarget != null) {
                 originalTarget = networkOriginalTarget.Interactable;
             }
-            unitController.CharacterAbilityManager.SpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, new AbilityEffectContext(unitController));
+            unitController.CharacterAbilityManager.SpawnProjectileEffectPrefabs(target, originalTarget, projectileEffectProperties, new AbilityEffectContext(unitController, originalTarget, serializableAbilityEffectContext, systemGameManager));
+        }
+
+        public void HandleSpawnChanneledEffectPrefabsServer(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnChanneledEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {channeledEffectProperties.ResourceName})");
+
+            NetworkInteractable networkTarget = null;
+            if (target != null) {
+                networkTarget = target.GetComponent<NetworkInteractable>();
+            }
+            NetworkInteractable networkOriginalTarget = null;
+            if (target != null) {
+                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+            }
+            HandleSpawnChanneledEffectPrefabsClient(networkTarget, networkOriginalTarget, channeledEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
+        }
+
+        [ObserversRpc]
+        public void HandleSpawnChanneledEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
+
+            ChanneledEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ChanneledEffect;
+            if (abilityEffect == null) {
+                return;
+            }
+            ChanneledEffectProperties channeledEffectProperties = abilityEffect.AbilityEffectProperties as ChanneledEffectProperties;
+            if (channeledEffectProperties == null) {
+                return;
+            }
+            Interactable target = null;
+            Interactable originalTarget = null;
+            if (networkTarget != null) {
+                target = networkTarget.Interactable;
+            }
+            if (networkOriginalTarget != null) {
+                originalTarget = networkOriginalTarget.Interactable;
+            }
+            unitController.CharacterAbilityManager.SpawnChanneledEffectPrefabs(target, originalTarget, channeledEffectProperties, new AbilityEffectContext(unitController, originalTarget, serializableAbilityEffectContext, systemGameManager));
         }
 
 

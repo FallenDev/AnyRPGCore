@@ -603,6 +603,54 @@ namespace AnyRPG {
             return prefabObjects;
         }
 
+        public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnChanneledEffectPrefabs(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
+            Dictionary<PrefabProfile, List<GameObject>> prefabObjects = ProcessSpawnAbilityEffectPrefabs(target, originalTarget, channeledEffectProperties, abilityEffectContext);
+
+            if (prefabObjects != null) {
+                //Debug.Log(DisplayName + "ChanneledEffect.Cast(" + source + ", " + (target == null ? "null" : target.name) + ") PREFABOBJECTS WAS NOT NULL");
+
+                foreach (PrefabProfile prefabProfile in prefabObjects.Keys) {
+                    foreach (GameObject go in prefabObjects[prefabProfile]) {
+                        // recently added code will properly spawn the object based on universal attachments
+                        // get references to the parent and rotation to pass them onto the channeled object script
+                        // since this object will switch parents to avoid moving/rotating with the character body
+                        GameObject prefabParent = go.transform.parent.gameObject;
+                        Vector3 sourcePosition = go.transform.localPosition;
+
+                        //go.transform.parent = playerManager.EffectPrefabParent.transform;
+                        go.transform.parent = null;
+                        IChanneledObject channeledObjectScript = go.GetComponent<IChanneledObject>();
+                        if (channeledObjectScript != null) {
+                            Vector3 endPosition = Vector3.zero;
+                            Interactable usedTarget = target;
+                            if (abilityEffectContext.baseAbility != null && abilityEffectContext.baseAbility.GetTargetOptions(abilityCaster).RequiresGroundTarget == true) {
+                                endPosition = abilityEffectContext.groundTargetLocation;
+                                usedTarget = null;
+                                //Debug.Log(DisplayName + "ChanneledEffect.Cast() abilityEffectInput.prefabLocation: " + abilityEffectInput.prefabLocation);
+                            } else {
+                                endPosition = target.GetComponent<Collider>().bounds.center - target.transform.position;
+                            }
+
+                            channeledObjectScript.Setup(prefabParent, sourcePosition, usedTarget?.gameObject, endPosition, systemGameManager);
+                        } else {
+                            Debug.LogError($"{abilityCaster.gameObject.name}.AbilityManager.SpawnChanneledEffectPrefabs.(): CHECK INSPECTOR, IChanneledObject NOT FOUND");
+                        }
+                    }
+
+                }
+
+                // delayed damage
+                if (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local) {
+                    BeginPerformAbilityHitDelay(abilityCaster, target, abilityEffectContext, channeledEffectProperties);
+                }
+            } else {
+                //Debug.Log(DisplayName + ".ChanneledEffect.Cast(" + source + ", " + (target == null ? "null" : target.name) + ") PREFABOBJECTS WAS NULL");
+
+            }
+
+            return prefabObjects;
+        }
+
         public void HandleProjectileCollision(IAbilityCaster source, Interactable target, GameObject abilityEffectObject, AbilityEffectContext abilityEffectInput, ProjectileScript projectileScript) {
             Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.HandleProjectileCollision({source.AbilityManager.Name}, {(target == null ? "null" : target.gameObject.name)}, {abilityEffectObject.name}, {projectileScript.ProjectileEffectProperties.ResourceName})");
 

@@ -53,6 +53,22 @@ namespace AnyRPG {
             abilityCasterRotation = abilityCaster.transform.rotation;
         }
 
+        public AbilityEffectContext(IAbilityCaster abilityCaster, Interactable originalTarget, SerializableAbilityEffectContext serializableAbilityEffectContext, SystemGameManager systemGameManager) {
+            this.abilityCaster = abilityCaster;
+            abilityCasterLocation = abilityCaster.transform.position;
+            abilityCasterRotation = abilityCaster.transform.rotation;
+            overrideDuration = serializableAbilityEffectContext.overrideDuration;
+            savedEffect = serializableAbilityEffectContext.savedEffect;
+            castTimeMultiplier = serializableAbilityEffectContext.castTimeMultiplier;
+            spellDamageMultiplier = serializableAbilityEffectContext.spellDamageMultiplier;
+            reflectDamage = serializableAbilityEffectContext.reflectDamage;
+            groundTargetLocation = serializableAbilityEffectContext.groundTargetLocation;
+            this.originalTarget = originalTarget;
+            baseAbility = serializableAbilityEffectContext.baseAbilityName == string.Empty ? null : systemGameManager.SystemDataFactory.GetResource<Ability>(serializableAbilityEffectContext.baseAbilityName)?.AbilityProperties;
+            powerResource = serializableAbilityEffectContext.powerResourceName == string.Empty ? null : systemGameManager.SystemDataFactory.GetResource<PowerResource>(serializableAbilityEffectContext.powerResourceName);
+            weaponHitHasCast = serializableAbilityEffectContext.weaponHitHasCast;
+        }
+
         public AbilityEffectContext GetCopy() {
             // make a new ability effect context
             AbilityEffectContext returnValue = new AbilityEffectContext();
@@ -81,6 +97,28 @@ namespace AnyRPG {
             // return the new object
             return returnValue;
         }
+
+        public SerializableAbilityEffectContext GetSerializableContext() {
+            // make a new ability effect context
+            SerializableAbilityEffectContext returnValue = new SerializableAbilityEffectContext();
+
+            // copy all properties
+            returnValue.overrideDuration = overrideDuration;
+            returnValue.savedEffect = savedEffect;
+            returnValue.castTimeMultiplier = castTimeMultiplier;
+            returnValue.spellDamageMultiplier = spellDamageMultiplier;
+            returnValue.reflectDamage = reflectDamage;
+            returnValue.groundTargetLocation = groundTargetLocation;
+            returnValue.baseAbilityName = (baseAbility != null ? baseAbility.ResourceName : string.Empty);
+            returnValue.powerResourceName = (powerResource != null ? powerResource.ResourceName : string.Empty);
+            returnValue.weaponHitHasCast = weaponHitHasCast;
+            returnValue.abilityCasterLocation = abilityCasterLocation;
+            returnValue.abilityCasterRotation = abilityCasterRotation;
+
+            // return the new object
+            return returnValue;
+        }
+
 
         public void SetResourceAmount(string resourceName, float resourceValue) {
             bool foundResource = false;

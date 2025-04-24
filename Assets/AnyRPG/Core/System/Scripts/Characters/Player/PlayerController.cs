@@ -568,7 +568,7 @@ namespace AnyRPG {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100, movementMask)) {
                 if (playerManager.ActiveUnitController.CharacterAbilityManager.WaitingForTarget()) {
-                    playerManager.ActiveUnitController.CharacterAbilityManager.SetGroundTarget(hit.point);
+                    playerManager.ActiveUnitController.CharacterAbilityManager.SetGroundTargetClient(hit.point);
                 }
             }
         }

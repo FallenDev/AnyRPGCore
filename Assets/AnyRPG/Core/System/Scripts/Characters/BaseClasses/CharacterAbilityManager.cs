@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AnyRPG {
     public class CharacterAbilityManager : AbilityManager, ICharacterRequestor {
@@ -14,6 +15,7 @@ namespace AnyRPG {
         protected Vector3 groundTarget = Vector3.zero;
 
         protected bool targettingModeActive = false;
+        protected AbilityProperties groundTargetAbility = null;
 
         // does killing the player you are currently targetting stop your cast.  gets set to false when channeling aoe.
         // disabled to prevent weapon going out of character hand mid animation swing if mob dies while swinging
@@ -1086,6 +1088,7 @@ namespace AnyRPG {
         public void ActivateTargettingMode(AbilityProperties baseAbility, Interactable target) {
             //Debug.Log("CharacterAbilityManager.ActivateTargettingMode()");
             targettingModeActive = true;
+            groundTargetAbility = baseAbility;
             if (unitController.UnitControllerMode == UnitControllerMode.AI || unitController.UnitControllerMode == UnitControllerMode.Pet) {
                 targettingModeActive = false;
                 groundTarget = target.transform.position;
@@ -1104,14 +1107,25 @@ namespace AnyRPG {
         }
 
         public void SetGroundTarget(Vector3 newGroundTarget) {
-            //Debug.Log("CharacterAbilityManager.SetGroundTarget(" + newGroundTarget + ")");
             groundTarget = newGroundTarget;
-            DeActivateTargettingMode();
+            unitController.UnitEventController.NotifyOnSetGroundTarget(newGroundTarget);
+        }
+
+        public void SetGroundTargetClient(Vector3 newGroundTarget) {
+            //Debug.Log("CharacterAbilityManager.SetGroundTarget(" + newGroundTarget + ")");
+            SetGroundTarget(newGroundTarget);
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                AbilityProperties ability = groundTargetAbility;
+                DeActivateTargettingMode();
+                BeginAbility(ability, null);
+            }
         }
 
         public void DeActivateTargettingMode() {
-            //Debug.Log("CharacterAbilityManager.DeActivateTargettingMode()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DeActivateTargettingMode()");
+
             targettingModeActive = false;
+            groundTargetAbility = null;
             castTargettingManager.DisableProjector();
         }
 
@@ -1211,87 +1225,61 @@ namespace AnyRPG {
             float startTime = Time.time;
             Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.PerformAbilityCast({ability.ResourceName}, {(target == null ? "null" : target.name)}) Enter Ienumerator with start time: {startTime}");
 
-            bool canCast = true;
-
             abilityEffectContext.originalTarget = target;
-            if (ability.GetTargetOptions(unitController).RequiresGroundTarget == true) {
-                //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() Ability requires a ground target.");
-                ActivateTargettingMode(ability, target);
-                while (WaitingForTarget() == true) {
-                    //Debug.Log("CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + ") waiting for target");
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): cancast is true");
+            if (!ability.CanSimultaneousCast) {
+                //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() ability: " + ability.DisplayName + " can simultaneous cast is false, setting casting to true");
+                performingCast = true;
+                //ability.StartCasting(unitController);
+                PerformCastingAnimation(ability);
+            }
+            float currentCastPercent = 0f;
+            float nextTickPercent = 0f;
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastPercent: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.MyAbilityCastingTime);
+
+            if (unitController != null && ability.GetHoldableObjectList(unitController).Count != 0) {
+                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "): spawning ability objects");
+                if (!ability.AnimatorCreatePrefabs) {
+                    SpawnAbilityObjects(ability);
+                }
+            }
+            if (ability.CastingAudioClip != null) {
+                unitController.UnitComponentController.PlayCastSound(ability.CastingAudioClip, ability.LoopAudio);
+            }
+            if (ability.CoolDownOnCast == true) {
+                ability.BeginAbilityCoolDown(unitController);
+            }
+
+            if (ability.GetAbilityCastingTime(unitController) > 0f) {
+                // added target condition to allow channeled spells to stop casting if target disappears
+                while (currentCastPercent < 1f
+                    && (ability.GetTargetOptions(unitController).RequireTarget == false
+                    || (target != null && target.gameObject.activeInHierarchy == true))) {
+                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): currentCastPercent: " + currentCastPercent);
+
                     yield return null;
-                }
-                if (GetGroundTarget() == Vector3.zero) {
-                    //Debug.Log("CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + ") Ground Targetting: groundtarget is vector3.zero, cannot cast");
-                    canCast = false;
-                }
-                abilityEffectContext.groundTargetLocation = GetGroundTarget();
-            }
-            if (canCast == true) {
-                // dismount if mounted
+                    currentCastPercent += (Time.deltaTime / ability.GetAbilityCastingTime(unitController));
 
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): cancast is true");
-                if (!ability.CanSimultaneousCast) {
-                    //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() ability: " + ability.DisplayName + " can simultaneous cast is false, setting casting to true");
-                    performingCast = true;
-                    //ability.StartCasting(unitController);
-                    PerformCastingAnimation(ability);
-                }
-                float currentCastPercent = 0f;
-                float nextTickPercent = 0f;
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastPercent: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.MyAbilityCastingTime);
-
-                if (unitController != null && ability.GetHoldableObjectList(unitController).Count != 0) {
-                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "): spawning ability objects");
-                    if (!ability.AnimatorCreatePrefabs) {
-                        SpawnAbilityObjects(ability);
+                    // call this first because it updates the cast bar
+                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastTime: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.GetAbilityCastingTime(baseCharacter) + "; calling OnCastTimeChanged()");
+                    if (unitController != null) {
+                        unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability, currentCastPercent);
                     }
+
+                    // now call the ability on casttime changed (really only here for channeled stuff to do damage)
+                    nextTickPercent = ability.OnCastTimeChanged(currentCastPercent, nextTickPercent, unitController, target, abilityEffectContext);
                 }
-                if (ability.CastingAudioClip != null) {
-                    unitController.UnitComponentController.PlayCastSound(ability.CastingAudioClip, ability.LoopAudio);
-                }
-                if (ability.CoolDownOnCast == true) {
-                    ability.BeginAbilityCoolDown(unitController);
-                }
-
-                if (ability.GetAbilityCastingTime(unitController) > 0f) {
-                    // added target condition to allow channeled spells to stop casting if target disappears
-                    while (currentCastPercent < 1f
-                        && (ability.GetTargetOptions(unitController).RequireTarget == false
-                        || (target != null && target.gameObject.activeInHierarchy == true))) {
-                        //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): currentCastPercent: " + currentCastPercent);
-
-                        yield return null;
-                        currentCastPercent += (Time.deltaTime / ability.GetAbilityCastingTime(unitController));
-
-                        // call this first because it updates the cast bar
-                        //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastTime: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.GetAbilityCastingTime(baseCharacter) + "; calling OnCastTimeChanged()");
-                        if (unitController != null) {
-                            unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability, currentCastPercent);
-                        }
-
-                        // now call the ability on casttime changed (really only here for channeled stuff to do damage)
-                        nextTickPercent = ability.OnCastTimeChanged(currentCastPercent, nextTickPercent, unitController, target, abilityEffectContext);
-                    }
-                }
-
             }
 
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "). nulling tag: " + startTime);
             // set currentCast to null because it isn't automatically null until the next frame and we are about to do stuff which requires it to be null immediately
             EndCastCleanup();
 
-            if (canCast) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(): Cast Complete and can cast");
-                if (!ability.CanSimultaneousCast) {
-                    NotifyOnCastComplete();
-                    performingCast = false;
-                    unitController.UnitAnimator.ClearCasting();
-                }
-                PerformAbility(ability, target, abilityEffectContext);
-            } else {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(): Cast Complete and cannot cast");
+            if (!ability.CanSimultaneousCast) {
+                NotifyOnCastComplete();
+                performingCast = false;
+                unitController.UnitAnimator.ClearCasting();
             }
+            PerformAbility(ability, target, abilityEffectContext);
         }
 
         /*
@@ -1360,12 +1348,15 @@ namespace AnyRPG {
         public bool BeginAbility(AbilityProperties ability, bool playerInitiated = false) {
             Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName}, {playerInitiated})");
 
-            if (ability == null) {
-                //Debug.Log("CharacterAbilityManager.BeginAbility(): ability is null! Exiting!");
-                return false;
-            } else {
-                //Debug.Log("CharacterAbilityManager.BeginAbility(" + ability.DisplayName + ")");
+            if (ability.GetTargetOptions(unitController).RequiresGroundTarget == true) {
+                //Debug.Log("CharacterAbilitymanager.BeginAbility() Ability requires a ground target.");
+                // we need to wait for the player to select a target
+                ActivateTargettingMode(ability, unitController.Target);
+                if (WaitingForTarget() == true) {
+                    return false;
+                }
             }
+
             return BeginAbility(ability, unitController.Target, playerInitiated);
         }
 
@@ -1374,19 +1365,16 @@ namespace AnyRPG {
 
             unitController.UnitEventController.NotifyOnBeginAbility(ability, target, playerInitiated);
 
-            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {
-                return BeginAbilityInternal(ability, target, playerInitiated);
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                AbilityEffectContext abilityEffectContext = new AbilityEffectContext(unitController);
+                abilityEffectContext.baseAbility = ability;
+                abilityEffectContext.groundTargetLocation = GetGroundTarget();
+                return BeginAbilityInternal(ability, target, abilityEffectContext, playerInitiated);
             }
 
             // in the case this is a client in network mode, returning true will not matter because the only thing that checks this value is consumables, which
             // are called from the server anyway
             return true;
-        }
-
-        public bool BeginAbilityInternal(AbilityProperties ability, Interactable target, bool playerInitiated) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName})");
-
-            return BeginAbilityCommon(ability, target, playerInitiated);
         }
 
         public override float GetSpeed() {
@@ -1471,8 +1459,8 @@ namespace AnyRPG {
             return base.GetCritChance();
         }
 
-        protected bool BeginAbilityCommon(AbilityProperties ability, Interactable target, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target == null ? "null" : target.gameObject.name)}, {playerInitiated})");
+        protected bool BeginAbilityInternal(AbilityProperties ability, Interactable target, AbilityEffectContext abilityEffectContext, bool playerInitiated = false) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target == null ? "null" : target.gameObject.name)}, {playerInitiated})");
 
             if (ability == null) {
                 Debug.LogError("CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.name) + ") NO ABILITY FOUND");
@@ -1490,9 +1478,6 @@ namespace AnyRPG {
                 Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 return false;
             }
-
-            AbilityEffectContext abilityEffectContext = new AbilityEffectContext(unitController);
-            abilityEffectContext.baseAbility = ability;
 
             // testing - if this was player initiated, the attack attempt came through right click or action button press
             // those things attempted to interact with a characterUnit which passed a faction check.  assume target is valid and perform quick sanity check

@@ -123,6 +123,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestUnequipBag += HandleRequestUnequipBag;
                 unitController.UnitEventController.OnRequestMoveBag += HandleRequestMoveBag;
                 unitController.UnitEventController.OnRequestAddBag += HandleRequestAddBagFromInventory;
+                unitController.UnitEventController.OnSetGroundTarget += HandleSetGroundTarget;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -149,6 +150,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestUnequipBag -= HandleRequestUnequipBag;
                 unitController.UnitEventController.OnRequestMoveBag -= HandleRequestMoveBag;
                 unitController.UnitEventController.OnRequestAddBag -= HandleRequestAddBagFromInventory;
+                unitController.UnitEventController.OnSetGroundTarget -= HandleSetGroundTarget;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -664,6 +666,15 @@ namespace AnyRPG {
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
                 unitController.CharacterInventoryManager.MoveBag(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, nodeIndex, isBankNode);
             }
+        }
+
+        public void HandleSetGroundTarget(Vector3 vector) {
+            SetGroundTargetServer(vector);
+        }
+
+        [ServerRpc]
+        public void SetGroundTargetServer(Vector3 vector) {
+            unitController.CharacterAbilityManager.SetGroundTarget(vector);
         }
 
         public void HandleRequestAddBagFromInventory(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
@@ -1364,7 +1375,7 @@ namespace AnyRPG {
             if (targetNetworkInteractable != null) {
                 targetInteractable = targetNetworkInteractable.GetComponent<Interactable>();
             }
-            unitController.CharacterAbilityManager.BeginAbilityInternal(baseAbility.AbilityProperties, targetInteractable, playerInitiated);
+            unitController.CharacterAbilityManager.BeginAbility(baseAbility.AbilityProperties, targetInteractable, playerInitiated);
         }
 
         [ServerRpc]

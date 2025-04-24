@@ -150,6 +150,7 @@ namespace AnyRPG {
         public event System.Action<InstantiatedBag, BagNode> OnAddBag = delegate { };
         public event System.Action<InstantiatedBag, int, bool> OnRequestMoveBag = delegate { };
         public event System.Action<InstantiatedBag, int, bool> OnRequestAddBag = delegate { };
+        public event System.Action<Vector3> OnSetGroundTarget = delegate { };
 
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
@@ -784,6 +785,10 @@ namespace AnyRPG {
 
         public void NotifyOnSpawnChanneledEffectPrefabs(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
             OnSpawnChanneledEffectPrefabs(target, originalTarget, channeledEffectProperties, abilityEffectContext);
+        }
+
+        public void NotifyOnSetGroundTarget(Vector3 newGroundTarget) {
+            OnSetGroundTarget(newGroundTarget);
         }
 
         #endregion

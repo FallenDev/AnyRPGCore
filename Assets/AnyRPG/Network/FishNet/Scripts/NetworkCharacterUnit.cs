@@ -221,6 +221,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnAddStatusEffectStack += HandleAddStatusEffectStackServer;
             unitController.UnitEventController.OnCancelStatusEffect += HandleCancelStatusEffectServer;
             unitController.UnitEventController.OnCombatMessage += HandleCombatMessageServer;
+            unitController.UnitEventController.OnReceiveCombatTextEvent += HandleReceiveCombatTextEventServer;
+            unitController.UnitEventController.OnTakeDamage += HandleTakeDamageServer;
+            unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffectServer;
+            unitController.UnitEventController.OnRecoverResource += HandleRecoverResourceServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -286,6 +290,68 @@ namespace AnyRPG {
             unitController.UnitEventController.OnAddStatusEffectStack -= HandleAddStatusEffectStackServer;
             unitController.UnitEventController.OnCancelStatusEffect -= HandleCancelStatusEffectServer;
             unitController.UnitEventController.OnCombatMessage -= HandleCombatMessageServer;
+            unitController.UnitEventController.OnReceiveCombatTextEvent -= HandleReceiveCombatTextEventServer;
+            unitController.UnitEventController.OnTakeDamage -= HandleTakeDamageServer;
+            unitController.UnitEventController.OnImmuneToEffect -= HandleImmuneToEffectServer;
+            unitController.UnitEventController.OnRecoverResource -= HandleRecoverResourceServer;
+        }
+
+        public void HandleRecoverResourceServer(PowerResource resource, int amount, CombatMagnitude magnitude, AbilityEffectContext context) {
+            HandleRecoverResourceClient(resource.ResourceName, amount, magnitude, context.GetSerializableContext());
+        }
+
+        [ObserversRpc]
+        public void HandleRecoverResourceClient(string resourceName, int amount, CombatMagnitude magnitude, SerializableAbilityEffectContext context) {
+            PowerResource powerResource = systemDataFactory.GetResource<PowerResource>(resourceName);
+            if (powerResource == null) {
+                return;
+            }
+            unitController.UnitEventController.NotifyOnRecoverResource(powerResource, amount, magnitude, new AbilityEffectContext(unitController, null, context, systemGameManager));
+        }
+
+        public void HandleImmuneToEffectServer(AbilityEffectContext context) {
+            HandleImmuneToEffectClient(context.GetSerializableContext());
+        }
+
+        [ObserversRpc]
+        public void HandleImmuneToEffectClient(SerializableAbilityEffectContext context) {
+            unitController.UnitEventController.NotifyOnImmuneToEffect(new AbilityEffectContext(unitController, null, context, systemGameManager));
+        }
+
+        public void HandleTakeDamageServer(IAbilityCaster sourceCaster, UnitController target, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, AbilityEffectContext context) {
+            
+            UnitController sourceUnitController = sourceCaster as UnitController;
+            NetworkCharacterUnit networkCharacterUnit = null;
+            if (sourceUnitController != null) {
+                networkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+            }
+            HandleTakeDamageClient(networkCharacterUnit, amount, combatTextType, combatMagnitude, abilityName, context.GetSerializableContext());
+        }
+
+        [ObserversRpc]
+        public void HandleTakeDamageClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, SerializableAbilityEffectContext context) {
+            IAbilityCaster sourceCaster = null;
+            if (sourceNetworkCharacterUnit == null) {
+                sourceCaster = systemGameManager.SystemAbilityController;
+            } else {
+                sourceCaster = sourceNetworkCharacterUnit.UnitController;
+            }
+            unitController.UnitEventController.NotifyOnTakeDamage(sourceCaster, unitController, amount, combatTextType, combatMagnitude, abilityName, new AbilityEffectContext(unitController, null, context, systemGameManager));
+        }
+
+        public void HandleReceiveCombatTextEventServer(UnitController targetUnitController, int amount, CombatTextType type, CombatMagnitude magnitude, AbilityEffectContext context) {
+            NetworkCharacterUnit networkCharacterUnit = null;
+            if (targetUnitController != null) {
+                networkCharacterUnit = targetUnitController.GetComponent<NetworkCharacterUnit>();
+            }
+            ReceiveCombatTextEventClient(networkCharacterUnit, amount, type, magnitude, context.GetSerializableContext());
+        }
+
+        [ObserversRpc]
+        public void ReceiveCombatTextEventClient(NetworkCharacterUnit targetNetworkCharacterUnit, int amount, CombatTextType type, CombatMagnitude magnitude, SerializableAbilityEffectContext context) {
+            if (targetNetworkCharacterUnit != null) {
+                unitController.UnitEventController.NotifyOnReceiveCombatTextEvent(targetNetworkCharacterUnit.unitController, amount, type, magnitude, new AbilityEffectContext(unitController, null, context, systemGameManager));
+            }
         }
 
         public void HandleCombatMessageServer(string message) {

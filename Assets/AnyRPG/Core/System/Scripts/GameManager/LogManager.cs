@@ -146,13 +146,14 @@ namespace AnyRPG {
             ClearLog();
         }
 
-        public void HandleTakeDamage(IAbilityCaster source, CharacterUnit target, int damage, string abilityName) {
+
+        public void HandleTakeDamage(IAbilityCaster source, UnitController targetUnitController, int damage, string abilityName) {
             //Debug.Log("LogManager.HandleTakeDamage()");
             Color textColor = Color.white;
-            if (playerManager.UnitController != null && target == playerManager.UnitController.CharacterUnit) {
+            if (playerManager.UnitController != null && targetUnitController == playerManager.UnitController) {
                 textColor = Color.red;
             }
-            string combatMessage = string.Format("<color=#{0}>{1} Takes {2} damage from {3}'s {4}</color>", ColorUtility.ToHtmlStringRGB(textColor), target.UnitController.BaseCharacter.CharacterName, damage, source.AbilityManager.Name, abilityName);
+            string combatMessage = string.Format("<color=#{0}>{1} Takes {2} damage from {3}'s {4}</color>", ColorUtility.ToHtmlStringRGB(textColor), targetUnitController.BaseCharacter.CharacterName, damage, source.AbilityManager.Name, abilityName);
 
             WriteCombatMessage(combatMessage);
         }

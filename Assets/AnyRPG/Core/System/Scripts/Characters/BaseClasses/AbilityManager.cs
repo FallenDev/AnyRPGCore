@@ -661,6 +661,7 @@ namespace AnyRPG {
             objectPooler.ReturnObjectToPool(abilityEffectObject);
         }
 
-
+        public virtual void ReceiveCombatTextEvent(UnitController unitController, int damage, CombatTextType combatTextType, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {
+        }
     }
 }

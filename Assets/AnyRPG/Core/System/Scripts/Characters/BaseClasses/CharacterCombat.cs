@@ -197,7 +197,7 @@ namespace AnyRPG {
             }
         }
 
-        public void ProcessTakeDamage(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster target, CombatMagnitude combatMagnitude, AbilityEffectProperties abilityEffect) {
+        public void ProcessTakeDamage(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster sourceCaster, CombatMagnitude combatMagnitude, AbilityEffectProperties abilityEffect) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.ProcessTakeDamage(" + damage + ", " + (target == null ? "null" : target.AbilityManager.UnitGameObject.name) + ", " + combatMagnitude.ToString() + ", " + abilityEffect.DisplayName);
             /*
             if (abilityEffectContext == null) {
@@ -215,7 +215,7 @@ namespace AnyRPG {
                     // this could maybe be done better through an event subscription
                     if (statusEffectNode.StatusEffect.ReflectAbilityEffectList.Count > 0) {
                         // we can't reflect on system attackers, so check if this is an interactable
-                        Interactable targetInteractable = target.AbilityManager.UnitGameObject.GetComponent<Interactable>();
+                        Interactable targetInteractable = sourceCaster.AbilityManager.UnitGameObject.GetComponent<Interactable>();
                         if (targetInteractable != null) {
                             statusEffectNode.StatusEffect.CastReflect(unitController, targetInteractable, abilityEffectContext);
                         }
@@ -223,41 +223,25 @@ namespace AnyRPG {
                 }
             }
 
-            if (target != null
-                && playerManager.ActiveUnitController != null
-                && unitController.CharacterUnit != null) {
-                if (target == (playerManager.ActiveUnitController as IAbilityCaster) ||
-                    playerManager.ActiveUnitController == unitController ||
-                    target.AbilityManager.IsPlayerControlled()) {
-                    // spawn text over enemies damaged by the player and over the player itself
-                    CombatTextType combatTextType = CombatTextType.normal;
-                    /*
-                    if ((abilityEffect as AttackEffect).DamageType == DamageType.physical) {
-                        combatTextType = CombatTextType.normal;
-                    } else if ((abilityEffect as AttackEffect).DamageType == DamageType.ability) {
-                        combatTextType = CombatTextType.ability;
-                    }
-                    */
-                    // this code has issues.  status effects spawned by auto-attacks show wrong color
-                    // on-hit effects spawned by auto-attacks show wrong color
-                    // testing - add physical requirement
-                    //if ((abilityEffectContext.baseAbility is AnimatedAbility) && (abilityEffectContext.baseAbility as AnimatedAbility).IsAutoAttack) {
-                    if (abilityEffectContext.baseAbility.IsAutoAttack
-                        && (abilityEffect as AttackEffectProperties).DamageType == DamageType.physical) {
-                        combatTextType = CombatTextType.normal;
-                    } else {
-                        combatTextType = CombatTextType.ability;
-                    }
-                    uIManager.CombatTextManager.SpawnCombatText(unitController, damage, combatTextType, combatMagnitude, abilityEffectContext);
-                    systemEventManager.NotifyOnTakeDamage(target, unitController.CharacterUnit, damage, abilityEffect.DisplayName);
+            CombatTextType combatTextType = CombatTextType.normal;
+            if (abilityEffectContext.baseAbility.IsAutoAttack
+                && (abilityEffect as AttackEffectProperties).DamageType == DamageType.physical) {
+                combatTextType = CombatTextType.normal;
+            } else {
+                combatTextType = CombatTextType.ability;
+            }
+
+            if (sourceCaster != null) {
+                if (sourceCaster.gameObject != unitController.gameObject) {
+                    sourceCaster.AbilityManager.ReceiveCombatTextEvent(unitController, damage, combatTextType, combatMagnitude, abilityEffectContext);
                 }
+
                 lastCombatEvent = Time.time;
                 float totalThreat = damage;
-                totalThreat *= abilityEffect.ThreatMultiplier * target.AbilityManager.GetThreatModifiers();
-
+                totalThreat *= abilityEffect.ThreatMultiplier * sourceCaster.AbilityManager.GetThreatModifiers();
 
                 // determine if this target is capable of fighting (ie, not environmental effect), and if so, enter combat
-                CharacterUnit _characterUnit = target.AbilityManager.GetCharacterUnit();
+                CharacterUnit _characterUnit = sourceCaster.AbilityManager.GetCharacterUnit();
                 if (_characterUnit != null) {
                     AggroTable.AddToAggroTable(_characterUnit, (int)totalThreat);
                     // commented out and moved to TakeDamage
@@ -265,7 +249,7 @@ namespace AnyRPG {
                 }
             }
 
-            unitController?.UnitEventController.NotifyOnTakeDamage();
+            unitController?.UnitEventController.NotifyOnTakeDamage(sourceCaster, unitController, damage, combatTextType, combatMagnitude, abilityEffect.DisplayName, abilityEffectContext);
 
         }
 

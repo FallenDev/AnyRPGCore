@@ -705,6 +705,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetCraftAbility += HandleSetCraftAbility;
             unitController.UnitEventController.OnCraftItem += HandleCraftItem;
             unitController.UnitEventController.OnFactionChange += HandleFactionChange;
+            unitController.UnitEventController.OnReceiveCombatTextEvent += HandleReceiveCombatTextEvent;
+            unitController.UnitEventController.OnTakeDamage += HandleTakeDamage;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -754,6 +756,18 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetCraftAbility -= HandleSetCraftAbility;
             unitController.UnitEventController.OnCraftItem -= HandleCraftItem;
             unitController.UnitEventController.OnFactionChange -= HandleFactionChange;
+            unitController.UnitEventController.OnReceiveCombatTextEvent -= HandleReceiveCombatTextEvent;
+            unitController.UnitEventController.OnTakeDamage -= HandleTakeDamage;
+        }
+
+        public void HandleTakeDamage(IAbilityCaster sourceCaster, UnitController targetUnitController, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, AbilityEffectContext abilityEffectContext) {
+
+            combatTextManager.SpawnCombatText(targetUnitController, amount, combatTextType, combatMagnitude, abilityEffectContext);
+            systemEventManager.NotifyOnTakeDamage(sourceCaster, unitController, amount, abilityName);
+        }
+
+        public void HandleReceiveCombatTextEvent(UnitController targetUnitController, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {
+            combatTextManager.SpawnCombatText(targetUnitController, amount, combatTextType, combatMagnitude, abilityEffectContext);
         }
 
         public void HandleFactionChange(Faction newFaction, Faction oldFaction) {
@@ -960,10 +974,11 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleRecoverResource(PowerResource powerResource, int amount) {
+        public void HandleRecoverResource(PowerResource powerResource, int amount, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {
             if (logManager != null) {
                 logManager.WriteCombatMessage($"You gain {amount} {powerResource.DisplayName}");
             }
+            combatTextManager.SpawnCombatText(activeUnitController, amount, CombatTextType.gainResource, combatMagnitude, abilityEffectContext);
         }
 
         public void HandleResourceAmountChanged(PowerResource powerResource, int amount, int amount2) {
@@ -990,12 +1005,10 @@ namespace AnyRPG {
 
         public void HandleGainXP(UnitController unitController, int gainedXP, int currentXP) {
             if (logManager != null) {
-                logManager.WriteSystemMessage("You gain " + gainedXP + " experience");
+                logManager.WriteSystemMessage($"You gain {gainedXP} experience");
             }
             if (activeUnitController != null) {
-                if (combatTextManager != null) {
-                    combatTextManager.SpawnCombatText(activeUnitController, gainedXP, CombatTextType.gainXP, CombatMagnitude.normal, null);
-                }
+                combatTextManager.SpawnCombatText(activeUnitController, gainedXP, CombatTextType.gainXP, CombatMagnitude.normal, null);
             }
             SystemEventManager.TriggerEvent("OnXPGained", new EventParamProperties());
         }

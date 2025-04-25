@@ -22,7 +22,7 @@ namespace AnyRPG {
         public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionCompleted = delegate { };
         public event System.Action<UnitController, Item> OnItemCountChanged = delegate { };
         public event System.Action<UnitController, Dialog> OnDialogCompleted = delegate { };
-        public event System.Action<IAbilityCaster, CharacterUnit, int, string> OnTakeDamage = delegate { };
+        public event System.Action<IAbilityCaster, UnitController, int, string> OnTakeDamage = delegate { };
         public event System.Action<UnitController> OnReputationChange = delegate { };
         public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
         public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
@@ -106,7 +106,7 @@ namespace AnyRPG {
             OnSpecializationChange(sourceUnitController, newClassSpecialization, oldClassSpecialization);
         }
 
-        public void NotifyOnTakeDamage(IAbilityCaster source, CharacterUnit target, int damage, string abilityName) {
+        public void NotifyOnTakeDamage(IAbilityCaster source, UnitController target, int damage, string abilityName) {
             OnTakeDamage(source, target, damage, abilityName);
         }
 

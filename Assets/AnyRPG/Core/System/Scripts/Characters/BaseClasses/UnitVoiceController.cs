@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace AnyRPG {
 
@@ -98,7 +99,7 @@ namespace AnyRPG {
             unitComponentController.PlayVoiceSound(unitController.UnitProfile.VoiceProps.RandomAttack);
         }
 
-        public void HandleTakeDamage() {
+        public void HandleTakeDamage(IAbilityCaster caster, UnitController controller, int amount, CombatTextType type, CombatMagnitude magnitude, string abilityName, AbilityEffectContext context) {
             if (unitController.UnitProfile == null) {
                 return;
             }

@@ -30,6 +30,7 @@ namespace AnyRPG {
         // ignores if existing, otherwise sets to amount.  This allows leaving and re-joining factions without losing reputation with them
         public virtual void SetReputation(Faction newFaction) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterFactionmanager.SetReputation(" + (newFaction == null ? "null" : newFaction.DisplayName) + ")");
+            /*
             foreach (FactionDisposition factionDisposition in DispositionDictionary) {
                 if (factionDisposition.Faction == newFaction) {
                     return;
@@ -39,7 +40,25 @@ namespace AnyRPG {
             _factionDisposition.Faction = newFaction;
             _factionDisposition.disposition = Faction.RelationWith(unitController, newFaction);
             DispositionDictionary.Add(_factionDisposition);
+            */
+            SetReputationAmount(newFaction, Faction.RelationWith(unitController, newFaction));
+            foreach (FactionDisposition factionDisposition in newFaction.dispositionList) {
+                SetReputationAmount(factionDisposition.Faction, factionDisposition.disposition);
+            }
             NotifyOnReputationChange();
+        }
+
+        public virtual void SetReputationAmount(Faction changeFaction, float amount) {
+            foreach (FactionDisposition factionDisposition in DispositionDictionary) {
+                if (factionDisposition.Faction == changeFaction) {
+                    factionDisposition.disposition = amount;
+                    return;
+                }
+            }
+            FactionDisposition _factionDisposition = new FactionDisposition();
+            _factionDisposition.Faction = changeFaction;
+            _factionDisposition.disposition = amount;
+            dispositionDictionary.Add(_factionDisposition);
         }
 
         // loads reputation values from a save file, ignoring all existing values

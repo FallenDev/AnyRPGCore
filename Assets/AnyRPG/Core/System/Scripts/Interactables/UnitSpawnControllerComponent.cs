@@ -47,6 +47,18 @@ namespace AnyRPG {
             return GetValidOptionCount(sourceUnitController);
         }
 
+        public void SpawnUnit(UnitController sourceUnitController, int unitLevel, int extraLevels, bool useDynamicLevel, UnitProfile unitProfile, UnitToughness unitToughness) {
+            Debug.Log($"{interactable.gameObject.name}UnitSpawnManager.SpawnUnit({sourceUnitController.gameObject.name}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfile.ResourceName}, {(unitToughness == null ? string.Empty : unitToughness.ResourceName)})");
+
+            foreach (UnitSpawnNode unitSpawnNode in Props.UnitSpawnNodeList) {
+                if (unitSpawnNode != null) {
+                    unitSpawnNode.ManualSpawn(unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness);
+                }
+            }
+            NotifyOnConfirmAction(sourceUnitController);
+        }
+
+
     }
 
 }

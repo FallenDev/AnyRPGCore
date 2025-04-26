@@ -688,6 +688,32 @@ namespace AnyRPG {
             networkManagerServer.SellVendorItem(interactable, componentIndex, itemInstanceId, networkConnection.ClientId);
         }
 
+        public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName) {
+            Debug.Log($"FishNetClientConnector.RequestSpawnUnit({interactable.gameObject.name}, {componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
+
+            NetworkInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+            }
+            RequestSpawnUnitServer(networkInteractable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfileName, unitToughnessName);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestSpawnUnitServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestSpawnUnitServer({componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
+            if (unitProfile == null) {
+                return;
+            }
+            UnitToughness unitToughness = systemDataFactory.GetResource<UnitToughness>(unitToughnessName);
+            networkManagerServer.RequestSpawnUnit(interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness, networkConnection.ClientId);
+        }
+
         public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
             NetworkInteractable networkInteractable = null;
             if (interactable != null) {
@@ -850,6 +876,7 @@ namespace AnyRPG {
         public void RequestCancelCrafting(NetworkConnection networkConnection = null) {
             networkManagerServer.RequestCancelCrafting(networkConnection.ClientId);
         }
+
 
 
 

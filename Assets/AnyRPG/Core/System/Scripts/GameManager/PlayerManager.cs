@@ -637,7 +637,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerInventoryEvents() {
-            Debug.Log("PlayerManager.SubscribeToPlayerInventoryEvents()");
+            //Debug.Log("PlayerManager.SubscribeToPlayerInventoryEvents()");
 
             unitController.CharacterInventoryManager.OnAddInventoryBagNode += HandleAddInventoryBagNode;
             unitController.CharacterInventoryManager.OnAddBankBagNode += HandleAddBankBagNode;
@@ -659,7 +659,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToPlayerEvents() {
-            Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
+            //Debug.Log("PlayerManager.SubscribeToPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;

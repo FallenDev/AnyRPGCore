@@ -100,6 +100,7 @@ TagManager:
   - FactionSpawnLocation1
   - FactionSpawnLocation2
   - UMAIgnore
+  - UnitSpawn1
   layers:
   - Default
   - TransparentFX

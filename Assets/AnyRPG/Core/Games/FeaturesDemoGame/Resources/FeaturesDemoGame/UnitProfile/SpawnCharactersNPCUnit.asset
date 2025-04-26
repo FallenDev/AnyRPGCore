@@ -24,10 +24,11 @@ MonoBehaviour:
   prefabProfileName: 
   useInlinePrefabProps: 1
   unitPrefabProps:
-    unitPrefab: {fileID: 3544550570938047708, guid: 8c54d1fd144385b4d82be245ec64219d,
+    unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
     networkUnitPrefab: {fileID: 0}
-    modelPrefab: {fileID: 0}
+    modelPrefab: {fileID: 6307183516646880328, guid: d000c5c25fdbc114696a5e9443f6ac45,
+      type: 3}
     networkModelPrefab: {fileID: 0}
     modelProvider:
       rid: -2
@@ -208,6 +209,7 @@ MonoBehaviour:
   interactableOptions: []
   inlineInteractableOptions:
   - rid: 0
+  - rid: 8367098255002304567
   persistObjectPosition: 0
   saveOnLevelUnload: 0
   saveOnGameSave: 0
@@ -230,3 +232,43 @@ MonoBehaviour:
           endQuest: 1
           questName: Use Interactable
         questGiverProfileNames: []
+    - rid: 8367098255002304567
+      type: {class: UnitSpawnControllerProps, ns: AnyRPG, asm: Assembly-CSharp}
+      data:
+        interactionPanelTitle: 
+        interactionPanelImage: {fileID: 0}
+        namePlateImage: {fileID: 0}
+        prerequisiteConditions: []
+        unitProfileNames:
+        - Red Warrior
+        - Red Knight
+        - Red Blood Knight
+        - Red Priest
+        - Red Mage
+        - Red Ice Mage
+        - Red Fire Mage
+        - Red Necromancer
+        - Red Archer
+        - Red Ranger
+        - Red Marksman
+        - Red Thief
+        - Red Fighter
+        - Red Boss
+        - Blue Warrior
+        - Blue Knight
+        - Blue Blood Knight
+        - Blue Priest
+        - Blue Mage
+        - Blue Ice Mage
+        - Blue Fire Mage
+        - Blue Necromancer
+        - Blue Archer
+        - Blue Ranger
+        - Blue Marksman
+        - Blue Thief
+        - Blue Fighter
+        - Blue Boss
+        - Dragon
+        unitSpawnNodeList: []
+        unitSpawnNodeTagList:
+        - UnitSpawn1

@@ -137,7 +137,7 @@ namespace AnyRPG {
         }
 
         public bool Equip(InstantiatedEquipment newItem, EquipmentSlotProfile equipmentSlotProfile = null) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Equip({(newItem != null ? newItem.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Equip({(newItem != null ? newItem.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
 
             if (newItem == null) {
                 Debug.Log("Instructed to Equip a null item!");
@@ -162,13 +162,13 @@ namespace AnyRPG {
         }
 
         public override EquipmentSlotProfile EquipEquipment(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile = null) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.EquipEquipment({(newEquipment != null ? newEquipment.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.EquipEquipment({(newEquipment != null ? newEquipment.ResourceName : "null")}, {(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.DisplayName)})");
 
             return base.EquipEquipment(newEquipment, equipmentSlotProfile);
         }
 
         public void HandleAddEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.HandleAddEquipment({equipmentInventorySlot.ToString()}, {(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.HandleAddEquipment({equipmentInventorySlot.ToString()}, {(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
 
             EquipmentSlotProfile equipmentSlotProfile = currentEquipmentLookup[equipmentInventorySlot];
 

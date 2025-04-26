@@ -664,7 +664,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
 
             OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }

@@ -59,6 +59,7 @@ namespace AnyRPG {
         private SystemItemManager systemItemManager = null;
         private LootManager lootManager = null;
         private CraftingManager craftingManager = null;
+        private UnitSpawnManager unitSpawnManager = null;
 
         [SerializeField]
         private NetworkController networkController = null;
@@ -67,6 +68,12 @@ namespace AnyRPG {
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LoggedInAccounts { get => loggedInAccounts; }
         public Dictionary<int, LobbyGame> LobbyGames { get => lobbyGames; }
+
+        public override void Configure(SystemGameManager systemGameManager) {
+            base.Configure(systemGameManager);
+
+            networkController?.Configure(systemGameManager);
+        }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
@@ -82,9 +89,7 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
-
-            networkController?.Configure(systemGameManager);
-
+            unitSpawnManager = systemGameManager.UnitSpawnManager;
         }
 
         public void SetClientToken(int clientId, string token) {
@@ -662,6 +667,16 @@ namespace AnyRPG {
             }
             vendorManager.SellItemToVendorServer(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
         }
+
+        public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, UnitProfile unitProfile, UnitToughness unitToughness, int clientId) {
+            Debug.Log($"NetworkManagerServer.RequestSpawnUnit({interactable.gameObject.name}, {componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfile.ResourceName}, {unitToughness?.ResourceName}, {clientId})");
+
+            if (playerManagerServer.ActivePlayers.ContainsKey(clientId) == false) {
+                return;
+            }
+            unitSpawnManager.SpawnUnit(playerManagerServer.ActivePlayers[clientId], interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness);
+        }
+
 
         public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
             networkController.AdvertiseAddToBuyBackCollection(sourceUnitController, playerManagerServer.ActivePlayerLookup[sourceUnitController], interactable, componentIndex, newInstantiatedItem);

@@ -47,6 +47,7 @@ namespace AnyRPG {
         public abstract void CompleteQuest(string questName, QuestRewardChoices questRewardChoices);
         public abstract void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId);
         public abstract void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName);
+        public abstract void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName);
         public abstract void TakeAllLoot();
         public abstract void RequestTakeLoot(int lootDropId);
         public abstract void RequestBeginCrafting(Recipe recipe, int craftAmount);

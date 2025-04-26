@@ -457,6 +457,13 @@ namespace AnyRPG {
             networkController.SellVendorItem(interactable, componentIndex, itemInstanceId);
         }
 
+        public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName) {
+            Debug.Log($"NetworkManagerClient.RequestSpawnUnit({unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
+
+            networkController.RequestSpawnUnit(interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfileName, unitToughnessName);
+        }
+
+
         public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, Interactable interactable, int componentIndex, int instantiatedItemId) {
             if (systemItemManager.InstantiatedItems.ContainsKey(instantiatedItemId) == false) {
                 return;
@@ -529,6 +536,7 @@ namespace AnyRPG {
         public void RequestCancelCrafting() {
             networkController.RequestCancelCrafting();
         }
+
 
 
         /*

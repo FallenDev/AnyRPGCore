@@ -59,7 +59,7 @@ namespace AnyRPG {
         }
 
         private void EquipItemModels(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment equipment) {
-            Debug.Log($"{unitController.gameObject.name}.MecanimModelController.EquipItemModels({equipmentSlotProfile.DisplayName}, {(equipment == null ? "null" : equipment.DisplayName)})");
+            //Debug.Log($"{unitController.gameObject.name}.MecanimModelController.EquipItemModels({equipmentSlotProfile.DisplayName}, {(equipment == null ? "null" : equipment.DisplayName)})");
 
             SpawnEquipmentObjects(equipmentSlotProfile, equipment);
 

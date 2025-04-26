@@ -321,7 +321,7 @@ namespace AnyRPG {
 
         public void SpawnUnit() {
             bool useDynamicLevel = (levelTypeDropdown.options[levelTypeDropdown.value].text == "Fixed" ? false : true);
-            unitSpawnManager.SpawnUnit(unitLevel, extraLevels, useDynamicLevel, SelectedUnitSpawnButton.UnitProfile, unitToughness);
+            unitSpawnManager.RequestSpawnUnit(unitLevel, extraLevels, useDynamicLevel, SelectedUnitSpawnButton.UnitProfile, unitToughness);
             ClosePanel();
         }
 

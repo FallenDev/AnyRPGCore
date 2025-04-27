@@ -161,10 +161,13 @@ namespace AnyRPG {
         public virtual bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
             //source.CancelMountEffects();
-            systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
-            sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, componentIndex, choiceIndex);
+            if (sourceUnitController != null) {
+                // this could have come from a trigger, so we can't make the assumption there is a source UnitController
+                systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
+                sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, componentIndex, choiceIndex);
+                interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
+            }
             //interactable.InteractableEventController.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
-            interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 

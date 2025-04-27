@@ -32,7 +32,7 @@ namespace AnyRPG {
         }
 
         protected override void ProcessCreateEventSubscriptions() {
-            Debug.Log("InventoryPanel.ProcessCreateEventSubscriptions()");
+            //Debug.Log("InventoryPanel.ProcessCreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
 
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);

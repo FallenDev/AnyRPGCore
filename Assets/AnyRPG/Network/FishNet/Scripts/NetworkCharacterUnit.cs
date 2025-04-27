@@ -1235,20 +1235,20 @@ namespace AnyRPG {
 
 
         private void HandleBeforeDieServer(UnitController targetUnitController) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
 
             HandleBeforeDieClient();
         }
 
         [ObserversRpc]
         public void HandleBeforeDieClient() {
-            Debug.Log($"{gameObject.name}.HandleBeforeDieClient()");
+            //Debug.Log($"{gameObject.name}.HandleBeforeDieClient()");
 
             unitController.CharacterStats.Die();
         }
 
         private void HandleClearTargetClient(Interactable oldTarget) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
 
             /*
             NetworkInteractable networkInteractable = null;

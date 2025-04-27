@@ -31,7 +31,7 @@ namespace AnyRPG {
         }
 
         protected override void ProcessCreateEventSubscriptions() {
-            Debug.Log("BankPanel.ProcessCreateEventSubscriptions()");
+            //Debug.Log("BankPanel.ProcessCreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
 
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);

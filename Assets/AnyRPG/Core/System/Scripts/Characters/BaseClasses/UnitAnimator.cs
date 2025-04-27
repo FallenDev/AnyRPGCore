@@ -587,7 +587,7 @@ namespace AnyRPG {
         }
 
         public void ClearCasting() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.ClearCasting()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.ClearCasting()");
 
             unitController.UnitEventController.NotifyOnAnimatorClearAbilityCast();
             if (unitController.IsOwner) {

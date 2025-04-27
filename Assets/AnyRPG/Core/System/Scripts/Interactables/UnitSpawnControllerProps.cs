@@ -39,9 +39,9 @@ namespace AnyRPG {
 
             foreach (string unitSpawnNodeTag in unitSpawnNodeTagList) {
                 GameObject spawnLocation = GameObject.FindWithTag(unitSpawnNodeTag);
-                Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): searching for tag {unitSpawnNodeTag}");
+                //Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): searching for tag {unitSpawnNodeTag}");
                 if (spawnLocation != null) {
-                    Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): found spawn location with tag {unitSpawnNodeTag}: {spawnLocation.gameObject.name}");
+                    //Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): found spawn location with tag {unitSpawnNodeTag}: {spawnLocation.gameObject.name}");
                     UnitSpawnNode unitSpawnNode = spawnLocation.GetComponent<UnitSpawnNode>();
                     if (unitSpawnNode != null) {
                         completeUnitSpawnNodeList.Add(unitSpawnNode);

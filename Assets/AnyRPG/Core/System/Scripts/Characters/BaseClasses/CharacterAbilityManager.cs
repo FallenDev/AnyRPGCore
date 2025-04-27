@@ -1332,7 +1332,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="abilityName"></param>
         public override bool BeginAbility(string abilityName) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility(" + (abilityName == null ? "null" : abilityName) + ")");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility != null) {
@@ -1346,7 +1346,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="ability"></param>
         public bool BeginAbility(AbilityProperties ability, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName}, {playerInitiated})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.BeginAbility({ability.ResourceName}, {playerInitiated})");
 
             if (ability.GetTargetOptions(unitController).RequiresGroundTarget == true) {
                 //Debug.Log("CharacterAbilitymanager.BeginAbility() Ability requires a ground target.");
@@ -1361,7 +1361,7 @@ namespace AnyRPG {
         }
 
         public bool BeginAbility(AbilityProperties ability, Interactable target, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbility({ability.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbility({ability.ResourceName})");
 
             unitController.UnitEventController.NotifyOnBeginAbility(ability, target, playerInitiated);
 

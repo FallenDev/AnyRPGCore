@@ -39,7 +39,7 @@ namespace AnyRPG {
         }
 
         public void ClearSubscriptions() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.ClearSubscriptions()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.ClearSubscriptions()");
 
             unitController.CharacterInventoryManager.EquipmentSlots.Clear();
             foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {

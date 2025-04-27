@@ -12515,7 +12515,7 @@ PrefabInstance:
     - target: {fileID: 5598058123386693122, guid: 182e453858cadc34392feb6b095a7fa1,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12525,6 +12525,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 371638880}
+    - targetCorrespondingSourceObject: {fileID: 5598058123386693122, guid: 182e453858cadc34392feb6b095a7fa1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1319457845}
     - targetCorrespondingSourceObject: {fileID: 2076345672503358558, guid: 182e453858cadc34392feb6b095a7fa1,
         type: 3}
       insertIndex: -1
@@ -30558,13 +30562,14 @@ GameObject:
   - component: {fileID: 902514105}
   - component: {fileID: 902514104}
   - component: {fileID: 902514103}
+  - component: {fileID: 902514106}
   m_Layer: 0
   m_Name: ArenaGateController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &902514103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30631,6 +30636,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 280206183}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &902514106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902514102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae915218a2d3064d9cf329ac2f9eb85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &902534735
 GameObject:
   m_ObjectHideFlags: 0
@@ -44697,6 +44717,21 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1318511567}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1319457845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371638878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae915218a2d3064d9cf329ac2f9eb85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
 --- !u!1001 &1320333969
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45599,13 +45634,14 @@ GameObject:
   - component: {fileID: 1339571317}
   - component: {fileID: 1339571316}
   - component: {fileID: 1339571315}
+  - component: {fileID: 1339571320}
   m_Layer: 11
   m_Name: PressureSwitch2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1339571314
 Transform:
   m_ObjectHideFlags: 0
@@ -45745,6 +45781,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1339571313}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1339571320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339571313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae915218a2d3064d9cf329ac2f9eb85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
 --- !u!1001 &1342612935
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48464,6 +48515,7 @@ GameObject:
   - component: {fileID: 1448223534}
   - component: {fileID: 1448223533}
   - component: {fileID: 1448223539}
+  - component: {fileID: 1448223540}
   m_Layer: 0
   m_Name: 25KgCubeSavePosition2
   m_TagString: Untagged
@@ -48514,7 +48566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 9240f669-ac5d-43a6-884e-15daa69b2517
+  m_UUID: 7f22daed-6166-4107-b603-f9306fdd3fa7
   forceUpdateUUID: 0
 --- !u!54 &1448223535
 Rigidbody:
@@ -48660,6 +48712,22 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &1448223540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448223531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 490d03d693e2bdd4895cb19d71423103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
+  rigidbodyComponent: {fileID: 1448223535}
 --- !u!1001 &1450240525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59214,13 +59282,14 @@ GameObject:
   - component: {fileID: 1709763948}
   - component: {fileID: 1709763947}
   - component: {fileID: 1709763946}
+  - component: {fileID: 1709763952}
   m_Layer: 11
   m_Name: PressureSwitch1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1709763946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59360,6 +59429,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 280206183}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1709763952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709763945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae915218a2d3064d9cf329ac2f9eb85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
 --- !u!1001 &1711980767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62210,6 +62294,7 @@ GameObject:
   - component: {fileID: 1813795259}
   - component: {fileID: 1813795258}
   - component: {fileID: 1813795264}
+  - component: {fileID: 1813795265}
   m_Layer: 0
   m_Name: 25KgCubeSavePosition
   m_TagString: Untagged
@@ -62260,7 +62345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 509c0424-2176-489f-9357-b40db9da38e3
+  m_UUID: d2ec80c4-d4be-438e-a7db-a4e7b7447e9d
   forceUpdateUUID: 0
 --- !u!54 &1813795260
 Rigidbody:
@@ -62406,6 +62491,22 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &1813795265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1813795256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 490d03d693e2bdd4895cb19d71423103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 854816079}
+  _networkObjectCache: {fileID: 0}
+  rigidbodyComponent: {fileID: 1813795260}
 --- !u!1001 &1815233270
 PrefabInstance:
   m_ObjectHideFlags: 0

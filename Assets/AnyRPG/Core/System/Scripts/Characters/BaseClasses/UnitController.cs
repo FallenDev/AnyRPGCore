@@ -764,7 +764,12 @@ namespace AnyRPG {
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultPlayerUnitLayer);
             DisableAggro();
 
-            rigidBody.useGravity = true;
+            if (networkManagerServer.ServerModeActive == true) {
+                // movement is client authoritative, so gravity should not be applied on the server
+                rigidBody.useGravity = false;
+            } else {
+                rigidBody.useGravity = true;
+            }
             rigidBody.isKinematic = false;
             rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
@@ -2229,10 +2234,16 @@ namespace AnyRPG {
         public void StartFlying() {
             flying = true;
             StopMovementSound();
+            //RigidBody.useGravity = false;
+
         }
 
         public void StopFlying() {
             flying = false;
+            /*
+            RigidBody.useGravity = true;
+            RigidBody.constraints = RigidbodyConstraints.FreezeRotation;
+            */
         }
 
         public void ExitWater(WaterBody water) {

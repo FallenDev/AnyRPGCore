@@ -179,9 +179,10 @@ namespace AnyRPG {
             // update - its supposed to trigger an event that result in ClientInteract() on players on their own clients
             
             UnitController sourceUnitController = null;
-            if (sourceNetworkCharacterUnit != null) {
-                sourceUnitController = sourceNetworkCharacterUnit.UnitController;
+            if (sourceNetworkCharacterUnit == null) {
+                return;
             }
+            sourceUnitController = sourceNetworkCharacterUnit.UnitController;
 
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
             if (currentInteractables.ContainsKey(componentIndex)) {

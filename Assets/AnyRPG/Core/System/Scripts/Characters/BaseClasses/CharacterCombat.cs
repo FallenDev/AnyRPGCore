@@ -224,7 +224,8 @@ namespace AnyRPG {
             }
 
             CombatTextType combatTextType = CombatTextType.normal;
-            if (abilityEffectContext.baseAbility.IsAutoAttack
+            if (abilityEffectContext.baseAbility != null
+                && abilityEffectContext.baseAbility.IsAutoAttack
                 && (abilityEffect as AttackEffectProperties).DamageType == DamageType.physical) {
                 combatTextType = CombatTextType.normal;
             } else {

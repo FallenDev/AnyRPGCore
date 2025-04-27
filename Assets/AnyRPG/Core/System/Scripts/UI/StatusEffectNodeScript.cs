@@ -62,16 +62,13 @@ namespace AnyRPG {
 
         public void HandleRightClick() {
             //Debug.Log("StatusEffectNodeScript.HandleRightClick()");
-            CancelStatusEffect();
+            RequestCancelStatusEffect();
             uIManager.HideToolTip();
         }
 
-        private void CancelStatusEffect() {
+        private void RequestCancelStatusEffect() {
             if (target == playerManager.UnitController?.CharacterUnit) {
-                if (statusEffectNode != null && statusEffectNode.StatusEffect.StatusEffectAlignment != StatusEffectAlignment.Harmful) {
-                    //Debug.Log("StatusEffectNodeScript.HandleRightClick(): statusEffect is not null, destroying");
-                    statusEffectNode.CancelStatusEffect();
-                }
+                target.UnitController.CharacterStats.RequestCancelStatusEffect(statusEffectNode);
             }
         }
 
@@ -154,7 +151,7 @@ namespace AnyRPG {
         public override void JoystickButton2() {
             //Debug.Log("StatusEffectNodeScript.JoystickButton2()");
             base.JoystickButton2();
-            CancelStatusEffect();
+            RequestCancelStatusEffect();
         }
 
 

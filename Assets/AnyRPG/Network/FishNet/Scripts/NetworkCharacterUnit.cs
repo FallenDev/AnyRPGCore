@@ -124,6 +124,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveBag += HandleRequestMoveBag;
                 unitController.UnitEventController.OnRequestAddBag += HandleRequestAddBagFromInventory;
                 unitController.UnitEventController.OnSetGroundTarget += HandleSetGroundTarget;
+                unitController.UnitEventController.OnRequestCancelStatusEffect += HandleRequestCancelStatusEffect;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -151,6 +152,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveBag -= HandleRequestMoveBag;
                 unitController.UnitEventController.OnRequestAddBag -= HandleRequestAddBagFromInventory;
                 unitController.UnitEventController.OnSetGroundTarget -= HandleSetGroundTarget;
+                unitController.UnitEventController.OnRequestCancelStatusEffect -= HandleRequestCancelStatusEffect;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -756,6 +758,20 @@ namespace AnyRPG {
             }
         }
 
+        public void HandleRequestCancelStatusEffect(StatusEffectProperties properties) {
+            RequestCancelStatusEffect(properties.ResourceName);
+        }
+
+        [ServerRpc]
+        public void RequestCancelStatusEffect(string resourceName) {
+            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            if (statusEffect == null) {
+                return;
+            }
+            unitController.CharacterStats.CancelStatusEffect(statusEffect.StatusEffectProperties);
+        }
+
+
         public void HandleRequestMoveFromInventoryToBank(int slotIndex) {
             RequestMoveFromInventoryToBank(slotIndex);
         }
@@ -1064,7 +1080,7 @@ namespace AnyRPG {
                 networkTarget = target.GetComponent<NetworkInteractable>();
             }
             NetworkInteractable networkOriginalTarget = null;
-            if (target != null) {
+            if (originalTarget != null) {
                 networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
             }
             HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());

@@ -1598,6 +1598,17 @@ namespace AnyRPG {
                 statusEffects[statusEffect.ResourceName].CancelStatusEffect();
             }
         }
+
+        public void RequestCancelStatusEffect(StatusEffectNode statusEffectNode) {
+            if (statusEffectNode.StatusEffect.StatusEffectAlignment == StatusEffectAlignment.Harmful) {
+                return;
+            }
+            if (systemGameManager.GameMode == GameMode.Local) {
+                CancelStatusEffect(statusEffectNode.StatusEffect);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestCancelStatusEffect(statusEffectNode.StatusEffect);
+            }
+        }
     }
 
     [System.Serializable]

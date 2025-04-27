@@ -32,6 +32,7 @@ namespace AnyRPG {
         public event System.Action<PowerResource, int, int> OnResourceAmountChanged = delegate { };
         public event System.Action<StatusEffectNode> OnStatusEffectAdd = delegate { };
         public event System.Action<string> OnAddStatusEffectStack = delegate { };
+        public event System.Action<StatusEffectProperties> OnRequestCancelStatusEffect = delegate { };
         public event System.Action<StatusEffectProperties> OnCancelStatusEffect = delegate { };
         public event System.Action<IAbilityCaster, AbilityProperties, float> OnCastTimeChanged = delegate { };
         public event System.Action OnCastComplete = delegate { };
@@ -793,6 +794,11 @@ namespace AnyRPG {
 
         public void NotifyOnReceiveCombatTextEvent(UnitController targetUnitController, int damage, CombatTextType combatTextType, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {
             OnReceiveCombatTextEvent(targetUnitController, damage, combatTextType, combatMagnitude, abilityEffectContext);
+        }
+
+        public void NotifyOnRequestCancelStatusEffect(StatusEffectProperties statusEffect) {
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestCancelStatusEffect({statusEffect.ResourceName})");
+            OnRequestCancelStatusEffect(statusEffect);
         }
 
         #endregion

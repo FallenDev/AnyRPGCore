@@ -1,4 +1,5 @@
 using AnyRPG;
+using FishNet.CodeAnalysis.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -100,10 +101,15 @@ namespace AnyRPG {
 
             //Dictionary<PrefabProfile, List<GameObject>> prefabObjects = base.Cast(source, target, originalTarget, abilityEffectInput);
 
-            Dictionary<PrefabProfile, List<GameObject>> prefabObjects = source.AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
-
+            if (target is IAbilityCaster) {
+                // effects cast by environmental areas will spawn on network clients this way
+                return (target as IAbilityCaster).AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
+            } else {
+                return source.AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
+            }
+            //Dictionary<PrefabProfile, List<GameObject>> prefabObjects = source.AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
             //abilityEffectInput.PrefabObjects = prefabObjects;
-            return prefabObjects;
+            //return prefabObjects;
         }
 
 

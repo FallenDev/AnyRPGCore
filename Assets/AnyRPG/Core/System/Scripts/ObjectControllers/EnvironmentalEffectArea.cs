@@ -91,21 +91,22 @@ namespace AnyRPG {
 
             Vector3 aoeSpawnCenter = transform.position;
 
-            Collider[] colliders = new Collider[0];
+            Collider[] colliders = new Collider[200];
             int playerMask = 1 << LayerMask.NameToLayer("Player");
             int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             int validMask = (playerMask | characterMask);
 
-            //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(): using aoeSpawnCenter: {Vector3.zero} extents: {new Vector3(200, 200, 200)}");
             //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(): using aoeSpawnCenter: {aoeSpawnCenter} extents: {boxCollider.bounds.extents}");
-            //int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, colliders, Quaternion.identity, validMask);
-            //int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, colliders, Quaternion.identity);
-            int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(Vector3.zero, new Vector3(200, 200, 200), colliders, Quaternion.identity, Physics.AllLayers, QueryTriggerInteraction.Collide);
+            int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(aoeSpawnCenter, boxCollider.bounds.extents, colliders, Quaternion.identity, validMask, QueryTriggerInteraction.Collide);
+            //int hitCount = gameObject.scene.GetPhysicsScene().OverlapBox(Vector3.zero, new Vector3(200, 200, 200), colliders, Quaternion.identity, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
             //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets(): hitCount: {hitCount}");
 
             List<AOETargetNode> validTargets = new List<AOETargetNode>();
             foreach (Collider collider in colliders) {
+                if (collider == null) {
+                    continue;
+                }
                 Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
 
                 bool canAdd = true;

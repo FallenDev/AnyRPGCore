@@ -36948,7 +36948,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 162.94702
+      value: 100.0155
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36958,12 +36958,12 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.880737
+      value: 12.416138
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.7071061
+      value: 0.0000014305114
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36973,7 +36973,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.70710754
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -36988,7 +36988,7 @@ PrefabInstance:
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -270
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 8617408416077730537, guid: 5a2d78ebe26542846be90199022210b5,
         type: 3}
@@ -48514,7 +48514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: cdb34727-a9d6-4e6c-bd2a-9dfc3a299746
+  m_UUID: 9240f669-ac5d-43a6-884e-15daa69b2517
   forceUpdateUUID: 0
 --- !u!54 &1448223535
 Rigidbody:
@@ -62260,7 +62260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 6afe1a78-0ef8-4fbe-8e84-65eb8f0443ae
+  m_UUID: 509c0424-2176-489f-9357-b40db9da38e3
   forceUpdateUUID: 0
 --- !u!54 &1813795260
 Rigidbody:

@@ -277,10 +277,14 @@ namespace AnyRPG {
                 bool canSave = true;
                 Collider playerCollider = playerManager.ActiveUnitController.Collider;
                 int validMask = (1 << LayerMask.NameToLayer("Triggers") | 1 << LayerMask.NameToLayer("Interactable") | 1 << LayerMask.NameToLayer("Ignore Raycast"));
-                Collider[] hitColliders = Physics.OverlapCapsule(playerCollider.bounds.center + new Vector3(0, playerCollider.bounds.extents.y, 0),
+                Collider[] hitColliders = new Collider[100];
+                playerManager.ActiveUnitController.PhysicsScene.OverlapCapsule(playerCollider.bounds.center + new Vector3(0, playerCollider.bounds.extents.y, 0),
                     playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0),
-                    playerManager.ActiveUnitController.Collider.bounds.extents.x, validMask);
+                    playerManager.ActiveUnitController.Collider.bounds.extents.x, hitColliders, validMask);
                 foreach (Collider hitCollider in hitColliders) {
+                    if (hitCollider == null) {
+                        continue;
+                    }
                     if (hitCollider.isTrigger == true) {
                         Interactable interactable = hitCollider.gameObject.GetComponent<Interactable>();
                         if (interactable != null && interactable.IsTrigger == true) {

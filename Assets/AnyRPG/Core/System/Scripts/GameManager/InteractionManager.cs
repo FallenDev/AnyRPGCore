@@ -71,7 +71,7 @@ namespace AnyRPG {
             // perform range check
             bool passedRangeCheck = false;
 
-            Collider[] colliders = new Collider[0];
+            Collider[] colliders = new Collider[100];
             int playerMask = 1 << LayerMask.NameToLayer("Player");
             int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             int interactableMask = 1 << LayerMask.NameToLayer("Interactable");
@@ -83,8 +83,11 @@ namespace AnyRPG {
             Vector3 topPoint = new Vector3(sourceUnitController.Collider.bounds.center.x,
             sourceUnitController.Collider.bounds.center.y + sourceUnitController.Collider.bounds.extents.y,
                 sourceUnitController.Collider.bounds.center.z);
-            colliders = Physics.OverlapCapsule(bottomPoint, topPoint, targetInteractable.InteractionMaxRange, validMask);
+            sourceUnitController.PhysicsScene.OverlapCapsule(bottomPoint, topPoint, targetInteractable.InteractionMaxRange, colliders, validMask);
             foreach (Collider collider in colliders) {
+                if (collider == null) {
+                    continue;
+                }
                 if (collider.gameObject == targetInteractable.gameObject) {
                     passedRangeCheck = true;
                     break;

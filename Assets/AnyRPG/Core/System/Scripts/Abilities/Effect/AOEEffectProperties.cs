@@ -121,7 +121,7 @@ namespace AnyRPG {
                 //Debug.Log("AOEEffect.Cast(): Setting AOE center to vector3.zero!!! was prefab spawn location not set or target despawned?");
             }
             //aoeSpawnCenter += source.AbilityManager.UnitGameObject.transform.TransformDirection(aoeCenter);
-            Collider[] colliders = new Collider[0];
+            Collider[] colliders = new Collider[100];
             int playerMask = 1 << LayerMask.NameToLayer("Player");
             int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             int validMask = (playerMask | characterMask);
@@ -136,6 +136,9 @@ namespace AnyRPG {
             List<AOETargetNode> validTargets = new List<AOETargetNode>();
             foreach (Collider collider in colliders) {
                 //Debug.Log(DisplayName + ".AOEEffect.Cast() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
+                if (collider == null) {
+                    continue;
+                }
                 bool canAdd = true;
                 Interactable targetInteractable = collider.gameObject.GetComponent<Interactable>();
                 if (targetInteractable == null) {

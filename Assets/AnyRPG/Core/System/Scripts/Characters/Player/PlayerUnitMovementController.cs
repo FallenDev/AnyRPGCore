@@ -1110,7 +1110,7 @@ namespace AnyRPG {
             for (int i = 0; i < 12; i++) {
                 Vector3 raycastPoint = (playerManager.ActiveUnitController.transform.position + (Vector3.up * raycastHeight) + (Vector3.up * 0.01f)) + (Quaternion.AngleAxis((360f / 12f) * i, Vector3.up) * Vector3.forward * colliderRadius);
                 Debug.DrawLine(raycastPoint, new Vector3(raycastPoint.x, raycastPoint.y - raycastHeight - 0.02f, raycastPoint.z), Color.cyan);
-                if (Physics.Raycast(raycastPoint, Vector3.down, out centerDownHitInfo, Mathf.Infinity, groundMask)) {
+                if (playerManager.ActiveUnitController.PhysicsScene.Raycast(raycastPoint, Vector3.down, out centerDownHitInfo, Mathf.Infinity, groundMask)) {
                     float groundHitHeight = playerManager.ActiveUnitController.transform.InverseTransformPoint(centerDownHitInfo.point).y;
                     
                     // determine if this is the closest ground distance, not caring if the player is actually touching it or not
@@ -1439,7 +1439,7 @@ namespace AnyRPG {
 
             // set an inital ground distance based on a direct downward raycast from the center of the player
             // later, a more accurate search will be done to see if there is a closer ground distance at the edges of the player capsule
-            if (Physics.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out centerDownHitInfo, Mathf.Infinity, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out centerDownHitInfo, Mathf.Infinity, groundMask)) {
                 groundNormal = centerDownHitInfo.normal;
                 groundPoint = centerDownHitInfo.point;
                 if (Vector3.Angle(Vector3.up, centerDownHitInfo.normal) <= slopeLimit) {
@@ -1462,7 +1462,7 @@ namespace AnyRPG {
 
             /*
             // downward cast for close to ground
-            if (Physics.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out downHitInfo, (closeToGroundHeight + 0.25f), groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out downHitInfo, (closeToGroundHeight + 0.25f), groundMask)) {
                 //Debug.Log($"{gameObject.name}.PlayerUnitMovementController.CheckGround(): grounded is true");
                 closeToGround = true;
             } else {
@@ -1473,7 +1473,7 @@ namespace AnyRPG {
 
             /*
             // downward cast for touching ground
-            if (Physics.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out downHitInfo, (touchingGroundHeight + 0.25f), groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(playerManager.ActiveUnitController.transform.position + (Vector3.up * 0.25f), -Vector3.up, out downHitInfo, (touchingGroundHeight + 0.25f), groundMask)) {
                 //Debug.Log($"{gameObject.name}.PlayerUnitMovementController.CheckGround(): grounded is true");
                 touchingGround = true;
             } else {
@@ -1489,9 +1489,9 @@ namespace AnyRPG {
 
             // this is necessary in case the player is moving fast and went off a cliff and we want to apply downforce
             // also needed in case of moving up stairs that are higher than 0.25f (the close to ground height)
-            Collider[] hitColliders = new Collider[0];
-            playerManager.ActiveUnitController.PhysicsScene.OverlapBox(playerManager.ActiveUnitController.transform.position, maintainingGroundExtents, hitColliders, playerManager.ActiveUnitController.transform.rotation, groundMask);
-            if (hitColliders.Length > 0) {
+            Collider[] hitColliders = new Collider[100];
+            int hitCount = playerManager.ActiveUnitController.PhysicsScene.OverlapBox(playerManager.ActiveUnitController.transform.position, maintainingGroundExtents, hitColliders, playerManager.ActiveUnitController.transform.rotation, groundMask);
+            if (hitCount > 0) {
                 closeToGround = true;
             }
             
@@ -1515,7 +1515,7 @@ namespace AnyRPG {
                     raycastPoint = new Vector3(raycastPoint.x, playerManager.ActiveUnitController.transform.position.y + stepHeight + 0.001f, raycastPoint.z);
                     //Debug.Log("CheckFrontObstacle() front Angle Different and frontObstacle > slopeLimit; localMoveVelocity: " + localMoveVelocity + "; directionOfTravel: " + directionOfTravel + "; forwardHitInfo: " + forwardHitInfo.point + "; player: " + playerManager.ActiveUnitController.transform.position + "; raycastpoint: " + raycastPoint);
                     Debug.DrawLine(raycastPoint, new Vector3(raycastPoint.x, raycastPoint.y - stepHeight - 0.001f, raycastPoint.z), Color.cyan);
-                    if (Physics.Raycast(raycastPoint, Vector3.down, out bottomStairDownHitInfo, stepHeight, groundMask)) {
+                    if (playerManager.ActiveUnitController.PhysicsScene.Raycast(raycastPoint, Vector3.down, out bottomStairDownHitInfo, stepHeight, groundMask)) {
                         // we hit something that is low enough to step on, if it is below the slope limit, we can consider it to be a stair step
                         if (Vector3.Angle(bottomStairDownHitInfo.normal, Vector3.up) < slopeLimit) {
                             bottomFrontStairHeight = bottomStairDownHitInfo.point;
@@ -1552,7 +1552,7 @@ namespace AnyRPG {
                     raycastPoint = new Vector3(raycastPoint.x, bottomStairDownHitInfo.point.y + stepHeight + 0.001f, raycastPoint.z);
                     //Debug.Log("CheckFrontObstacle() front Angle Different and frontObstacle > slopeLimit; localMoveVelocity: " + localMoveVelocity + "; directionOfTravel: " + directionOfTravel + "; forwardHitInfo: " + forwardHitInfo.point + "; player: " + playerManager.ActiveUnitController.transform.position + "; raycastpoint: " + raycastPoint);
                     Debug.DrawLine(raycastPoint, new Vector3(raycastPoint.x, raycastPoint.y - stepHeight - 0.001f, raycastPoint.z), Color.cyan);
-                    if (Physics.Raycast(raycastPoint, Vector3.down, out topStairDownHitInfo, stepHeight, groundMask)) {
+                    if (playerManager.ActiveUnitController.PhysicsScene.Raycast(raycastPoint, Vector3.down, out topStairDownHitInfo, stepHeight, groundMask)) {
                         // we hit something that is low enough to step on, if it is below the slope limit, we can consider it to be a stair step
                         if (Vector3.Angle(topStairDownHitInfo.normal, Vector3.up) < slopeLimit) {
                             topFrontStairHeight = topStairDownHitInfo.point;
@@ -1567,7 +1567,7 @@ namespace AnyRPG {
                             // determine exact corner of highest stair
                             Vector3 exactTopOriginPoint = new Vector3(topOriginPoint.x, topStairDownHitInfo.point.y - 0.001f, topOriginPoint.z);
                             Debug.DrawLine(exactTopOriginPoint, exactTopOriginPoint + directionOfTravel, Color.cyan);
-                            Physics.Raycast(exactTopOriginPoint, directionOfTravel, out topStairForwardHitInfo, detectionDistance, groundMask);
+                            playerManager.ActiveUnitController.PhysicsScene.Raycast(exactTopOriginPoint, directionOfTravel, out topStairForwardHitInfo, detectionDistance, groundMask);
                             */
                             return true;
                         }
@@ -1596,12 +1596,12 @@ namespace AnyRPG {
                 lowObstacleOriginPoint + (directionOfTravel * (detectionDistance + colliderRadius)),
                 Color.black);
 
-            if (Physics.Raycast(lowObstacleOriginPoint, directionOfTravel, (detectionDistance + colliderRadius), groundMask) == true) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(lowObstacleOriginPoint, directionOfTravel, (detectionDistance + colliderRadius), groundMask) == true) {
                 return;
             } else {
                 // check if origin point is on the other side of an obstacle
                 // disable if statement because this is the bottom center of capsule and no need to raycast since los origin and bottom origin are identical
-                //if (Physics.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == true) {
+                //if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == true) {
                     // near an obstacle in front center
                     //Debug.Log("near a low obstacle in front center");
                     validResultCount++;
@@ -1615,11 +1615,11 @@ namespace AnyRPG {
             Debug.DrawLine(lowObstacleOriginPoint,
                 lowObstacleOriginPoint + (directionOfTravel * detectionDistance),
                 Color.black);
-            if (Physics.Raycast(lowObstacleOriginPoint, directionOfTravel, detectionDistance, groundMask) == true) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(lowObstacleOriginPoint, directionOfTravel, detectionDistance, groundMask) == true) {
                 return;
             } else {
                 // check if origin point is on the other side of an obstacle
-                if (Physics.Raycast(losOriginPoint, lowObstacleOriginPoint - losOriginPoint, Vector3.Magnitude(lowObstacleOriginPoint - losOriginPoint), groundMask) == false) {
+                if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, lowObstacleOriginPoint - losOriginPoint, Vector3.Magnitude(lowObstacleOriginPoint - losOriginPoint), groundMask) == false) {
                     // near an obstacle in front left
                     //Debug.Log("near a low obstacle in front left");
                     validResultCount++;
@@ -1634,11 +1634,11 @@ namespace AnyRPG {
             Debug.DrawLine(lowObstacleOriginPoint,
                 lowObstacleOriginPoint + (directionOfTravel * detectionDistance),
                 Color.black);
-            if (Physics.Raycast(lowObstacleOriginPoint, directionOfTravel, detectionDistance, groundMask) == true) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(lowObstacleOriginPoint, directionOfTravel, detectionDistance, groundMask) == true) {
                 return;
             } else {
                 // check if origin point is on the other side of an obstacle
-                if (Physics.Raycast(losOriginPoint, lowObstacleOriginPoint - losOriginPoint, Vector3.Magnitude(lowObstacleOriginPoint - losOriginPoint), groundMask) == false) {
+                if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, lowObstacleOriginPoint - losOriginPoint, Vector3.Magnitude(lowObstacleOriginPoint - losOriginPoint), groundMask) == false) {
                     // near an obstacle in front right
                     //Debug.Log("near a low obstacle in front right");
                     validResultCount++;
@@ -1664,9 +1664,9 @@ namespace AnyRPG {
                 bottomOriginPoint + (directionOfTravel * (detectionDistance + colliderRadius)),
                 Color.black);
 
-            if (Physics.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
                 // check if origin point is on the other side of an obstacle
-                //if (Physics.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
+                //if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
                     // near an obstacle in front center
                     //Debug.Log("near a bottom obstacle in front center");
                     nearBottomFrontObstacle = true;
@@ -1678,7 +1678,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                                                         topOriginPoint + (directionOfTravel * (detectionDistance + colliderRadius)),
                                                         Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
                             // near an obstacle in front center
                             //Debug.Log("near a top obstacle in front center");
                             nearTopFrontObstacle = true;
@@ -1690,7 +1690,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                                                         topOriginPoint + (directionOfTravel * (detectionDistance + colliderRadius)),
                                                         Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, (detectionDistance + colliderRadius), groundMask)) {
                             // near an obstacle in front center
                             //Debug.Log("near a top obstacle in front center");
                             nearTopFrontObstacle = true;
@@ -1706,9 +1706,9 @@ namespace AnyRPG {
             Debug.DrawLine(bottomOriginPoint,
                 bottomOriginPoint + (directionOfTravel * detectionDistance),
                 Color.black);
-            if (Physics.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, detectionDistance, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, detectionDistance, groundMask)) {
                 // check if origin point is on the other side of an obstacle
-                if (Physics.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
+                if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
                     // near an obstacle in front left
                     //Debug.Log("near a bottom obstacle in front left");
                     nearBottomFrontObstacle = true;
@@ -1719,7 +1719,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                             topOriginPoint + (directionOfTravel * detectionDistance),
                             Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
                             // near an obstacle in front left
                             //Debug.Log("near a top obstacle in front left");
                             nearTopFrontObstacle = true;
@@ -1731,7 +1731,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                             topOriginPoint + (directionOfTravel * detectionDistance),
                             Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
                             // near an obstacle in front left
                             //Debug.Log("near a top obstacle in front left");
                             nearTopFrontObstacle = true;
@@ -1748,9 +1748,9 @@ namespace AnyRPG {
             Debug.DrawLine(bottomOriginPoint,
                 bottomOriginPoint + (directionOfTravel * detectionDistance),
                 Color.black);
-            if (Physics.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, detectionDistance, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(bottomOriginPoint, directionOfTravel, out bottomForwardHitInfo, detectionDistance, groundMask)) {
                 // check if origin point is on the other side of an obstacle
-                if (Physics.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
+                if (playerManager.ActiveUnitController.PhysicsScene.Raycast(losOriginPoint, bottomOriginPoint - losOriginPoint, out losHitInfo, Vector3.Magnitude(bottomOriginPoint - losOriginPoint), groundMask) == false) {
                     // near an obstacle in front right
                     //Debug.Log("near a bottom obstacle in front right");
                     nearBottomFrontObstacle = true;
@@ -1761,7 +1761,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                             topOriginPoint + (directionOfTravel * detectionDistance),
                             Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
                             // near an obstacle in front right
                             //Debug.Log("near a top obstacle in front right");
                             nearTopFrontObstacle = true;
@@ -1773,7 +1773,7 @@ namespace AnyRPG {
                         Debug.DrawLine(topOriginPoint,
                             topOriginPoint + (directionOfTravel * detectionDistance),
                             Color.black);
-                        if (Physics.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
+                        if (playerManager.ActiveUnitController.PhysicsScene.Raycast(topOriginPoint, directionOfTravel, out topForwardHitInfo, detectionDistance, groundMask)) {
                             // near an obstacle in front right
                             //Debug.Log("near a top obstacle in front right");
                             nearTopFrontObstacle = true;
@@ -1800,7 +1800,7 @@ namespace AnyRPG {
                 Color.black);
 
             // perform a downward raycast from center just in front of collider to see if close to contacting any obstacle
-            if (Physics.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
                 // if there was a hit, return the height 1mm below the height of the hit
                 nearFrontObstacle = true;
                 return playerManager.ActiveUnitController.transform.InverseTransformPoint(obstacleCastHitInfo.point).y - 0.001f;
@@ -1811,7 +1811,7 @@ namespace AnyRPG {
             Debug.DrawLine(forwardOriginPoint,
                 forwardOriginPoint + (Vector3.down * stepHeight),
                 Color.black);
-            if (Physics.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
                 // if there was a hit, return the height 1mm below the height of the hit
                 nearFrontObstacle = true;
                 return playerManager.ActiveUnitController.transform.InverseTransformPoint(obstacleCastHitInfo.point).y - 0.001f;
@@ -1822,7 +1822,7 @@ namespace AnyRPG {
             Debug.DrawLine(forwardOriginPoint,
                 forwardOriginPoint + (Vector3.down * stepHeight),
                 Color.black);
-            if (Physics.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
+            if (playerManager.ActiveUnitController.PhysicsScene.Raycast(forwardOriginPoint, Vector3.down, out obstacleCastHitInfo, stepHeight, groundMask)) {
                 // if there was a hit, return the height 1mm below the height of the hit
                 nearFrontObstacle = true;
                 return playerManager.ActiveUnitController.transform.InverseTransformPoint(obstacleCastHitInfo.point).y - 0.001f;
@@ -1855,7 +1855,7 @@ namespace AnyRPG {
             if (nearBottomFrontObstacle == false) {
                 //Vector3 highObstacleOrigin = playerManager.ActiveUnitController.transform.position + (Vector3.up * (stepHeight + 0.001f)) + (directionOfTravel * (colliderRadius + 0.001f));
                 //Debug.DrawLine(highObstacleOrigin, highObstacleOrigin - (Vector3.up * stepHeight), Color.cyan);
-                //if (Physics.Raycast(highObstacleOrigin, Vector3.down, out bottomStairDownHitInfo, stepHeight, groundMask)) {
+                //if (playerManager.ActiveUnitController.PhysicsScene.Raycast(highObstacleOrigin, Vector3.down, out bottomStairDownHitInfo, stepHeight, groundMask)) {
                 //PerformFrontObstacleCasts(directionOfTravel, detectionDistance, playerManager.ActiveUnitController.transform.InverseTransformPoint(bottomStairDownHitInfo.point).y - 0.001f);
                 if (rayCastForGroundRun == false) {
                     RaycastForGround();

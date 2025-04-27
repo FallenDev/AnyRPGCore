@@ -681,13 +681,17 @@ namespace AnyRPG {
             } else {
                 validMask = 1 << LayerMask.NameToLayer("CharacterUnit");
             }
-            Collider[] hitColliders = Physics.OverlapSphere(playerManager.ActiveUnitController.transform.position, tabTargetMaxDistance, validMask);
+            Collider[] hitColliders = new Collider[100];
+            playerManager.UnitController.PhysicsScene.OverlapSphere(playerManager.ActiveUnitController.transform.position, tabTargetMaxDistance, hitColliders, validMask, QueryTriggerInteraction.UseGlobal);
             //Debug.Log("GetNextTabTarget(): collider length: " + hitColliders.Length + "; index: " + tabTargetIndex);
 
             // although the layermask on the collider should have only delivered us valid characterUnits, they may be dead or friendly.  We need to put all the valid attack targets in a list first
             foreach (Collider hitCollider in hitColliders) {
                 //Debug.Log("GetNextTabTarget(): collider length: " + hitColliders.Length);
                 //GameObject collidedGameObject = hitCollider.gameObject;
+                if (hitCollider == null) {
+                    continue;
+                }
                 Interactable targetCharacterUnit = hitCollider.gameObject.GetComponent<Interactable>();
                 if (targetCharacterUnit != null
                     && targetCharacterUnit != oldTarget

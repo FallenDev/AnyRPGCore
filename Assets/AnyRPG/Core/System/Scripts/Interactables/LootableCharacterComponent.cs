@@ -270,12 +270,15 @@ namespace AnyRPG {
 
         public List<Interactable> GetLootableTargets() {
             Vector3 aoeSpawnCenter = CharacterUnit.Interactable.transform.position;
-            Collider[] colliders = new Collider[0];
+            Collider[] colliders = new Collider[100];
             int validMask = 1 << LayerMask.NameToLayer("CharacterUnit");
-            colliders = Physics.OverlapSphere(aoeSpawnCenter, 15f, validMask);
+            interactable.PhysicsScene.OverlapSphere(aoeSpawnCenter, 15f, colliders, validMask, QueryTriggerInteraction.UseGlobal);
             //Debug.Log("AOEEffect.Cast(): Casting OverlapSphere with radius: " + aoeRadius);
             List<Interactable> validTargets = new List<Interactable>();
             foreach (Collider collider in colliders) {
+                if (collider == null) {
+                    continue;
+                }
                 Interactable _interactable = collider.gameObject.GetComponent<Interactable>();
                 if (_interactable != null) {
                     validTargets.Add(_interactable);

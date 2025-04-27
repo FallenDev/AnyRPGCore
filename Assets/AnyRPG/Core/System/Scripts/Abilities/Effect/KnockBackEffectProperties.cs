@@ -100,7 +100,7 @@ namespace AnyRPG {
                     }
                 }
             } else {
-                Collider[] colliders = new Collider[0];
+                Collider[] colliders = new Collider[100];
                 //int playerMask = 1 << LayerMask.NameToLayer("Default");
                 //int characterMask = 1 << LayerMask.NameToLayer("CharacterUnit");
                 //int validMask = (playerMask | characterMask);
@@ -112,8 +112,11 @@ namespace AnyRPG {
                 } else {
                     explosionCenter = targetPosition;
                 }
-                colliders = Physics.OverlapSphere(explosionCenter, explosionRadius, explosionMask);
+                source.PhysicsScene.OverlapSphere(explosionCenter, explosionRadius, colliders, explosionMask, QueryTriggerInteraction.UseGlobal);
                 foreach (Collider collider in colliders) {
+                    if (collider == null) {
+                        continue;
+                    }
                     //Debug.Log(DisplayName + ".KnockBackEffect.Cast() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
                     Rigidbody rigidbody = collider.gameObject.GetComponent<Rigidbody>();
                     if (rigidbody != null) {

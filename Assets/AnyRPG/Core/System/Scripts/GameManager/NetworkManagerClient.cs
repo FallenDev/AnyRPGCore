@@ -99,22 +99,22 @@ namespace AnyRPG {
             networkController.LoadScene(sceneName);
         }
 
-        public void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform) {
+        public void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
 
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform);
+            networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform, sceneName);
         }
 
-        public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
 
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward);
+            networkController.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, sceneName);
         }
 
         public GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
@@ -230,8 +230,8 @@ namespace AnyRPG {
             networkController.DeletePlayerCharacter(playerCharacterId);
         }
 
-        public void CreateLobbyGame(string sceneName) {
-            networkController.CreateLobbyGame(sceneName);
+        public void RequestCreateLobbyGame(string sceneResourceName) {
+            networkController.RequestCreateLobbyGame(sceneResourceName);
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
@@ -349,11 +349,11 @@ namespace AnyRPG {
             }
         }
 
-        public void StartLobbyGame(int gameId) {
-            networkController.StartLobbyGame(gameId);
+        public void RequestStartLobbyGame(int gameId) {
+            networkController.RequestStartLobbyGame(gameId);
         }
 
-        public void AdvertiseStartLobbyGame(int gameId, string sceneName) {
+        public void AdvertiseStartLobbyGame(int gameId/*, string sceneName*/) {
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // lobby game does not exist
                 return;
@@ -368,7 +368,8 @@ namespace AnyRPG {
             uIManager.clientLobbyGameWindow.CloseWindow();
 
             playerManager.SpawnPlayerConnection();
-            levelManager.LoadLevel(sceneName);
+            //levelManager.LoadLevel(sceneName);
+            levelManager.ProcessBeforeLevelUnload();
         }
 
         public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {

@@ -2,9 +2,14 @@ using UnityEngine;
 
 namespace AnyRPG {
     public class FishNetRigidbody : ConfiguredNetworkBehaviour {
+        // ##################
+        // currently not used - maybe use again if figure out a good way to avoid rubberbanding or walking through boxes
+        // perhaps a unitcontroller mode of push with proper animations
+        // ##################
 
-        [SerializeField]
-        private Rigidbody rigidbodyComponent = null;
+
+        //[SerializeField]
+        //private Rigidbody rigidbodyComponent = null;
 
         // game manager references
         protected NetworkManagerServer networkManagerServer = null;

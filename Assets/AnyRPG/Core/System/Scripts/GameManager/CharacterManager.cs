@@ -65,7 +65,7 @@ namespace AnyRPG {
 
             SetupUnitSpawnRequest(characterRequestData);
 
-            networkManagerClient.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward);
+            networkManagerClient.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, SceneManager.GetActiveScene().name);
 
         }
 
@@ -74,7 +74,7 @@ namespace AnyRPG {
             SetupUnitSpawnRequest(characterRequestData);
 
             if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerClient.SpawnPlayer(playerCharacterSaveData.PlayerCharacterId, characterRequestData, parentTransform);
+                networkManagerClient.SpawnPlayer(playerCharacterSaveData.PlayerCharacterId, characterRequestData, parentTransform, SceneManager.GetActiveScene().name);
                 return;
             }
 

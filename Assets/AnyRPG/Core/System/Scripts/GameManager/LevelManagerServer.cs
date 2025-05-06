@@ -10,7 +10,8 @@ using UnityEngine.UI;
 namespace AnyRPG {
     public class LevelManagerServer : ConfiguredMonoBehaviour {
 
-        private Dictionary<string, Scene> loadedScenes = new Dictionary<string, Scene>();
+        // dictionary of loaded scenes, where the key is the scene name and the value is a list of scene handles
+        private Dictionary<string, Dictionary<int, Scene>> loadedScenes = new Dictionary<string, Dictionary<int, Scene>>();
 
         // game manager references
         private LevelManager levelManager = null;
@@ -32,21 +33,28 @@ namespace AnyRPG {
 
         public void AddLoadedScene(Scene scene) {
             Debug.Log($"LevelManagerServer.AddLoadedScene({scene.name})");
-
-            loadedScenes.Add(scene.name, scene);
+            if (loadedScenes.ContainsKey(scene.name) == false) {
+                loadedScenes.Add(scene.name, new Dictionary<int, Scene>());
+            }
+            loadedScenes[scene.name].Add(scene.handle, scene);
         }
 
-        public void RemoveLoadedScene(string sceneName) {
-            Debug.Log($"LevelManagerServer.RemoveLoadedScene({sceneName})");
+        public void RemoveLoadedScene(int sceneHandle, string sceneName) {
+            Debug.Log($"LevelManagerServer.RemoveLoadedScene({sceneHandle}, {sceneName})");
 
-            loadedScenes.Remove(sceneName);
+            if (loadedScenes.ContainsKey(sceneName) == false) {
+                //Debug.LogError($"LevelManagerServer.RemoveLoadedScene() - scene {sceneName} not found in loaded scenes");
+                return;
+            }
+
+            loadedScenes[sceneName].Remove(sceneHandle);
         }
 
-        public void ProcessLevelLoad(string sceneName)  {
-            Debug.Log($"LevelManagerServer.ProcessLevelLoad({sceneName})");
+        public void ProcessLevelLoad(Scene loadedScene)  {
+            Debug.Log($"LevelManagerServer.ProcessLevelLoad({loadedScene.name}({loadedScene.handle}))");
 
             cameraManager.ActivateMainCamera();
-            systemGameManager.AutoConfigureMonoBehaviours(sceneName);
+            systemGameManager.AutoConfigureMonoBehaviours(loadedScene);
 
         }
 

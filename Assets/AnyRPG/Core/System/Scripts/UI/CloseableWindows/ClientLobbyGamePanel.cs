@@ -96,7 +96,7 @@ namespace AnyRPG {
         }
 
         public void StartGame() {
-            networkManagerClient.StartLobbyGame(networkManagerClient.LobbyGame.gameId);
+            networkManagerClient.RequestStartLobbyGame(networkManagerClient.LobbyGame.gameId);
         }
 
 
@@ -115,9 +115,9 @@ namespace AnyRPG {
 
         public void UpdateUIELements() {
             serverStatusText.text = $"Logged In As: {networkManagerClient.Username}";
-            SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(networkManagerClient.LobbyGame.sceneName);
+            SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(networkManagerClient.LobbyGame.sceneResourceName);
             if (sceneNode == null) {
-                Debug.LogWarning($"Could not find scene {networkManagerClient.LobbyGame.sceneName}");
+                Debug.LogWarning($"Could not find scene {networkManagerClient.LobbyGame.sceneResourceName}");
                 return;
             }
             if (sceneNode.LoadingScreenImage != null) {

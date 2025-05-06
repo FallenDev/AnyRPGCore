@@ -7,7 +7,7 @@ namespace AnyRPG {
         public string leaderUserName = string.Empty;
         public int gameId;
         public string gameName = string.Empty;
-        public string sceneName = string.Empty;
+        public string sceneResourceName = string.Empty;
         public bool inProgress = false;
 
         private Dictionary<int, LobbyGamePlayerInfo> playerList = new Dictionary<int, LobbyGamePlayerInfo>();
@@ -22,11 +22,11 @@ namespace AnyRPG {
             */
         }
 
-        public LobbyGame(int clientId, int gameId, string sceneName, string userName) {
+        public LobbyGame(int clientId, int gameId, string sceneResourceName, string userName) {
             this.leaderClientId = clientId;
             leaderUserName = userName;
             this.gameId = gameId;
-            this.sceneName = sceneName;
+            this.sceneResourceName = sceneResourceName;
             playerList.Add(clientId, new LobbyGamePlayerInfo(clientId, userName));
         }
 

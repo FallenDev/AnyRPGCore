@@ -242,7 +242,7 @@ namespace AnyRPG {
 
             foreach (UnloadedScene scene in obj.UnloadedScenesV2) {
                 Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.Name}");
-                networkManagerServer.HandleSceneUnloadEnd(scene.Name);
+                networkManagerServer.HandleSceneUnloadEnd(scene.Handle, scene.Name);
             }
         }
 
@@ -289,17 +289,17 @@ namespace AnyRPG {
         }
 
 
-        public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform) {
+        public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
             Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform);
+            clientConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform, sceneName);
             //return null;
         }
 
-        public override void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public override void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.SpawnLobbyGamePlayer(characterRequestData.spawnRequestId, gameId, parentTransform, position, forward);
+            clientConnector.SpawnLobbyGamePlayer(characterRequestData.spawnRequestId, gameId, parentTransform, position, forward, sceneName);
             //return null;
         }
 
@@ -352,8 +352,8 @@ namespace AnyRPG {
             clientConnector.LoadCharacterList();
         }
 
-        public override void CreateLobbyGame(string sceneName) {
-            clientConnector.CreateLobbyGame(sceneName);
+        public override void RequestCreateLobbyGame(string sceneResourceName) {
+            clientConnector.RequestCreateLobbyGame(sceneResourceName);
         }
 
         public override void CancelLobbyGame(int gameId) {
@@ -396,8 +396,8 @@ namespace AnyRPG {
             clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId);
         }
 
-        public override void StartLobbyGame(int gameId) {
-            clientConnector.StartLobbyGame(gameId);
+        public override void RequestStartLobbyGame(int gameId) {
+            clientConnector.RequestStartLobbyGame(gameId);
         }
 
         public override void ToggleLobbyGameReadyStatus(int gameId) {
@@ -469,14 +469,14 @@ namespace AnyRPG {
         #region server functions
 
         private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
-            //Debug.Log($"FishNetNetworkController.HandleLoadEndServer()");
+            Debug.Log($"FishNetNetworkController.HandleLoadEndServer() skipped: {obj.SkippedSceneNames.Length}; loaded: {obj.LoadedScenes.Length} options hashcode: {obj.QueueData.SceneLoadData.GetHashCode()}");
 
             if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
                 return;
             }
             foreach (Scene scene in obj.LoadedScenes) {
-                //Debug.Log($"FishNetNetworkController.HandleLoadEnd() {scene.name}");
-                networkManagerServer.HandleSceneLoadEnd(scene);
+                Debug.Log($"FishNetNetworkController.HandleSceneLoadEndServer() loaded: {scene.name} handle: {scene.handle}");
+                networkManagerServer.HandleSceneLoadEnd(scene, obj.QueueData.SceneLoadData.GetHashCode());
             }
             //Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");
 
@@ -552,8 +552,8 @@ namespace AnyRPG {
             clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
         }
 
-        public override void AdvertiseStartLobbyGame(int gameId, string sceneName) {
-            clientConnector.AdvertiseStartLobbyGame(gameId, sceneName);
+        public override void StartLobbyGame(int gameId/*, string sceneName*/) {
+            clientConnector.StartLobbyGame(gameId/*, sceneName*/);
         }
 
         public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {

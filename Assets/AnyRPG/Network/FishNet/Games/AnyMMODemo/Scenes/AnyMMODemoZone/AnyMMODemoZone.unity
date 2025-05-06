@@ -48515,7 +48515,6 @@ GameObject:
   - component: {fileID: 1448223534}
   - component: {fileID: 1448223533}
   - component: {fileID: 1448223539}
-  - component: {fileID: 1448223540}
   m_Layer: 0
   m_Name: 25KgCubeSavePosition2
   m_TagString: Untagged
@@ -48566,7 +48565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 7f22daed-6166-4107-b603-f9306fdd3fa7
+  m_UUID: 7e9bbfd4-a64b-4372-8dd5-c9b0215752e7
   forceUpdateUUID: 0
 --- !u!54 &1448223535
 Rigidbody:
@@ -48712,22 +48711,6 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &1448223540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1448223531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 490d03d693e2bdd4895cb19d71423103, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 854816079}
-  _networkObjectCache: {fileID: 0}
-  rigidbodyComponent: {fileID: 1448223535}
 --- !u!1001 &1450240525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62294,7 +62277,6 @@ GameObject:
   - component: {fileID: 1813795259}
   - component: {fileID: 1813795258}
   - component: {fileID: 1813795264}
-  - component: {fileID: 1813795265}
   m_Layer: 0
   m_Name: 25KgCubeSavePosition
   m_TagString: Untagged
@@ -62345,7 +62327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: d2ec80c4-d4be-438e-a7db-a4e7b7447e9d
+  m_UUID: 8061726e-71ba-4e1f-a59a-7ad849549b46
   forceUpdateUUID: 0
 --- !u!54 &1813795260
 Rigidbody:
@@ -62491,22 +62473,6 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &1813795265
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1813795256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 490d03d693e2bdd4895cb19d71423103, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 854816079}
-  _networkObjectCache: {fileID: 0}
-  rigidbodyComponent: {fileID: 1813795260}
 --- !u!1001 &1815233270
 PrefabInstance:
   m_ObjectHideFlags: 0

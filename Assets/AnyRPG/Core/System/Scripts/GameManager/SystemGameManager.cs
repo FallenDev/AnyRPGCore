@@ -2,6 +2,7 @@ using AnyRPG;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
     public class SystemGameManager : MonoBehaviour {
@@ -362,15 +363,15 @@ namespace AnyRPG {
         /// <summary>
         /// configure all classes of type AutoConfiguredMonoBehavior in the scene
         /// </summary>
-        public void AutoConfigureMonoBehaviours(string sceneName) {
+        public void AutoConfigureMonoBehaviours(Scene scene) {
             //Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours()");
 
             foreach (AutoConfiguredMonoBehaviour autoConfiguredMonoBehaviour in GameObject.FindObjectsByType<AutoConfiguredMonoBehaviour>(FindObjectsSortMode.None)) {
 
-                if (autoConfiguredMonoBehaviour.gameObject.scene.name == sceneName) {
+                if (autoConfiguredMonoBehaviour.gameObject.scene == scene) {
                     autoConfiguredMonoBehaviour.AutoConfigure(this);
                 } else {
-                    Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours(): {autoConfiguredMonoBehaviour.gameObject.name} not in scene");
+                    //Debug.Log($"SystemGameManager.AutoConfigureMonoBehaviours(): {autoConfiguredMonoBehaviour.gameObject.name} not in scene");
                 }
             }
         }

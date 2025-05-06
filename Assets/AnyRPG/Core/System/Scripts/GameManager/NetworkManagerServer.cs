@@ -33,6 +33,12 @@ namespace AnyRPG {
 
         // list of lobby games
         private Dictionary<int, LobbyGame> lobbyGames = new Dictionary<int, LobbyGame>();
+        // hashcode, gameId
+        private Dictionary<int, int> lobbyGameLoadRequestHashCodes = new Dictionary<int, int>();
+        // gameId, sceneName, sceneHandle
+        private Dictionary<int, Dictionary<string, int>> lobbyGameSceneHandles = new Dictionary<int, Dictionary<string, int>>();
+        // sceneHandle, gameId
+        private Dictionary<int, int> lobbyGameSceneHandleLookup = new Dictionary<int, int>();
         private int lobbyGameCounter = 0;
         private int maxLobbyChatTextSize = 64000;
 
@@ -400,8 +406,9 @@ namespace AnyRPG {
             return networkController?.GetClientIPAddress(clientId);
         }
 
-        public void CreateLobbyGame(string sceneName, int clientId) {
-            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneName, loggedInAccounts[clientId].username);
+        public void CreateLobbyGame(string sceneResourceName, int clientId) {
+            
+            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneResourceName, loggedInAccounts[clientId].username);
             lobbyGameCounter++;
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             lobbyGameChatText.Add(lobbyGame.gameId, string.Empty);
@@ -464,13 +471,17 @@ namespace AnyRPG {
             networkController.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, lobbyGames[gameId].PlayerList[clientId].ready);
         }
 
-        public void StartLobbyGame(int gameId, int clientId) {
+        public void RequestStartLobbyGame(int gameId, int clientId) {
             if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].leaderClientId != clientId || lobbyGames[gameId].inProgress == true) {
                 // game did not exist, non leader tried to start, or already in progress, nothing to do
                 return;
             }
+            StartLobbyGame(gameId);
+        }
+
+        public void StartLobbyGame(int gameId) {
             lobbyGames[gameId].inProgress = true;
-            networkController.AdvertiseStartLobbyGame(gameId, lobbyGames[gameId].sceneName);
+            networkController.StartLobbyGame(gameId/*, lobbyGames[gameId].sceneName*/);
         }
 
         public void LeaveLobbyGame(int gameId, int clientId) {
@@ -580,15 +591,39 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleSceneLoadEnd(Scene scene) {
-            Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name})");
-
+        public void HandleSceneLoadEnd(Scene scene, int loadRequestHashCode) {
+            Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name}, {loadRequestHashCode})");
+            if (lobbyGameLoadRequestHashCodes.ContainsKey(loadRequestHashCode) == true) {
+                //Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name}, {loadRequestHashCode}) - lobby game load request");
+                AddLobbyGameSceneHandle(lobbyGameLoadRequestHashCodes[loadRequestHashCode], scene);
+                lobbyGameLoadRequestHashCodes.Remove(loadRequestHashCode);
+            }
             levelManagerServer.AddLoadedScene(scene);
-            levelManagerServer.ProcessLevelLoad(scene.name);
+            levelManagerServer.ProcessLevelLoad(scene);
         }
 
-        public void HandleSceneUnloadEnd(string sceneName) {
-            levelManagerServer.RemoveLoadedScene(sceneName);
+        private void AddLobbyGameSceneHandle(int lobbyGameId, Scene scene) {
+            if (lobbyGameSceneHandles.ContainsKey(lobbyGameId) == false) {
+                lobbyGameSceneHandles.Add(lobbyGameId, new Dictionary<string, int>());
+            }
+            if (lobbyGameSceneHandles[lobbyGameId].ContainsKey(scene.name) == false) {
+                lobbyGameSceneHandles[lobbyGameId].Add(scene.name, scene.handle);
+            }
+            if (lobbyGameSceneHandleLookup.ContainsKey(scene.handle) == false) {
+                lobbyGameSceneHandleLookup.Add(scene.handle, lobbyGameId);
+            }
+        }
+
+        public void HandleSceneUnloadEnd(int sceneHandle, string sceneName) {
+            if (lobbyGameSceneHandleLookup.ContainsKey(sceneHandle) == true) {
+                //Debug.Log($"NetworkManagerServer.HandleSceneUnloadEnd({sceneName}, {sceneHandle}) - lobby game unload request");
+                int lobbyGameId = lobbyGameSceneHandleLookup[sceneHandle];
+                if (lobbyGameSceneHandles.ContainsKey(lobbyGameId) == true && lobbyGameSceneHandles[lobbyGameId].ContainsKey(sceneName) == true) {
+                    lobbyGameSceneHandles[lobbyGameId].Remove(sceneName);
+                }
+                lobbyGameSceneHandleLookup.Remove(sceneHandle);
+            }
+            levelManagerServer.RemoveLoadedScene(sceneHandle, sceneName);
         }
 
         public UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
@@ -733,6 +768,12 @@ namespace AnyRPG {
 
         public void AdvertiseTakeLoot(int clientId, int lootDropId) {
             networkController.AdvertiseTakeLoot(clientId, lootDropId);
+        }
+
+        public void SetLobbyGameLoadRequestHashcode(int gameId, int hashCode) {
+            if (lobbyGameLoadRequestHashCodes.ContainsKey(hashCode) == false) {
+                lobbyGameLoadRequestHashCodes.Add(hashCode, gameId);
+            }
         }
 
 

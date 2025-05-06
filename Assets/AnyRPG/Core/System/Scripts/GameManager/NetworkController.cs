@@ -16,8 +16,8 @@ namespace AnyRPG {
             return false;
         }
         public abstract void Logout();
-        public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform);
-        public abstract void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName);
+        public abstract void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName);
         public abstract GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();
@@ -25,7 +25,7 @@ namespace AnyRPG {
         public abstract void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData);
         public abstract void DeletePlayerCharacter(int playerCharacterId);
         public abstract void LoadCharacterList();
-        public abstract void CreateLobbyGame(string sceneName);
+        public abstract void RequestCreateLobbyGame(string sceneResourceName);
         public abstract void CancelLobbyGame(int gameId);
         public abstract void JoinLobbyGame(int gameId);
         public abstract void LeaveLobbyGame(int gameId);
@@ -36,7 +36,7 @@ namespace AnyRPG {
         public abstract void RequestLobbyGameList();
         public abstract void RequestLobbyPlayerList();
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
-        public abstract void StartLobbyGame(int gameId);
+        public abstract void RequestStartLobbyGame(int gameId);
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex);
         public abstract void SetPlayerCharacterClass(string className);
@@ -70,7 +70,7 @@ namespace AnyRPG {
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
         public abstract void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers);
         public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
-        public abstract void AdvertiseStartLobbyGame(int gameId, string sceneName);
+        public abstract void StartLobbyGame(int gameId/*, string sceneName*/);
         public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready);
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);

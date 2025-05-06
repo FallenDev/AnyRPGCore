@@ -271,7 +271,7 @@ namespace AnyRPG {
 
             loadingLevel = false;
             SetActiveSceneNode();
-            systemGameManager.AutoConfigureMonoBehaviours(activeSceneName);
+            systemGameManager.AutoConfigureMonoBehaviours(SceneManager.GetActiveScene());
 
             // determine if this is the game manager loading scene
             if (IsInitializationScene()) {
@@ -420,16 +420,7 @@ namespace AnyRPG {
                 return;
             }
 
-            mapManager.ProcessLevelUnload();
-            SystemEventManager.TriggerEvent("OnLevelUnload", new EventParamProperties());
-
-            // playerManager needs to do this last so other objects can respond before we despawn the character
-            // testing - let playerController handle passing on player despawn event
-            //playerManager.ProcessLevelUnload();
-
-            uIManager.DeactivatePlayerUI();
-            uIManager.DeactivateInGameUI();
-            uIManager.DeactivateSystemMenuUI();
+            ProcessBeforeLevelUnload();
 
             loadingSceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
             if (loadingSceneNode != null) {
@@ -439,6 +430,15 @@ namespace AnyRPG {
                 StartLoadAsync(levelName);
                 //Debug.LogError("LevelManager.LoadLevel(" + levelName + "): could not find scene node with that name!");
             }
+        }
+
+        public void ProcessBeforeLevelUnload() {
+            mapManager.ProcessLevelUnload();
+            SystemEventManager.TriggerEvent("OnLevelUnload", new EventParamProperties());
+
+            uIManager.DeactivatePlayerUI();
+            uIManager.DeactivateInGameUI();
+            uIManager.DeactivateSystemMenuUI();
         }
 
         private void StartLoadAsync(string sceneName) {

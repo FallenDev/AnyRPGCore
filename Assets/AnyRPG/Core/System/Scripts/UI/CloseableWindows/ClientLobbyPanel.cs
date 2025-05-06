@@ -197,7 +197,7 @@ namespace AnyRPG {
             GameObject go = objectPooler.GetPooledObject(lobbyGameTemplate, lobbyGameContainer);
             ClientLobbyGameConnectionButtonController clientLobbyGameConnectionButtonController = go.GetComponent<ClientLobbyGameConnectionButtonController>();
             clientLobbyGameConnectionButtonController.Configure(systemGameManager);
-            clientLobbyGameConnectionButtonController.SetGameId(gameId, lobbyGame.sceneName, lobbyGame.leaderUserName);
+            clientLobbyGameConnectionButtonController.SetGameId(gameId, lobbyGame.sceneResourceName, lobbyGame.leaderUserName);
             uINavigationControllers[1].AddActiveButton(clientLobbyGameConnectionButtonController.JoinButton);
             lobbyGameButtons.Add(gameId, clientLobbyGameConnectionButtonController);
         }

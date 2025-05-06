@@ -160,9 +160,9 @@ namespace AnyRPG {
             //Debug.Log("CreateLobbyGamePanel.CreateLobbyGame()");
             if (selectedSceneButton != null) {
                 // this variable will be set to null in the Close() call so save the property we need first
-                string sceneName = selectedSceneButton.SceneNode.ResourceName;
+                string sceneResourceName = selectedSceneButton.SceneNode.ResourceName;
                 Close();
-                networkManagerClient.CreateLobbyGame(sceneName);
+                networkManagerClient.RequestCreateLobbyGame(sceneResourceName);
             }
         }
 

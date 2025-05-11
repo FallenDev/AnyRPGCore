@@ -20,6 +20,13 @@ namespace AnyRPG {
         [SerializeField]
         protected Transform playerConnectionContainer = null;
 
+        [SerializeField]
+        protected GameObject gameListingTemplate = null;
+
+        [SerializeField]
+        protected Transform gameListingContainer = null;
+
+
         //[SerializeField]
         //protected HighlightButton returnButton = null;
 
@@ -30,6 +37,7 @@ namespace AnyRPG {
         protected HighlightButton stopServerButton = null;
 
         private Dictionary<int, PlayerConnectionButtonController> playerButtons = new Dictionary<int, PlayerConnectionButtonController>();
+        private Dictionary<int, ServerLobbyGameConnectionButtonController> lobbyGameButtons = new Dictionary<int, ServerLobbyGameConnectionButtonController>();
 
         // game manager references
         protected UIManager uIManager = null;
@@ -138,6 +146,51 @@ namespace AnyRPG {
             RemovePlayerFromList(clientId);
         }
 
+        public void HandleCreateLobbyGame(LobbyGame lobbyGame) {
+            AddLobbyGameToList(lobbyGame.gameId, lobbyGame);
+        }
+
+        public void AddLobbyGameToList(int gameId, LobbyGame lobbyGame) {
+            //Debug.Log($"ClientLobbyPanelController.AddLobbyGameToList({gameId})");
+
+            GameObject go = objectPooler.GetPooledObject(gameListingTemplate, gameListingContainer);
+            ServerLobbyGameConnectionButtonController serverLobbyGameButtonController = go.GetComponent<ServerLobbyGameConnectionButtonController>();
+            serverLobbyGameButtonController.Configure(systemGameManager);
+            serverLobbyGameButtonController.SetGame(lobbyGame);
+            //uINavigationControllers[1].AddActiveButton(serverLobbyGameButtonController.JoinButton);
+            lobbyGameButtons.Add(gameId, serverLobbyGameButtonController);
+        }
+
+        public void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshPlayerCount();
+            }
+        }
+
+        public void HandleLeaveLobbyGame(int gameId, int clientId) {
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshPlayerCount();
+            }
+        }
+
+        public void HandleStartLobbyGame(int gameId) {
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshStatus();
+            }
+        }
+
+        public void HandleCancelLobbyGame(int gameId) {
+            //Debug.Log($"HostServerPanelController.HandleCancelLobbyGame({gameId})");
+            RemoveLobbyGameFromList(gameId);
+        }
+
+        public void RemoveLobbyGameFromList(int gameId) {
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                objectPooler.ReturnObjectToPool(lobbyGameButtons[gameId].gameObject);
+                lobbyGameButtons.Remove(gameId);
+            }
+        }
+
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
             PopulatePlayerList();
@@ -145,6 +198,11 @@ namespace AnyRPG {
             networkManagerServer.OnStopServer += HandleStopServer;
             networkManagerServer.OnLobbyLogin += HandleLobbyLogin;
             networkManagerServer.OnLobbyLogout += HandleLobbyLogout;
+            networkManagerServer.OnCreateLobbyGame += HandleCreateLobbyGame;
+            networkManagerServer.OnCancelLobbyGame += HandleCancelLobbyGame;
+            networkManagerServer.OnJoinLobbyGame += HandleJoinLobbyGame;
+            networkManagerServer.OnLeaveLobbyGame += HandleLeaveLobbyGame;
+            networkManagerServer.OnStartLobbyGame += HandleStartLobbyGame;
         }
 
         public override void ReceiveClosedWindowNotification() {
@@ -153,6 +211,12 @@ namespace AnyRPG {
             networkManagerServer.OnStopServer -= HandleStopServer;
             networkManagerServer.OnLobbyLogin -= HandleLobbyLogin;
             networkManagerServer.OnLobbyLogout -= HandleLobbyLogout;
+            networkManagerServer.OnCreateLobbyGame -= HandleCreateLobbyGame;
+            networkManagerServer.OnCancelLobbyGame -= HandleCancelLobbyGame;
+            networkManagerServer.OnJoinLobbyGame -= HandleJoinLobbyGame;
+            networkManagerServer.OnLeaveLobbyGame -= HandleLeaveLobbyGame;
+            networkManagerServer.OnStartLobbyGame -= HandleStartLobbyGame;
+
             ClearPlayerList();
         }
     }

@@ -16,6 +16,11 @@ namespace AnyRPG {
         public event Action OnStopServer = delegate { };
         public event Action<int> OnLobbyLogin = delegate { };
         public event Action<int> OnLobbyLogout = delegate { };
+        public event Action<LobbyGame> OnCreateLobbyGame = delegate { };
+        public event Action<int> OnCancelLobbyGame = delegate { };
+        public event Action<int, int, string> OnJoinLobbyGame = delegate { };
+        public event Action<int> OnStartLobbyGame = delegate { };
+        public event Action<int, int> OnLeaveLobbyGame = delegate { };
 
         // jwt for each client so the server can make API calls to the api server on their behalf
         //private Dictionary<int, string> clientTokens = new Dictionary<int, string>();
@@ -412,6 +417,7 @@ namespace AnyRPG {
             lobbyGameCounter++;
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             lobbyGameChatText.Add(lobbyGame.gameId, string.Empty);
+            OnCreateLobbyGame(lobbyGame);
             networkController.AdvertiseCreateLobbyGame(lobbyGame);
         }
 
@@ -422,6 +428,7 @@ namespace AnyRPG {
             }
             lobbyGames.Remove(gameId);
             lobbyGameChatText.Remove(gameId);
+            OnCancelLobbyGame(gameId);
             networkController.AdvertiseCancelLobbyGame(gameId);
         }
 
@@ -431,6 +438,7 @@ namespace AnyRPG {
                 return;
             }
             lobbyGames[gameId].AddPlayer(clientId, loggedInAccounts[clientId].username);
+            OnJoinLobbyGame(gameId, clientId, loggedInAccounts[clientId].username);
             networkController.AdvertiseClientJoinLobbyGame(gameId, clientId, loggedInAccounts[clientId].username);
         }
 
@@ -481,6 +489,7 @@ namespace AnyRPG {
 
         public void StartLobbyGame(int gameId) {
             lobbyGames[gameId].inProgress = true;
+            OnStartLobbyGame(gameId);
             networkController.StartLobbyGame(gameId/*, lobbyGames[gameId].sceneName*/);
         }
 
@@ -493,6 +502,7 @@ namespace AnyRPG {
                 CancelLobbyGame(clientId, gameId);
             } else {
                 lobbyGames[gameId].RemovePlayer(clientId);
+                OnLeaveLobbyGame(gameId, clientId);
                 networkController.AdvertiseClientLeaveLobbyGame(gameId, clientId);
             }
         }

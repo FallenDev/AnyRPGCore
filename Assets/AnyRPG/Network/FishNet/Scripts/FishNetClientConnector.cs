@@ -451,6 +451,11 @@ namespace AnyRPG {
             networkManagerServer.RequestStartLobbyGame(gameId, networkConnection.ClientId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestJoinLobbyGameInProgress(int gameId, NetworkConnection networkConnection = null) {
+            networkManagerServer.RequestJoinLobbyGameInProgress(gameId, networkConnection.ClientId);
+        }
+
         public override void OnStartNetwork() {
             base.OnStartNetwork();
             //Debug.Log($"FishNetNetworkConnector.OnStartNetwork()");
@@ -460,10 +465,10 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RequestCreateLobbyGame(string sceneResourceName, NetworkConnection networkConnection = null) {
+        public void RequestCreateLobbyGame(string sceneResourceName, bool allowLateJoin, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.CreateLobbyGame()");
 
-            networkManagerServer.CreateLobbyGame(sceneResourceName, networkConnection.ClientId);
+            networkManagerServer.CreateLobbyGame(sceneResourceName, networkConnection.ClientId, allowLateJoin);
         }
 
 
@@ -509,6 +514,47 @@ namespace AnyRPG {
             networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
         }
 
+        public void JoinLobbyGameInProgress(int gameId, int clientId) {
+            Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId})");
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                //Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress() could not find client id {clientId}");
+                return;
+            }
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[clientId];
+            LobbyGame lobbyGame = networkManagerServer.LobbyGames[gameId];
+
+            SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(lobbyGame.sceneResourceName);
+            if (loadingSceneNode == null) {
+                return;
+            }
+
+            AdvertiseJoinLobbyGameInProgress(networkConnection, gameId);
+            if (networkManagerServer.LobbyGameSceneHandles.ContainsKey(gameId) == false || networkManagerServer.LobbyGameSceneHandles[gameId].ContainsKey(loadingSceneNode.SceneFile) == false) {
+                // load new scene
+                SceneLoadData sceneLoadData = new SceneLoadData(loadingSceneNode.SceneFile);
+                sceneLoadData.ReplaceScenes = ReplaceOption.All;
+                sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
+                sceneLoadData.Options.AllowStacking = true;
+                sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(lobbyGame.sceneResourceName));
+                networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
+                Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
+
+                fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
+            } else {
+                // load existing scene
+                SceneLoadData sceneLoadData = new(networkManagerServer.LobbyGameSceneHandles[gameId][loadingSceneNode.SceneFile]);
+                sceneLoadData.ReplaceScenes = ReplaceOption.All;
+                sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
+                sceneLoadData.Options.AllowStacking = true;
+                sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(loadingSceneNode.SceneFile));
+                //networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
+                //Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId}) replace: {sceneLoadData.ReplaceScenes}, localPhysics: {sceneLoadData.Options.LocalPhysics}, allowstacking: {sceneLoadData.Options.AllowStacking} preferredActive: {sceneLoadData.PreferredActiveScene.Server.Name}");
+                Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId}) replace: {sceneLoadData.ReplaceScenes}, localPhysics: {sceneLoadData.Options.LocalPhysics}, allowstacking: {sceneLoadData.Options.AllowStacking} ");
+
+                fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
+            }
+        }
+
         public void StartLobbyGame(int gameId) {
             Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId})");
 
@@ -531,7 +577,6 @@ namespace AnyRPG {
             sceneLoadData.ReplaceScenes = ReplaceOption.All;
             sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
             sceneLoadData.Options.AllowStacking = true;
-            //sceneLoadData.PreferredActiveScene = sceneLoadData.SceneLookupDatas[0];
             sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(lobbyGame.sceneResourceName));
             networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
             Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
@@ -539,9 +584,15 @@ namespace AnyRPG {
             fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnections, sceneLoadData);
         }
 
+        [TargetRpc]
+        public void AdvertiseJoinLobbyGameInProgress(NetworkConnection networkConnection, int gameId) {
+            networkManagerClient.AdvertiseJoinLobbyGameInProgress(gameId);
+        }
+
+
         [ObserversRpc]
-        public void AdvertiseStartLobbyGame(int gameId/*, string sceneName*/) {
-            networkManagerClient.AdvertiseStartLobbyGame(gameId/*, sceneName*/);
+        public void AdvertiseStartLobbyGame(int gameId) {
+            networkManagerClient.AdvertiseStartLobbyGame(gameId);
         }
 
         [ObserversRpc]

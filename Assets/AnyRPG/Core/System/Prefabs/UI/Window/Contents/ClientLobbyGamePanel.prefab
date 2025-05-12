@@ -2442,6 +2442,7 @@ MonoBehaviour:
   readyButton: {fileID: 1942298254912069622}
   readyButtonText: {fileID: 8130461664111708616}
   startGameButton: {fileID: 3081536838753811160}
+  startGameButtonText: {fileID: 8717817617429051086}
 --- !u!222 &511441070343466101
 CanvasRenderer:
   m_ObjectHideFlags: 0

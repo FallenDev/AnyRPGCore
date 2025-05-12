@@ -197,7 +197,7 @@ namespace AnyRPG {
             GameObject go = objectPooler.GetPooledObject(lobbyGameTemplate, lobbyGameContainer);
             ClientLobbyGameConnectionButtonController clientLobbyGameConnectionButtonController = go.GetComponent<ClientLobbyGameConnectionButtonController>();
             clientLobbyGameConnectionButtonController.Configure(systemGameManager);
-            clientLobbyGameConnectionButtonController.SetGameId(gameId, lobbyGame.sceneResourceName, lobbyGame.leaderUserName);
+            clientLobbyGameConnectionButtonController.SetGame(lobbyGame);
             uINavigationControllers[1].AddActiveButton(clientLobbyGameConnectionButtonController.JoinButton);
             lobbyGameButtons.Add(gameId, clientLobbyGameConnectionButtonController);
         }
@@ -227,6 +227,27 @@ namespace AnyRPG {
             uINavigationControllers[1].ClearActiveButtons();
         }
 
+        private void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
+            //Debug.Log($"ClientLobbyPanelController.HandleJoinLobbyGame({gameId}, {clientId}, {userName})");
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshPlayerCount();
+            }
+        }
+
+        private void HandleLeaveLobbyGame(int gameId, int clientId) {
+            //Debug.Log($"ClientLobbyPanelController.HandleLeaveLobbyGame({gameId}, {clientId})");
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshPlayerCount();
+            }
+        }
+
+        private void HandleStartLobbyGame(int gameId) {
+            //Debug.Log($"ClientLobbyPanelController.HandleStartLobbyGame({gameId})");
+            if (lobbyGameButtons.ContainsKey(gameId)) {
+                lobbyGameButtons[gameId].RefreshStatus();
+            }
+        }
+
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
             SetStatusLabel();
@@ -239,6 +260,9 @@ namespace AnyRPG {
             networkManagerClient.OnCancelLobbyGame += HandleCancelLobbyGame;
             networkManagerClient.OnSetLobbyGameList += HandleSetLobbyGameList;
             networkManagerClient.OnSetLobbyPlayerList += HandleSetLobbyPlayerList;
+            networkManagerClient.OnJoinLobbyGame += HandleJoinLobbyGame;
+            networkManagerClient.OnLeaveLobbyGame += HandleLeaveLobbyGame;
+            networkManagerClient.OnStartLobbyGame += HandleStartLobbyGame;
         }
 
         public override void ReceiveClosedWindowNotification() {
@@ -250,6 +274,9 @@ namespace AnyRPG {
             networkManagerClient.OnCancelLobbyGame -= HandleCancelLobbyGame;
             networkManagerClient.OnSetLobbyGameList -= HandleSetLobbyGameList;
             networkManagerClient.OnSetLobbyPlayerList -= HandleSetLobbyPlayerList;
+            networkManagerClient.OnJoinLobbyGame -= HandleJoinLobbyGame;
+            networkManagerClient.OnLeaveLobbyGame -= HandleLeaveLobbyGame;
+            networkManagerClient.OnStartLobbyGame -= HandleStartLobbyGame;
 
             ClearPlayerList();
             ClearLobbyGameList();

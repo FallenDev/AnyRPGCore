@@ -5,21 +5,26 @@ namespace AnyRPG {
     public class ClientLobbyGameConnectionButtonController : ConfiguredMonoBehaviour {
 
         [SerializeField]
-        private TextMeshProUGUI gameNameText = null;
+        private TextMeshProUGUI sceneNameText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI leaderNameText = null;
 
         [SerializeField]
         private TextMeshProUGUI gameInfoText = null;
 
         [SerializeField]
+        private TextMeshProUGUI statusText = null;
+
+        [SerializeField]
         private HighlightButton joinButton = null;
 
         private int gameId;
+        private LobbyGame lobbyGame = null;
 
         // game manager references
         NetworkManagerClient networkManagerClient = null;
 
-        public TextMeshProUGUI PlayerNameText { get => gameNameText; }
-        public TextMeshProUGUI PlayerInfoText { get => gameInfoText; }
         public HighlightButton JoinButton { get => joinButton; }
 
         public override void Configure(SystemGameManager systemGameManager) {
@@ -29,11 +34,30 @@ namespace AnyRPG {
             joinButton.Configure(systemGameManager);
         }
 
-        public void SetGameId(int gameId, string gameName, string infoText) {
-            this.gameId = gameId;
-            gameNameText.text = gameName;
-            gameInfoText.text = infoText;
+        public void SetGame(LobbyGame lobbyGame) {
+            this.lobbyGame = lobbyGame;
+            this.gameId = lobbyGame.gameId;
+            sceneNameText.text = lobbyGame.sceneResourceName;
+            leaderNameText.text = lobbyGame.leaderUserName;
+            RefreshPlayerCount();
+            RefreshStatus();
+        }
 
+        public void RefreshPlayerCount() {
+            gameInfoText.text = $"{lobbyGame.PlayerList.Count} Player{(lobbyGame.PlayerList.Count == 1 ? "" : "s")}";
+        }
+
+        public void RefreshStatus() {
+            if (lobbyGame.inProgress) {
+                statusText.text = "In Progress";
+                if (lobbyGame.allowLateJoin) {
+                    joinButton.Button.interactable = true;
+                } else {
+                    joinButton.Button.interactable = false;
+                }
+            } else {
+                statusText.text = "Waiting for Players";
+            }
         }
 
         public void JoinGame() {

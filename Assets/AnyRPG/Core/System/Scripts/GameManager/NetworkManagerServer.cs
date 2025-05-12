@@ -40,7 +40,7 @@ namespace AnyRPG {
         private Dictionary<int, LobbyGame> lobbyGames = new Dictionary<int, LobbyGame>();
         // hashcode, gameId
         private Dictionary<int, int> lobbyGameLoadRequestHashCodes = new Dictionary<int, int>();
-        // gameId, sceneName, sceneHandle
+        // gameId, sceneFileName, sceneHandle
         private Dictionary<int, Dictionary<string, int>> lobbyGameSceneHandles = new Dictionary<int, Dictionary<string, int>>();
         // sceneHandle, gameId
         private Dictionary<int, int> lobbyGameSceneHandleLookup = new Dictionary<int, int>();
@@ -79,6 +79,7 @@ namespace AnyRPG {
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LoggedInAccounts { get => loggedInAccounts; }
         public Dictionary<int, LobbyGame> LobbyGames { get => lobbyGames; }
+        public Dictionary<int, Dictionary<string, int>> LobbyGameSceneHandles { get => lobbyGameSceneHandles; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -411,9 +412,9 @@ namespace AnyRPG {
             return networkController?.GetClientIPAddress(clientId);
         }
 
-        public void CreateLobbyGame(string sceneResourceName, int clientId) {
+        public void CreateLobbyGame(string sceneResourceName, int clientId, bool allowLateJoin) {
             
-            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneResourceName, loggedInAccounts[clientId].username);
+            LobbyGame lobbyGame = new LobbyGame(clientId, lobbyGameCounter, sceneResourceName, loggedInAccounts[clientId].username, allowLateJoin);
             lobbyGameCounter++;
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             lobbyGameChatText.Add(lobbyGame.gameId, string.Empty);
@@ -487,10 +488,22 @@ namespace AnyRPG {
             StartLobbyGame(gameId);
         }
 
+        public void RequestJoinLobbyGameInProgress(int gameId, int clientId) {
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].inProgress == false || lobbyGames[gameId].allowLateJoin == false) {
+                // game did not exist or not in progress or does not allow late joins
+                return;
+            }
+            JoinLobbyGameInProgress(gameId, clientId);
+        }
+
+        public void JoinLobbyGameInProgress(int gameId, int clientId) {
+            networkController.AdvertiseJoinLobbyGameInProgress(gameId, clientId);
+        }
+
         public void StartLobbyGame(int gameId) {
             lobbyGames[gameId].inProgress = true;
             OnStartLobbyGame(gameId);
-            networkController.StartLobbyGame(gameId/*, lobbyGames[gameId].sceneName*/);
+            networkController.StartLobbyGame(gameId);
         }
 
         public void LeaveLobbyGame(int gameId, int clientId) {

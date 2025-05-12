@@ -21,6 +21,7 @@ namespace AnyRPG {
         public event Action<Dictionary<int, string>> OnSetLobbyPlayerList = delegate { };
         public event Action<int, int, string> OnChooseLobbyGameCharacter = delegate { };
         public event Action<int, int, bool> OnSetLobbyGameReadyStatus = delegate { };
+        public event Action<int> OnStartLobbyGame = delegate { };
 
 
         private string username = string.Empty;
@@ -230,8 +231,8 @@ namespace AnyRPG {
             networkController.DeletePlayerCharacter(playerCharacterId);
         }
 
-        public void RequestCreateLobbyGame(string sceneResourceName) {
-            networkController.RequestCreateLobbyGame(sceneResourceName);
+        public void RequestCreateLobbyGame(string sceneResourceName, bool allowLateJoin) {
+            networkController.RequestCreateLobbyGame(sceneResourceName, allowLateJoin);
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
@@ -276,8 +277,8 @@ namespace AnyRPG {
         */
 
         public void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
-            OnJoinLobbyGame(gameId, clientId, userName);
             lobbyGames[gameId].AddPlayer(clientId, userName);
+            OnJoinLobbyGame(gameId, clientId, userName);
             if (clientId == this.clientId) {
                 // this client just joined a game
                 lobbyGame = lobbyGames[gameId];
@@ -286,6 +287,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
+            lobbyGames[gameId].RemovePlayer(clientId);
             OnLeaveLobbyGame(gameId, clientId);
         }
 
@@ -353,12 +355,32 @@ namespace AnyRPG {
             networkController.RequestStartLobbyGame(gameId);
         }
 
-        public void AdvertiseStartLobbyGame(int gameId/*, string sceneName*/) {
+        public void RequestJoinLobbyGameInProgress(int gameId) {
+            networkController.RequestJoinLobbyGameInProgress(gameId);
+        }
+
+        public void AdvertiseJoinLobbyGameInProgress(int gameId) {
+            //Debug.Log($"NetworkManagerClient.AdvertiseJoinLobbyGameInProgress({gameId})");
+            if (lobbyGames.ContainsKey(gameId) == false) {
+                // lobby game does not exist
+                return;
+            }
+
+            LaunchLobbyGame(gameId);
+        }
+
+        public void AdvertiseStartLobbyGame(int gameId) {
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // lobby game does not exist
                 return;
             }
             lobbyGames[gameId].inProgress = true;
+            OnStartLobbyGame(gameId);
+
+            LaunchLobbyGame(gameId);
+        }
+
+        public void LaunchLobbyGame(int gameId) {
             if (lobbyGame == null || lobbyGame.gameId != gameId) {
                 // have not joined lobby game, or joined different lobby game
                 return;

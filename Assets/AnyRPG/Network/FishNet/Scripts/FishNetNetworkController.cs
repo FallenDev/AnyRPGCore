@@ -352,8 +352,8 @@ namespace AnyRPG {
             clientConnector.LoadCharacterList();
         }
 
-        public override void RequestCreateLobbyGame(string sceneResourceName) {
-            clientConnector.RequestCreateLobbyGame(sceneResourceName);
+        public override void RequestCreateLobbyGame(string sceneResourceName, bool allowLateJoin) {
+            clientConnector.RequestCreateLobbyGame(sceneResourceName, allowLateJoin);
         }
 
         public override void CancelLobbyGame(int gameId) {
@@ -398,6 +398,10 @@ namespace AnyRPG {
 
         public override void RequestStartLobbyGame(int gameId) {
             clientConnector.RequestStartLobbyGame(gameId);
+        }
+
+        public override void RequestJoinLobbyGameInProgress(int gameId) {
+            clientConnector.RequestJoinLobbyGameInProgress(gameId);
         }
 
         public override void ToggleLobbyGameReadyStatus(int gameId) {
@@ -553,7 +557,11 @@ namespace AnyRPG {
         }
 
         public override void StartLobbyGame(int gameId/*, string sceneName*/) {
-            clientConnector.StartLobbyGame(gameId/*, sceneName*/);
+            clientConnector.StartLobbyGame(gameId);
+        }
+
+        public override void AdvertiseJoinLobbyGameInProgress(int gameId, int clientId) {
+            clientConnector.JoinLobbyGameInProgress(gameId, clientId);
         }
 
         public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {

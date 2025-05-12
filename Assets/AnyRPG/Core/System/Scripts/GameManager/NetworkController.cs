@@ -25,7 +25,7 @@ namespace AnyRPG {
         public abstract void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData);
         public abstract void DeletePlayerCharacter(int playerCharacterId);
         public abstract void LoadCharacterList();
-        public abstract void RequestCreateLobbyGame(string sceneResourceName);
+        public abstract void RequestCreateLobbyGame(string sceneResourceName, bool allowLateJoin);
         public abstract void CancelLobbyGame(int gameId);
         public abstract void JoinLobbyGame(int gameId);
         public abstract void LeaveLobbyGame(int gameId);
@@ -37,6 +37,7 @@ namespace AnyRPG {
         public abstract void RequestLobbyPlayerList();
         public abstract void ChooseLobbyGameCharacter(string unitProfileName, int gameId);
         public abstract void RequestStartLobbyGame(int gameId);
+        public abstract void RequestJoinLobbyGameInProgress(int gameId);
         public abstract void ToggleLobbyGameReadyStatus(int gameId);
         public abstract void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex);
         public abstract void SetPlayerCharacterClass(string className);
@@ -70,7 +71,8 @@ namespace AnyRPG {
         public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
         public abstract void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers);
         public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
-        public abstract void StartLobbyGame(int gameId/*, string sceneName*/);
+        public abstract void StartLobbyGame(int gameId);
+        public abstract void AdvertiseJoinLobbyGameInProgress(int gameId, int clientId);
         public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready);
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneName, int clientId);

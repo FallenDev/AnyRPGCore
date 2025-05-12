@@ -59,6 +59,9 @@ namespace AnyRPG {
         [SerializeField]
         protected HighlightButton startGameButton = null;
 
+        [SerializeField]
+        protected TextMeshProUGUI startGameButtonText = null;
+
         private string lobbyGameChatText = string.Empty;
         private int maxLobbyChatTextSize = 64000;
         private string originalCharacterNameText = string.Empty;
@@ -96,6 +99,11 @@ namespace AnyRPG {
         }
 
         public void StartGame() {
+            if (networkManagerClient.LobbyGame.inProgress == true) {
+                // we are already in a game, so just join it
+                networkManagerClient.RequestJoinLobbyGameInProgress(networkManagerClient.LobbyGame.gameId);
+                return;
+            }
             networkManagerClient.RequestStartLobbyGame(networkManagerClient.LobbyGame.gameId);
         }
 
@@ -261,6 +269,10 @@ namespace AnyRPG {
             if (clientId == networkManagerClient.ClientId) {
                 if (ready) {
                     readyButtonText.text = "Not Ready";
+                    readyButton.Button.interactable = true;
+                    if (networkManagerClient.LobbyGame.inProgress == true && networkManagerClient.LobbyGame.allowLateJoin == true) {
+                        startGameButton.Button.interactable = true;
+                    }
                 } else {
                     readyButtonText.text = "Ready";
                 }
@@ -290,7 +302,10 @@ namespace AnyRPG {
 
 
         public void UpdateNavigationButtons() {
-            
+
+            startGameButtonText.text = "Start Game";
+            readyButtonText.text = "Ready";
+
             // hide the cancel game button for anyone other than the leader
             if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
                 cancelGameButton.gameObject.SetActive(true);
@@ -298,10 +313,15 @@ namespace AnyRPG {
                 startGameButton.Button.interactable = false;
             } else {
                 cancelGameButton.gameObject.SetActive(false);
-                startGameButton.gameObject.SetActive(false);
+                if (networkManagerClient.LobbyGame.inProgress == true && networkManagerClient.LobbyGame.allowLateJoin == true) {
+                    startGameButton.gameObject.SetActive(true);
+                    startGameButtonText.text = "Join Game";
+                    startGameButton.Button.interactable = false;
+                } else {
+                    startGameButton.gameObject.SetActive(false);
+                }
             }
             readyButton.Button.interactable = false;
-            readyButtonText.text = "Ready";
 
             uINavigationControllers[0].UpdateNavigationList();
         }

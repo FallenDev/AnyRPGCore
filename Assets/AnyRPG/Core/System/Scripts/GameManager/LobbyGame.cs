@@ -9,6 +9,7 @@ namespace AnyRPG {
         public string gameName = string.Empty;
         public string sceneResourceName = string.Empty;
         public bool inProgress = false;
+        public bool allowLateJoin = false;
 
         private Dictionary<int, LobbyGamePlayerInfo> playerList = new Dictionary<int, LobbyGamePlayerInfo>();
 
@@ -22,12 +23,13 @@ namespace AnyRPG {
             */
         }
 
-        public LobbyGame(int clientId, int gameId, string sceneResourceName, string userName) {
+        public LobbyGame(int clientId, int gameId, string sceneResourceName, string userName, bool allowLateJoin) {
             this.leaderClientId = clientId;
             leaderUserName = userName;
             this.gameId = gameId;
             this.sceneResourceName = sceneResourceName;
             playerList.Add(clientId, new LobbyGamePlayerInfo(clientId, userName));
+            this.allowLateJoin = allowLateJoin;
         }
 
         public void AddPlayer(int clientId, string userName) {

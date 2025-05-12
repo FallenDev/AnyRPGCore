@@ -36,6 +36,10 @@ namespace AnyRPG {
         [SerializeField]
         private Image previewImage = null;
 
+        [SerializeField]
+        private Toggle allowLateJoin = null;
+
+
         private List<SceneButton> sceneButtons = new List<SceneButton>();
 
         private SceneButton selectedSceneButton = null;
@@ -162,7 +166,7 @@ namespace AnyRPG {
                 // this variable will be set to null in the Close() call so save the property we need first
                 string sceneResourceName = selectedSceneButton.SceneNode.ResourceName;
                 Close();
-                networkManagerClient.RequestCreateLobbyGame(sceneResourceName);
+                networkManagerClient.RequestCreateLobbyGame(sceneResourceName, allowLateJoin.isOn);
             }
         }
 

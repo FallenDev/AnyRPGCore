@@ -21,7 +21,7 @@ namespace AnyRPG {
 
         public void UpdateStatus(UnitController sourceUnitController, bool notify = true) {
             bool originalResult = prerequisiteMet;
-            bool checkResult = (prerequisiteSceneNode.Visited() == true);
+            bool checkResult = (sourceUnitController.CharacterSaveManager.IsSceneNodeVisited(prerequisiteSceneNode) == true);
             if (checkResult != originalResult) {
                 prerequisiteMet = checkResult;
                 if (notify == true) {

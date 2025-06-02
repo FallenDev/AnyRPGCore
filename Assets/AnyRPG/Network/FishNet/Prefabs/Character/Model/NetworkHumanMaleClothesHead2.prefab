@@ -234,9 +234,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6fc7cb308a137f41b18fdb48773834f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 5952257601153309654}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 5952257601153309654}
 --- !u!114 &5952257601153309654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,10 +250,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
+  WasActiveDuringEdit: 0
+  WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours: []
+  NetworkBehaviours:
+  - {fileID: -9193059977413643576}
+  - {fileID: -442142897053832807}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -264,7 +268,6 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedValusSet: 0
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -279,15 +282,15 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 79
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 13166748902501197112
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0, y: 0, z: 0}
-    IsValid: 0
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Scale: {x: 1, y: 1, z: 1}
+    IsValid: 1
 --- !u!114 &-442142897053832807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,9 +303,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 5952257601153309654}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 5952257601153309654}
   IgnoredParameters: []
   _animator: {fileID: 733068066654663816}
   _synchronizeWhenDisabled: 0

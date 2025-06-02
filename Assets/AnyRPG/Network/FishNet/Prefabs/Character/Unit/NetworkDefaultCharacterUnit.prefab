@@ -86,7 +86,7 @@ PrefabInstance:
     - target: {fileID: 7989242567668304555, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
       propertyPath: m_UUID
-      value: f04636ea-f8c9-4cbc-9516-bb7e3e829814
+      value: 947f24fd-1323-4bb0-bcc4-4a058882e19a
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -182,6 +182,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
+  WasActiveDuringEdit: 0
+  WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
@@ -198,7 +200,6 @@ MonoBehaviour:
   _initializeOrder: -1
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedValusSet: 1
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -213,7 +214,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 7
+  <PrefabId>k__BackingField: 69
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11266477648363333465
   <SceneId>k__BackingField: 0

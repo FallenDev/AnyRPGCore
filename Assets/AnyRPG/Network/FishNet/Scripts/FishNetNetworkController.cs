@@ -42,7 +42,7 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
-                //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
+                Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
 
                 fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
                 //fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
@@ -51,10 +51,20 @@ namespace AnyRPG {
                 // stuff that was previously done only on active connection
                 fishNetNetworkManager.SceneManager.OnActiveSceneSet += HandleActiveSceneSet;
                 fishNetNetworkManager.SceneManager.OnUnloadStart += HandleUnloadStart;
+                fishNetNetworkManager.SceneManager.OnQueueStart += HandleQueueStart;
+                fishNetNetworkManager.SceneManager.OnQueueEnd += HandleQueueEnd;
 
             } else {
                 Debug.Log("FishNetNetworkController.Configure() Could not find FishNet NetworkManager");
             }
+        }
+
+        private void HandleQueueEnd() {
+            Debug.Log("FishNetNetworkController.HandleQueueEnd()");
+        }
+
+        private void HandleQueueStart() {
+            Debug.Log("FishNetNetworkController.HandleQueueStart()");
         }
 
         public override void SetGameManagerReferences() {
@@ -197,7 +207,7 @@ namespace AnyRPG {
         private void HandleClientAuthenticated() {
             //Debug.Log($"FishNetNetworkController.HandleClientAuthenticated({fishNetNetworkManager.ClientManager.Connection.ClientId})");
 
-            networkManagerClient.SetClientId(fishNetNetworkManager.ClientManager.Connection.ClientId);
+            //networkManagerClient.SetClientId(fishNetNetworkManager.ClientManager.Connection.ClientId);
         }
 
         private void HandleClientKick(NetworkConnection arg1, int arg2, KickReason kickReason) {
@@ -238,7 +248,7 @@ namespace AnyRPG {
         }
 
         private void HandleUnloadEndServer(SceneUnloadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleUnloadEnd()");
+            Debug.Log($"FishNetNetworkController.HandleUnloadEndServer()");
 
             foreach (UnloadedScene scene in obj.UnloadedScenesV2) {
                 Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.Name}");
@@ -292,22 +302,22 @@ namespace AnyRPG {
         public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
             Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.SpawnPlayer(characterRequestData.spawnRequestId, playerCharacterId, parentTransform, sceneName);
+            clientConnector.SpawnPlayer(characterRequestData.clientSpawnRequestId, playerCharacterId, parentTransform, sceneName);
             //return null;
         }
 
-        public override void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
+        public override void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.SpawnLobbyGamePlayer(characterRequestData.spawnRequestId, gameId, parentTransform, position, forward, sceneName);
+            clientConnector.RequestSpawnLobbyGamePlayer(characterRequestData.clientSpawnRequestId, gameId, parentTransform, position, forward, sceneName);
             //return null;
         }
 
 
-        public override GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public override GameObject SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId}, {parentTransform.gameObject.name})");
 
-            clientConnector.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
+            clientConnector.SpawnModelPrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             return null;
         }
 
@@ -496,11 +506,15 @@ namespace AnyRPG {
             fishNetNetworkManager.ServerManager.StopConnection(true);
         }
 
-        public override void KickPlayer(int clientId) {
-            fishNetNetworkManager.ServerManager.Kick(clientId, KickReason.Unset);
+        public override void KickPlayer(int accountId) {
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            fishNetNetworkManager.ServerManager.Kick(networkManagerServer.LoggedInAccounts[accountId].clientId, KickReason.Unset);
         }
 
         public override string GetClientIPAddress(int clientId) {
+
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
                 return "ClientId not found";
             }
@@ -516,12 +530,12 @@ namespace AnyRPG {
             clientConnector.AdvertiseCancelLobbyGame(gameId);
         }
 
-        public override void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
-            clientConnector.AdvertiseClientJoinLobbyGame(gameId, clientId, userName);
+        public override void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName) {
+            clientConnector.AdvertiseAccountJoinLobbyGame(gameId, accountId, userName);
         }
 
-        public override void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
-            clientConnector.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+        public override void AdvertiseAccountLeaveLobbyGame(int gameId, int accountId) {
+            clientConnector.AdvertiseAccountLeaveLobbyGame(gameId, accountId);
         }
 
         public override void AdvertiseSendLobbyChatMessage(string messageText) {
@@ -532,48 +546,50 @@ namespace AnyRPG {
             clientConnector.AdvertiseSendLobbyGameChatMessage(messageText, gameId);
         }
 
-        public override void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
-            clientConnector.AdvertiseSendSceneChatMessage(messageText, clientId);
+        public override void AdvertiseSendSceneChatMessage(string messageText, int accountId) {
+            clientConnector.AdvertiseSendSceneChatMessage(messageText, accountId);
         }
 
-        public override void AdvertiseLobbyLogin(int clientId, string userName) {
-            clientConnector.AdvertiseLobbyLogin(clientId, userName);
+        public override void AdvertiseLobbyLogin(int accountId, string userName) {
+            clientConnector.AdvertiseLobbyLogin(accountId, userName);
         }
 
-        public override void AdvertiseLobbyLogout(int clientId) {
-            clientConnector.AdvertiseLobbyLogout(clientId);
+        public override void AdvertiseLobbyLogout(int accountId) {
+            clientConnector.AdvertiseLobbyLogout(accountId);
         }
 
-        public override void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames) {
-            clientConnector.SendLobbyGameList(clientId, lobbyGames);
+        public override void SetLobbyGameList(int accountId, List<LobbyGame> lobbyGames) {
+            clientConnector.SendLobbyGameList(accountId, lobbyGames);
         }
 
-        public override void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers) {
-            clientConnector.SendLobbyPlayerList(clientId, lobbyPlayers);
+        public override void SetLobbyPlayerList(int accountId, Dictionary<int, string> lobbyPlayers) {
+            clientConnector.SendLobbyPlayerList(accountId, lobbyPlayers);
         }
 
-        public override void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
-            clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        public override void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
 
         public override void StartLobbyGame(int gameId/*, string sceneName*/) {
             clientConnector.StartLobbyGame(gameId);
         }
 
-        public override void AdvertiseJoinLobbyGameInProgress(int gameId, int clientId) {
-            clientConnector.JoinLobbyGameInProgress(gameId, clientId);
+        public override void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId) {
+            clientConnector.JoinLobbyGameInProgress(gameId, accountId);
         }
 
-        public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            clientConnector.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
+        public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready) {
+            clientConnector.AdvertiseSetLobbyGameReadyStatus(gameId, accountId, ready);
         }
 
         public override int GetServerPort() {
             return fishNetNetworkManager.TransportManager.Transport.GetPort();
         }
 
-        public override void AdvertiseLoadScene(string sceneName, int clientId) {
-            clientConnector.AdvertiseLoadSceneServer(sceneName, clientId);
+        public override void AdvertiseLoadScene(string sceneResourceName, int accountId) {
+            Debug.Log($"FishNetNetworkController.AdvertiseLoadScene({sceneResourceName}, {accountId})");
+
+            clientConnector.AdvertiseLoadSceneServer(sceneResourceName, accountId);
         }
 
         public override void ReturnObjectToPool(GameObject returnedObject) {
@@ -581,31 +597,31 @@ namespace AnyRPG {
         }
 
         /*
-        public override void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int clientId) {
+        public override void AdvertiseInteractWithQuestGiver(Interactable interactable, int optionIndex, int accountId) {
 
             NetworkInteractable networkInteractable = null;
             if (interactable != null) {
                 networkInteractable = interactable.GetComponent<NetworkInteractable>();
             }
-            clientConnector.AdvertiseInteractWithQuestGiver(networkInteractable, optionIndex, clientId);
+            clientConnector.AdvertiseInteractWithQuestGiver(networkInteractable, optionIndex, accountId);
         }
         */
 
-        public override void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
-            clientConnector.AdvertiseAddSpawnRequestServer(clientId, loadSceneRequest);
+        public override void AdvertiseAddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest) {
+            clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
         }
 
         /*
-        public override void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            clientConnector.AdvertiseInteractWithClassChangeComponentServer(clientId, interactable, optionIndex);
+        public override void AdvertiseInteractWithClassChangeComponentServer(int accountId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithClassChangeComponentServer(accountId, interactable, optionIndex);
         }
 
-        public override void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            clientConnector.AdvertiseInteractWithSkillTrainerComponentServer(clientId, interactable, optionIndex);
+        public override void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithSkillTrainerComponentServer(accountId, interactable, optionIndex);
         }
 
-        public override void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            clientConnector.AdvertiseInteractWithAnimatedObjectComponentServer(clientId, interactable, optionIndex);
+        public override void AdvertiseInteractWithAnimatedObjectComponentServer(int accountId, Interactable interactable, int optionIndex) {
+            clientConnector.AdvertiseInteractWithAnimatedObjectComponentServer(accountId, interactable, optionIndex);
         }
         */
 
@@ -613,23 +629,23 @@ namespace AnyRPG {
             return clientConnector.SpawnCharacterUnit(characterRequestData, parentTransform, position, forward, scene);
         }
 
-        public override GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public override GameObject SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetNetworkController.SpawnModelPrefabServer({spawnRequestId}, {parentTransform.gameObject.name})");
 
-            clientConnector.SpawnModelPrefabServer(spawnRequestId, prefab, parentTransform, position, forward);
+            clientConnector.SpawnModelPrefabServer(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             return null;
         }
 
-        public override void AdvertiseMessageFeedMessage(int clientId, string message) {
-            clientConnector.AdvertiseMessageFeedMessage(clientId, message);
+        public override void AdvertiseMessageFeedMessage(int accountId, string message) {
+            clientConnector.AdvertiseMessageFeedMessage(accountId, message);
         }
 
-        public override void AdvertiseSystemMessage(int clientId, string message) {
-            clientConnector.AdvertiseSystemMessage(clientId, message);
+        public override void AdvertiseSystemMessage(int accountId, string message) {
+            clientConnector.AdvertiseSystemMessage(accountId, message);
         }
 
-        public override void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
-            clientConnector.AdvertiseAddToBuyBackCollection(sourceUnitController, clientId, interactable, componentIndex, newInstantiatedItem);
+        public override void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int accountId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
+            clientConnector.AdvertiseAddToBuyBackCollection(sourceUnitController, accountId, interactable, componentIndex, newInstantiatedItem);
         }
 
         public override void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
@@ -638,25 +654,29 @@ namespace AnyRPG {
             clientConnector.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 
-        public override void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
-            //Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({clientId}, {items.Count})");
+        public override void AddAvailableDroppedLoot(int accountId, List<LootDrop> items) {
+            //Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({accountId}, {items.Count})");
 
-            clientConnector.AddAvailableDroppedLoot(clientId, items);
+            clientConnector.AddAvailableDroppedLoot(accountId, items);
         }
 
-        public override void AddLootDrop(int clientId, int lootDropId, int itemId) {
-            clientConnector.AddDroppedLoot(clientId, lootDropId, itemId);
+        public override void AddLootDrop(int accountId, int lootDropId, int itemId) {
+            clientConnector.AddDroppedLoot(accountId, lootDropId, itemId);
         }
 
-        public override void AdvertiseTakeLoot(int clientId, int lootDropId) {
-            clientConnector.AdvertiseTakeLoot(clientId, lootDropId);
+        public override void AdvertiseTakeLoot(int accountId, int lootDropId) {
+            clientConnector.AdvertiseTakeLoot(accountId, lootDropId);
+        }
+
+        public override void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
+            clientConnector.SpawnLobbyGamePlayer(accountId, clientSpawnRequestId, serverSpawnRequestId, characterRequestData, position, forward, sceneName);
         }
 
         /*
-        public override void SetCraftingManagerAbility(int clientId, string abilityName) {
-            Debug.Log($"FishNetNetworkController.SetCraftingManagerAbility({clientId}, {abilityName})");
+        public override void SetCraftingManagerAbility(int accountId, string abilityName) {
+            Debug.Log($"FishNetNetworkController.SetCraftingManagerAbility({accountId}, {abilityName})");
 
-            clientConnector.SetCraftingManagerAbility(clientId, abilityName);
+            clientConnector.SetCraftingManagerAbility(accountId, abilityName);
         }
         */
 

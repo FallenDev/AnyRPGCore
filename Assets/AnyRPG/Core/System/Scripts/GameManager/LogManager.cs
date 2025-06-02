@@ -74,14 +74,14 @@ namespace AnyRPG {
             OnWriteChatMessage(newMessage);
         }
 
-        public void WriteChatMessageServer(int clientId, string newMessage) {
+        public void WriteChatMessageServer(int accountId, string newMessage) {
             if (newMessage.StartsWith("/") == true) {
-                chatCommandManager.ParseChatCommand(newMessage.Substring(1), clientId);
+                chatCommandManager.ParseChatCommand(newMessage.Substring(1), accountId);
                 return;
             }
 
             if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerServer.AdvertiseSceneChatMessage(newMessage, clientId);
+                networkManagerServer.AdvertiseSceneChatMessage(newMessage, accountId);
             } else {
                 WriteChatMessageClient(newMessage);
             }

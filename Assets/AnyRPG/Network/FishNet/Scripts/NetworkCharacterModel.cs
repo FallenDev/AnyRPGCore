@@ -40,6 +40,7 @@ namespace AnyRPG {
         }
 
         private void CompleteModelRequest(bool isOwner) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
             /*
             CharacterRequestData characterRequestData;
             characterRequestData = new CharacterRequestData(null, 
@@ -50,7 +51,7 @@ namespace AnyRPG {
             characterRequestData.spawnRequestId = clientSpawnRequestId;
             systemGameManager.CharacterManager.CompleteModelRequest(characterRequestData, unitController, isOwner);
             */
-            systemGameManager.CharacterManager.CompleteNetworkModelRequest(clientSpawnRequestId.Value, unitController, gameObject, isOwner, base.OwnerId == -1);
+            systemGameManager.CharacterManager.CompleteNetworkModelRequest(clientSpawnRequestId.Value, serverSpawnRequestId.Value, unitController, gameObject, isOwner, base.OwnerId == -1);
         }
 
         public override void OnStartClient() {

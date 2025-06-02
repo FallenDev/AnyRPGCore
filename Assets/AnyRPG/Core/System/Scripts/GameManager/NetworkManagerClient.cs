@@ -30,7 +30,7 @@ namespace AnyRPG {
         private bool isLoggingInOrOut = false;
 
         private NetworkClientMode clientMode = NetworkClientMode.Lobby;
-        private int clientId;
+        private int accountId;
         private LobbyGame lobbyGame;
 
         [SerializeField]
@@ -58,7 +58,7 @@ namespace AnyRPG {
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
         public Dictionary<int, LoggedInAccount> LobbyGamePlayerList { get => lobbyGamePlayerList; }
         public LobbyGame LobbyGame { get => lobbyGame; }
-        public int ClientId { get => clientId; }
+        public int AccountId { get => accountId; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -109,17 +109,17 @@ namespace AnyRPG {
             networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform, sceneName);
         }
 
-        public void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
+        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
 
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.SpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, sceneName);
+            networkController.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, sceneName);
         }
 
-        public GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            return networkController.SpawnModelPrefab(spawnRequestId, prefab, parentTransform, position, forward);
+        public GameObject SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            return networkController.SpawnModelPrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
         }
 
         public void SendLobbyChatMessage(string messageText) {
@@ -200,12 +200,12 @@ namespace AnyRPG {
             uIManager.loginFailedWindow.OpenWindow();
         }
 
-        public void ProcessLoginSuccess() {
+        public void ProcessLoginSuccess(int accountId) {
             //Debug.Log($"NetworkManagerClient.ProcessLoginSuccess()");
 
             // not doing this here because the connector has not spawned yet.
             //uIManager.ProcessLoginSuccess();
-
+            this.accountId = accountId;
             isLoggingInOrOut = false;
         }
 
@@ -236,14 +236,19 @@ namespace AnyRPG {
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderClientId}) clientid: {clientId}");
+            //Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderAccountId}) accountId: {accountId}");
 
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
-            if (lobbyGame.leaderClientId == clientId) {
+            if (lobbyGame.leaderAccountId == accountId) {
                 this.lobbyGame = lobbyGame;
                 uIManager.clientLobbyGameWindow.OpenWindow();
             }
             OnCreateLobbyGame(lobbyGame);
+        }
+
+        public void SetLobbyGame(LobbyGame lobbyGame) {
+            //Debug.Log($"NetworkManagerClient.SetLobbyGame({lobbyGame.gameId}) accountId: {accountId}");
+            this.lobbyGame = lobbyGame;
         }
 
         public void CancelLobbyGame(int gameId) {
@@ -262,33 +267,19 @@ namespace AnyRPG {
             networkController.LeaveLobbyGame(gameId);
         }
 
-        public void SetClientId(int clientId) {
-            this.clientId = clientId;
-        }
-
-
-
-        /*
-        public int GetClientId() {
-            Debug.Log($"NetworkManagerClient.GetClientId()");
-
-            return networkController.GetClientId();
-        }
-        */
-
-        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
-            lobbyGames[gameId].AddPlayer(clientId, userName);
-            OnJoinLobbyGame(gameId, clientId, userName);
-            if (clientId == this.clientId) {
+        public void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName) {
+            lobbyGames[gameId].AddPlayer(accountId, userName);
+            OnJoinLobbyGame(gameId, accountId, userName);
+            if (accountId == this.accountId) {
                 // this client just joined a game
                 lobbyGame = lobbyGames[gameId];
                 uIManager.clientLobbyGameWindow.OpenWindow();
             }
         }
 
-        public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
-            lobbyGames[gameId].RemovePlayer(clientId);
-            OnLeaveLobbyGame(gameId, clientId);
+        public void AdvertiseAccountLeaveLobbyGame(int gameId, int accountId) {
+            lobbyGames[gameId].RemovePlayer(accountId);
+            OnLeaveLobbyGame(gameId, accountId);
         }
 
         public void AdvertiseSendLobbyChatMessage(string messageText) {
@@ -299,17 +290,17 @@ namespace AnyRPG {
             OnSendLobbyGameChatMessage(messageText, gameId);
         }
 
-        public void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
-            OnSendSceneChatMessage(messageText, clientId);
+        public void AdvertiseSendSceneChatMessage(string messageText, int accountId) {
+            OnSendSceneChatMessage(messageText, accountId);
             logManager.WriteChatMessageClient(messageText);
         }
 
-        public void AdvertiseLobbyLogin(int clientId, string userName) {
-            OnLobbyLogin(clientId, userName);
+        public void AdvertiseLobbyLogin(int accountId, string userName) {
+            OnLobbyLogin(accountId, userName);
         }
 
-        public void AdvertiseLobbyLogout(int clientId) {
-            OnLobbyLogout(clientId);
+        public void AdvertiseLobbyLogout(int accountId) {
+            OnLobbyLogout(accountId);
         }
 
         public void SetLobbyGameList(List<LobbyGame> lobbyGames) {
@@ -334,18 +325,18 @@ namespace AnyRPG {
             networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId);
         }
 
-        public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {clientId}, {unitProfileName})");
+        public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            //Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // game does not exist
                 return;
             }
-            lobbyGames[gameId].PlayerList[clientId].unitProfileName = unitProfileName;
+            lobbyGames[gameId].PlayerList[accountId].unitProfileName = unitProfileName;
             
-            OnChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+            OnChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
 
-            if (gameId == lobbyGame.gameId && clientId == this.clientId) {
+            if (gameId == lobbyGame.gameId && accountId == this.accountId) {
                 // the character was chosen for this client so close the new game window
                 uIManager.newGameWindow.CloseWindow();
             }
@@ -394,19 +385,21 @@ namespace AnyRPG {
             levelManager.ProcessBeforeLevelUnload();
         }
 
-        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
+        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready) {
+            //Debug.Log($"NetworkManagerClient.AdvertiseSetLobbyGameReadyStatus({gameId}, {accountId}, {ready})");
 
-            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(clientId) == false) {
+            if (lobbyGames.ContainsKey(gameId) == false || lobbyGames[gameId].PlayerList.ContainsKey(accountId) == false) {
                 // game does not exist or player is not in game
                 return;
             }
-            lobbyGames[gameId].PlayerList[clientId].ready = ready;
-            OnSetLobbyGameReadyStatus(gameId, clientId, ready);
+            lobbyGames[gameId].PlayerList[accountId].ready = ready;
+            OnSetLobbyGameReadyStatus(gameId, accountId, ready);
         }
 
         public void AdvertiseLoadSceneClient(string sceneName) {
-            levelManager.LoadLevel(sceneName);
+            Debug.Log($"NetworkManagerClient.AdvertiseLoadSceneClient({sceneName})");
+
+            levelManager.ProcessBeforeLevelUnload();
         }
 
         /*
@@ -421,7 +414,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAddSpawnRequest(LoadSceneRequest loadSceneRequest) {
-            levelManager.AddSpawnRequest(ClientId, loadSceneRequest);
+            levelManager.AddSpawnRequest(accountId, loadSceneRequest);
         }
 
         public void HandleSceneLoadStart(string sceneName) {
@@ -529,13 +522,13 @@ namespace AnyRPG {
         public void AddAvailableDroppedLoot(List<int> lootDropIds) {
             //Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot(count: {lootDropIds.Count})");
 
-            //lootManager.AddAvailableLoot(clientId, lootDropIds);
-            // available loot is always clientId 0 on client
+            //lootManager.AddAvailableLoot(accountId, lootDropIds);
+            // available loot is always accountId 0 on client
             lootManager.AddAvailableLoot(0, lootDropIds);
         }
 
         public void AdvertiseTakeLoot(int lootDropId) {
-            lootManager.TakeLoot(clientId, lootDropId);
+            lootManager.TakeLoot(accountId, lootDropId);
         }
 
         public void RequestTakeLoot(int lootDropId) {

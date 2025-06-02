@@ -36,7 +36,11 @@ namespace AnyRPG {
         [SerializeField]
         protected HighlightButton stopServerButton = null;
 
+        /// <summary>
+        /// accountId, PlayerConnectionButtonController
+        /// </summary>
         private Dictionary<int, PlayerConnectionButtonController> playerButtons = new Dictionary<int, PlayerConnectionButtonController>();
+
         private Dictionary<int, ServerLobbyGameConnectionButtonController> lobbyGameButtons = new Dictionary<int, ServerLobbyGameConnectionButtonController>();
 
         // game manager references
@@ -64,29 +68,33 @@ namespace AnyRPG {
             //Debug.Log($"HostServerPanelController.PopulatePlayerList()");
 
             foreach (KeyValuePair<int, LoggedInAccount> loggedInAccount in networkManagerServer.LoggedInAccounts) {
-                AddPlayerToList(loggedInAccount.Value.clientId, loggedInAccount.Value.username);
+                AddPlayerToList(loggedInAccount.Value.accountId, loggedInAccount.Value.username);
             }
         }
 
-        public void AddPlayerToList(int clientId, string userName) {
+        public void AddPlayerToList(int accountId, string userName) {
             //Debug.Log($"HostServerPanelController.AddPlayerToList({userName})");
-
+            if (playerButtons.ContainsKey(accountId)) {
+                //Debug.Warning($"HostServerPanelController.AddPlayerToList() - player was already connected, and is reconnecting");
+                playerButtons[accountId].UpdateIPAddress(networkManagerServer.LoggedInAccounts[accountId].ipAddress);
+                return;
+            }
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             PlayerConnectionButtonController playerConnectionButtonController = go.GetComponent<PlayerConnectionButtonController>();
             playerConnectionButtonController.Configure(systemGameManager);
-            playerConnectionButtonController.SetClientId(clientId, userName, networkManagerServer.LoggedInAccounts[clientId].ipAddress);
+            playerConnectionButtonController.SetAccountId(accountId, userName, networkManagerServer.LoggedInAccounts[accountId].ipAddress);
             uINavigationControllers[1].AddActiveButton(playerConnectionButtonController.KickButton);
-            playerButtons.Add(clientId, playerConnectionButtonController);
+            playerButtons.Add(accountId, playerConnectionButtonController);
         }
 
-        public void RemovePlayerFromList(int clientId) {
-            //Debug.Log($"HostServerPanelController.RemovePlayerFromList({clientId})");
+        public void RemovePlayerFromList(int accountId) {
+            //Debug.Log($"HostServerPanelController.RemovePlayerFromList({accountId})");
 
-            if (playerButtons.ContainsKey(clientId)) {
-                uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);
-                if (playerButtons[clientId].gameObject != null) {
-                    playerButtons[clientId].gameObject.transform.SetParent(null);
-                    objectPooler.ReturnObjectToPool(playerButtons[clientId].gameObject);
+            if (playerButtons.ContainsKey(accountId)) {
+                uINavigationControllers[1].ClearActiveButton(playerButtons[accountId].KickButton);
+                if (playerButtons[accountId].gameObject != null) {
+                    playerButtons[accountId].gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(playerButtons[accountId].gameObject);
                 }
             }
         }
@@ -134,16 +142,16 @@ namespace AnyRPG {
             ClearPlayerList();
         }
 
-        public void HandleLobbyLogin(int clientId) {
-            //Debug.Log($"HostServerPanelController.HandleLobbyLogin({clientId})");
+        public void HandleLobbyLogin(int accountId) {
+            //Debug.Log($"HostServerPanelController.HandleLobbyLogin({accountId})");
 
-            AddPlayerToList(clientId, networkManagerServer.LoggedInAccounts[clientId].username);
+            AddPlayerToList(accountId, networkManagerServer.LoggedInAccounts[accountId].username);
         }
 
-        public void HandleLobbyLogout(int clientId) {
-            //Debug.Log($"HostServerPanelController.HandleLobbyLogout({clientId})");
-            
-            RemovePlayerFromList(clientId);
+        public void HandleLobbyLogout(int accountId) {
+            //Debug.Log($"HostServerPanelController.HandleLobbyLogout({accountId})");
+
+            RemovePlayerFromList(accountId);
         }
 
         public void HandleCreateLobbyGame(LobbyGame lobbyGame) {
@@ -161,13 +169,13 @@ namespace AnyRPG {
             lobbyGameButtons.Add(gameId, serverLobbyGameButtonController);
         }
 
-        public void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
+        public void HandleJoinLobbyGame(int gameId, int accountId, string userName) {
             if (lobbyGameButtons.ContainsKey(gameId)) {
                 lobbyGameButtons[gameId].RefreshPlayerCount();
             }
         }
 
-        public void HandleLeaveLobbyGame(int gameId, int clientId) {
+        public void HandleLeaveLobbyGame(int gameId, int accountId) {
             if (lobbyGameButtons.ContainsKey(gameId)) {
                 lobbyGameButtons[gameId].RefreshPlayerCount();
             }

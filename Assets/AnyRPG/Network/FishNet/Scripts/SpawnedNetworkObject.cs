@@ -10,7 +10,7 @@ namespace AnyRPG {
         
         public readonly SyncVar<int> clientSpawnRequestId = new SyncVar<int>();
 
-        public readonly SyncVar<int> serverRequestId = new SyncVar<int>();
+        public readonly SyncVar<int> serverSpawnRequestId = new SyncVar<int>();
 
         public override void OnStartClient() {
             base.OnStartClient();

@@ -4136,8 +4136,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4855493212079588181, guid: c1ca76057cbb4374f85e91bca1b5a20a,
         type: 3}
+      propertyPath: WasActiveDuringEdit
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4855493212079588181, guid: c1ca76057cbb4374f85e91bca1b5a20a,
+        type: 3}
       propertyPath: <SceneId>k__BackingField
-      value: 1944051143
+      value: 4160603871
       objectReference: {fileID: 0}
     - target: {fileID: 6516233597783551863, guid: c1ca76057cbb4374f85e91bca1b5a20a,
         type: 3}
@@ -11070,11 +11075,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df07de734135f834b9ba0098ec4ed914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabProfileName: 
-  spawnDelay: 0
-  spawnReference: {fileID: 0}
-  despawnObject: 0
-  spawnPrerequisites: []
   showTooltip: 0
   interactableName: 
   glowOnMouseOver: 0
@@ -12961,6 +12961,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
+  WasActiveDuringEdit: 1
+  WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
@@ -12975,7 +12977,6 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedValusSet: 0
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -12993,7 +12994,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
-  <SceneId>k__BackingField: 2011144143
+  <SceneId>k__BackingField: 4017602431
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}

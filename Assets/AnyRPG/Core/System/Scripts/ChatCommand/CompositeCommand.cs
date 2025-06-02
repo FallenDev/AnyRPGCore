@@ -25,11 +25,11 @@ namespace AnyRPG {
             chatCommandManager = systemGameManager.ChatCommandManager;
         }
 
-        public override void ExecuteCommand(string commandParameters, int clientId) {
+        public override void ExecuteCommand(string commandParameters, int accountId) {
             //Debug.Log("GainItemCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             foreach (string chatCommand in chatCommands) {
-                chatCommandManager.ParseChatCommand(chatCommand, clientId);
+                chatCommandManager.ParseChatCommand(chatCommand, accountId);
             }
         }
 

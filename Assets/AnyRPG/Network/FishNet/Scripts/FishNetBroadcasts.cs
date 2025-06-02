@@ -11,6 +11,7 @@ namespace AnyRPG
 
     public struct ResponseBroadcast : IBroadcast
     {
+        public int AccountId;
         public bool AuthenticationPassed;
         public bool ClientPassed;
         public string RequiredClientVersion;

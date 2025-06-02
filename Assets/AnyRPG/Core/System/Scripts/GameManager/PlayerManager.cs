@@ -93,6 +93,7 @@ namespace AnyRPG {
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected PlayerManagerServer playerManagerServer = null;
+        protected SystemAchievementManager systemAchievementManager = null;
 
         public GameObject PlayerConnectionObject { get => playerConnectionObject; set => playerConnectionObject = value; }
         public float MaxMovementSpeed { get => maxMovementSpeed; set => maxMovementSpeed = value; }
@@ -110,6 +111,14 @@ namespace AnyRPG {
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
+
+            PerformRequiredPropertyChecks();
+            CreateEventSubscriptions();
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
             saveManager = systemGameManager.SaveManager;
             systemEventManager = systemGameManager.SystemEventManager;
             uIManager = systemGameManager.UIManager;
@@ -127,16 +136,9 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
             characterManager = systemGameManager.CharacterManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
-
-            PerformRequiredPropertyChecks();
-            CreateEventSubscriptions();
-        }
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-
             networkManagerServer = systemGameManager.NetworkManagerServer;
             playerManagerServer = systemGameManager.PlayerManagerServer;
+            systemAchievementManager = systemGameManager.SystemAchievementManager;
         }
 
         public void PerformRequiredPropertyChecks() {
@@ -202,7 +204,7 @@ namespace AnyRPG {
             //Debug.Log("PlayerManager.ProcessExitToMainMenu()");
             DespawnPlayerUnit();
             DespawnPlayerConnection();
-            saveManager.ClearSystemManagedCharacterData();
+            saveManager.ClearSystemManagedSaveData();
         }
 
         public void SetPlayerName(string newName) {
@@ -402,11 +404,11 @@ namespace AnyRPG {
 
             cameraManager.HidePlayers();
             subscribeToTargetReady = true;
-            return SpawnPlayerUnit(networkManagerClient.ClientId);
+            return SpawnPlayerUnit(networkManagerClient.AccountId);
         }
 
-        public LoadSceneRequest SpawnPlayerUnit(int clientId) {
-            //Debug.Log($"PlayerManager.SpawnPlayerUnit({clientId})");
+        public LoadSceneRequest SpawnPlayerUnit(int accountId) {
+            //Debug.Log($"PlayerManager.SpawnPlayerUnit({accountId})");
 
             if (activeUnitController != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
@@ -414,11 +416,11 @@ namespace AnyRPG {
             }
 
             // spawn the player unit and set references
-            LoadSceneRequest loadSceneRequest = levelManager.GetLoadSceneSettings(clientId);
+            LoadSceneRequest loadSceneRequest = levelManager.GetLoadSceneSettings(accountId);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
                 // load lobby player
-                UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerClient.LobbyGame.PlayerList[networkManagerClient.ClientId].unitProfileName);
+                UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerClient.LobbyGame.PlayerList[networkManagerClient.AccountId].unitProfileName);
                 if (unitProfile == null) {
                     return null;
                 }
@@ -428,7 +430,7 @@ namespace AnyRPG {
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
-                characterManager.SpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
+                characterManager.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
             } else {
                 // load MMO or local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
@@ -452,7 +454,7 @@ namespace AnyRPG {
 
             // testing - for now this can always return true because we will not perform configuration on things we didn't request anyway
             //return true;
-            return characterManager.HasUnitSpawnRequest(characterRequestData.spawnRequestId);
+            return characterManager.HasUnitSpawnRequest(characterRequestData.clientSpawnRequestId);
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
@@ -495,7 +497,11 @@ namespace AnyRPG {
 
             if (systemGameManager.GameMode == GameMode.Local || networkManagerClient.ClientMode == NetworkClientMode.MMO) {
                 // load player data from saveManager
-                saveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
+                unitController.CharacterSaveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
+            }
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                systemAchievementManager.CreateEventSubscriptions();
             }
 
             //SubscribeToPlayerInventoryEvents();

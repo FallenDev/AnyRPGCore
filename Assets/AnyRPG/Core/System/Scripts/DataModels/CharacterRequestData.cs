@@ -5,26 +5,22 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterRequestData {
 
-        public int spawnRequestId;
-        public int clientId;
+        public int clientSpawnRequestId;
+        public int serverSpawnRequestId;
+        public int accountId;
         public ICharacterRequestor characterRequestor;
         public GameMode requestMode;
-        //public UnitProfile unitProfile;
-        //public UnitControllerMode unitControllerMode;
-        public int unitLevel;
-        public UnitController unitController;
         public CharacterConfigurationRequest characterConfigurationRequest;
         public bool isServerOwned = false;
         public bool isServer = false;
         public bool isOwner = false;
 
-        public CharacterRequestData(ICharacterRequestor characterRequestor, GameMode requestMode/*, UnitProfile unitProfile*//*, UnitControllerMode unitControllerMode*/, CharacterConfigurationRequest characterConfigurationRequest) {
+        public CharacterRequestData(ICharacterRequestor characterRequestor, GameMode requestMode, CharacterConfigurationRequest characterConfigurationRequest) {
             this.characterRequestor = characterRequestor;
             this.requestMode = requestMode;
             //this.unitProfile = unitProfile;
             //this.unitControllerMode = unitControllerMode;
             this.characterConfigurationRequest = characterConfigurationRequest;
-            unitLevel = 1;
         }
 
     }

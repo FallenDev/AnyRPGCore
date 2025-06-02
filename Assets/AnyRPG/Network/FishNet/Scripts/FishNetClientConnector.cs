@@ -54,20 +54,27 @@ namespace AnyRPG {
             Debug.Log($"FishNetNetworkConnector.SpawnPlayer({clientSpawnRequestId}, {playerCharacterId})");
 
             // check if character is already spawned
+            // this code accounts for reconnection after disconnection.  logic needs to be fixed
+            /*
             if (networkManagerServer.PlayerCharacterIsActive(playerCharacterId)) {
-                int otherClientId = networkManagerServer.GetPlayerCharacterClientId(playerCharacterId);
-                if (otherClientId == -1) {
-                    Debug.LogError($"FishNetNetworkConnector.SpawnPlayer({ clientSpawnRequestId}, { playerCharacterId}) got invalid clientId for an active player character");
+                int otherAccountId = networkManagerServer.GetPlayerCharacterAccountId(playerCharacterId);
+                if (otherAccountId == -1) {
+                    Debug.LogError($"FishNetNetworkConnector.SpawnPlayer({ clientSpawnRequestId}, { playerCharacterId}) got invalid accountId for an active player character");
                     return;
                 }
-                if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(otherClientId)) {
+                if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(otherAccountId)) {
                     // manually stop monitoring here because the actual despawn of the unit won't happen until later after we attempt to spawn the new unit
                     networkManagerServer.StopMonitoringPlayerUnit(playerCharacterId);
-                    fishNetNetworkManager.ServerManager.Clients[otherClientId].Kick(FishNet.Managing.Server.KickReason.Unset);
+                    fishNetNetworkManager.ServerManager.Clients[otherAccountId].Kick(FishNet.Managing.Server.KickReason.Unset);
                 }
             }
-
-            PlayerCharacterSaveData playerCharacterSaveData = networkManagerServer.GetPlayerCharacterSaveData(networkConnection.ClientId, playerCharacterId);
+            */
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.SpawnPlayer({clientSpawnRequestId}, {playerCharacterId}) could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            int accountId = networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId;
+            PlayerCharacterSaveData playerCharacterSaveData = networkManagerServer.GetPlayerCharacterSaveData(accountId, playerCharacterId);
             if (playerCharacterSaveData == null) {
                 Debug.LogWarning($"FishNetNetworkConnector.SpawnPlayer({clientSpawnRequestId}, {playerCharacterId}) could not find playerCharacterId");
                 return;
@@ -83,7 +90,7 @@ namespace AnyRPG {
                 Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
                 return;
             }
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
+            int serverSpawnRequestId = characterManager.GetClientSpawnRequestId();
             /*
             CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
             characterConfigurationRequest.unitLevel = playerCharacterSaveData.SaveData.PlayerLevel;
@@ -106,13 +113,13 @@ namespace AnyRPG {
                 networkCharacterUnit.unitProfileName.Value = playerCharacterSaveData.SaveData.unitProfileName;
                 networkCharacterUnit.unitControllerMode.Value = unitControllerMode;
                 networkCharacterUnit.unitLevel.Value = playerCharacterSaveData.SaveData.PlayerLevel;
-                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
+                networkCharacterUnit.serverSpawnRequestId.Value = serverSpawnRequestId;
                 networkCharacterUnit.characterAppearanceData.Value = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
             }
 
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
             if (unitController != null) {
-                networkManagerServer.MonitorPlayerUnit(networkConnection.ClientId, playerCharacterSaveData, unitController);
+                networkManagerServer.MonitorPlayerUnit(accountId, unitController);
             }
 
             SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
@@ -122,15 +129,18 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName, NetworkConnection networkConnection = null) {
+        public void RequestSpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
-
-            if (networkManagerServer.LobbyGames.ContainsKey(gameId) == false || networkManagerServer.LobbyGames[gameId].PlayerList.ContainsKey(networkConnection.ClientId) == false) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            int accountId = networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId;
+            if (networkManagerServer.LobbyGames.ContainsKey(gameId) == false || networkManagerServer.LobbyGames[gameId].PlayerList.ContainsKey(accountId) == false) {
                 // game not running or client not in game
                 return;
             }
 
-            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerServer.LobbyGames[gameId].PlayerList[networkConnection.ClientId].unitProfileName);
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerServer.LobbyGames[gameId].PlayerList[accountId].unitProfileName);
             if (unitProfile == null) {
                 return;
             }
@@ -139,41 +149,41 @@ namespace AnyRPG {
                 Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
                 return;
             }
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
-            /*
-            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-            characterConfigurationRequest.unitLevel = playerCharacterSaveData.SaveData.PlayerLevel;
-            characterConfigurationRequest.unitControllerMode = unitControllerMode;
-            CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
-            */
-            //characterManager.AddUnitSpawnRequest(serverSpawnRequestId, characterRequestData);
-            position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
-            NetworkObject nob = GetSpawnablePrefab(clientSpawnRequestId, serverSpawnRequestId, unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
-            // update syncvars
-            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
-            if (networkCharacterUnit != null) {
-                networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
-                networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.Player;
-                networkCharacterUnit.unitLevel.Value = 1;
-                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
-            }
+            networkManagerServer.RequestSpawnLobbyGamePlayer(accountId, gameId, clientSpawnRequestId, unitProfile, position, forward, sceneName);
+        }
 
-            PlayerCharacterSaveData playerCharacterSaveData = saveManager.CreateSaveData();
-            playerCharacterSaveData.PlayerCharacterId = networkConnection.ClientId;
-            playerCharacterSaveData.SaveData.playerName = networkManagerServer.LobbyGames[gameId].PlayerList[networkConnection.ClientId].userName;
-            playerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
-            playerCharacterSaveData.SaveData.CurrentScene = networkManagerServer.LobbyGames[gameId].sceneResourceName;
+        public void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
+            
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
 
-            UnitController unitController = nob.gameObject.GetComponent<UnitController>();
-            if (unitController != null) {
-                networkManagerServer.MonitorPlayerUnit(networkConnection.ClientId, playerCharacterSaveData, unitController);
-            }
-
-            SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
+            NetworkObject nob = GetSpawnablePrefab(clientSpawnRequestId, serverSpawnRequestId, characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab, null, position, forward);
             if (nob == null) {
                 return;
             }
+
+            // update syncvars
+            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
+            if (networkCharacterUnit == null) {
+                return;
+            }
+
+            networkCharacterUnit.unitProfileName.Value = characterRequestData.characterConfigurationRequest.unitProfile.ResourceName;
+            networkCharacterUnit.characterName.Value = characterRequestData.characterConfigurationRequest.characterName;
+            networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.Player;
+            networkCharacterUnit.unitLevel.Value = characterRequestData.characterConfigurationRequest.unitLevel;
+            networkCharacterUnit.serverSpawnRequestId.Value = serverSpawnRequestId;
+            networkCharacterUnit.clientSpawnRequestId.Value = clientSpawnRequestId;
+            networkCharacterUnit.characterAppearanceData.Value = characterRequestData.characterConfigurationRequest.characterAppearanceData;
+
+            UnitController unitController = nob.gameObject.GetComponent<UnitController>();
+            if (unitController == null) {
+                return;
+            }
+            networkManagerServer.MonitorPlayerUnit(accountId, unitController);
+
+            SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
         }
+
 
         public Scene GetConnectionScene(NetworkConnection networkConnection, string sceneName) {
             foreach (Scene scene in networkConnection.Scenes) {
@@ -196,16 +206,17 @@ namespace AnyRPG {
                 Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
                 return null;
             }
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
 
-            NetworkObject nob = GetSpawnablePrefab(characterRequestData.spawnRequestId, serverSpawnRequestId, unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
+            NetworkObject nob = GetSpawnablePrefab(characterRequestData.clientSpawnRequestId, characterRequestData.serverSpawnRequestId, unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
             // update syncvars
             NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
             if (networkCharacterUnit != null) {
                 networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
+                networkCharacterUnit.characterName.Value = characterRequestData.characterConfigurationRequest.characterName;
                 networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.AI;
-                networkCharacterUnit.unitLevel.Value = 1;
-                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
+                networkCharacterUnit.unitLevel.Value = characterRequestData.characterConfigurationRequest.unitLevel;
+                networkCharacterUnit.clientSpawnRequestId.Value = characterRequestData.clientSpawnRequestId;
+                networkCharacterUnit.serverSpawnRequestId.Value = characterRequestData.serverSpawnRequestId;
             }
 
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
@@ -229,7 +240,7 @@ namespace AnyRPG {
                 Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
                 return;
             }
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
+            int serverSpawnRequestId = characterManager.GetClientSpawnRequestId();
             CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
             characterConfigurationRequest.unitLevel = unitLevel;
             characterConfigurationRequest.unitControllerMode = unitControllerMode;
@@ -242,7 +253,8 @@ namespace AnyRPG {
                 networkCharacterUnit.unitProfileName.Value = unitProfileName;
                 networkCharacterUnit.unitControllerMode.Value = unitControllerMode;
                 networkCharacterUnit.unitLevel.Value = unitLevel;
-                networkCharacterUnit.serverRequestId.Value = serverSpawnRequestId;
+                networkCharacterUnit.clientSpawnRequestId.Value = clientSpawnRequestId;
+                networkCharacterUnit.serverSpawnRequestId.Value = serverSpawnRequestId;
             }
 
             SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
@@ -252,19 +264,17 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SpawnModelPrefab(int clientSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
+        public void SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
 
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
             //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             NetworkObject nob = GetSpawnablePrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             SpawnPrefab(nob, networkConnection, default);
         }
 
-        public void SpawnModelPrefabServer(int clientSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public void SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetClientConnector.SpawnModelPrefabServer({clientSpawnRequestId}, {parentTransform.gameObject.name})");
 
-            int serverSpawnRequestId = characterManager.GetServerSpawnRequestId();
             //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             NetworkObject nob = GetSpawnablePrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
             SpawnPrefab(nob, null, default);
@@ -296,7 +306,7 @@ namespace AnyRPG {
             if (spawnedNetworkObject != null) {
                 //Debug.Log($"FishNetNetworkConnector.SpawnPrefab({clientSpawnRequestId}, {prefab.name}) setting spawnRequestId on gameobject");
                 spawnedNetworkObject.clientSpawnRequestId.Value = clientSpawnRequestId;
-                spawnedNetworkObject.serverRequestId.Value = serverSpawnRequestId;
+                spawnedNetworkObject.serverSpawnRequestId.Value = serverSpawnRequestId;
             }
 
             return nob;
@@ -328,48 +338,49 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.CreatePlayerCharacter(AnyRPGSaveData)");
-
-            networkManagerServer.CreatePlayerCharacter(networkConnection.ClientId, anyRPGSaveData);
-        }
-
-        public void HandleCreatePlayerCharacter(int clientId) {
-            Debug.Log($"FishNetNetworkConnector.HandleCreatePlayerCharacter({clientId})");
-
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
-                Debug.Log($"FishNetNetworkConnector.HandleCreatePlayerCharacter() could not find client id {clientId}");
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.CreatePlayerCharacter() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
+            
+            networkManagerServer.CreatePlayerCharacter(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, anyRPGSaveData);
+        }
 
-            //LoadCharacterList(networkManager.ServerManager.Clients[clientId]);
-            networkManagerServer.LoadCharacterList(clientId);
+        public void HandleCreatePlayerCharacter(int accountId) {
+            Debug.Log($"FishNetNetworkConnector.HandleCreatePlayerCharacter({accountId})");
+
+            //LoadCharacterList(networkManager.ServerManager.Clients[accountId]);
+            networkManagerServer.LoadCharacterList(accountId);
         }
 
 
         [ServerRpc(RequireOwnership = false)]
         public void DeletePlayerCharacter(int playerCharacterId, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetNetworkConnector.DeletePlayerCharacter({playerCharacterId})");
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.DeletePlayerCharacter() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
 
-            networkManagerServer.DeletePlayerCharacter(networkConnection.ClientId, playerCharacterId);
+            networkManagerServer.DeletePlayerCharacter(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, playerCharacterId);
 
             // now that character is deleted, just load the character list
             //LoadCharacterList(networkConnection);
         }
 
-        public void HandleDeletePlayerCharacter(int clientId) {
-            Debug.Log($"FishNetNetworkConnector.HandleDeletePlayerCharacter({clientId})");
+        public void HandleDeletePlayerCharacter(int accountId) {
+            Debug.Log($"FishNetNetworkConnector.HandleDeletePlayerCharacter({accountId})");
 
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
-                Debug.Log($"FishNetNetworkConnector.HandleDeletePlayerCharacter() could not find client id {clientId}");
-                return;
-            }
-
-            //LoadCharacterList(networkManager.ServerManager.Clients[clientId]);
-            networkManagerServer.LoadCharacterList(clientId);
+            networkManagerServer.LoadCharacterList(accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void ToggleLobbyGameReadyStatus(int gameId, NetworkConnection networkConnection = null) {
-            networkManagerServer.ToggleLobbyGameReadyStatus(gameId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.ToggleLobbyGameReadyStatus() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.ToggleLobbyGameReadyStatus(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
 
@@ -385,22 +396,21 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void LoadCharacterList(NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.LoadCharacterList()");
-
-            networkManagerServer.LoadCharacterList(networkConnection.ClientId);
-            //List<PlayerCharacterSaveData> playerCharacterSaveDataList = networkManagerServer.LoadCharacterList(networkConnection.ClientId);
-
-            //Debug.Log($"FishNetNetworkConnector.LoadCharacterList() list size: {playerCharacterSaveDataList.Count}");
-            //SetCharacterList(networkConnection, playerCharacterSaveDataList);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.LoadCharacterList() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.LoadCharacterList(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
-        public void HandleLoadCharacterList(int clientId, List<PlayerCharacterSaveData> playerCharacterSaveDataList) {
+        public void HandleLoadCharacterList(int accountId, List<PlayerCharacterSaveData> playerCharacterSaveDataList) {
             //Debug.Log($"FishNetNetworkConnector.HandleLoadCharacterList({clientId})");
 
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
-                foreach (int client in fishNetNetworkManager.ServerManager.Clients.Keys) {
-                    Debug.Log($"FishNetNetworkConnector.LoadCharacterList() found client id {client}");
-                }
-                Debug.Log($"FishNetNetworkConnector.LoadCharacterList() could not find client id {clientId}");
                 return;
             }
 
@@ -417,43 +427,75 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestLobbyGameList(NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestLobbyGameList(networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.RequestLobbyGameList() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.RequestLobbyGameList(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestLobbyPlayerList(NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestLobbyPlayerList(networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.RequestLobbyPlayerList() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.RequestLobbyPlayerList(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void SendLobbyChatMessage(string messageText, NetworkConnection networkConnection = null) {
-            networkManagerServer.SendLobbyChatMessage(messageText, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.SendLobbyChatMessage() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SendLobbyChatMessage(messageText, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void SendLobbyGameChatMessage(string messageText, int gameId, NetworkConnection networkConnection = null) {
-            networkManagerServer.SendLobbyGameChatMessage(messageText, networkConnection.ClientId, gameId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.SendLobbyGameChatMessage() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SendLobbyGameChatMessage(messageText, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, gameId);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        internal void SendSceneChatMessage(string messageText, NetworkConnection networkConnection = null) {
-            networkManagerServer.SendSceneChatMessage(messageText, networkConnection.ClientId);
+        public void SendSceneChatMessage(string messageText, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.SendSceneChatMessage() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SendSceneChatMessage(messageText, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
 
         [ServerRpc(RequireOwnership = false)]
         public void ChooseLobbyGameCharacter(string unitProfileName, int gameId, NetworkConnection networkConnection = null) {
-            networkManagerServer.ChooseLobbyGameCharacter(gameId, networkConnection.ClientId, unitProfileName);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.ChooseLobbyGameCharacter() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.ChooseLobbyGameCharacter(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfileName);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestStartLobbyGame(int gameId, NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestStartLobbyGame(gameId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.RequestStartLobbyGame() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.RequestStartLobbyGame(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestJoinLobbyGameInProgress(int gameId, NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestJoinLobbyGameInProgress(gameId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.RequestJoinLobbyGameInProgress() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.RequestJoinLobbyGameInProgress(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         public override void OnStartNetwork() {
@@ -467,8 +509,11 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void RequestCreateLobbyGame(string sceneResourceName, bool allowLateJoin, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.CreateLobbyGame()");
-
-            networkManagerServer.CreateLobbyGame(sceneResourceName, networkConnection.ClientId, allowLateJoin);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.CreateLobbyGame() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.CreateLobbyGame(sceneResourceName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, allowLateJoin);
         }
 
 
@@ -480,23 +525,36 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void CancelLobbyGame(int gameId, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.CancelLobbyGame()");
-
-            networkManagerServer.CancelLobbyGame(networkConnection.ClientId, gameId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.CancelLobbyGame() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.CancelLobbyGame(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, gameId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void JoinLobbyGame(int gameId, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.JoinLobbyGame()");
-
-            networkManagerServer.JoinLobbyGame(gameId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.JoinLobbyGame() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.JoinLobbyGame(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ObserversRpc]
-        public void AdvertiseLobbyLogin(int clientId, string userName) {
-            networkManagerClient.AdvertiseLobbyLogin(clientId, userName);
+        public void AdvertiseLobbyLogin(int accountId, string userName) {
+            networkManagerClient.AdvertiseLobbyLogin(accountId, userName);
         }
 
-        public void SendLobbyGameList(int clientId, List<LobbyGame> lobbyGames) {
+        public void SendLobbyGameList(int accountId, List<LobbyGame> lobbyGames) {
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
             SetLobbyGameList(fishNetNetworkManager.ServerManager.Clients[clientId], lobbyGames);
         }
 
@@ -505,7 +563,14 @@ namespace AnyRPG {
             networkManagerClient.SetLobbyGameList(lobbyGames);
         }
 
-        public void SendLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers) {
+        public void SendLobbyPlayerList(int accountId, Dictionary<int, string> lobbyPlayers) {
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
             SetLobbyPlayerList(fishNetNetworkManager.ServerManager.Clients[clientId], lobbyPlayers);
         }
 
@@ -514,10 +579,14 @@ namespace AnyRPG {
             networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
         }
 
-        public void JoinLobbyGameInProgress(int gameId, int clientId) {
-            Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId})");
+        public void JoinLobbyGameInProgress(int gameId, int accountId) {
+            Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {accountId})");
+
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
-                //Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress() could not find client id {clientId}");
                 return;
             }
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[clientId];
@@ -529,27 +598,30 @@ namespace AnyRPG {
             }
 
             AdvertiseJoinLobbyGameInProgress(networkConnection, gameId);
-            if (networkManagerServer.LobbyGameSceneHandles.ContainsKey(gameId) == false || networkManagerServer.LobbyGameSceneHandles[gameId].ContainsKey(loadingSceneNode.SceneFile) == false) {
+
+            LoadLobbyGameScene(lobbyGame, loadingSceneNode, networkConnection);
+        }
+
+        public void LoadLobbyGameScene(LobbyGame lobbyGame, SceneNode sceneNode, NetworkConnection networkConnection) {
+            Debug.Log($"FishNetNetworkConnector.LoadLobbyGameScene({lobbyGame.gameId}, {sceneNode.SceneFile}");
+            if (networkManagerServer.LobbyGameSceneHandles.ContainsKey(lobbyGame.gameId) == false || networkManagerServer.LobbyGameSceneHandles[lobbyGame.gameId].ContainsKey(sceneNode.SceneFile) == false) {
                 // load new scene
-                SceneLoadData sceneLoadData = new SceneLoadData(loadingSceneNode.SceneFile);
+                SceneLoadData sceneLoadData = new SceneLoadData(sceneNode.SceneFile);
                 sceneLoadData.ReplaceScenes = ReplaceOption.All;
                 sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
                 sceneLoadData.Options.AllowStacking = true;
                 sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(lobbyGame.sceneResourceName));
-                networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
-                Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
+                networkManagerServer.SetLobbyGameLoadRequestHashcode(lobbyGame.gameId, sceneLoadData.GetHashCode());
+                Debug.Log($"FishNetNetworkConnector.LoadLobbyGameScene({lobbyGame.gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
 
                 fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
             } else {
                 // load existing scene
-                SceneLoadData sceneLoadData = new(networkManagerServer.LobbyGameSceneHandles[gameId][loadingSceneNode.SceneFile]);
+                SceneLoadData sceneLoadData = new(networkManagerServer.LobbyGameSceneHandles[lobbyGame.gameId][sceneNode.SceneFile]);
                 sceneLoadData.ReplaceScenes = ReplaceOption.All;
                 sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
                 sceneLoadData.Options.AllowStacking = true;
-                sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(loadingSceneNode.SceneFile));
-                //networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
-                //Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId}) replace: {sceneLoadData.ReplaceScenes}, localPhysics: {sceneLoadData.Options.LocalPhysics}, allowstacking: {sceneLoadData.Options.AllowStacking} preferredActive: {sceneLoadData.PreferredActiveScene.Server.Name}");
-                Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {clientId}) replace: {sceneLoadData.ReplaceScenes}, localPhysics: {sceneLoadData.Options.LocalPhysics}, allowstacking: {sceneLoadData.Options.AllowStacking} ");
+                sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(sceneNode.SceneFile));
 
                 fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnection, sceneLoadData);
             }
@@ -559,6 +631,7 @@ namespace AnyRPG {
             Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId})");
 
             NetworkConnection[] networkConnections = new NetworkConnection[networkManagerServer.LobbyGames[gameId].PlayerList.Keys.Count];
+            Debug.Log($"FishNetNetworkConnector.StartLobbyGame() networkConnections.Length = {networkConnections.Length}");
             LobbyGame lobbyGame = networkManagerServer.LobbyGames[gameId];
             SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(lobbyGame.sceneResourceName);
             if (loadingSceneNode == null) {
@@ -566,8 +639,17 @@ namespace AnyRPG {
             }
 
             int i = 0;
-            foreach (int clientId in networkManagerServer.LobbyGames[gameId].PlayerList.Keys) {
+            int clientId = -1;
+            foreach (int accountId in networkManagerServer.LobbyGames[gameId].PlayerList.Keys) {
+                if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                    continue;
+                }
+                clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+                if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                    continue;
+                }
                 networkConnections[i] = fishNetNetworkManager.ServerManager.Clients[clientId];
+                Debug.Log($"FishNetNetworkConnector.StartLobbyGame() adding client {clientId} to networkConnections[{i}] for game {gameId}");
                 i++;
             }
 
@@ -577,7 +659,7 @@ namespace AnyRPG {
             sceneLoadData.ReplaceScenes = ReplaceOption.All;
             sceneLoadData.Options.LocalPhysics = LocalPhysicsMode.Physics3D;
             sceneLoadData.Options.AllowStacking = true;
-            sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(lobbyGame.sceneResourceName));
+            sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(loadingSceneNode.SceneFile));
             networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
             Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
 
@@ -592,24 +674,29 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseStartLobbyGame(int gameId) {
+            //Debug.Log($"FishNetNetworkConnector.AdvertiseStartLobbyGame({gameId})");
+
             networkManagerClient.AdvertiseStartLobbyGame(gameId);
         }
 
         [ObserversRpc]
-        public void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
-            networkManagerClient.AdvertiseChooseLobbyGameCharacter(gameId, clientId, unitProfileName);
+        public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            networkManagerClient.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
 
         [ObserversRpc]
-        public void AdvertiseLobbyLogout(int clientId) {
-            networkManagerClient.AdvertiseLobbyLogout(clientId);
+        public void AdvertiseLobbyLogout(int accountId) {
+            networkManagerClient.AdvertiseLobbyLogout(accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void LeaveLobbyGame(int gameId, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.LeaveLobbyGame()");
-
-            networkManagerServer.LeaveLobbyGame(gameId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.LeaveLobbyGame() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.LeaveLobbyGame(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ObserversRpc]
@@ -618,13 +705,13 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
-        public void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName) {
-            networkManagerClient.AdvertiseClientJoinLobbyGame(gameId, clientId, userName);
+        public void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName) {
+            networkManagerClient.AdvertiseAccountJoinLobbyGame(gameId, accountId, userName);
         }
 
         [ObserversRpc]
-        public void AdvertiseClientLeaveLobbyGame(int gameId, int clientId) {
-            networkManagerClient.AdvertiseClientLeaveLobbyGame(gameId, clientId);
+        public void AdvertiseAccountLeaveLobbyGame(int gameId, int accountId) {
+            networkManagerClient.AdvertiseAccountLeaveLobbyGame(gameId, accountId);
         }
 
         [ObserversRpc]
@@ -638,41 +725,51 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
-        public void AdvertiseSendSceneChatMessage(string messageText, int clientId) {
-            networkManagerClient.AdvertiseSendSceneChatMessage(messageText, clientId);
+        public void AdvertiseSendSceneChatMessage(string messageText, int accountId) {
+            networkManagerClient.AdvertiseSendSceneChatMessage(messageText, accountId);
         }
 
         [ObserversRpc]
-        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            networkManagerClient.AdvertiseSetLobbyGameReadyStatus(gameId, clientId, ready);
+        public void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready) {
+            networkManagerClient.AdvertiseSetLobbyGameReadyStatus(gameId, accountId, ready);
         }
 
-        public void AdvertiseLoadSceneServer(string sceneName, int clientId) {
-            AdvertiseLoadSceneClient(fishNetNetworkManager.ServerManager.Clients[clientId], sceneName);
+        public void AdvertiseLoadSceneServer(string sceneResourceName, int accountId) {
+            Debug.Log($"FishNetNetworkConnector.AdvertiseLoadSceneServer({sceneResourceName}, {accountId})");
+
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetNetworkConnector.AdvertiseLoadSceneServer() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
+
+            // this code works only for lobby game.  It will need to be modified to work with MMO
+            AdvertiseLoadSceneClient(fishNetNetworkManager.ServerManager.Clients[clientId], sceneResourceName);
+            
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[clientId];
+            LobbyGame lobbyGame = networkManagerServer.LobbyGames[networkManagerServer.LobbyGameAccountLookup[accountId]];
+
+            SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(sceneResourceName);
+            if (loadingSceneNode == null) {
+                return;
+            }
+
+            LoadLobbyGameScene(lobbyGame, loadingSceneNode, networkConnection);
         }
 
         [TargetRpc]
         public void AdvertiseLoadSceneClient(NetworkConnection networkConnection, string sceneName) {
+            Debug.Log($"FishNetNetworkConnector.AdvertiseLoadSceneClient({sceneName})");
+
             networkManagerClient.AdvertiseLoadSceneClient(sceneName);
         }
 
         public void ReturnObjectToPool(GameObject returnedObject) {
             fishNetNetworkManager.ServerManager.Despawn(returnedObject);
         }
-
-        /*
-        public void AdvertiseInteractWithQuestGiver(NetworkInteractable networkInteractable, int optionIndex, int clientId) {
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
-                AdvertiseInteractWithQuestGiverClient(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
-            }
-        }
-
-        [TargetRpc]
-        public void AdvertiseInteractWithQuestGiverClient(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
-
-            networkManagerClient.AdvertiseInteractWithQuestGiver(networkInteractable.Interactable, optionIndex);
-        }
-        */
 
         public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
             NetworkCharacterUnit networkCharacterUnit = null;
@@ -699,7 +796,12 @@ namespace AnyRPG {
             networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex, choiceIndex);
         }
 
-        public void AdvertiseAddSpawnRequestServer(int clientId, LoadSceneRequest loadSceneRequest) {
+        public void AdvertiseAddSpawnRequestServer(int accountId, LoadSceneRequest loadSceneRequest) {
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
             if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
                 AdvertiseAddSpawnRequestClient(fishNetNetworkManager.ServerManager.Clients[clientId], loadSceneRequest);
             }
@@ -710,55 +812,58 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
         }
 
-        /*
-        public void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
-                NetworkInteractable networkInteractable = null;
-                if (interactable != null) {
-                    networkInteractable = interactable.GetComponent<NetworkInteractable>();
-                }
-                AdvertiseInteractWithClassChangeComponent(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
-            }
-        }
-
-        [TargetRpc]
-        public void AdvertiseInteractWithClassChangeComponent(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
-            Interactable interactable = null;
-            if (networkInteractable != null) {
-                interactable = networkInteractable.Interactable;
-            }
-            networkManagerClient.AdvertiseInteractWithClassChangeComponent(interactable, optionIndex);
-        }
-        */
-
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {
-            networkManagerServer.SetPlayerCharacterClass(className, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.SetPlayerCharacterClass() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SetPlayerCharacterClass(className, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerCharacterSpecialization(string specializationName, NetworkConnection networkConnection = null) {
-            networkManagerServer.SetPlayerCharacterSpecialization(specializationName, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.SetPlayerCharacterSpecialization() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SetPlayerCharacterSpecialization(specializationName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerFaction(string factionName, NetworkConnection networkConnection = null) {
-            networkManagerServer.SetPlayerFaction(factionName, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.SetPlayerFaction() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.SetPlayerFaction(factionName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void LearnSkill(string skillName, NetworkConnection networkConnection = null) {
-            networkManagerServer.LearnSkill(skillName, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.LearnSkill() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.LearnSkill(skillName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void AcceptQuest(string questName, NetworkConnection networkConnection = null) {
-            networkManagerServer.AcceptQuest(questName, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.AcceptQuest() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.AcceptQuest(questName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, NetworkConnection networkConnection = null) {
-            networkManagerServer.CompleteQuest(questName, questRewardChoices, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.CompleteQuest() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.CompleteQuest(questName, questRewardChoices, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
         
         public void SellVendorItemClient(Interactable interactable, int componentIndex, int itemInstanceId) {
@@ -771,11 +876,15 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void SellVendorItemServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int itemInstanceId, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.SellVendorItemServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
             Interactable interactable = null;
             if (targetNetworkInteractable != null) {
                 interactable = targetNetworkInteractable.Interactable;
             }
-            networkManagerServer.SellVendorItem(interactable, componentIndex, itemInstanceId, networkConnection.ClientId);
+            networkManagerServer.SellVendorItem(interactable, componentIndex, itemInstanceId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName) {
@@ -791,7 +900,10 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void RequestSpawnUnitServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestSpawnUnitServer({componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
-
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.RequestSpawnUnitServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
             Interactable interactable = null;
             if (targetNetworkInteractable != null) {
                 interactable = targetNetworkInteractable.Interactable;
@@ -801,7 +913,7 @@ namespace AnyRPG {
                 return;
             }
             UnitToughness unitToughness = systemDataFactory.GetResource<UnitToughness>(unitToughnessName);
-            networkManagerServer.RequestSpawnUnit(interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness, networkConnection.ClientId);
+            networkManagerServer.RequestSpawnUnit(interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
@@ -814,16 +926,28 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void BuyItemFromVendorServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+
             Interactable interactable = null;
             if (targetNetworkInteractable != null) {
                 interactable = targetNetworkInteractable.Interactable;
             }
-            networkManagerServer.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName, networkConnection.ClientId);
+            networkManagerServer.BuyItemFromVendor(interactable, componentIndex, collectionIndex, itemIndex, resourceName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
 
-        public void AdvertiseMessageFeedMessage(int clientId, string message) {
-            Debug.Log($"FishNetClientConnector.AdvertiseMessageFeedMessage({clientId}, {message})");
+        public void AdvertiseMessageFeedMessage(int accountId, string message) {
+            Debug.Log($"FishNetClientConnector.AdvertiseMessageFeedMessage({accountId}, {message})");
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
             AdvertiseMessageFeedMessageClient(fishNetNetworkManager.ServerManager.Clients[clientId], message);
         }
 
@@ -842,7 +966,7 @@ namespace AnyRPG {
             networkManagerClient.AdvertiseSystemMessage(message);
         }
 
-        public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
+        public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int accountId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
             NetworkInteractable networkInteractable = null;
             if (interactable != null) {
                 networkInteractable = interactable.GetComponent<NetworkInteractable>();
@@ -850,6 +974,15 @@ namespace AnyRPG {
             NetworkCharacterUnit networkCharacterUnit = null;
             if (sourceUnitController != null) {
                 networkCharacterUnit = interactable.GetComponent<NetworkCharacterUnit>();
+            }
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetClientConnector.AdvertiseAddToBuyBackCollection() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                Debug.Log($"FishNetClientConnector.AdvertiseAddToBuyBackCollection() could not find client id {clientId}");
+                return;
             }
             AdvertiseAddToBuyBackCollectionClient(fishNetNetworkManager.ServerManager.Clients[clientId], networkCharacterUnit, networkInteractable, componentIndex, newInstantiatedItem.InstanceId);
         }
@@ -881,18 +1014,34 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void TakeAllLoot(NetworkConnection networkConnection = null) {
-            networkManagerServer.TakeAllLoot(networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.TakeAllLoot() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.TakeAllLoot(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestTakeLoot(int lootDropId, NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestTakeLoot(lootDropId, networkConnection.ClientId);
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.RequestTakeLoot() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.RequestTakeLoot(lootDropId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
 
-        public void AddDroppedLoot(int clientId, int lootDropId, int itemId) {
-            //Debug.Log($"FishNetClientConnector.AddDroppedLoot({clientId}, {lootDropId}, {itemId})");
+        public void AddDroppedLoot(int accountId, int lootDropId, int itemId) {
+            //Debug.Log($"FishNetClientConnector.AddDroppedLoot({accountId}, {lootDropId}, {itemId})");
 
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetClientConnector.AddDroppedLoot() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
             AddDroppedLootClient(ServerManager.Clients[clientId], lootDropId, itemId);
         }
 
@@ -903,8 +1052,17 @@ namespace AnyRPG {
             networkManagerClient.AddDroppedLoot(lootDropId, itemId);
         }
 
-        public void AddAvailableDroppedLoot(int clientId, List<LootDrop> items) {
-            //Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({clientId}, {items.Count})");
+        public void AddAvailableDroppedLoot(int accountId, List<LootDrop> items) {
+            //Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({accountId}, {items.Count})");
+
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
 
             List<int> lootDropIds = new List<int>();
             
@@ -922,7 +1080,16 @@ namespace AnyRPG {
             networkManagerClient.AddAvailableDroppedLoot(lootDropIds);
         }
 
-        public void AdvertiseTakeLoot(int clientId, int lootDropId) {
+        public void AdvertiseTakeLoot(int accountId, int lootDropId) {
+            //Debug.Log($"FishNetClientConnector.AdvertiseTakeLoot({accountId}, {lootDropId})");
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetClientConnector.AdvertiseTakeLoot() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
             AdvertiseTakeLootClient(ServerManager.Clients[clientId], lootDropId);
         }
 
@@ -932,10 +1099,10 @@ namespace AnyRPG {
         }
 
         /*
-        public void SetCraftingManagerAbility(int clientId, string abilityName) {
-            Debug.Log($"FishNetClientConnector.SetCraftingManagerAbility({clientId}, {abilityName})");
+        public void SetCraftingManagerAbility(int accountId, string abilityName) {
+            Debug.Log($"FishNetClientConnector.SetCraftingManagerAbility({accountId}, {abilityName})");
 
-            SetCraftingManagerAbilityClient(ServerManager.Clients[clientId], abilityName);
+            SetCraftingManagerAbilityClient(ServerManager.Clients[accountId], abilityName);
         }
 
         [TargetRpc]
@@ -953,64 +1120,28 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void RequestBeginCrafting(string recipeName, int craftAmount, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestBeginCrafting({recipeName}, {craftAmount})");
+            
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                //Debug.LogWarning($"FishNetNetworkConnector.RequestBeginCrafting() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
 
             Recipe recipe = systemDataFactory.GetResource<Recipe>(recipeName);
             if (recipe == null) {
                 return;
             }
-            networkManagerServer.RequestBeginCrafting(recipe, craftAmount, networkConnection.ClientId);
+            networkManagerServer.RequestBeginCrafting(recipe, craftAmount, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
 
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestCancelCrafting(NetworkConnection networkConnection = null) {
-            networkManagerServer.RequestCancelCrafting(networkConnection.ClientId);
-        }
-
-
-
-
-        /*
-        public void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
-                NetworkInteractable networkInteractable = null;
-                if (interactable != null) {
-                    networkInteractable = interactable.GetComponent<NetworkInteractable>();
-                }
-                AdvertiseInteractWithSkillTrainerComponent(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
+            Debug.Log($"FishNetClientConnector.RequestCancelCrafting()");
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
             }
+            networkManagerServer.RequestCancelCrafting(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
-
-        [TargetRpc]
-        public void AdvertiseInteractWithSkillTrainerComponent(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
-            Interactable interactable = null;
-            if (networkInteractable != null) {
-                interactable = networkInteractable.Interactable;
-            }
-            networkManagerClient.AdvertiseInteractWithSkillTrainerComponent(interactable, optionIndex);
-        }
-        */
-
-        /*
-        public void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex) {
-            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId)) {
-                NetworkInteractable networkInteractable = null;
-                if (interactable != null) {
-                    networkInteractable = interactable.GetComponent<NetworkInteractable>();
-                }
-                AdvertiseInteractWithAnimatedObjectComponent(fishNetNetworkManager.ServerManager.Clients[clientId], networkInteractable, optionIndex);
-            }
-        }
-
-        [TargetRpc]
-        public void AdvertiseInteractWithAnimatedObjectComponent(NetworkConnection networkConnection, NetworkInteractable networkInteractable, int optionIndex) {
-            Interactable interactable = null;
-            if (networkInteractable != null) {
-                interactable = networkInteractable.Interactable;
-            }
-            networkManagerClient.AdvertiseInteractWithAnimatedObjectComponent(interactable, optionIndex);
-        }
-        */
 
         /*
         public override void OnStartServer() {

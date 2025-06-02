@@ -51,12 +51,12 @@ namespace AnyRPG {
             }
         }
 
-        public void BuyItemFromVendorServer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int clientId) {
-            Debug.Log($"VendorManager.BuyItemFromVendorServer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {clientId})");
+        public void BuyItemFromVendorServer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int accountId) {
+            Debug.Log($"VendorManager.BuyItemFromVendorServer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {accountId})");
             Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
             if (currentInteractables[componentIndex] is VendorComponent) {
                 VendorComponent vendorComponent = (currentInteractables[componentIndex] as VendorComponent);
-                List<VendorCollection> localVendorCollections = vendorComponent.GetVendorCollections(clientId);
+                List<VendorCollection> localVendorCollections = vendorComponent.GetVendorCollections(accountId);
                 if (localVendorCollections.Count > collectionIndex && localVendorCollections[collectionIndex].VendorItems.Count > itemIndex) {
                     VendorItem vendorItem = localVendorCollections[collectionIndex].VendorItems[itemIndex];
                     if (vendorItem.Item.ResourceName == resourceName) {

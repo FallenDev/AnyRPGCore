@@ -240,7 +240,7 @@ namespace AnyRPG {
             if (characterCreatorManager.PreviewUnitController != null) {
                 //Debug.Log("LoadGamePanel.LoadEquipmentData(): preview controller found");
 
-                saveManager.LoadEquipmentData(loadGameManager.PlayerCharacterSaveData.SaveData, characterCreatorManager.PreviewUnitController.CharacterEquipmentManager);
+                characterCreatorManager.PreviewUnitController.CharacterSaveManager.LoadEquipmentData(loadGameManager.PlayerCharacterSaveData.SaveData);
             }
         }
 

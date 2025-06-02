@@ -87,14 +87,14 @@ namespace AnyRPG {
             serverStatusText.text = $"Logged In As: {networkManagerClient.Username}";
         }
 
-        public void HandleLobbyLogin(int clientId, string userName) {
-            Debug.Log($"ClientLobbyPanel.HandleLobbyLogin({clientId}, {userName})");
+        public void HandleLobbyLogin(int accountId, string userName) {
+            Debug.Log($"ClientLobbyPanel.HandleLobbyLogin({accountId}, {userName})");
 
-            AddPlayerToList(clientId, userName);
+            AddPlayerToList(accountId, userName);
         }
 
-        public void HandleLobbyLogout(int clientId) {
-            RemovePlayerFromList(clientId);
+        public void HandleLobbyLogout(int accountId) {
+            RemovePlayerFromList(accountId);
         }
 
         public void HandleCreateLobbyGame(LobbyGame lobbyGame) {
@@ -136,25 +136,28 @@ namespace AnyRPG {
             }
         }
 
-        public void AddPlayerToList(int clientId, string userName) {
-            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({clientId}, {userName})");
-
+        public void AddPlayerToList(int accountId, string userName) {
+            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({accountId}, {userName})");
+            if (playerButtons.ContainsKey(accountId)) {
+                //Debug.Log($"ClientLobbyPanelController.AddPlayerToList({accountId}, {userName}) - already exists, account is reconnecting");
+                return;
+            }
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyConnectionButton clientPlayerLobbyConnectionButtonController = go.GetComponent<ClientPlayerLobbyConnectionButton>();
             clientPlayerLobbyConnectionButtonController.Configure(systemGameManager);
-            clientPlayerLobbyConnectionButtonController.SetClientId(clientId, userName);
+            clientPlayerLobbyConnectionButtonController.SetAccountId(accountId, userName);
             //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyConnectionButtonController.joinbu);
-            playerButtons.Add(clientId, clientPlayerLobbyConnectionButtonController);
+            playerButtons.Add(accountId, clientPlayerLobbyConnectionButtonController);
         }
 
-        public void RemovePlayerFromList(int clientId) {
+        public void RemovePlayerFromList(int accountId) {
             //Debug.Log($"ClientLobbyPanelController.RemovePlayerFromList({clientId})");
 
-            if (playerButtons.ContainsKey(clientId)) {
+            if (playerButtons.ContainsKey(accountId)) {
                 //uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);
-                if (playerButtons[clientId].gameObject != null) {
-                    playerButtons[clientId].gameObject.transform.SetParent(null);
-                    objectPooler.ReturnObjectToPool(playerButtons[clientId].gameObject);
+                if (playerButtons[accountId].gameObject != null) {
+                    playerButtons[accountId].gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(playerButtons[accountId].gameObject);
                 }
             }
         }
@@ -180,7 +183,31 @@ namespace AnyRPG {
         }
 
         public void HandleSetLobbyGameList(List<LobbyGame> lobbyGames) {
+            Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList()");
+
             PopulateLobbyGameList(lobbyGames);
+            
+            // in an account reconnection, we need to rejoin the game we were in
+            foreach (LobbyGame lobbyGame in lobbyGames) {
+                if (lobbyGame.PlayerList.ContainsKey(networkManagerClient.AccountId) == false) {
+                    //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - account {networkManagerClient.AccountId} not in game {lobbyGame.gameId}");
+                    continue;
+                }
+                if (lobbyGame.inProgress) {
+                    //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - rejoining game {lobbyGame.gameId}");
+                    if (lobbyGame.PlayerList[networkManagerClient.AccountId].ready) {
+                        //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - account {networkManagerClient.AccountId} is ready in game {lobbyGame.gameId}");
+                        networkManagerClient.RequestJoinLobbyGameInProgress(lobbyGame.gameId);
+                    } else {
+                        //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - account {networkManagerClient.AccountId} is not ready in game {lobbyGame.gameId}");
+                        uIManager.clientLobbyGameWindow.OpenWindow();
+                    }
+                } else {
+                    //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - starting game {lobbyGame.gameId}");
+                    networkManagerClient.SetLobbyGame(lobbyGame);
+                    uIManager.clientLobbyGameWindow.OpenWindow();
+                }
+            }
         }
 
         public void PopulateLobbyGameList(List<LobbyGame> lobbyGames) {
@@ -227,14 +254,14 @@ namespace AnyRPG {
             uINavigationControllers[1].ClearActiveButtons();
         }
 
-        private void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
+        private void HandleJoinLobbyGame(int gameId, int accountId, string userName) {
             //Debug.Log($"ClientLobbyPanelController.HandleJoinLobbyGame({gameId}, {clientId}, {userName})");
             if (lobbyGameButtons.ContainsKey(gameId)) {
                 lobbyGameButtons[gameId].RefreshPlayerCount();
             }
         }
 
-        private void HandleLeaveLobbyGame(int gameId, int clientId) {
+        private void HandleLeaveLobbyGame(int gameId, int accountId) {
             //Debug.Log($"ClientLobbyPanelController.HandleLeaveLobbyGame({gameId}, {clientId})");
             if (lobbyGameButtons.ContainsKey(gameId)) {
                 lobbyGameButtons[gameId].RefreshPlayerCount();

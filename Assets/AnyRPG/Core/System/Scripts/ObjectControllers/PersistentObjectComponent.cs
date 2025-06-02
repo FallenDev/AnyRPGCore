@@ -35,6 +35,7 @@ namespace AnyRPG {
 
         // game manager references
         protected LevelManager levelManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public bool MoveOnStart { get => moveOnStart; set => moveOnStart = value; }
         public bool PersistObjectPosition { get => persistObjectPosition; set => persistObjectPosition = value; }
@@ -47,6 +48,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             levelManager = systemGameManager.LevelManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void Setup(IPersistentObjectOwner persistentObjectOwner, SystemGameManager systemGameManager) {
@@ -64,6 +66,10 @@ namespace AnyRPG {
             //Debug.Log($"{(persistentObjectOwner as MonoBehaviour).gameObject.name}.Init() UUID is {persistentObjectOwner.UUID.ID}");
 
             if (persistObjectPosition == false) {
+                return;
+            }
+            // no persistent state on server
+            if (networkManagerServer.ServerModeActive == true) {
                 return;
             }
             if (moveOnStart == true) {

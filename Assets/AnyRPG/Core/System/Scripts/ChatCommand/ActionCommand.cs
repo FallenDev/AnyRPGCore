@@ -19,13 +19,13 @@ namespace AnyRPG {
 
         protected AnimatedAction animatedAction = null;
 
-        public override void ExecuteCommand(string commandParameters, int clientId) {
+        public override void ExecuteCommand(string commandParameters, int accountId) {
             //Debug.Log("ActionCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
             
             if (animatedAction == null) {
                 return;
             }
-            playerManagerServer.BeginAction(animatedAction, clientId);
+            playerManagerServer.BeginAction(animatedAction, accountId);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

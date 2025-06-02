@@ -17,8 +17,8 @@ namespace AnyRPG {
         }
         public abstract void Logout();
         public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName);
-        public abstract void SpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName);
-        public abstract GameObject SpawnModelPrefab(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName);
+        public abstract GameObject SpawnModelPrefab(int spawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();
         public abstract bool OwnPlayer(UnitController unitController);
@@ -57,41 +57,43 @@ namespace AnyRPG {
         // server functions
         public abstract void StartServer();
         public abstract void StopServer();
-        public abstract void KickPlayer(int clientId);
-        public abstract string GetClientIPAddress(int clientId);
+        public abstract void KickPlayer(int accountId);
+        public abstract string GetClientIPAddress(int accountId);
         public abstract void AdvertiseCreateLobbyGame(LobbyGame lobbyGame);
         public abstract void AdvertiseCancelLobbyGame(int gameId);
-        public abstract void AdvertiseClientJoinLobbyGame(int gameId, int clientId, string userName);
-        public abstract void AdvertiseClientLeaveLobbyGame(int gameId, int clientId);
+        public abstract void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName);
+        public abstract void AdvertiseAccountLeaveLobbyGame(int gameId, int accountId);
         public abstract void AdvertiseSendLobbyChatMessage(string messageText);
         public abstract void AdvertiseSendLobbyGameChatMessage(string messageText, int gameId);
-        public abstract void AdvertiseSendSceneChatMessage(string messageText, int clientId);
-        public abstract void AdvertiseLobbyLogin(int clientId, string userName);
-        public abstract void AdvertiseLobbyLogout(int clientId);
-        public abstract void SetLobbyGameList(int clientId, List<LobbyGame> lobbyGames);
-        public abstract void SetLobbyPlayerList(int clientId, Dictionary<int, string> lobbyPlayers);
-        public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName);
+        public abstract void AdvertiseSendSceneChatMessage(string messageText, int accountId);
+        public abstract void AdvertiseLobbyLogin(int accountId, string userName);
+        public abstract void AdvertiseLobbyLogout(int accountId);
+        public abstract void SetLobbyGameList(int accountId, List<LobbyGame> lobbyGames);
+        public abstract void SetLobbyPlayerList(int accountId, Dictionary<int, string> lobbyPlayers);
+        public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName);
         public abstract void StartLobbyGame(int gameId);
-        public abstract void AdvertiseJoinLobbyGameInProgress(int gameId, int clientId);
-        public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int clientId, bool ready);
+        public abstract void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId);
+        public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready);
         public abstract int GetServerPort();
-        public abstract void AdvertiseLoadScene(string sceneName, int clientId);
+        public abstract void AdvertiseLoadScene(string sceneResourceName, int accountId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
-        public abstract void AdvertiseAddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest);
+        public abstract void AdvertiseAddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
-        public abstract GameObject SpawnModelPrefabServer(int spawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
-        public abstract void AdvertiseMessageFeedMessage(int clientId, string message);
-        public abstract void AdvertiseSystemMessage(int clientId, string message);
-        public abstract void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int clientId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem);
+        public abstract GameObject SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId,GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void AdvertiseMessageFeedMessage(int accountId, string message);
+        public abstract void AdvertiseSystemMessage(int accountId, string message);
+        public abstract void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int accountId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem);
         public abstract void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int quantity);
-        public abstract void AddAvailableDroppedLoot(int clientId, List<LootDrop> items);
-        public abstract void AddLootDrop(int clientId, int lootDropId, int itemId);
-        public abstract void AdvertiseTakeLoot(int clientId, int lootDropId);
-        //public abstract void SetCraftingManagerAbility(int clientId, string abilityName);
-        //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int clientId, Interactable interactable, int optionIndex);
-        //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int clientId, Interactable interactable, int optionIndex);
-        //public abstract void AdvertiseInteractWithClassChangeComponentServer(int clientId, Interactable interactable, int optionIndex);
-        //public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int componentIndex, int clientId);
+        public abstract void AddAvailableDroppedLoot(int accountId, List<LootDrop> items);
+        public abstract void AddLootDrop(int accountId, int lootDropId, int itemId);
+        public abstract void AdvertiseTakeLoot(int accountId, int lootDropId);
+        public abstract void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
+
+        //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
+        //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int accountId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithClassChangeComponentServer(int accountId, Interactable interactable, int optionIndex);
+        //public abstract void AdvertiseInteractWithQuestGiver(Interactable interactable, int componentIndex, int accountId);
     }
 
 }

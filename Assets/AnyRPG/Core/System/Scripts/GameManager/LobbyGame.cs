@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AnyRPG {
     public class LobbyGame {
-        public int leaderClientId;
+        public int leaderAccountId;
         public string leaderUserName = string.Empty;
         public int gameId;
         public string gameName = string.Empty;
@@ -11,6 +11,9 @@ namespace AnyRPG {
         public bool inProgress = false;
         public bool allowLateJoin = false;
 
+        /// <summary>
+        /// accountId, LobbyGamePlayerInfo
+        /// </summary>
         private Dictionary<int, LobbyGamePlayerInfo> playerList = new Dictionary<int, LobbyGamePlayerInfo>();
 
         public Dictionary<int, LobbyGamePlayerInfo> PlayerList { get => playerList; set => playerList = value; }
@@ -23,26 +26,26 @@ namespace AnyRPG {
             */
         }
 
-        public LobbyGame(int clientId, int gameId, string sceneResourceName, string userName, bool allowLateJoin) {
-            this.leaderClientId = clientId;
+        public LobbyGame(int accountId, int gameId, string sceneResourceName, string userName, bool allowLateJoin) {
+            this.leaderAccountId = accountId;
             leaderUserName = userName;
             this.gameId = gameId;
             this.sceneResourceName = sceneResourceName;
-            playerList.Add(clientId, new LobbyGamePlayerInfo(clientId, userName));
+            playerList.Add(accountId, new LobbyGamePlayerInfo(accountId, userName));
             this.allowLateJoin = allowLateJoin;
         }
 
-        public void AddPlayer(int clientId, string userName) {
-            playerList.Add(clientId, new LobbyGamePlayerInfo(clientId, userName));
+        public void AddPlayer(int accountId, string userName) {
+            playerList.Add(accountId, new LobbyGamePlayerInfo(accountId, userName));
         }
 
-        public void RemovePlayer(int clientId) {
-            playerList.Remove(clientId);
+        public void RemovePlayer(int accountId) {
+            playerList.Remove(accountId);
         }
     }
 
     public class LobbyGamePlayerInfo {
-        public int clientId;
+        public int accountId;
         public string userName = string.Empty;
         public string unitProfileName = string.Empty;
         public bool ready = false;
@@ -50,8 +53,8 @@ namespace AnyRPG {
         public LobbyGamePlayerInfo() {
         }
 
-        public LobbyGamePlayerInfo(int clientId, string userName) {
-            this.clientId = clientId;
+        public LobbyGamePlayerInfo(int accountId, string userName) {
+            this.accountId = accountId;
             this.userName = userName;
         }
     }

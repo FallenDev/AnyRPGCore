@@ -260,7 +260,7 @@ namespace AnyRPG {
                 overrideSpawnLocation = true,
                 spawnLocation = playerManager.ActiveUnitController.transform.position
             };
-            levelManager.AddSpawnRequest(networkManagerClient.ClientId, loadSceneRequest);
+            levelManager.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             playerManager.DespawnPlayerUnit();
             playerManager.PlayerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
             playerManager.SpawnPlayerUnit();

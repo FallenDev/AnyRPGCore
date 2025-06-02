@@ -27,7 +27,7 @@ namespace AnyRPG {
             playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
-        public virtual void ExecuteCommand(string commandParameters, int clientId) {
+        public virtual void ExecuteCommand(string commandParameters, int accountId) {
             //Debug.Log("ChatCommand.ExecuteCommand(): Executing command " + ResourceName + " with parameters (" + commandParameters + ")");
         }
 

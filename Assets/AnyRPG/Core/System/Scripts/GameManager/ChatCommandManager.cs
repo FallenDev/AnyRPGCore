@@ -31,7 +31,7 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
         }
 
-        public void ParseChatCommand(string commandText, int clientId) {
+        public void ParseChatCommand(string commandText, int accountId) {
 
             if (commandText == string.Empty) {
                 Debug.Log("Empty Chat Message");
@@ -55,7 +55,7 @@ namespace AnyRPG {
             }
 
             if (commandDictionary.ContainsKey(chatCommandString)) {
-                commandDictionary[chatCommandString].ExecuteCommand(commandParameters, clientId);
+                commandDictionary[chatCommandString].ExecuteCommand(commandParameters, accountId);
             }/* else {
                 logManager.RequestChatMessageClient("Unknown command : " + chatCommandString);
             }*/

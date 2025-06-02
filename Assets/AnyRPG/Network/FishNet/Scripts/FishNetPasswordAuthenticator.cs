@@ -100,14 +100,14 @@ namespace AnyRPG
             }
 
             if (pb.ClientVersion != systemGameManager.SystemConfigurationManager.ClientVersion) {
-                HandleAuthenticationResult(conn.ClientId, false, false);
+                HandleAuthenticationResult(conn.ClientId, -1, false, false);
                 return;
             }
 
             systemGameManager.NetworkManagerServer.GetLoginToken(conn.ClientId, pb.Username, pb.Password);
         }
 
-        public void HandleAuthenticationResult(int clientId, bool clientPassed, bool authenticationPassed) {
+        public void HandleAuthenticationResult(int clientId, int accountId, bool clientPassed, bool authenticationPassed) {
             //Debug.Log($"FishNetPasswordAuthenticator.HandleAuthenticationResult({clientId}, {authenticationPassed})");
 
             if (base.NetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
@@ -116,7 +116,7 @@ namespace AnyRPG
                 return;
             }
             
-            SendAuthenticationResponse(base.NetworkManager.ServerManager.Clients[clientId], clientPassed, authenticationPassed);
+            SendAuthenticationResponse(base.NetworkManager.ServerManager.Clients[clientId], accountId, clientPassed, authenticationPassed);
             /* Invoke result. This is handled internally to complete the connection or kick client.
              * It's important to call this after sending the broadcast so that the broadcast
              * makes it out to the client before the kick. */
@@ -143,19 +143,20 @@ namespace AnyRPG
                 return;
             }
 
-            systemGameManager.NetworkManagerClient.ProcessLoginSuccess();
+            systemGameManager.NetworkManagerClient.ProcessLoginSuccess(rb.AccountId);
         }
 
         /// <summary>
         /// Sends an authentication result to a connection.
         /// </summary>
-        private void SendAuthenticationResponse(NetworkConnection conn, bool clientPassed, bool authenticated) {
+        private void SendAuthenticationResponse(NetworkConnection conn, int accountId, bool clientPassed, bool authenticated) {
             //Debug.Log($"FishNetPasswordAuthenticator.SendAuthenticationResponse({authenticated})");
 
             /* Tell client if they authenticated or not. This is
             * entirely optional but does demonstrate that you can send
             * broadcasts to client on pass or fail. */
             ResponseBroadcast rb = new ResponseBroadcast() {
+                AccountId = accountId,
                 AuthenticationPassed = authenticated,
                 ClientPassed = clientPassed,
                 RequiredClientVersion = systemGameManager.SystemConfigurationManager.ClientVersion

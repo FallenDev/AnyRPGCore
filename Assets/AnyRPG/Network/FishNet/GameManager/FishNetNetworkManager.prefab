@@ -87,7 +87,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneProcessor: {fileID: 0}
   _lightProbeUpdating: 0
-  _moveClientHostObjects: 1
+  _moveClientObjects: 1
   _setActiveScene: 1
 --- !u!114 &5702170212700110633
 MonoBehaviour:

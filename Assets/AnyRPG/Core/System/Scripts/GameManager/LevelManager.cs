@@ -137,26 +137,26 @@ namespace AnyRPG {
             return activeSceneNode;
         }
 
-        public void AddSpawnRequest(int clientId, LoadSceneRequest loadSceneRequest) {
-            if (spawnRequests.ContainsKey(clientId)) {
-                spawnRequests[clientId] = loadSceneRequest;
+        public void AddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest) {
+            if (spawnRequests.ContainsKey(accountId)) {
+                spawnRequests[accountId] = loadSceneRequest;
             } else {
-                spawnRequests.Add(clientId, loadSceneRequest);
+                spawnRequests.Add(accountId, loadSceneRequest);
             }
         }
 
-        public void RemoveSpawnRequest(int clientId) {
-            spawnRequests.Remove(clientId);
+        public void RemoveSpawnRequest(int accountId) {
+            spawnRequests.Remove(accountId);
         }
 
 
-        public LoadSceneRequest GetLoadSceneSettings(int clientId) {
+        public LoadSceneRequest GetLoadSceneSettings(int accountId) {
             //Debug.Log("LevelManager.GetSpawnLocation(): scene is: " + SceneManager.GetActiveScene().name);
             LoadSceneRequest inputLoadSceneRequest = null;
             LoadSceneRequest outputLoadSceneRequest = new LoadSceneRequest();
 
-            if (spawnRequests.ContainsKey(clientId)) {
-                inputLoadSceneRequest = spawnRequests[clientId];
+            if (spawnRequests.ContainsKey(accountId)) {
+                inputLoadSceneRequest = spawnRequests[accountId];
             } else {
                 inputLoadSceneRequest = new LoadSceneRequest();
             }
@@ -379,7 +379,7 @@ namespace AnyRPG {
                     overrideSpawnLocation = true,
                     spawnLocation = playerManager.ActiveUnitController.transform.position
                 };
-                AddSpawnRequest(networkManagerClient.ClientId, loadSceneRequest);
+                AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             }
             returnSceneName = activeSceneNode.ResourceName;
             uIManager.CutSceneBarController.AssignCutScene(cutscene);

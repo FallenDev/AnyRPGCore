@@ -233,7 +233,7 @@ namespace AnyRPG {
 
         public List<PersistentObjectSaveData> PersistentObjects {
             get {
-                return saveManager.GetSceneNodeSaveData(this).persistentObjects;
+                return saveManager.GetPersistentObjects(this);
             }
         }
         public List<EnvironmentStateProfile> EnvironmentStates { get => environmentStates; set => environmentStates = value; }
@@ -243,14 +243,7 @@ namespace AnyRPG {
         public AudioProfile MovementHitProfile { get => movementHitProfile; set => movementHitProfile = value; }
         public string SceneFile { get => sceneFile; set => sceneFile = value; }
 
-        public bool Visited() {
-            return saveManager.GetSceneNodeSaveData(this).visited;
-        }
-        public void SetVisited(bool value) {
-            SceneNodeSaveData saveData = saveManager.GetSceneNodeSaveData(this);
-            saveData.visited = value;
-            saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
-        }
+        
 
         public bool AllowMount { get => allowMount; set => allowMount = value; }
         public string BackgroundMusicProfileName { set => backgroundMusicProfile = value; }
@@ -286,31 +279,15 @@ namespace AnyRPG {
 
         public void SavePersistentObject(string UUID, PersistentObjectSaveData persistentObjectSaveData) {
             //Debug.Log(DisplayName + ".SceneNode.SavePersistentObject(" + UUID + ")");
-            SceneNodeSaveData saveData = saveManager.GetSceneNodeSaveData(this);
-            foreach (PersistentObjectSaveData _persistentObjectSaveData in saveData.persistentObjects) {
-                if (_persistentObjectSaveData.UUID == UUID) {
-                    saveData.persistentObjects.Remove(_persistentObjectSaveData);
-                    saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
-                    break;
-                }
-            }
-            saveData.persistentObjects.Add(persistentObjectSaveData);
-            saveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
+            saveManager.SavePersistentObject(UUID, persistentObjectSaveData, this);
         }
 
         public PersistentObjectSaveData GetPersistentObject(string UUID) {
-            foreach (PersistentObjectSaveData _persistentObjectSaveData in saveManager.GetSceneNodeSaveData(this).persistentObjects) {
-                if (_persistentObjectSaveData.UUID == UUID) {
-                    return _persistentObjectSaveData;
-                }
-            }
-            return new PersistentObjectSaveData();
+            return saveManager.GetPersistentObject(UUID, this);
         }
 
         public void Visit(UnitController sourceUnitController) {
-            if (Visited() == false) {
-                SetVisited(true);
-            }
+            sourceUnitController.CharacterSaveManager.VisitSceneNode(this);
             OnVisitZone(sourceUnitController);
         }
 

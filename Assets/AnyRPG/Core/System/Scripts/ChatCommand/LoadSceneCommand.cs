@@ -30,12 +30,12 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override void ExecuteCommand(string commandParameters, int clientId) {
-            Debug.Log($"{resourceName}.LoadSceneCommand.ExecuteCommand({commandParameters}, {clientId})");
+        public override void ExecuteCommand(string commandParameters, int accountId) {
+            Debug.Log($"{resourceName}.LoadSceneCommand.ExecuteCommand({commandParameters}, {accountId})");
 
             // load a fixed scene
             if (fixedScene == true) {
-                LoadScene(sceneName, clientId);
+                LoadScene(sceneName, accountId);
                 return;
             }
 
@@ -45,27 +45,13 @@ namespace AnyRPG {
             }
 
             // load a scene from parameters
-            LoadScene(commandParameters, clientId);
+            LoadScene(commandParameters, accountId);
         }
 
-        private void LoadScene(string sceneName, int clientId) {
-            Debug.Log($"{resourceName}.LoadSceneCommand.LoadScene({sceneName}, {clientId})");
+        private void LoadScene(string sceneName, int accountId) {
+            Debug.Log($"{resourceName}.LoadSceneCommand.LoadScene({sceneName}, {accountId})");
 
-            playerManagerServer.LoadScene(sceneName, clientId);
-        }
-
-        public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
-            base.SetupScriptableObjects(systemGameManager);
-
-            /*
-            // check is disabled because you can load scenes directly by name without a scene node
-            if (fixedScene == true && sceneName != null && sceneName != string.Empty) {
-                SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(sceneName);
-                if (sceneNode == null) {
-                    Debug.LogError("LoadSceneCommand.SetupScriptableObjects(): Could not find scene node for : " + sceneName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
-                }
-            }
-            */
+            playerManagerServer.LoadScene(sceneName, accountId);
         }
 
     }

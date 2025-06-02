@@ -13,7 +13,7 @@ namespace AnyRPG {
         [SerializeField]
         private HighlightButton kickButton = null;
 
-        private int clientId;
+        private int accountId;
 
         // game manager references
         NetworkManagerServer networkManagerServer = null;
@@ -29,15 +29,15 @@ namespace AnyRPG {
             kickButton.Configure(systemGameManager);
         }
 
-        public void SetClientId(int clientId, string userName) {
-            this.clientId = clientId;
+        public void SetAccountId(int accountId, string userName) {
+            this.accountId = accountId;
             playerNameText.text = userName;
             //playerInfoText.text = ipAddress;
 
         }
 
         public void KickPlayer() {
-            networkManagerServer.KickPlayer(clientId);
+            networkManagerServer.KickPlayer(accountId);
         }
 
 

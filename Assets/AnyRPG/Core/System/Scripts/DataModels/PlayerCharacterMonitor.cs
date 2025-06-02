@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 namespace AnyRPG {
     public class PlayerCharacterMonitor : ConfiguredClass {
 
-        public int clientId;
+        public int accountId;
         public PlayerCharacterSaveData playerCharacterSaveData;
         public UnitController unitController;
         public bool saveDataDirty;
@@ -14,20 +15,26 @@ namespace AnyRPG {
         private SaveManager saveManager = null;
         private NetworkManagerServer networkManagerServer = null;
 
-        public PlayerCharacterMonitor(SystemGameManager systemGameManager, int clientId, PlayerCharacterSaveData playerCharacterSaveData, UnitController unitController) {
+        public PlayerCharacterMonitor(SystemGameManager systemGameManager, int accountId, PlayerCharacterSaveData playerCharacterSaveData, UnitController unitController) {
             Configure(systemGameManager);
 
-            this.clientId = clientId;
+            this.accountId = accountId;
             this.playerCharacterSaveData = playerCharacterSaveData;
             this.unitController = unitController;
             saveDataDirty = false;
-            unitController.OnCameraTargetReady += HandleCameraTargetReady;
+            //unitController.OnCameraTargetReady += HandleCameraTargetReady;
         }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             saveManager = systemGameManager.SaveManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+        }
+
+        public void Despawn() {
+            //Debug.Log("PlayerCharacterMonitor.Despawn() " + playerCharacterSaveData.PlayerCharacterId);
+            unitController.CharacterSaveManager.SaveGameData();
+            unitController = null;
         }
 
         public void SavePlayerLocation() {
@@ -37,7 +44,7 @@ namespace AnyRPG {
                 || unitController.transform.forward.x != playerCharacterSaveData.SaveData.PlayerRotationX
                 || unitController.transform.forward.y != playerCharacterSaveData.SaveData.PlayerRotationY
                 || unitController.transform.forward.z != playerCharacterSaveData.SaveData.PlayerRotationZ) {
-                saveManager.SavePlayerLocation(playerCharacterSaveData.SaveData, unitController);
+                unitController.CharacterSaveManager.SavePlayerLocation();
                 saveDataDirty = true;
             }
         }
@@ -61,9 +68,11 @@ namespace AnyRPG {
 
         public void StopMonitoring() {
             unitController.OnCameraTargetReady -= HandleCameraTargetReady;
-
         }
 
+        public void SetUnitController(UnitController unitController) {
+            this.unitController = unitController;
+        }
     }
 }
 

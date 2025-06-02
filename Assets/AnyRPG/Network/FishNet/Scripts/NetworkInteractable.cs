@@ -13,6 +13,8 @@ namespace AnyRPG {
 
         private Interactable interactable = null;
 
+        private bool eventRegistrationComplete = false;
+
         // game manager references
         protected SystemGameManager systemGameManager = null;
         protected SystemDataFactory systemDataFactory = null;
@@ -87,12 +89,17 @@ namespace AnyRPG {
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
-            UnsubscribeFromServerInteractableEvents();
+            //UnsubscribeFromServerInteractableEvents();
             //systemGameManager.NetworkManagerServer.ProcessStopServer(unitController);
         }
 
         public void SubscribeToServerInteractableEvents() {
             //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
+
+            if (eventRegistrationComplete == true) {
+                //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): already registered");
+                return;
+            }
 
             if (interactable == null) {
                 Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): interactable is null");
@@ -103,15 +110,29 @@ namespace AnyRPG {
             //interactable.InteractableEventController.OnAnimatedObjectChooseMovement += HandleAnimatedObjectChooseMovementServer;
             interactable.OnInteractionWithOptionStarted += HandleInteractionWithOptionStarted;
             interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
+            interactable.OnInteractableDisable += HandleInteractableDisableServer;
+
+            eventRegistrationComplete = true;
+        }
+
+        public void HandleInteractableDisableServer() {
+            UnsubscribeFromServerInteractableEvents();
         }
 
         public void UnsubscribeFromServerInteractableEvents() {
             if (interactable == null) {
                 return;
             }
+            if (eventRegistrationComplete == false) {
+                //Debug.Log($"{gameObject.name}.NetworkInteractable.UnsubscribeFromServerInteractableEvents(): not registered");
+                return;
+            }
             //interactable.InteractableEventController.OnAnimatedObjectChooseMovement -= HandleAnimatedObjectChooseMovementServer;
             interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
             interactable.InteractableEventController.OnPlayDialogNode -= HandlePlayDialogNode;
+            interactable.OnInteractableDisable -= HandleInteractableDisableServer;
+
+            eventRegistrationComplete = false;
         }
 
         public void SubscribeToClientInteractableEvents() {

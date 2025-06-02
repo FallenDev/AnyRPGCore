@@ -73,9 +73,9 @@ namespace AnyRPG {
             return GetVendorCollections(0);
         }
 
-        public List<VendorCollection> GetVendorCollections(int clientId) {
+        public List<VendorCollection> GetVendorCollections(int accountId) {
             List<VendorCollection> returnList = new List<VendorCollection>();
-            returnList.Add(buyBackCollection[clientId]);
+            returnList.Add(buyBackCollection[accountId]);
             returnList.AddRange(Props.VendorCollections);
             return returnList;
         }
@@ -85,11 +85,11 @@ namespace AnyRPG {
             newVendorItem.Quantity = 1;
             newVendorItem.InstantiatedItem = newInstantiatedItem;
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController) == true) {
-                int clientId = playerManagerServer.ActivePlayerLookup[sourceUnitController];
-                if (buyBackCollection.ContainsKey(clientId) == false) {
-                    buyBackCollection.Add(clientId, ScriptableObject.CreateInstance(typeof(VendorCollection)) as VendorCollection);
+                int accountId = playerManagerServer.ActivePlayerLookup[sourceUnitController];
+                if (buyBackCollection.ContainsKey(accountId) == false) {
+                    buyBackCollection.Add(accountId, ScriptableObject.CreateInstance(typeof(VendorCollection)) as VendorCollection);
                 }
-                buyBackCollection[clientId].VendorItems.Add(newVendorItem);
+                buyBackCollection[accountId].VendorItems.Add(newVendorItem);
                 interactable.InteractableEventController.NotifyOnAddToBuyBackCollection(sourceUnitController, newInstantiatedItem);
                 if (networkManagerServer.ServerModeActive == true) {
                     networkManagerServer.AdvertiseAddToBuyBackCollection(sourceUnitController, interactable, componentIndex, newInstantiatedItem);

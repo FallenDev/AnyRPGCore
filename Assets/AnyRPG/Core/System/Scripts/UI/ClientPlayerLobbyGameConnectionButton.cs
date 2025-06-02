@@ -14,7 +14,7 @@ namespace AnyRPG {
         [SerializeField]
         private TextMeshProUGUI readyText = null;
 
-        private int clientId;
+        private int accountId;
 
         // game manager references
         NetworkManagerServer networkManagerServer = null;
@@ -27,8 +27,8 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
-        public void SetClientId(int clientId, string userName, string unitProfileName) {
-            this.clientId = clientId;
+        public void SetClientId(int accountId, string userName, string unitProfileName) {
+            this.accountId = accountId;
             playerNameText.text = userName;
             unitProfileNameText.text = unitProfileName;
             SetReadyStatus(false);

@@ -21,12 +21,12 @@ namespace AnyRPG {
         private int experienceAmount = 0;
 
 
-        public override void ExecuteCommand(string commandParameters, int clientId) {
+        public override void ExecuteCommand(string commandParameters, int accountId) {
             //Debug.Log("GainCurrencyCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
 
             // add a fixed experience amount
             if (fixedExperience == true) {
-                AddExperience(experienceAmount, clientId);
+                AddExperience(experienceAmount, accountId);
                 return;
             }
 
@@ -40,15 +40,15 @@ namespace AnyRPG {
             int i = 0;
             bool result = int.TryParse(commandParameters, out i);
             if (result == true) {
-                AddExperience(i, clientId);
+                AddExperience(i, accountId);
             }
 
         }
 
-        private void AddExperience(int amount, int clientId) {
+        private void AddExperience(int amount, int accountId) {
             //Debug.Log("GainCurrencyCommand.AddCurrency(" + currency.DisplayName + ", " + amount + ")");
 
-            playerManagerServer.GainXP(amount, clientId);
+            playerManagerServer.GainXP(amount, accountId);
         }
 
     }

@@ -9,8 +9,10 @@ namespace AnyRPG {
         public event System.Action OnTakeLoot = delegate { };
         public event Action OnAvailableLootAdded = delegate { };
 
-        // clientId, LootDrop
-        // a list that is reset every time the loot window opens or closes to give the proper list depending on what was looted
+        /// <summary>
+        /// accountId, LootDrop
+        /// a list that is reset every time the loot window opens or closes to give the proper list depending on what was looted
+        /// </summary>
         private Dictionary<int, List<LootDrop>> availableDroppedLoot = new Dictionary<int, List<LootDrop>>();
 
         // this list is solely for the purpose of tracking dropped loot to ensure that unique items cannot be dropped twice
@@ -61,8 +63,8 @@ namespace AnyRPG {
             }
         }
 
-        public void AddAvailableLoot(int clientId, List<int> lootDropIds) {
-            //Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {lootDropIds.Count})");
+        public void AddAvailableLoot(int accountId, List<int> lootDropIds) {
+            //Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {lootDropIds.Count})");
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {
@@ -70,21 +72,21 @@ namespace AnyRPG {
                     lootDrops.Add(lootDropIndex[lootDropId]);
                 }
             }
-            AddAvailableLoot(clientId, lootDrops);
+            AddAvailableLoot(accountId, lootDrops);
         }
 
-        public void AddAvailableLoot(int clientId, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({clientId}, count: {items.Count})");
+        public void AddAvailableLoot(int accountId, List<LootDrop> items) {
+            Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {items.Count})");
 
-            if (availableDroppedLoot.ContainsKey(clientId)) {
-                availableDroppedLoot[clientId] = items;
+            if (availableDroppedLoot.ContainsKey(accountId)) {
+                availableDroppedLoot[accountId] = items;
             } else {
-                availableDroppedLoot.Add(clientId, items);
+                availableDroppedLoot.Add(accountId, items);
             }
             
             // copy this data to the client
             if (networkManagerServer.ServerModeActive == true) {
-                networkManagerServer.AddAvailableDroppedLoot(clientId, items);
+                networkManagerServer.AddAvailableDroppedLoot(accountId, items);
             } else {
                 OnAvailableLootAdded();
             }
@@ -110,34 +112,34 @@ namespace AnyRPG {
             }
         }
 
-        public void TakeLoot(int clientId, int lootDropId) {
+        public void TakeLoot(int accountId, int lootDropId) {
             //Debug.Log("LootManager.TakeLoot()");
             if (lootDropIndex.ContainsKey(lootDropId) == false) {
                 return;
             }
             LootDrop lootDrop = lootDropIndex[lootDropId];
-            TakeLoot(clientId, lootDrop);
+            TakeLoot(accountId, lootDrop);
         }
 
-        public void TakeLoot(int clientId, LootDrop lootDrop) {
+        public void TakeLoot(int accountId, LootDrop lootDrop) {
             //Debug.Log("LootManager.TakeLoot()");
 
             RemoveLootTableStateIndex(lootDropId);
-            RemoveFromAvailableDroppedItems(clientId, lootDrop);
+            RemoveFromAvailableDroppedItems(accountId, lootDrop);
 
             if (networkManagerServer.ServerModeActive == true) {
-                networkManagerServer.AdvertiseTakeLoot(clientId, lootDrop.LootDropId);
+                networkManagerServer.AdvertiseTakeLoot(accountId, lootDrop.LootDropId);
             }
 
             SystemEventManager.TriggerEvent("OnTakeLoot", new EventParamProperties());
             OnTakeLoot();
         }
 
-        public void RemoveFromAvailableDroppedItems(int clientId, LootDrop lootDrop) {
+        public void RemoveFromAvailableDroppedItems(int accountId, LootDrop lootDrop) {
             //Debug.Log("LootManager.RemoveFromDroppedItems()");
 
-            if (availableDroppedLoot.ContainsKey(clientId) && availableDroppedLoot[clientId].Contains(lootDrop)) {
-                availableDroppedLoot[clientId].Remove(lootDrop);
+            if (availableDroppedLoot.ContainsKey(accountId) && availableDroppedLoot[accountId].Contains(lootDrop)) {
+                availableDroppedLoot[accountId].Remove(lootDrop);
             }
         }
 
@@ -149,18 +151,18 @@ namespace AnyRPG {
             }
         }
 
-        public void TakeAllLootInternal(int clientId, UnitController sourceUnitController) {
+        public void TakeAllLootInternal(int accountId, UnitController sourceUnitController) {
             //Debug.Log("LootManager.TakeAllLoot()");
 
             // added emptyslotcount to prevent game from freezup when no bag space left and takeall button pressed
-            int maximumLoopCount = availableDroppedLoot[clientId].Count;
+            int maximumLoopCount = availableDroppedLoot[accountId].Count;
             int currentLoopCount = 0;
-            while (availableDroppedLoot[clientId].Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() > 0 && currentLoopCount < maximumLoopCount) {
-                availableDroppedLoot[clientId][0].TakeLoot(sourceUnitController);
+            while (availableDroppedLoot[accountId].Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() > 0 && currentLoopCount < maximumLoopCount) {
+                availableDroppedLoot[accountId][0].TakeLoot(sourceUnitController);
                 currentLoopCount++;
             }
 
-            if (availableDroppedLoot[clientId].Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
+            if (availableDroppedLoot[accountId].Count > 0 && sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
                 if (sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
                     //Debug.Log("No space left in inventory");
                 }

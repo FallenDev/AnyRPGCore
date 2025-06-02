@@ -21,6 +21,7 @@ namespace AnyRPG {
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
+            SceneManager.sceneUnloaded += HandleSceneUnloaded;
         }
 
         public override void SetGameManagerReferences() {
@@ -29,6 +30,24 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             cameraManager = systemGameManager.CameraManager;
+        }
+
+        public void HandleSceneUnloaded(Scene scene) {
+            Debug.Log($"LevelManagerServer.HandleSceneUnloaded({scene.name})");
+
+            // if the scene is not in the loaded scenes, then we don't need to do anything
+            if (loadedScenes.ContainsKey(scene.name) == false) {
+                //Debug.LogWarning($"LevelManagerServer.HandleSceneUnloaded() - scene {scene.name} not found in loaded scenes");
+                return;
+            }
+            // remove the scene from the loaded scenes
+            RemoveLoadedScene(scene.handle, scene.name);
+            // if there are no more handles for this scene, then remove it from the dictionary
+            if (loadedScenes[scene.name].Count == 0) {
+                loadedScenes.Remove(scene.name);
+            }
+
+            networkManagerServer.HandleSceneUnloadEnd(scene.handle, scene.name);
         }
 
         public void AddLoadedScene(Scene scene) {

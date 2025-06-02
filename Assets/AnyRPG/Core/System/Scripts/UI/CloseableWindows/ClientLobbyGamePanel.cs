@@ -69,6 +69,9 @@ namespace AnyRPG {
 
         private UnitProfile unitProfile = null;
 
+        /// <summary>
+        /// accountId, ClientPlayerLobbyGameConnectionButton
+        /// </summary>
         private Dictionary<int, ClientPlayerLobbyGameConnectionButton> playerButtons = new Dictionary<int, ClientPlayerLobbyGameConnectionButton>();
 
         // game manager references
@@ -144,23 +147,23 @@ namespace AnyRPG {
             characterDescriptionText.text = originalCharacterDescriptionText;
         }
 
-        public void HandleJoinLobbyGame(int gameId, int clientId, string userName) {
+        public void HandleJoinLobbyGame(int gameId, int accountId, string userName) {
             if (gameId != networkManagerClient.LobbyGame.gameId) {
                 return;
             }
-            AddPlayerToList(clientId, userName, string.Empty);
+            AddPlayerToList(accountId, userName, string.Empty);
         }
 
-        public void HandleLeaveLobbyGame(int clientId, int gameId) {
+        public void HandleLeaveLobbyGame(int accountId, int gameId) {
             if (gameId != networkManagerClient.LobbyGame.gameId) {
                 return;
             }
-            RemovePlayerFromList(clientId);
+            RemovePlayerFromList(accountId);
         }
 
 
-        public void HandleLobbyLogout(int clientId) {
-            RemovePlayerFromList(clientId);
+        public void HandleLobbyLogout(int accountId) {
+            RemovePlayerFromList(accountId);
         }
 
         public void HandleCancelLobbyGame(int gameId) {
@@ -201,29 +204,33 @@ namespace AnyRPG {
             }
         }
 
-        public void AddPlayerToList(int clientId, string userName, string unitProfileName) {
-            //Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({clientId}, {userName})");
+        public void AddPlayerToList(int accountId, string userName, string unitProfileName) {
+            Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({accountId}, {userName}, {unitProfileName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton = go.GetComponent<ClientPlayerLobbyGameConnectionButton>();
             clientPlayerLobbyGameConnectionButton.Configure(systemGameManager);
-            if (networkManagerClient.LobbyGame.leaderClientId == clientId) {
-                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, $"{userName} (leader)", unitProfileName);
+            if (networkManagerClient.LobbyGame.leaderAccountId == accountId) {
+                clientPlayerLobbyGameConnectionButton.SetClientId(accountId, $"{userName} (leader)", unitProfileName);
             } else {
-                clientPlayerLobbyGameConnectionButton.SetClientId(clientId, userName, unitProfileName);
+                clientPlayerLobbyGameConnectionButton.SetClientId(accountId, userName, unitProfileName);
             }
             //uINavigationControllers[1].AddActiveButton(clientPlayerLobbyGameConnectionButton.joinbu);
-            playerButtons.Add(clientId, clientPlayerLobbyGameConnectionButton);
+            playerButtons.Add(accountId, clientPlayerLobbyGameConnectionButton);
+
+            if (accountId == networkManagerClient.AccountId) {
+                HandleChooseLobbyGameCharacter(networkManagerClient.LobbyGame.gameId, accountId, unitProfileName);
+            }
         }
 
-        public void RemovePlayerFromList(int clientId) {
-            Debug.Log($"ClientLobbyPanelController.RemovePlayerFromList({clientId})");
+        public void RemovePlayerFromList(int accountId) {
+            Debug.Log($"ClientLobbyGamePanel.RemovePlayerFromList({accountId})");
 
-            if (playerButtons.ContainsKey(clientId)) {
+            if (playerButtons.ContainsKey(accountId)) {
                 //uINavigationControllers[1].ClearActiveButton(playerButtons[clientId].KickButton);
-                if (playerButtons[clientId].gameObject != null) {
-                    playerButtons[clientId].gameObject.transform.SetParent(null);
-                    objectPooler.ReturnObjectToPool(playerButtons[clientId].gameObject);
+                if (playerButtons[accountId].gameObject != null) {
+                    playerButtons[accountId].gameObject.transform.SetParent(null);
+                    objectPooler.ReturnObjectToPool(playerButtons[accountId].gameObject);
                 }
             }
         }
@@ -241,9 +248,10 @@ namespace AnyRPG {
             //uINavigationControllers[1].ClearActiveButtons();
         }
 
-        public void HandleChooseLobbyGameCharacter(int gameId, int clientId, string unitProfileName) {
-            
-            if (clientId == networkManagerClient.ClientId) {
+        public void HandleChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            Debug.Log($"ClientLobbyGamePanel.HandleChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+
+            if (accountId == networkManagerClient.AccountId) {
                 unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
                 if (unitProfile != null) {
                     characterImage.sprite = unitProfile.Icon;
@@ -256,17 +264,17 @@ namespace AnyRPG {
                     characterImage.color = Color.black;
                 }
             }
-            playerButtons[clientId].SetUnitProfileName(unitProfileName);
+            playerButtons[accountId].SetUnitProfileName(unitProfileName);
         }
 
-        public void HandleSetLobbyGameReadyStatus(int gameId, int clientId, bool ready) {
-            //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
+        public void HandleSetLobbyGameReadyStatus(int gameId, int accountId, bool ready) {
+            //Debug.Log($"ClientLobbyGamePanel.HandleSetLobbyGameReadyStatus({gameId}, {clientId}, {ready})");
 
             if (networkManagerClient.LobbyGame.gameId != gameId) {
                 return;
             }
 
-            if (clientId == networkManagerClient.ClientId) {
+            if (accountId == networkManagerClient.AccountId) {
                 if (ready) {
                     readyButtonText.text = "Not Ready";
                     readyButton.Button.interactable = true;
@@ -278,9 +286,9 @@ namespace AnyRPG {
                 }
             }
             
-            playerButtons[clientId].SetReadyStatus(ready);
+            playerButtons[accountId].SetReadyStatus(ready);
 
-            if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
+            if (networkManagerClient.AccountId == networkManagerClient.LobbyGame.leaderAccountId) {
                 // check if the start button can be made interactable
                 if (AllPlayersReady()) {
                     startGameButton.Button.interactable = true;
@@ -300,14 +308,13 @@ namespace AnyRPG {
             return true;
         }
 
-
         public void UpdateNavigationButtons() {
 
             startGameButtonText.text = "Start Game";
             readyButtonText.text = "Ready";
 
             // hide the cancel game button for anyone other than the leader
-            if (networkManagerClient.ClientId == networkManagerClient.LobbyGame.leaderClientId) {
+            if (networkManagerClient.AccountId == networkManagerClient.LobbyGame.leaderAccountId) {
                 cancelGameButton.gameObject.SetActive(true);
                 startGameButton.gameObject.SetActive(true);
                 startGameButton.Button.interactable = false;
@@ -330,8 +337,8 @@ namespace AnyRPG {
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
             UpdateUIELements();
-            PopulatePlayerList(networkManagerClient.LobbyGame.PlayerList);
             UpdateNavigationButtons();
+            PopulatePlayerList(networkManagerClient.LobbyGame.PlayerList);
             networkManagerClient.OnSendLobbyGameChatMessage += HandleSendLobbyGameChatMessage;
             networkManagerClient.OnJoinLobbyGame += HandleJoinLobbyGame;
             networkManagerClient.OnLeaveLobbyGame += HandleLeaveLobbyGame;

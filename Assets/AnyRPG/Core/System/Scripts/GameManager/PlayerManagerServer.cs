@@ -6,11 +6,17 @@ using UnityEngine;
 namespace AnyRPG {
     public class PlayerManagerServer : ConfiguredMonoBehaviour {
 
-        // clientId, UnitController
+        /// <summary>
+        /// accountId, UnitController
+        /// </summary>
         private Dictionary<int, UnitController> activePlayers = new Dictionary<int, UnitController>();
-        // gameobject, clientId
+
+        // gameobject, accountId
         private Dictionary<GameObject, int> activePlayerGameObjects = new Dictionary<GameObject, int>();
-        // unitController, clientId
+
+        /// <summary>
+        /// unitController, accountId
+        /// </summary>
         private Dictionary<UnitController, int> activePlayerLookup = new Dictionary<UnitController, int>();
 
         protected bool eventSubscriptionsInitialized = false;
@@ -82,17 +88,13 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void AddActivePlayer(int clientId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.AddActivePlayer({clientId}, {unitController.gameObject.name})");
+        public void AddActivePlayer(int accountId, UnitController unitController) {
+            Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
 
-            activePlayers.Add(clientId, unitController);
-            activePlayerGameObjects.Add(unitController.gameObject, clientId);
-            activePlayerLookup.Add(unitController, clientId);
+            activePlayers.Add(accountId, unitController);
+            activePlayerGameObjects.Add(unitController.gameObject, accountId);
+            activePlayerLookup.Add(unitController, accountId);
 
-            SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(unitController.gameObject.scene.name);
-            if (sceneNode != null) {
-                sceneNode.Visit(unitController);
-            }
         }
 
         public void MonitorPlayer(UnitController unitController) {
@@ -101,16 +103,26 @@ namespace AnyRPG {
             }
             SubscribeToPlayerEvents(unitController);
             systemAchievementManager.AcceptAchievements(unitController);
-        }
 
-        public void RemoveActivePlayer(int clientId) {
-            if (ActivePlayers.ContainsKey(clientId) == false) {
+            if (levelManager.SceneDictionary.ContainsKey(unitController.gameObject.scene.name) == false) {
                 return;
             }
-            UnsubscribeFromPlayerEvents(activePlayers[clientId]);
-            activePlayerGameObjects.Remove(activePlayers[clientId].gameObject);
-            activePlayerLookup.Remove(activePlayers[clientId]);
-            activePlayers.Remove(clientId);
+            SceneNode sceneNode = levelManager.SceneDictionary[unitController.gameObject.scene.name];
+            if (sceneNode != null) {
+                sceneNode.Visit(unitController);
+            }
+        }
+
+        public void RemoveActivePlayer(int accountId) {
+            Debug.Log($"PlayerManagerServer.RemoveActivePlayer({accountId})");
+
+            if (ActivePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+            UnsubscribeFromPlayerEvents(activePlayers[accountId]);
+            activePlayerGameObjects.Remove(activePlayers[accountId].gameObject);
+            activePlayerLookup.Remove(activePlayers[accountId]);
+            activePlayers.Remove(accountId);
         }
 
         public void SubscribeToPlayerEvents(UnitController unitController) {
@@ -159,9 +171,9 @@ namespace AnyRPG {
             GainXP(unitController, (int)(LevelEquations.GetXPAmountForKill(unitController.CharacterStats.Level, killedUnitController, systemConfigurationManager) * creditPercent));
         }
 
-        public void GainXP(int amount, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == true) {
-                GainXP(activePlayers[clientId], amount);
+        public void GainXP(int amount, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == true) {
+                GainXP(activePlayers[accountId], amount);
             }
         }
 
@@ -169,49 +181,49 @@ namespace AnyRPG {
             unitController.CharacterStats.GainXP(amount);
         }
 
-        public void AddCurrency(Currency currency, int amount, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void AddCurrency(Currency currency, int amount, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].CharacterCurrencyManager.AddCurrency(currency, amount);
+            activePlayers[accountId].CharacterCurrencyManager.AddCurrency(currency, amount);
 
         }
 
-        public void AddItem(string itemName, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void AddItem(string itemName, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
 
-            InstantiatedItem tmpItem = activePlayers[clientId].CharacterInventoryManager.GetNewInstantiatedItem(itemName);
+            InstantiatedItem tmpItem = activePlayers[accountId].CharacterInventoryManager.GetNewInstantiatedItem(itemName);
             if (tmpItem != null) {
-                activePlayers[clientId].CharacterInventoryManager.AddItem(tmpItem, false);
+                activePlayers[accountId].CharacterInventoryManager.AddItem(tmpItem, false);
             }
         }
 
-        public void BeginAction(AnimatedAction animatedAction, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void BeginAction(AnimatedAction animatedAction, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].UnitActionManager.BeginAction(animatedAction);
+            activePlayers[accountId].UnitActionManager.BeginAction(animatedAction);
 
         }
 
-        public void LearnAbility(string abilityName, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void LearnAbility(string abilityName, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
             Ability tmpAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (tmpAbility != null) {
-                activePlayers[clientId].CharacterAbilityManager.LearnAbility(tmpAbility.AbilityProperties);
+                activePlayers[accountId].CharacterAbilityManager.LearnAbility(tmpAbility.AbilityProperties);
             }
 
         }
 
-        public void SetLevel(int newLevel, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void SetLevel(int newLevel, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            CharacterStats characterStats = activePlayers[clientId].CharacterStats;
+            CharacterStats characterStats = activePlayers[accountId].CharacterStats;
             newLevel = Mathf.Clamp(newLevel, characterStats.Level, systemConfigurationManager.MaxLevel);
             if (newLevel > characterStats.Level) {
                 while (characterStats.Level < newLevel) {
@@ -228,16 +240,16 @@ namespace AnyRPG {
             }
         }
 
-        public void LoadScene(string sceneName, int clientId) {
-            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {clientId})");
+        public void LoadScene(string sceneName, int accountId) {
+            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {accountId})");
             
-            if (activePlayers.ContainsKey(clientId) == false) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
             if (systemGameManager.GameMode == GameMode.Local) {
                 levelManager.LoadLevel(sceneName);
             } else if (networkManagerServer.ServerModeActive) {
-                networkManagerServer.AdvertiseLoadScene(sceneName, clientId);
+                networkManagerServer.AdvertiseLoadScene(sceneName, accountId);
             }
         }
 
@@ -282,12 +294,14 @@ namespace AnyRPG {
             }
         }
 
-        public void DespawnPlayerUnit(int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void DespawnPlayerUnit(int accountId) {
+            Debug.Log($"PlayerManagerServer.DespawnPlayerUnit({accountId})");
+
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].Despawn(0, false, true);
-            RemoveActivePlayer(clientId);
+            activePlayers[accountId].Despawn(0, false, true);
+            RemoveActivePlayer(accountId);
         }
 
         public void AddSpawnRequest(UnitController unitController, LoadSceneRequest loadSceneRequest) {
@@ -300,47 +314,47 @@ namespace AnyRPG {
             }
         }
 
-        public void SetPlayerCharacterClass(CharacterClass characterClass, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void SetPlayerCharacterClass(CharacterClass characterClass, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].BaseCharacter.ChangeCharacterClass(characterClass);
+            activePlayers[accountId].BaseCharacter.ChangeCharacterClass(characterClass);
         }
 
-        public void SetPlayerCharacterSpecialization(ClassSpecialization classSpecialization, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void SetPlayerCharacterSpecialization(ClassSpecialization classSpecialization, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].BaseCharacter.ChangeClassSpecialization(classSpecialization);
+            activePlayers[accountId].BaseCharacter.ChangeClassSpecialization(classSpecialization);
         }
 
-        public void SetPlayerFaction(Faction faction, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void SetPlayerFaction(Faction faction, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].BaseCharacter.ChangeCharacterFaction(faction);
+            activePlayers[accountId].BaseCharacter.ChangeCharacterFaction(faction);
         }
 
 
-        public void LearnSkill(Skill skill, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void LearnSkill(Skill skill, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].CharacterSkillManager.LearnSkill(skill);
+            activePlayers[accountId].CharacterSkillManager.LearnSkill(skill);
         }
 
-        public void AcceptQuest(Quest quest, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void AcceptQuest(Quest quest, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            activePlayers[clientId].CharacterQuestLog.AcceptQuest(quest);
+            activePlayers[accountId].CharacterQuestLog.AcceptQuest(quest);
         }
 
-        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices, int clientId) {
-            if (activePlayers.ContainsKey(clientId) == false) {
+        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices, int accountId) {
+            if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            questGiverManager.CompleteQuestInternal(ActivePlayers[clientId], quest, questRewardChoices);
+            questGiverManager.CompleteQuestInternal(ActivePlayers[accountId], quest, questRewardChoices);
         }
     }
 

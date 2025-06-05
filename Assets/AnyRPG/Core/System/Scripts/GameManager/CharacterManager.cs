@@ -64,12 +64,12 @@ namespace AnyRPG {
             AddUnitSpawnRequest(characterRequestData.clientSpawnRequestId, characterRequestData);
         }
 
-        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData) {
             //Debug.Log($"CharacterManager.SpawnLobbyGamePlayer({gameId}, {position}, {forward})");
 
             SetupUnitSpawnRequest(characterRequestData);
 
-            networkManagerClient.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, SceneManager.GetActiveScene().name);
+            networkManagerClient.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, SceneManager.GetActiveScene().name);
 
         }
 

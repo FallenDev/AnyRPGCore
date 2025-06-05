@@ -21,6 +21,7 @@ namespace AnyRPG {
         // game manager references
         private SystemEventManager systemEventManager = null;
         private PlayerManager playerManager = null;
+        private PlayerManagerServer playerManagerServer = null;
         private MessageFeedManager messageFeedManager = null;
         private LevelManager levelManager = null;
         private AchievementLog achievementLog = null;
@@ -46,9 +47,9 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             systemEventManager = systemGameManager.SystemEventManager;
             playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
             levelManager = systemGameManager.LevelManager;
             achievementLog = systemGameManager.AchievementLog;
-            //inventoryManager = systemGameManager.InventoryManager;
             systemItemManager = systemGameManager.SystemItemManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
             systemAchievementManager = systemGameManager.SystemAchievementManager;
@@ -541,7 +542,7 @@ namespace AnyRPG {
 
             uIManager.loadGameWindow.CloseWindow();
 
-            LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
+            SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
             // configure location and rotation overrides
             if (playerCharacterSaveData.SaveData.OverrideLocation == true) {
                 loadSceneRequest.overrideSpawnLocation = true;
@@ -551,7 +552,7 @@ namespace AnyRPG {
                 loadSceneRequest.overrideSpawnDirection = true;
                 loadSceneRequest.spawnForwardDirection = playerRotation;
             }
-            levelManager.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
+            playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             //levelManager.LoadLevel(anyRPGSaveData.CurrentScene, playerLocation, playerRotation);
             // load the proper level now that everything should be setup
             levelManager.LoadLevel(playerCharacterSaveData.SaveData.CurrentScene);

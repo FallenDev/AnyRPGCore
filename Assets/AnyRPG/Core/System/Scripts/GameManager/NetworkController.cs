@@ -17,7 +17,7 @@ namespace AnyRPG {
         }
         public abstract void Logout();
         public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName);
-        public abstract void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName);
+        public abstract void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName);
         public abstract GameObject SpawnModelPrefab(int spawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();
@@ -77,7 +77,7 @@ namespace AnyRPG {
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneResourceName, int accountId);
         public abstract void ReturnObjectToPool(GameObject returnedObject);
-        public abstract void AdvertiseAddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest);
+        //public abstract void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
         public abstract GameObject SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId,GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void AdvertiseMessageFeedMessage(int accountId, string message);

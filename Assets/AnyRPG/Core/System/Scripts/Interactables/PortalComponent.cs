@@ -27,7 +27,7 @@ namespace AnyRPG {
             base.Interact(sourceUnitController, componentIndex, choiceIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
-            LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
+            SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
             if (Props.OverrideSpawnDirection == true) {
                 loadSceneRequest.overrideSpawnDirection = true;
                 loadSceneRequest.spawnForwardDirection = Props.SpawnForwardDirection;

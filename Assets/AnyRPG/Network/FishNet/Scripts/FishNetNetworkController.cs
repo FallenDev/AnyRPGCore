@@ -306,10 +306,10 @@ namespace AnyRPG {
             //return null;
         }
 
-        public override void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
+        public override void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName) {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.RequestSpawnLobbyGamePlayer(characterRequestData.clientSpawnRequestId, gameId, parentTransform, position, forward, sceneName);
+            clientConnector.RequestSpawnLobbyGamePlayer(characterRequestData.clientSpawnRequestId, gameId, sceneName);
             //return null;
         }
 
@@ -607,9 +607,11 @@ namespace AnyRPG {
         }
         */
 
-        public override void AdvertiseAddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest) {
+        /*
+        public override void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
             clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
         }
+        */
 
         /*
         public override void AdvertiseInteractWithClassChangeComponentServer(int accountId, Interactable interactable, int optionIndex) {

@@ -29,12 +29,9 @@ namespace AnyRPG {
 
         private TerrainDetector terrainDetector = null;
 
-        private string defaultSpawnLocationTag = "DefaultSpawnLocation";
 
         // dictionary of scene file names to scene nodes for quick lookup at runtime
         private Dictionary<string, SceneNode> sceneDictionary = new Dictionary<string, SceneNode>();
-
-        private Dictionary<int, LoadSceneRequest> spawnRequests = new Dictionary<int, LoadSceneRequest>();
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
@@ -42,6 +39,7 @@ namespace AnyRPG {
         private AudioManager audioManager = null;
         private CameraManager cameraManager = null;
         private PlayerManager playerManager = null;
+        private PlayerManagerServer playerManagerServer = null;
         private MapManager mapManager = null;
         private NetworkManagerClient networkManagerClient = null;
         private NetworkManagerServer networkManagerServer = null;
@@ -69,6 +67,7 @@ namespace AnyRPG {
             audioManager = systemGameManager.AudioManager;
             cameraManager = systemGameManager.CameraManager;
             playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
         }
@@ -137,57 +136,7 @@ namespace AnyRPG {
             return activeSceneNode;
         }
 
-        public void AddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest) {
-            if (spawnRequests.ContainsKey(accountId)) {
-                spawnRequests[accountId] = loadSceneRequest;
-            } else {
-                spawnRequests.Add(accountId, loadSceneRequest);
-            }
-        }
-
-        public void RemoveSpawnRequest(int accountId) {
-            spawnRequests.Remove(accountId);
-        }
-
-
-        public LoadSceneRequest GetLoadSceneSettings(int accountId) {
-            //Debug.Log("LevelManager.GetSpawnLocation(): scene is: " + SceneManager.GetActiveScene().name);
-            LoadSceneRequest inputLoadSceneRequest = null;
-            LoadSceneRequest outputLoadSceneRequest = new LoadSceneRequest();
-
-            if (spawnRequests.ContainsKey(accountId)) {
-                inputLoadSceneRequest = spawnRequests[accountId];
-            } else {
-                inputLoadSceneRequest = new LoadSceneRequest();
-            }
-
-            if (inputLoadSceneRequest.overrideSpawnLocation == true) {
-                //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
-                outputLoadSceneRequest.spawnLocation = inputLoadSceneRequest.spawnLocation;
-            } else {
-                GameObject spawnLocationMarker = null;
-                if (inputLoadSceneRequest.locationTag != string.Empty) {
-                    spawnLocationMarker = GameObject.FindWithTag(inputLoadSceneRequest.locationTag);
-                    if (spawnLocationMarker != null) {
-                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
-                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
-                    }
-                }
-                if (spawnLocationMarker == null) {
-                    spawnLocationMarker = GameObject.FindWithTag(defaultSpawnLocationTag);
-                    if (spawnLocationMarker != null) {
-                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
-                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
-                    }
-                }
-            }
-            
-            if (inputLoadSceneRequest.overrideSpawnDirection == true) {
-                outputLoadSceneRequest.spawnForwardDirection = inputLoadSceneRequest.spawnForwardDirection;
-            }
-
-            return outputLoadSceneRequest;
-        }
+       
 
         private void DetectNavMesh() {
             //Debug.Log("LevelManager.DetectNavMesh()");
@@ -373,13 +322,13 @@ namespace AnyRPG {
         public void LoadCutScene(Cutscene cutscene) {
             //Debug.Log("LevelManager.LoadCutScene(" + sceneName + ")");
             if (playerManager.ActiveUnitController != null) {
-                LoadSceneRequest loadSceneRequest = new LoadSceneRequest() {
+                SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest() {
                     overrideSpawnDirection = true,
                     spawnForwardDirection = playerManager.ActiveUnitController.transform.forward,
                     overrideSpawnLocation = true,
                     spawnLocation = playerManager.ActiveUnitController.transform.position
                 };
-                AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
+                playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             }
             returnSceneName = activeSceneNode.ResourceName;
             uIManager.CutSceneBarController.AssignCutScene(cutscene);

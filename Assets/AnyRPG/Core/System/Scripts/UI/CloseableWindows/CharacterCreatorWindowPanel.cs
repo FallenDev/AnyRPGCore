@@ -42,6 +42,7 @@ namespace AnyRPG {
         // game manager references
         protected UIManager uIManager = null;
         protected PlayerManager playerManager = null;
+        protected PlayerManagerServer playerManagerServer = null;
         protected CharacterCreatorManager characterCreatorManager = null;
         protected SaveManager saveManager = null;
         protected LevelManager levelManager = null;
@@ -74,6 +75,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             uIManager = systemGameManager.UIManager;
             playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
             characterCreatorManager = systemGameManager.CharacterCreatorManager;
             saveManager = systemGameManager.SaveManager;
             levelManager = systemGameManager.LevelManager;
@@ -254,13 +256,13 @@ namespace AnyRPG {
             }
 
             // Always despawn units if their appearance changes.
-            LoadSceneRequest loadSceneRequest = new LoadSceneRequest() {
+            SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest() {
                 overrideSpawnDirection = true,
                 spawnForwardDirection = playerManager.ActiveUnitController.transform.forward,
                 overrideSpawnLocation = true,
                 spawnLocation = playerManager.ActiveUnitController.transform.position
             };
-            levelManager.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
+            playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             playerManager.DespawnPlayerUnit();
             playerManager.PlayerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
             playerManager.SpawnPlayerUnit();

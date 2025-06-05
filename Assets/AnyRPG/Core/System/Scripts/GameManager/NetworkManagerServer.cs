@@ -198,13 +198,15 @@ namespace AnyRPG {
         }
 
         private void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
-            playerCharacterMonitor.SavePlayerLocation();
+            if (playerCharacterMonitor.unitController != null) {
+                playerCharacterMonitor.SavePlayerLocation();
+            }
             if (playerCharacterMonitor.saveDataDirty == true) {
-                if (loggedInAccounts.ContainsKey(playerCharacterMonitor.accountId) == false) {
-                    // can't do anything without a token
-                    return;
-                }
                 if (clientMode == NetworkClientMode.MMO) {
+                    if (loggedInAccounts.ContainsKey(playerCharacterMonitor.accountId) == false) {
+                        // can't do anything without a token
+                        return;
+                    }
                     gameServerClient.SavePlayerCharacter(
                         playerCharacterMonitor.accountId,
                         loggedInAccounts[playerCharacterMonitor.accountId].token,
@@ -261,6 +263,15 @@ namespace AnyRPG {
 
             if (correctPassword == true) {
                 if (loggedInAccounts.ContainsKey(accountId)) {
+                    if (playerManagerServer.ActivePlayers.ContainsKey(accountId)) {
+                        // if the player is already logged in, we need to add a spawn request to match the current position and direction of the player
+                        playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest() {
+                            overrideSpawnDirection = true,
+                            spawnForwardDirection = playerManagerServer.ActivePlayers[accountId].transform.forward,
+                            overrideSpawnLocation = true,
+                            spawnLocation = playerManagerServer.ActivePlayers[accountId].transform.position
+                        });
+                    }
                     // if the account is already logged in, kick the old client
                     KickPlayer(accountId);
                 }
@@ -587,12 +598,25 @@ namespace AnyRPG {
         }
 
         public void JoinLobbyGameInProgress(int gameId, int accountId) {
+            Debug.Log($"NetworkManagerServer.JoinLobbyGameInProgress({gameId}, {accountId})");
+
+            if (playerManagerServer.SpawnRequests.ContainsKey(accountId) == false) {
+                playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest());
+            } else {
+                // player already has a spawn request, so this is a rejoin.  Leave it alone because it contains the last correct position and direction
+            }
             networkController.AdvertiseJoinLobbyGameInProgress(gameId, accountId);
         }
 
         public void StartLobbyGame(int gameId) {
+            Debug.Log($"NetworkManagerServer.StartLobbyGame({gameId})");
+
             lobbyGames[gameId].inProgress = true;
             OnStartLobbyGame(gameId);
+            // create spawn requests for all players in the game
+            foreach (int accountId in lobbyGames[gameId].PlayerList.Keys) {
+                playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest());
+            }
             networkController.StartLobbyGame(gameId);
         }
 
@@ -704,9 +728,11 @@ namespace AnyRPG {
             interactionManager.InteractWithOptionServer(sourceUnitController, interactable, componentIndex, choiceIndex);
         }
 
-        public void AdvertiseAddSpawnRequest(int accountId, LoadSceneRequest loadSceneRequest) {
+        /*
+        public void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
             networkController.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
         }
+        */
 
         /*
         public void AdvertiseInteractWithClassChangeComponent(int accountId, Interactable interactable, int optionIndex) {
@@ -901,8 +927,8 @@ namespace AnyRPG {
             }
         }
 
-        public void RequestSpawnLobbyGamePlayer(int accountId, int gameId, int clientSpawnRequestId, UnitProfile unitProfile, Vector3 position, Vector3 forward, string sceneName) {
-            Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {clientSpawnRequestId}, {unitProfile.ResourceName}, {position}, {forward}, {sceneName})");
+        public void RequestSpawnLobbyGamePlayer(int accountId, int gameId, int clientSpawnRequestId, UnitProfile unitProfile, string sceneName) {
+            Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {clientSpawnRequestId}, {unitProfile.ResourceName}, {sceneName})");
 
             PlayerCharacterSaveData playerCharacterSaveData = GetPlayerCharacterSaveData(gameId, accountId, unitProfile);
 
@@ -930,12 +956,19 @@ namespace AnyRPG {
                     playerCharacterSaveData.SaveData.PlayerRotationZ);
                 */
             //} else {
-                position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
             //}
+
+            SpawnPlayerRequest spawnPlayerRequest = playerManagerServer.GetSpawnPlayerRequest(accountId);
+
+            Vector3 position = spawnPlayerRequest.spawnLocation;
+            if (spawnPlayerRequest.overrideSpawnLocation == false) {
+                // we were loading the default location, so randomize the spawn position a bit so players don't all spawn in the same place
+                position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
+            }
 
             AddPlayerMonitor(accountId, playerCharacterSaveData);
 
-            networkController.SpawnLobbyGamePlayer(accountId, clientSpawnRequestId, serverSpawnRequestId, characterRequestData, position, forward, sceneName);
+            networkController.SpawnLobbyGamePlayer(accountId, clientSpawnRequestId, serverSpawnRequestId, characterRequestData, position, spawnPlayerRequest.spawnForwardDirection, sceneName);
         }
 
 

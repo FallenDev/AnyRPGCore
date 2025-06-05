@@ -51,6 +51,7 @@ namespace AnyRPG {
         private void LoadScene(string sceneName, int accountId) {
             Debug.Log($"{resourceName}.LoadSceneCommand.LoadScene({sceneName}, {accountId})");
 
+            playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest());
             playerManagerServer.LoadScene(sceneName, accountId);
         }
 

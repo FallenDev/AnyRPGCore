@@ -129,7 +129,7 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RequestSpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName, NetworkConnection networkConnection = null) {
+        public void RequestSpawnLobbyGamePlayer(int clientSpawnRequestId, int gameId, string sceneName, NetworkConnection networkConnection = null) {
             //Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 return;
@@ -149,7 +149,7 @@ namespace AnyRPG {
                 Debug.LogWarning($"Could not find NetworkObject component on {unitProfile.UnitPrefabProps.NetworkUnitPrefab.name}");
                 return;
             }
-            networkManagerServer.RequestSpawnLobbyGamePlayer(accountId, gameId, clientSpawnRequestId, unitProfile, position, forward, sceneName);
+            networkManagerServer.RequestSpawnLobbyGamePlayer(accountId, gameId, clientSpawnRequestId, unitProfile, sceneName);
         }
 
         public void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
@@ -796,7 +796,8 @@ namespace AnyRPG {
             networkManagerServer.InteractWithOption(sourceUnitController, interactable, componentIndex, choiceIndex);
         }
 
-        public void AdvertiseAddSpawnRequestServer(int accountId, LoadSceneRequest loadSceneRequest) {
+        /*
+        public void AdvertiseAddSpawnRequestServer(int accountId, SpawnPlayerRequest loadSceneRequest) {
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
                 Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer() could not find client id {accountId}");
                 return;
@@ -806,11 +807,14 @@ namespace AnyRPG {
                 AdvertiseAddSpawnRequestClient(fishNetNetworkManager.ServerManager.Clients[clientId], loadSceneRequest);
             }
         }
+        */
 
+        /*
         [TargetRpc]
-        public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, LoadSceneRequest loadSceneRequest) {
+        public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, SpawnPlayerRequest loadSceneRequest) {
             networkManagerClient.AdvertiseAddSpawnRequest(loadSceneRequest);
         }
+        */
 
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {

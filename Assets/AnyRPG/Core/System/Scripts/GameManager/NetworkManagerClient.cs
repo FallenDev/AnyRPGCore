@@ -109,13 +109,13 @@ namespace AnyRPG {
             networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform, sceneName);
         }
 
-        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, string sceneName) {
+        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
 
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, parentTransform, position, forward, sceneName);
+            networkController.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, sceneName);
         }
 
         public GameObject SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
@@ -413,9 +413,11 @@ namespace AnyRPG {
             networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
         }
 
-        public void AdvertiseAddSpawnRequest(LoadSceneRequest loadSceneRequest) {
+        /*
+        public void AdvertiseAddSpawnRequest(SpawnPlayerRequest loadSceneRequest) {
             levelManager.AddSpawnRequest(accountId, loadSceneRequest);
         }
+        */
 
         public void HandleSceneLoadStart(string sceneName) {
             levelManager.NotifyOnBeginLoadingLevel(sceneName);

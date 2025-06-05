@@ -291,7 +291,7 @@ namespace AnyRPG {
                 return;
             }
 
-            LoadSceneRequest spawnSettings = SpawnPlayerUnit();
+            SpawnPlayerRequest spawnSettings = SpawnPlayerUnit();
             //cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, activeUnitController.transform.forward);
             cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
         }
@@ -399,7 +399,7 @@ namespace AnyRPG {
             }
         }
 
-        public LoadSceneRequest SpawnPlayerUnit() {
+        public SpawnPlayerRequest SpawnPlayerUnit() {
             //Debug.Log("PlayerManager.SpawnPlayerUnit()");
 
             cameraManager.HidePlayers();
@@ -407,7 +407,7 @@ namespace AnyRPG {
             return SpawnPlayerUnit(networkManagerClient.AccountId);
         }
 
-        public LoadSceneRequest SpawnPlayerUnit(int accountId) {
+        public SpawnPlayerRequest SpawnPlayerUnit(int accountId) {
             //Debug.Log($"PlayerManager.SpawnPlayerUnit({accountId})");
 
             if (activeUnitController != null) {
@@ -416,7 +416,7 @@ namespace AnyRPG {
             }
 
             // spawn the player unit and set references
-            LoadSceneRequest loadSceneRequest = levelManager.GetLoadSceneSettings(accountId);
+            SpawnPlayerRequest loadSceneRequest = playerManagerServer.GetSpawnPlayerRequest(accountId);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
                 // load lobby player
@@ -430,7 +430,7 @@ namespace AnyRPG {
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
-                characterManager.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
+                characterManager.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData);
             } else {
                 // load MMO or local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);

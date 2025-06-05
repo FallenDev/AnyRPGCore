@@ -19,6 +19,13 @@ namespace AnyRPG {
         /// </summary>
         private Dictionary<UnitController, int> activePlayerLookup = new Dictionary<UnitController, int>();
 
+        /// <summary>
+        /// accountId, LoadSceneRequest pairs for spawn requests
+        /// </summary>
+        private Dictionary<int, SpawnPlayerRequest> spawnRequests = new Dictionary<int, SpawnPlayerRequest>();
+
+        private string defaultSpawnLocationTag = "DefaultSpawnLocation";
+
         protected bool eventSubscriptionsInitialized = false;
 
         // game manager references
@@ -36,6 +43,7 @@ namespace AnyRPG {
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
         public Dictionary<GameObject, int> ActivePlayerGameObjects { get => activePlayerGameObjects; set => activePlayerGameObjects = value; }
+        public Dictionary<int, SpawnPlayerRequest> SpawnRequests { get => spawnRequests; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -246,6 +254,7 @@ namespace AnyRPG {
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
+            //AddSpawnRequest(accountId, new SpawnPlayerRequest());
             if (systemGameManager.GameMode == GameMode.Local) {
                 levelManager.LoadLevel(sceneName);
             } else if (networkManagerServer.ServerModeActive) {
@@ -277,7 +286,7 @@ namespace AnyRPG {
 
             // local mode active, continue with teleport
             if (teleportEffectProperties.levelName != null) {
-                LoadSceneRequest loadSceneRequest = new LoadSceneRequest();
+                SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
                 if (teleportEffectProperties.overrideSpawnDirection == true) {
                     loadSceneRequest.overrideSpawnDirection = true;
                     loadSceneRequest.spawnForwardDirection = teleportEffectProperties.spawnForwardDirection;
@@ -289,7 +298,7 @@ namespace AnyRPG {
                 if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
                     loadSceneRequest.locationTag = teleportEffectProperties.locationTag;
                 }
-                levelManager.AddSpawnRequest(activePlayerLookup[unitController] , loadSceneRequest);
+                AddSpawnRequest(activePlayerLookup[unitController] , loadSceneRequest);
                 levelManager.LoadLevel(teleportEffectProperties.levelName);
             }
         }
@@ -304,13 +313,13 @@ namespace AnyRPG {
             RemoveActivePlayer(accountId);
         }
 
-        public void AddSpawnRequest(UnitController unitController, LoadSceneRequest loadSceneRequest) {
+        public void AddSpawnRequest(UnitController unitController, SpawnPlayerRequest loadSceneRequest) {
             if (activePlayerLookup.ContainsKey(unitController)) {
-                if (networkManagerServer.ServerModeActive == true) {
-                    networkManagerServer.AdvertiseAddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
-                } else {
-                    levelManager.AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
-                }
+                //if (networkManagerServer.ServerModeActive == true) {
+                //    networkManagerServer.AdvertiseAddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+                //} else {
+                    AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+                //}
             }
         }
 
@@ -355,6 +364,67 @@ namespace AnyRPG {
                 return;
             }
             questGiverManager.CompleteQuestInternal(ActivePlayers[accountId], quest, questRewardChoices);
+        }
+
+        public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId})");
+
+            if (spawnRequests.ContainsKey(accountId)) {
+                spawnRequests[accountId] = loadSceneRequest;
+            } else {
+                spawnRequests.Add(accountId, loadSceneRequest);
+            }
+        }
+
+        public void RemoveSpawnRequest(int accountId) {
+            Debug.Log($"PlayerManagerServer.RemoveSpawnRequest({accountId})");
+
+            spawnRequests.Remove(accountId);
+        }
+
+
+        public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId) {
+            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId})");
+
+            SpawnPlayerRequest inputLoadSceneRequest = null;
+            SpawnPlayerRequest outputLoadSceneRequest = new SpawnPlayerRequest();
+
+            if (spawnRequests.ContainsKey(accountId)) {
+                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
+                inputLoadSceneRequest = spawnRequests[accountId];
+            } else {
+                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
+                inputLoadSceneRequest = new SpawnPlayerRequest();
+            }
+
+            if (inputLoadSceneRequest.overrideSpawnLocation == true) {
+                //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
+                outputLoadSceneRequest.spawnLocation = inputLoadSceneRequest.spawnLocation;
+            } else {
+                GameObject spawnLocationMarker = null;
+                if (inputLoadSceneRequest.locationTag != string.Empty) {
+                    spawnLocationMarker = GameObject.FindWithTag(inputLoadSceneRequest.locationTag);
+                    if (spawnLocationMarker != null) {
+                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
+                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
+                    }
+                }
+                if (spawnLocationMarker == null) {
+                    spawnLocationMarker = GameObject.FindWithTag(defaultSpawnLocationTag);
+                    if (spawnLocationMarker != null) {
+                        outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
+                        outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
+                    }
+                }
+            }
+
+            if (inputLoadSceneRequest.overrideSpawnDirection == true) {
+                outputLoadSceneRequest.spawnForwardDirection = inputLoadSceneRequest.spawnForwardDirection;
+            }
+
+            RemoveSpawnRequest(accountId);
+
+            return outputLoadSceneRequest;
         }
     }
 

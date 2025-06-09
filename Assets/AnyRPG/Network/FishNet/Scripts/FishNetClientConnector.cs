@@ -185,6 +185,19 @@ namespace AnyRPG {
         }
 
 
+        public Scene GetAccountScene(int accountId, string sceneName) {
+            Debug.Log($"FishNetNetworkConnector.GetAccountScene({accountId}, {sceneName})");
+
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return default;
+            }
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+            if (networkConnection == null) {
+                return default;
+            }
+            return GetConnectionScene(networkConnection, sceneName);
+        }
+
         public Scene GetConnectionScene(NetworkConnection networkConnection, string sceneName) {
             foreach (Scene scene in networkConnection.Scenes) {
                 if (scene.name == sceneName) {

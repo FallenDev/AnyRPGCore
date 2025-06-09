@@ -416,7 +416,7 @@ namespace AnyRPG {
             }
 
             // spawn the player unit and set references
-            SpawnPlayerRequest loadSceneRequest = playerManagerServer.GetSpawnPlayerRequest(accountId);
+            SpawnPlayerRequest loadSceneRequest = playerManagerServer.GetSpawnPlayerRequest(accountId, levelManager.ActiveSceneName);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
                 // load lobby player
@@ -680,7 +680,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCalculateRunSpeed += HandleCalculateRunSpeed;
             unitController.UnitEventController.OnEnterCombat += HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
-            unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
+            //unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss += HandleCombatMiss;
             unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
@@ -731,7 +731,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCalculateRunSpeed -= HandleCalculateRunSpeed;
             unitController.UnitEventController.OnEnterCombat -= HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
-            unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
+            //unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
             unitController.UnitEventController.OnReceiveCombatMiss -= HandleCombatMiss;
             unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
@@ -892,9 +892,13 @@ namespace AnyRPG {
             }
         }
 
+        /*
         public void HandleCombatUpdate() {
+            Debug.Log("PlayerManager.HandleCombatUpdate()");
+
             activeUnitController.CharacterCombat.HandleAutoAttack();
         }
+        */
 
         public void HandleDropCombat() {
             //Debug.Log("PlayerManager.HandleDropCombat()");

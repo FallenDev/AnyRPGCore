@@ -83,14 +83,15 @@ namespace AnyRPG {
         }
 
         public void HandleAutoAttack() {
-            //Debug.Log($"{gameObject.name}.PlayerCombat.HandleAutoAttack()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.HandleAutoAttack()");
+
             if (unitController == null) {
                 // can't attack without a character
                 return;
             }
 
             if (unitController.Target == null && AutoAttackActive == true) {
-                //Debug.Log($"{gameObject.name}.PlayerCombat.HandleAutoAttack(): target is null.  deactivate autoattack");
+                //Debug.Log($"{unitController.gameObject.name}.PlayerCombat.HandleAutoAttack(): target is null.  deactivate autoattack");
                 DeActivateAutoAttack();
                 return;
             }
@@ -112,13 +113,13 @@ namespace AnyRPG {
                 //Interactable _interactable = controller.MyTarget.GetComponent<Interactable>();
                 CharacterUnit _characterUnit = CharacterUnit.GetCharacterUnit(unitController.Target);
                 if (_characterUnit?.UnitController != null) {
-                    //Debug.Log($"{gameObject.name}.PlayerCombat.HandleAutoAttack(). targetCharacter is not null.  Attacking");
+                    //Debug.Log($"{unitController.gameObject.name}.PlayerCombat.HandleAutoAttack(). targetCharacter is not null.  Attacking");
                     Attack(_characterUnit.UnitController);
                     return;
                 }
                 // autoattack is active, but we were unable to attack the target because they were dead, or not a lootable character, or didn't have an interactable.
                 // There is no reason for autoattack to remain active under these circumstances
-                //Debug.Log($"{gameObject.name}: target is not attackable.  deactivate autoattack");
+                //Debug.Log($"{unitController.gameObject.name}: target is not attackable.  deactivate autoattack");
                 DeActivateAutoAttack();
             }
         }
@@ -148,17 +149,23 @@ namespace AnyRPG {
 
             // leave combat if the combat cooldown has expired
             if (Time.time - lastCombatEvent > combatCooldown) {
-                //Debug.Log($"{gameObject.name} Leaving Combat");
+                //Debug.Log($"{unitController.gameObject.name} Leaving Combat");
                 TryToDropCombat();
             }
 
+            if (unitController.UnitControllerMode != UnitControllerMode.Player) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.Update(): unitController.UnitControllerMode != UnitControllerMode.Player.  returning");
+                return;
+            }
+
             if (inCombat) {
-                unitController.UnitEventController.NotifyOnCombatUpdate();
+                //unitController.UnitEventController.NotifyOnCombatUpdate();
+                HandleAutoAttack();
             }
         }
 
         public void HandleDie() {
-            //Debug.Log($"{gameObject.name}.OnDieHandler()");
+            //Debug.Log($"{unitController.gameObject.name}.OnDieHandler()");
 
             BroadcastCharacterDeath();
 
@@ -180,7 +187,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="characterTarget"></param>
         public void Attack(UnitController characterTarget, bool playerInitiated = false) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.Attack(" + characterTarget.name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.Attack({(characterTarget == null ? "null" : characterTarget.gameObject.name)})");
 
             if (characterTarget == null) {
                 //Debug.Log("You must have a target to attack");
@@ -256,15 +263,15 @@ namespace AnyRPG {
 
         public virtual void TryToDropCombat() {
             if (inCombat == false) {
-                //Debug.Log($"{gameObject.name}.TryToDropCombat(): incombat = false. returning");
+                //Debug.Log($"{unitController.gameObject.name}.TryToDropCombat(): incombat = false. returning");
                 return;
             }
-            //Debug.Log($"{gameObject.name} trying to drop combat.");
+            //Debug.Log($"{unitController.gameObject.name} trying to drop combat.");
             if (aggroTable.TopAgroNode == null) {
-                //Debug.Log($"{gameObject.name}.TryToDropCombat(): topAgroNode is null. Dropping combat.");
+                //Debug.Log($"{unitController.gameObject.name}.TryToDropCombat(): topAgroNode is null. Dropping combat.");
                 DropCombat();
             } else {
-                //Debug.Log($"{gameObject.name}.TryToDropCombat(): topAgroNode was not null");
+                //Debug.Log($"{unitController.gameObject.name}.TryToDropCombat(): topAgroNode was not null");
                 // this next condition should prevent crashes as a result of level unloads
                 foreach (AggroNode aggroNode in AggroTable.AggroNodes) {
                     UnitController _aiController = aggroNode.aggroTarget.UnitController;
@@ -286,7 +293,7 @@ namespace AnyRPG {
         }
 
         protected virtual void DropCombat(bool immediate = false) {
-            //Debug.Log($"{gameObject.name}.CharacterCombat.DropCombat()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DropCombat()");
             if (inCombat) {
                 inCombat = false;
 
@@ -306,7 +313,7 @@ namespace AnyRPG {
                     }
                 }
                 DeActivateAutoAttack();
-                //Debug.Log($"{gameObject.name}.CharacterCombat.DropCombat(): dropped combat.");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DropCombat(): dropped combat.");
                 //baseCharacter.UnitController?.UnitModelController?.SheathWeapons();
                 unitController.UnitEventController.NotifyOnDropCombat();
             }
@@ -509,7 +516,7 @@ namespace AnyRPG {
 
         public void ProcessAttackHit() {
             if (!unitController.CharacterStats.IsAlive) {
-                //Debug.Log($"{gameObject.name}.CharacterCombat.AttackHit_AnimationEvent() Character is not alive!");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.AttackHit_AnimationEvent() Character is not alive!");
                 return;
             }
             CharacterUnit targetCharacterUnit = null;
@@ -558,7 +565,7 @@ namespace AnyRPG {
         }
 
         public virtual void ReceiveCombatMiss(Interactable targetObject, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log($"{gameObject.name}.CharacterCombat.ReceiveCombatMiss()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.ReceiveCombatMiss()");
             lastCombatEvent = Time.time;
             unitController.UnitEventController.NotifyOnReceiveCombatMiss(targetObject, abilityEffectContext);
             
@@ -569,10 +576,10 @@ namespace AnyRPG {
         }
 
         public bool DidAttackMiss() {
-            //Debug.Log($"{gameObject.name}.CharacterCombat.DidAttackMiss()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DidAttackMiss()");
             int randomNumber = UnityEngine.Random.Range(0, 100);
             int randomCutoff = (int)Mathf.Clamp(unitController.CharacterStats.GetAccuracyModifiers(), 0, 100);
-            //Debug.Log($"{gameObject.name}.CharacterCombat.DidAttackMiss(): number: " + randomNumber + "; accuracy = " + randomCutoff);
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DidAttackMiss(): number: " + randomNumber + "; accuracy = " + randomCutoff);
             if (randomNumber >= randomCutoff) {
                 return true;
             }
@@ -590,7 +597,7 @@ namespace AnyRPG {
         /// <param name="abilityEffect"></param>
         /// <returns></returns>
         private bool TakeDamageCommon(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster source, CombatMagnitude combatMagnitude, AbilityEffectProperties abilityEffect) {
-            //Debug.Log($"{gameObject.name}.TakeDamageCommon(" + damage + ")");
+            //Debug.Log($"{unitController.gameObject.name}.TakeDamageCommon(" + damage + ")");
 
             // perform check to see if this character has the resource to be reduced.  if not, it is immune to this type of damage
             if (unitController.CharacterStats.WasImmuneToDamageType(powerResource, source, abilityEffectContext)) {
@@ -600,7 +607,7 @@ namespace AnyRPG {
             damage = (int)(damage * unitController.CharacterStats.GetIncomingDamageModifiers());
 
             ProcessTakeDamage(abilityEffectContext, powerResource, damage, source, combatMagnitude, abilityEffect);
-            //Debug.Log($"{gameObject.name} sending " + damage.ToString() + " to character stats");
+            //Debug.Log($"{unitController.gameObject.name} sending " + damage.ToString() + " to character stats");
             unitController.CharacterStats.ReducePowerResource(powerResource, damage);
             
             // check if dead.  if alive, then play take damage animation
@@ -609,7 +616,7 @@ namespace AnyRPG {
 
         public virtual bool TakeDamage(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster sourceCharacter, CombatMagnitude combatMagnitude, AttackEffectProperties abilityEffect) {
             //public virtual bool TakeDamage(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster sourceCharacter, CombatMagnitude combatMagnitude, AbilityEffectProperties abilityEffect) {
-            //Debug.Log($"{gameObject.name}.TakeDamage(" + damage + ", " + sourcePosition + ", " + source.name + ")");
+            //Debug.Log($"{unitController.gameObject.name}.TakeDamage(" + damage + ", " + sourcePosition + ", " + source.name + ")");
             if (unitController.UnitControllerMode == UnitControllerMode.AI || unitController.UnitControllerMode == UnitControllerMode.Pet) {
                 if (unitController.CurrentState is EvadeState || unitController.CurrentState is DeathState) {
                     return false;
@@ -622,7 +629,7 @@ namespace AnyRPG {
                 if (_characterUnit != null) {
                     unitController.Aggro(_characterUnit);
                 }
-                //Debug.Log($"{gameObject.name} about to take " + damage.ToString() + " damage. Character is alive");
+                //Debug.Log($"{unitController.gameObject.name} about to take " + damage.ToString() + " damage. Character is alive");
                 //float distance = Vector3.Distance(transform.position, sourcePosition);
                 // replace with hitbox check
                 bool canPerformAbility = true;
@@ -649,7 +656,7 @@ namespace AnyRPG {
         }
 
         public virtual void OnKillConfirmed(UnitController sourceCharacter, float creditPercent) {
-            //Debug.Log($"{gameObject.name} received death broadcast from " + sourceCharacter.AbilityManager.name);
+            //Debug.Log($"{unitController.gameObject.name} received death broadcast from " + sourceCharacter.AbilityManager.name);
             if (sourceCharacter != null) {
                 unitController.UnitEventController.NotifyOnKillEvent(sourceCharacter, creditPercent);
             }
@@ -661,17 +668,17 @@ namespace AnyRPG {
         public virtual void BroadcastCharacterDeath() {
             if (!unitController.CharacterStats.IsAlive) {
                 // putting this here because it can be overwritten easier than the event handler that calls it
-                //Debug.Log($"{gameObject.name} broadcasting death to aggro table");
+                //Debug.Log($"{unitController.gameObject.name} broadcasting death to aggro table");
                 Dictionary<CharacterCombat, float> broadcastDictionary = new Dictionary<CharacterCombat, float>();
                 foreach (AggroNode _aggroNode in AggroTable.AggroNodes) {
                     if (_aggroNode.aggroTarget == null) {
-                        //Debug.Log($"{gameObject.name}: aggronode.aggrotarget is null!");
+                        //Debug.Log($"{unitController.gameObject.name}: aggronode.aggrotarget is null!");
                     } else {
                         CharacterCombat _otherCharacterCombat = _aggroNode.aggroTarget.UnitController.CharacterCombat as CharacterCombat;
                         if (_otherCharacterCombat != null) {
                             broadcastDictionary.Add(_otherCharacterCombat, (_aggroNode.aggroValue > 0 ? 1 : 0));
                         } else {
-                            //Debug.Log($"{gameObject.name}: aggronode.aggrotarget(" + _aggroNode.aggroTarget.name + ") had no character combat!");
+                            //Debug.Log($"{unitController.gameObject.name}: aggronode.aggrotarget(" + _aggroNode.aggroTarget.name + ") had no character combat!");
                         }
                     }
                 }

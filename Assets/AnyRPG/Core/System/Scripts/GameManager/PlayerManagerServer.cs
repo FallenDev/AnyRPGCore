@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
     public class PlayerManagerServer : ConfiguredMonoBehaviour {
@@ -383,7 +385,7 @@ namespace AnyRPG {
         }
 
 
-        public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId) {
+        public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId, string sceneName) {
             Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId})");
 
             SpawnPlayerRequest inputLoadSceneRequest = null;
@@ -397,20 +399,27 @@ namespace AnyRPG {
                 inputLoadSceneRequest = new SpawnPlayerRequest();
             }
 
+            Scene accountScene;
+            if (networkManagerServer.ServerModeActive == true ) {
+                accountScene = networkManagerServer.GetAccountScene(accountId, sceneName);
+            } else {
+                accountScene = SceneManager.GetSceneByName(sceneName);
+            }
+
             if (inputLoadSceneRequest.overrideSpawnLocation == true) {
                 //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
                 outputLoadSceneRequest.spawnLocation = inputLoadSceneRequest.spawnLocation;
             } else {
                 GameObject spawnLocationMarker = null;
                 if (inputLoadSceneRequest.locationTag != string.Empty) {
-                    spawnLocationMarker = GameObject.FindWithTag(inputLoadSceneRequest.locationTag);
+                    spawnLocationMarker = GetSceneObjectByTag(inputLoadSceneRequest.locationTag, accountScene);
                     if (spawnLocationMarker != null) {
                         outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
                         outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
                     }
                 }
                 if (spawnLocationMarker == null) {
-                    spawnLocationMarker = GameObject.FindWithTag(defaultSpawnLocationTag);
+                    spawnLocationMarker = GetSceneObjectByTag(defaultSpawnLocationTag, accountScene);
                     if (spawnLocationMarker != null) {
                         outputLoadSceneRequest.spawnLocation = spawnLocationMarker.transform.position;
                         outputLoadSceneRequest.spawnForwardDirection = spawnLocationMarker.transform.forward;
@@ -425,6 +434,18 @@ namespace AnyRPG {
             RemoveSpawnRequest(accountId);
 
             return outputLoadSceneRequest;
+        }
+
+        public GameObject GetSceneObjectByTag(string locationTag, Scene scene) {
+            Debug.Log($"PlayerManagerServer.GetSpawnLocationMarker({locationTag})");
+            List<GameObject> spawnLocationMarkers = new List<GameObject>();
+            spawnLocationMarkers = GameObject.FindGameObjectsWithTag(locationTag).ToList();
+            foreach (GameObject spawnLocationMarker in spawnLocationMarkers) {
+                if (spawnLocationMarker.scene.handle == scene.handle) {
+                    return spawnLocationMarker;
+                }
+            }
+            return null;
         }
     }
 

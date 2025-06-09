@@ -38,6 +38,9 @@ namespace AnyRPG {
         }
 
         public void SavePlayerLocation() {
+            if (unitController?.CharacterSaveManager == null) {
+                return;
+            }
             if (unitController.transform.position.x != playerCharacterSaveData.SaveData.PlayerLocationX
                 || unitController.transform.position.y != playerCharacterSaveData.SaveData.PlayerLocationY
                 || unitController.transform.position.z != playerCharacterSaveData.SaveData.PlayerLocationZ

@@ -958,7 +958,7 @@ namespace AnyRPG {
             //} else {
             //}
 
-            SpawnPlayerRequest spawnPlayerRequest = playerManagerServer.GetSpawnPlayerRequest(accountId);
+            SpawnPlayerRequest spawnPlayerRequest = playerManagerServer.GetSpawnPlayerRequest(accountId, sceneName);
 
             Vector3 position = spawnPlayerRequest.spawnLocation;
             if (spawnPlayerRequest.overrideSpawnLocation == false) {
@@ -998,6 +998,10 @@ namespace AnyRPG {
                 return;
             }
             unitController.CharacterSaveManager.LoadSaveDataToCharacter(activePlayerCharacters[characterRequestData.accountId].playerCharacterSaveData.SaveData);
+        }
+
+        public Scene GetAccountScene(int accountId, string sceneName) {
+            return networkController.GetAccountScene(accountId, sceneName);
         }
 
 

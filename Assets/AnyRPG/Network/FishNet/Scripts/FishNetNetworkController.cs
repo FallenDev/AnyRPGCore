@@ -674,6 +674,10 @@ namespace AnyRPG {
             clientConnector.SpawnLobbyGamePlayer(accountId, clientSpawnRequestId, serverSpawnRequestId, characterRequestData, position, forward, sceneName);
         }
 
+        public override Scene GetAccountScene(int accountId, string sceneName) {
+            return clientConnector.GetAccountScene(accountId, sceneName);
+        }
+
         /*
         public override void SetCraftingManagerAbility(int accountId, string abilityName) {
             Debug.Log($"FishNetNetworkController.SetCraftingManagerAbility({accountId}, {abilityName})");

@@ -29,16 +29,24 @@ namespace AnyRPG {
         private List<UnitSpawnNode> completeUnitSpawnNodeList = new List<UnitSpawnNode>();
         private List<UnitProfile> unitProfileList = new List<UnitProfile>();
 
+        // game manager references
+        private PlayerManagerServer playerManagerServer = null;
+
         public override Sprite Icon { get => (systemConfigurationManager.UnitSpawnControllerInteractionPanelImage != null ? systemConfigurationManager.UnitSpawnControllerInteractionPanelImage : base.Icon); }
         public override Sprite NamePlateImage { get => (systemConfigurationManager.UnitSpawnControllerNamePlateImage != null ? systemConfigurationManager.UnitSpawnControllerNamePlateImage : base.NamePlateImage); }
 
         public List<UnitSpawnNode> UnitSpawnNodeList { get => completeUnitSpawnNodeList; }
         public List<UnitProfile> UnitProfileList { get => unitProfileList; set => unitProfileList = value; }
 
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            playerManagerServer = systemGameManager.PlayerManagerServer;
+        }
+
         public override InteractableOptionComponent GetInteractableOption(Interactable interactable, InteractableOption interactableOption = null) {
 
             foreach (string unitSpawnNodeTag in unitSpawnNodeTagList) {
-                GameObject spawnLocation = GameObject.FindWithTag(unitSpawnNodeTag);
+                GameObject spawnLocation = playerManagerServer.GetSceneObjectByTag(unitSpawnNodeTag, interactable.gameObject.scene);
                 //Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): searching for tag {unitSpawnNodeTag}");
                 if (spawnLocation != null) {
                     //Debug.Log($"UnitSpawnControllerComponent.SetupScriptableObjects(): found spawn location with tag {unitSpawnNodeTag}: {spawnLocation.gameObject.name}");

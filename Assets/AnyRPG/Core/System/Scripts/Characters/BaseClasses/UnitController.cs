@@ -2109,12 +2109,13 @@ namespace AnyRPG {
         }
 
         public bool CanGetValidAttack(bool beginAttack = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack(" + beginAttack + ")");
+            Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack})");
             if (CombatStrategy != null) {
                 // attempt to get a valid ability from combat strategy before defaulting to random attacks
                 AbilityProperties validCombatStrategyAbility = CombatStrategy.GetValidAbility(this);
                 if (validCombatStrategyAbility != null) {
                     characterAbilityManager.BeginAbility(validCombatStrategyAbility);
+                    Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using combat strategy ability: {validCombatStrategyAbility.ResourceName}");
                     return true;
                 }
             } else {
@@ -2122,10 +2123,12 @@ namespace AnyRPG {
                 AbilityProperties validAttackAbility = characterCombat.GetValidAttackAbility();
                 if (validAttackAbility != null) {
                     characterAbilityManager.BeginAbility(validAttackAbility);
+                    Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using random attack ability: {validAttackAbility.ResourceName}");
                     return true;
                 }
             }
 
+            Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): no valid attack found");
             return false;
         }
 

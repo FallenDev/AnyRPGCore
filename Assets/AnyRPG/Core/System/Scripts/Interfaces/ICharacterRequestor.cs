@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace AnyRPG {
     public interface ICharacterRequestor {
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData);
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData);
+        public void ConfigureSpawnedCharacter(UnitController unitController);
+        public void PostInit(UnitController unitController);
     }
 }
 

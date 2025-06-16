@@ -18,7 +18,7 @@ namespace AnyRPG {
         }
 
         public void Update() {
-            Debug.Log($"{baseUnitController.gameObject.name}.AttackState.Update()");
+            //Debug.Log($"{baseUnitController.gameObject.name}.AttackState.Update()");
 
 
             baseUnitController.UpdateTarget();

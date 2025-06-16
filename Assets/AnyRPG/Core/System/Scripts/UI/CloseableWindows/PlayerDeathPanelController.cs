@@ -35,7 +35,7 @@ namespace AnyRPG {
 
         public void RespawnPlayer() {
             uIManager.playerOptionsMenuWindow.CloseWindow();
-            playerManager.RespawnPlayer();
+            playerManager.RequestRespawnPlayer();
         }
 
         public void RevivePlayer() {

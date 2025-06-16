@@ -153,11 +153,11 @@ namespace AnyRPG {
             systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, UnitGameObject.transform.parent, UnitGameObject.transform.position, UnitGameObject.transform.forward);
         }
 
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
         }
 
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
-            this.unitController.SetMountedState(unitController, characterRequestData.characterConfigurationRequest.unitProfile);
+        public void PostInit(UnitController unitController) {
+            this.unitController.SetMountedState(unitController, unitController.CharacterRequestData.characterConfigurationRequest.unitProfile);
         }
 
         public override List<AbilityEffectProperties> GetDefaultHitEffects() {
@@ -355,14 +355,14 @@ namespace AnyRPG {
         }
 
         public override void GeneratePower(AbilityProperties ability) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.GeneratePower(" + ability.DisplayName + ")");
+            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.GeneratePower({ability.DisplayName})");
             if (ability.GeneratePowerResource == null) {
                 // nothing to generate
                 return;
             }
             base.GeneratePower(ability);
             if (unitController != null && unitController.CharacterStats != null) {
-                //Debug.Log($"{gameObject.name}.GeneratePower(" + ability.DisplayName + "): name " + ability.GeneratePowerResource.DisplayName  + "; " + ability.GetResourceGain(this));
+                //Debug.Log($"{gameObject.name}.GeneratePower({ability.DisplayName}): name " + ability.GeneratePowerResource.DisplayName  + "; " + ability.GetResourceGain(this));
                 unitController.CharacterStats.AddResourceAmount(ability.GeneratePowerResource.ResourceName, ability.GetResourceGain(unitController));
             }
         }
@@ -1226,9 +1226,9 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.CharacterAbilitymanager.PerformAbilityCast({ability.ResourceName}, {(target == null ? "null" : target.name)}) Enter Ienumerator with start time: {startTime}");
 
             abilityEffectContext.originalTarget = target;
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): cancast is true");
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast({ability.DisplayName}): cancast is true");
             if (!ability.CanSimultaneousCast) {
-                //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() ability: " + ability.DisplayName + " can simultaneous cast is false, setting casting to true");
+                //Debug.Log("CharacterAbilitymanager.PerformAbilityCast() ability: {ability.DisplayName} can simultaneous cast is false, setting casting to true");
                 performingCast = true;
                 //ability.StartCasting(unitController);
                 PerformCastingAnimation(ability);
@@ -1238,7 +1238,7 @@ namespace AnyRPG {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast() currentCastPercent: " + currentCastPercent + "; MyAbilityCastingTime: " + ability.MyAbilityCastingTime);
 
             if (unitController != null && ability.GetHoldableObjectList(unitController).Count != 0) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "): spawning ability objects");
+                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast({ability.DisplayName}): spawning ability objects");
                 if (!ability.AnimatorCreatePrefabs) {
                     SpawnAbilityObjects(ability);
                 }
@@ -1255,7 +1255,7 @@ namespace AnyRPG {
                 while (currentCastPercent < 1f
                     && (ability.GetTargetOptions(unitController).RequireTarget == false
                     || (target != null && target.gameObject.activeInHierarchy == true))) {
-                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast(" + ability.DisplayName + "): currentCastPercent: " + currentCastPercent);
+                    //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilitymanager.PerformAbilityCast({ability.DisplayName}): currentCastPercent: " + currentCastPercent);
 
                     yield return null;
                     currentCastPercent += (Time.deltaTime / ability.GetAbilityCastingTime(unitController));
@@ -1463,19 +1463,20 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target == null ? "null" : target.gameObject.name)}, {playerInitiated})");
 
             if (ability == null) {
-                Debug.LogError("CharacterAbilityManager.BeginAbilityCommon(" + (ability == null ? "null" : ability.DisplayName) + ", " + (target == null ? "null" : target.name) + ") NO ABILITY FOUND");
+                Debug.LogError($"CharacterAbilityManager.BeginAbilityInternal({(ability == null ? "null" : ability.DisplayName)}, {(target == null ? "null" : target.name)}) NO ABILITY FOUND");
                 return false;
             }
+
             if (unitController.ControlLocked == true) {
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) control locked");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) control locked");
                 return false;
             }
 
             if (!CanCastAbility(ability, playerInitiated)) {
                 if (playerInitiated) {
-                    //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
+                    //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 }
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 return false;
             }
 
@@ -1508,7 +1509,7 @@ namespace AnyRPG {
 
             // get final target before beginning casting
             Interactable finalTarget = ability.ReturnTarget(unitController, target, true, abilityEffectContext, playerInitiated);
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(" + ability.DisplayName + ") finalTarget: " + (finalTarget == null ? "null" : finalTarget.DisplayName));
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon({ability.DisplayName}) finalTarget: " + (finalTarget == null ? "null" : finalTarget.DisplayName));
 
             unitController.UnitEventController.NotifyOnAttemptPerformAbility(ability);
 
@@ -1538,7 +1539,7 @@ namespace AnyRPG {
             } else {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.BeginAbilityCommon(): can't simultanous cast");
                 if (currentCastCoroutine == null) {
-                    //Debug.Log("Performing Ability " + ability.DisplayName + " at a cost of " + ability.MyAbilityManaCost.ToString() + ": ABOUT TO START COROUTINE");
+                    //Debug.Log("Performing Ability {ability.DisplayName} at a cost of " + ability.MyAbilityManaCost.ToString() + ": ABOUT TO START COROUTINE");
 
                     // we need to do this because we are allowed to stop an outstanding auto-attack to start this cast
                     // we also need to stop any outstanding actions
@@ -1585,36 +1586,36 @@ namespace AnyRPG {
 
         // this only checks if the ability is able to be cast based on character state.  It does not check validity of target or ability specific requirements
         public override bool CanCastAbility(AbilityProperties ability, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}, {playerInitiated})");
 
             // check if the ability is learned yet
             if (!PerformLearnedCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): Have not learned ability!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): Have not learned ability!");
                 unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName} Have not learned ability!");
                 return false;
             }
 
             // check if the ability is on cooldown
             if (!PerformCooldownCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): ability is on cooldown!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): ability is on cooldown!");
                 unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: ability is on cooldown!");
                 return false;
             }
 
             // check if auto-attack cooldown based on attack speed applies
             if (ability.ReadyToCast(unitController.CharacterCombat) == false) {
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): auto-attack cooldown based on attack speed applies!");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): auto-attack cooldown based on attack speed applies!");
                 return false;
             }
 
             // check if we have enough mana
             if (!PerformPowerResourceCheck(ability)) {
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): do not have sufficient power resource to cast!");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.ResourceName}): do not have sufficient power resource to cast!");
                 return false;
             }
 
             if (!PerformCombatCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast ability in combat!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): cannot cast ability in combat!");
                 if (playerInitiated) {
                     unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast ability in combat!");
                 }
@@ -1622,7 +1623,7 @@ namespace AnyRPG {
             }
 
             if (!PerformStealthCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast ability in combat!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): cannot cast ability in combat!");
                 if (playerInitiated) {
                     unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast ability unless stealthed!");
                 }
@@ -1631,7 +1632,7 @@ namespace AnyRPG {
 
 
             if (!PerformLivenessCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): cannot cast while dead!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): cannot cast while dead!");
                 if (playerInitiated) {
                     unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast while dead!");
                 }
@@ -1641,13 +1642,13 @@ namespace AnyRPG {
             // for now require a player to perform movement check because an NPC will by default stop and go into attack mode to cast an ability
             // this check is designed to prevent players from casting anything other than instant casts while running
             if (playerInitiated && !PerformMovementCheck(ability)) {
-                //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): velocity too high to cast!");
+                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): velocity too high to cast!");
                 unitController.UnitEventController.NotifyOnCombatMessage($"Cannot cast {ability.DisplayName}: cannot cast while moving!");
                 return false;
             }
 
             // default is true, nothing has stopped us so far
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.CanCastAbility(" + ability.DisplayName + "): returning true");
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): returning true");
             return base.CanCastAbility(ability);
         }
 
@@ -1677,7 +1678,7 @@ namespace AnyRPG {
         }
 
         public bool PerformCooldownCheck(AbilityProperties ability) {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.PerformCooldownCheck(" + ability.DisplayName + ") : global: " + MyRemainingGlobalCoolDown);
+            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.PerformCooldownCheck({ability.DisplayName}) : global: " + MyRemainingGlobalCoolDown);
             if (abilityCoolDownDictionary.ContainsKey(ability.DisplayName) ||
                 (RemainingGlobalCoolDown > 0f && ability.IgnoreGlobalCoolDown == false)) {
                 return false;

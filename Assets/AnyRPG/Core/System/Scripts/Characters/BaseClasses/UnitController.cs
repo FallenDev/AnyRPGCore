@@ -150,6 +150,8 @@ namespace AnyRPG {
         private bool isServer = false;
         private bool isServerOwned = false;
 
+        // initial configuration
+        private CharacterRequestData characterRequestData = null;
 
         // game manager references
         protected LevelManager levelManager = null;
@@ -439,6 +441,7 @@ namespace AnyRPG {
         public bool IsOwner { get => isOwner; set => isOwner = value; }
         public bool IsServer { get => isServer; set => isServer = value; }
         public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
+        public CharacterRequestData CharacterRequestData { get => characterRequestData; set => characterRequestData = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -1118,7 +1121,7 @@ namespace AnyRPG {
         /// This method is meant to be called after OnEnable() and before Init()
         /// </summary>
         /// <param name="unitProfile"></param>
-        public void SetCharacterConfiguration(CharacterRequestData characterRequestData) {
+        public void SetCharacterConfiguration() {
             //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
 
             CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
@@ -2109,7 +2112,8 @@ namespace AnyRPG {
         }
 
         public bool CanGetValidAttack(bool beginAttack = false) {
-            Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack})");
+            //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack})");
+
             if (CombatStrategy != null) {
                 // attempt to get a valid ability from combat strategy before defaulting to random attacks
                 AbilityProperties validCombatStrategyAbility = CombatStrategy.GetValidAbility(this);
@@ -2128,7 +2132,7 @@ namespace AnyRPG {
                 }
             }
 
-            Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): no valid attack found");
+            //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): no valid attack found");
             return false;
         }
 

@@ -447,6 +447,12 @@ namespace AnyRPG {
             }
             return null;
         }
+
+        /*
+        public void RespawnPlayerUnit(int accountId) {
+            DespawnPlayerUnit(accountId);
+        }
+        */
     }
 
 }

@@ -299,25 +299,32 @@ namespace AnyRPG {
         }
 
 
-        public override void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
-            Debug.Log($"FishNetNetworkController.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+        public override void RequestSpawnPlayer(int playerCharacterId/*, CharacterRequestData characterRequestData*/, Transform parentTransform, string sceneName) {
+            Debug.Log($"FishNetNetworkController.SpawnPlayer({playerCharacterId})");
 
-            clientConnector.SpawnPlayer(characterRequestData.clientSpawnRequestId, playerCharacterId, parentTransform, sceneName);
+            clientConnector.RequestSpawnPlayer(/*characterRequestData.clientSpawnRequestId,*/ playerCharacterId, parentTransform, sceneName);
             //return null;
         }
 
-        public override void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName) {
+        public override void RequestSpawnLobbyGamePlayer(int gameId/*, CharacterRequestData characterRequestData*/, string sceneName) {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.RequestSpawnLobbyGamePlayer(characterRequestData.clientSpawnRequestId, gameId, sceneName);
+            clientConnector.RequestSpawnLobbyGamePlayer(/*characterRequestData.clientSpawnRequestId,*/ gameId, sceneName);
+            //return null;
+        }
+
+        public override void RequestRespawnPlayerUnit() {
+            //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+
+            clientConnector.RequestRespawnPlayerUnit();
             //return null;
         }
 
 
-        public override GameObject SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public override GameObject RequestSpawnModelPrefab(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetNetworkController.SpawnModelPrefab({spawnRequestId}, {parentTransform.gameObject.name})");
 
-            clientConnector.SpawnModelPrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
+            clientConnector.RequestSpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ prefab, parentTransform, position, forward);
             return null;
         }
 
@@ -631,10 +638,10 @@ namespace AnyRPG {
             return clientConnector.SpawnCharacterUnit(characterRequestData, parentTransform, position, forward, scene);
         }
 
-        public override GameObject SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public override GameObject SpawnModelPrefabServer(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"FishNetNetworkController.SpawnModelPrefabServer({spawnRequestId}, {parentTransform.gameObject.name})");
 
-            clientConnector.SpawnModelPrefabServer(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
+            clientConnector.SpawnModelPrefabServer(/*clientSpawnRequestId, serverSpawnRequestId,*/ prefab, parentTransform, position, forward);
             return null;
         }
 
@@ -670,8 +677,8 @@ namespace AnyRPG {
             clientConnector.AdvertiseTakeLoot(accountId, lootDropId);
         }
 
-        public override void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
-            clientConnector.SpawnLobbyGamePlayer(accountId, clientSpawnRequestId, serverSpawnRequestId, characterRequestData, position, forward, sceneName);
+        public override void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
+            clientConnector.SpawnLobbyGamePlayer(accountId, characterRequestData, position, forward, sceneName);
         }
 
         public override Scene GetAccountScene(int accountId, string sceneName) {

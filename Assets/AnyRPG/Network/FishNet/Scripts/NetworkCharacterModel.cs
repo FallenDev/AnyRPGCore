@@ -51,7 +51,7 @@ namespace AnyRPG {
             characterRequestData.spawnRequestId = clientSpawnRequestId;
             systemGameManager.CharacterManager.CompleteModelRequest(characterRequestData, unitController, isOwner);
             */
-            systemGameManager.CharacterManager.CompleteNetworkModelRequest(clientSpawnRequestId.Value, serverSpawnRequestId.Value, unitController, gameObject, isOwner, base.OwnerId == -1);
+            systemGameManager.CharacterManager.CompleteNetworkModelRequest(/*clientSpawnRequestId.Value, serverSpawnRequestId.Value,*/ unitController, gameObject, base.OwnerId == -1);
         }
 
         public override void OnStartClient() {

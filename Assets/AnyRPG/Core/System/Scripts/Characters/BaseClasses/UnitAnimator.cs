@@ -496,10 +496,10 @@ namespace AnyRPG {
             // save animation number of hits for multi hit weapon damage normalization
             lastAnimationHits = GetAnimationHitCount(animationClip);
 
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 // tell the animator to play the animation
                 SetAttacking(true, true, unitController.CharacterStats.GetSpeedModifiers() / 100f);
-            }
+            //}
 
             // there were 2 pieces of code that were setting animation speed.  One was using 1f / and one was not.  Not sure which one is correct?!!!
             //SetAttacking(true, true, 1f / (unitController.CharacterStats.GetSpeedModifiers() / 100f));
@@ -531,11 +531,11 @@ namespace AnyRPG {
                 unitController.SetUseRootMotion(false);
             }
 
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 if (baseAbility.GetAbilityCastingTime(unitController) > 0f) {
                     SetCasting(true, true, (baseAbility.UseSpeedMultipliers == true ? (unitController.CharacterStats.GetSpeedModifiers() / 100f) : 1f));
                 }
-            }
+            //}
         }
 
         // non combat action
@@ -549,9 +549,9 @@ namespace AnyRPG {
             SetAnimationClipOverride(systemAnimations.ActionClips[0].name, animatedAction.ActionProperties.AnimationClip);
             unitController.UnitEventController.NotifyOnPerformAnimatedActionAnimation(animatedAction);
 
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 SetActing(true, true);
-            }
+            //}
         }
 
         public void SetAnimationClipOverride(string originalClipName, AnimationClip animationClip) {
@@ -574,25 +574,25 @@ namespace AnyRPG {
 
         public void ClearAnimatedAbility() {
             unitController.UnitEventController.NotifyOnAnimatorClearAbilityAction();
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 SetAttacking(false);
-            }
+            //}
         }
 
         public void ClearAction() {
             unitController.UnitEventController.NotifyOnAnimatorClearAction();
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 SetActing(false);
-            }
+            //}
         }
 
         public void ClearCasting() {
             //Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.ClearCasting()");
 
             unitController.UnitEventController.NotifyOnAnimatorClearAbilityCast();
-            if (unitController.IsOwner) {
+            //if (unitController.IsOwner) {
                 SetCasting(false);
-            }
+            //}
         }
 
         private bool ParameterExists(string parameterName) {

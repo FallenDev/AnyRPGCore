@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AnyRPG {
     public class PlayerManager : ConfiguredMonoBehaviour, ICharacterRequestor {
@@ -196,13 +197,12 @@ namespace AnyRPG {
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
-            DespawnPlayerUnit();
+            playerManagerServer.DespawnPlayerUnit(networkManagerClient.AccountId);
         }
-
 
         public void ProcessExitToMainMenu() {
             //Debug.Log("PlayerManager.ProcessExitToMainMenu()");
-            DespawnPlayerUnit();
+            playerManagerServer.DespawnPlayerUnit(networkManagerClient.AccountId);
             DespawnPlayerConnection();
             saveManager.ClearSystemManagedSaveData();
         }
@@ -333,30 +333,27 @@ namespace AnyRPG {
             }
         }
 
-        public void DespawnPlayerUnit() {
-            //Debug.Log("PlayerManager.DespawnPlayerUnit()");
-            if (!playerUnitSpawned) {
-                //Debug.Log("Player Unit is not spawned.  Nothing to despawn.  returning");
-                return;
-            }
-            UnsubscribeFromPlayerInventoryEvents();
-            UnsubscribeFromPlayerEvents();
-            unitController.Despawn(0f, false, true);
-        }
-
         public void HandlePlayerDeath(string eventName, EventParamProperties eventParam) {
             //Debug.Log("PlayerManager.KillPlayer()");
             PlayDeathEffect();
         }
 
-        public void RespawnPlayer() {
+        public void RequestRespawnPlayer() {
             //Debug.Log("PlayerManager.RespawnPlayer()");
-            DespawnPlayerUnit();
+            if (systemGameManager.GameMode == GameMode.Network) {
+                //Debug.Log("PlayerManager.RequestRespawnPlayer(): Lobby Game Mode, requesting server to respawn player unit");
+                networkManagerClient.RequestRespawnPlayerUnit();
+                return;
+            }
+
+            playerManagerServer.DespawnPlayerUnit(0);
             SpawnPlayerUnit();
 
+            /*
             if (unitController.CharacterStats.IsAlive == false) {
                 unitController.CharacterStats.ReviveComplete();
             }
+            */
         }
 
         public void RevivePlayerUnit() {
@@ -419,31 +416,26 @@ namespace AnyRPG {
             SpawnPlayerRequest loadSceneRequest = playerManagerServer.GetSpawnPlayerRequest(accountId, levelManager.ActiveSceneName);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
-                // load lobby player
-                UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(networkManagerClient.LobbyGame.PlayerList[networkManagerClient.AccountId].unitProfileName);
-                if (unitProfile == null) {
-                    return null;
-                }
-                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
-                characterConfigurationRequest.characterName = networkManagerClient.Username;
-                CharacterRequestData characterRequestData = new CharacterRequestData(this,
-                    systemGameManager.GameMode,
-                    characterConfigurationRequest);
-                characterManager.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, characterRequestData);
+                networkManagerClient.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, /*characterRequestData,*/ SceneManager.GetActiveScene().name);
+
+            } else if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.MMO ) {
+                //networkManagerClient.RequestSpawnMMOGamePlayer();
             } else {
-                // load MMO or local player
+                // load local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
                 characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
                 CharacterRequestData characterRequestData = new CharacterRequestData(this,
                     systemGameManager.GameMode,
                     characterConfigurationRequest);
+                characterRequestData.isOwner = true;
                 characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
+
             }
             return loadSceneRequest;
         }
 
+        /*
         private bool OwnPlayer(UnitController unitController, CharacterRequestData characterRequestData) {
             //if (characterRequestData.requestMode == GameMode.Local) {
             //    return true;
@@ -456,8 +448,9 @@ namespace AnyRPG {
             //return true;
             return characterManager.HasUnitSpawnRequest(characterRequestData.clientSpawnRequestId);
         }
+        */
 
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
             //Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
 
             //if (OwnPlayer(unitController, characterRequestData) == true) {
@@ -484,7 +477,7 @@ namespace AnyRPG {
             }
         }
 
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void PostInit(UnitController unitController) {
             //Debug.Log($"PlayerManager.PostInit({unitController.gameObject.name})");
 
             if (unitController.UnitModelController.ModelCreated == false) {
@@ -713,6 +706,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnFactionChange += HandleFactionChange;
             unitController.UnitEventController.OnReceiveCombatTextEvent += HandleReceiveCombatTextEvent;
             unitController.UnitEventController.OnTakeDamage += HandleTakeDamage;
+            unitController.UnitEventController.OnDespawn += HandleDespawn;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -764,6 +758,12 @@ namespace AnyRPG {
             unitController.UnitEventController.OnFactionChange -= HandleFactionChange;
             unitController.UnitEventController.OnReceiveCombatTextEvent -= HandleReceiveCombatTextEvent;
             unitController.UnitEventController.OnTakeDamage -= HandleTakeDamage;
+            unitController.UnitEventController.OnDespawn -= HandleDespawn;
+        }
+
+        public void HandleDespawn(UnitController controller) {
+            UnsubscribeFromPlayerInventoryEvents();
+            UnsubscribeFromPlayerEvents();
         }
 
         public void HandleTakeDamage(IAbilityCaster sourceCaster, UnitController targetUnitController, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, AbilityEffectContext abilityEffectContext) {

@@ -83,7 +83,7 @@ namespace AnyRPG {
         }
 
         public void HandleAutoAttack() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.HandleAutoAttack()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.HandleAutoAttack()");
 
             if (unitController == null) {
                 // can't attack without a character

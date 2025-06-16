@@ -26,7 +26,7 @@ namespace AnyRPG {
             //Debug.Log("NewGameMenuController.ConfirmAction()");
             uIManager.confirmCharacterStuckWindow.CloseWindow();
             uIManager.helpMenuWindow.CloseWindow();
-            playerManager.RespawnPlayer();
+            playerManager.RequestRespawnPlayer();
         }
 
     }

@@ -423,7 +423,7 @@ namespace AnyRPG {
             }
         }
 
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.ConfigureSpawnedCharacter()");
 
             //if (spawnRequests.ContainsKey(characterRequestData.spawnRequestId) == false) {
@@ -489,7 +489,7 @@ namespace AnyRPG {
             //spawnReferences.Add(unitController);
         }
 
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void PostInit(UnitController unitController) {
         }
 
         /// <summary>

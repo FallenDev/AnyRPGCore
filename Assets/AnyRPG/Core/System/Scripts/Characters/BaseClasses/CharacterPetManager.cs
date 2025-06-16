@@ -129,13 +129,13 @@ namespace AnyRPG {
             systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, unitController.transform.parent, unitController.transform.position, unitController.transform.forward);
         }
 
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
             unitController.SetPetMode(this.unitController);
         }
 
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void PostInit(UnitController unitController) {
             unitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
-            activeUnitProfiles.Add(characterRequestData.characterConfigurationRequest.unitProfile, unitController);
+            activeUnitProfiles.Add(unitController.CharacterRequestData.characterConfigurationRequest.unitProfile, unitController);
         }
 
 

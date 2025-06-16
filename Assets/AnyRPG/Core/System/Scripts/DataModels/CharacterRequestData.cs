@@ -5,8 +5,8 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterRequestData {
 
-        public int clientSpawnRequestId;
-        public int serverSpawnRequestId;
+        //public int clientSpawnRequestId;
+        //public int serverSpawnRequestId;
         public int accountId;
         public ICharacterRequestor characterRequestor;
         public GameMode requestMode;

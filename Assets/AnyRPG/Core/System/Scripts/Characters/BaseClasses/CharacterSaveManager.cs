@@ -249,7 +249,8 @@ namespace AnyRPG {
         }
 
         public void LoadQuestData(AnyRPGSaveData anyRPGSaveData) {
-            //Debug.Log("Savemanager.LoadQuestData()");
+            Debug.Log($"{unitController.gameObject.name}.Savemanager.LoadQuestData()");
+
             unitController.CharacterQuestLog.QuestSaveDataDictionary.Clear();
             unitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary.Clear();
             foreach (QuestSaveData questSaveData in anyRPGSaveData.questSaveData) {

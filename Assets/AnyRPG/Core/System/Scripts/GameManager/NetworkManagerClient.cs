@@ -100,26 +100,31 @@ namespace AnyRPG {
             networkController.LoadScene(sceneName);
         }
 
-        public void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
+        public void RequestSpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
 
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.SpawnPlayer(playerCharacterId, characterRequestData, parentTransform, sceneName);
+            networkController.RequestSpawnPlayer(playerCharacterId, /*characterRequestData,*/ parentTransform, sceneName);
         }
 
-        public void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName) {
+        public void RequestSpawnLobbyGamePlayer(int gameId, /*CharacterRequestData characterRequestData,*/ string sceneName) {
             //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
-
+            /*
             if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
                 Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
             }
-            networkController.RequestSpawnLobbyGamePlayer(gameId, characterRequestData, sceneName);
+            */
+            networkController.RequestSpawnLobbyGamePlayer(gameId, /*characterRequestData,*/ sceneName);
         }
 
-        public GameObject SpawnModelPrefab(int clientSpawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            return networkController.SpawnModelPrefab(clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
+        public void RequestRespawnPlayerUnit() {
+            networkController.RequestRespawnPlayerUnit();
+        }
+
+        public GameObject RequestSpawnModelPrefab(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            return networkController.RequestSpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ prefab, parentTransform, position, forward);
         }
 
         public void SendLobbyChatMessage(string messageText) {
@@ -554,7 +559,6 @@ namespace AnyRPG {
         public void RequestCancelCrafting() {
             networkController.RequestCancelCrafting();
         }
-
 
 
         /*

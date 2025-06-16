@@ -263,7 +263,7 @@ namespace AnyRPG {
                 spawnLocation = playerManager.ActiveUnitController.transform.position
             };
             playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
-            playerManager.DespawnPlayerUnit();
+            playerManagerServer.DespawnPlayerUnit(networkManagerClient.AccountId);
             playerManager.PlayerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
             playerManager.SpawnPlayerUnit();
             if (playerManager.UnitController.CharacterAbilityManager != null) {

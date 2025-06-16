@@ -24,11 +24,13 @@ namespace AnyRPG {
         public void OnTriggerEnter(Collider other) {
             //Debug.Log($"{gameObject.name}.MovementSoundArea.OnTriggerEnter()");
 
+            // TO DO : FIX ME this will not work in multiplayer
+
             if (playerManager.ActiveUnitController == null) {
                 return;
             }
             if (other.gameObject == playerManager.ActiveUnitController.gameObject) {
-                playerManager.RespawnPlayer();
+                playerManager.RequestRespawnPlayer();
             }
         }
 

@@ -16,14 +16,14 @@ namespace AnyRPG {
 
         public readonly SyncVar<string> unitProfileName = new SyncVar<string>();
 
+        //public readonly SyncVar<string> characterName = new SyncVar<string>(new SyncTypeSettings(ReadPermission.ExcludeOwner));
+        public readonly SyncVar<string> characterName = new SyncVar<string>();
+
         public readonly SyncVar<int> unitLevel = new SyncVar<int>();
 
         public readonly SyncVar<UnitControllerMode> unitControllerMode = new SyncVar<UnitControllerMode>();
 
         public readonly SyncVar<CharacterAppearanceData> characterAppearanceData = new SyncVar<CharacterAppearanceData>();
-
-        public readonly SyncVar<string> characterName = new SyncVar<string>(new SyncTypeSettings(ReadPermission.ExcludeOwner));
-
         
         private UnitProfile unitProfile = null;
         private UnitController unitController = null;
@@ -1301,7 +1301,7 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
 
             /*
             if (base.Owner != null ) {
@@ -1310,41 +1310,34 @@ namespace AnyRPG {
             */
 
             unitProfile = systemGameManager.SystemDataFactory.GetResource<UnitProfile>(unitProfileName.Value);
-            CharacterConfigurationRequest characterConfigurationRequest;
-            if (networkManagerServer.ServerModeActive == false) {
-                if (isOwner && systemGameManager.CharacterManager.HasUnitSpawnRequest(clientSpawnRequestId.Value)) {
-                    //Debug.Log("this is happening on the client, and we own the object, so we requested it");
-                    systemGameManager.CharacterManager.AddServerSpawnRequestId(clientSpawnRequestId.Value, serverSpawnRequestId.Value);
-                    systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, clientSpawnRequestId.Value, isOwner);
-                } else {
-                    //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) falling back to creating new config request");
-                    //Debug.Log("this is happening on the client, and we do not own the object, so we need to create a new config request");
-                    characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-                    characterConfigurationRequest.characterName = characterName.Value;
-                    characterConfigurationRequest.unitLevel = unitLevel.Value;
-                    characterConfigurationRequest.unitControllerMode = unitControllerMode.Value;
-                    characterConfigurationRequest.characterAppearanceData = characterAppearanceData.Value;
-                    CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
-                    characterRequestData.clientSpawnRequestId = clientSpawnRequestId.Value;
-                    characterRequestData.serverSpawnRequestId = serverSpawnRequestId.Value;
-                    characterRequestData.isServer = false;
-                    systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, characterRequestData, isOwner);
-                }
+            if (networkManagerServer.ServerModeActive == true) {
+                systemGameManager.CharacterManager.CompleteCharacterRequest(unitController);
             } else {
-                if (systemGameManager.CharacterManager.HasUnitSpawnRequest(serverSpawnRequestId.Value) == true) {
-                    //Debug.Log("this is happening on the server, which will always have a requestor (unit spawn node, networkManager, etc.)");
-                    systemGameManager.CharacterManager.CompleteCharacterRequest(gameObject, serverSpawnRequestId.Value, isOwner);
-                } else {
-                    Debug.Log("this is happening on the server, which should always have a requestor, but we could not find one!");
+                CharacterConfigurationRequest characterConfigurationRequest;
+                characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
+                characterConfigurationRequest.characterName = characterName.Value;
+                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest() characterName: {characterConfigurationRequest.characterName}");
+                characterConfigurationRequest.unitLevel = unitLevel.Value;
+                characterConfigurationRequest.unitControllerMode = unitControllerMode.Value;
+                characterConfigurationRequest.characterAppearanceData = characterAppearanceData.Value;
+                CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
+                characterRequestData.isServer = false;
+                characterRequestData.isOwner = isOwner;
+                if (isOwner == true && unitControllerMode.Value == UnitControllerMode.Player) {
+                    characterRequestData.characterRequestor = systemGameManager.PlayerManager;
                 }
+                unitController.CharacterRequestData = characterRequestData;
+                systemGameManager.CharacterManager.CompleteCharacterRequest(unitController);
             }
 
+            /*
             if (base.IsOwner && unitController != null) {
                 unitController.UnitEventController.OnNameChange += HandleUnitNameChange;
 
                 // OnNameChange is not called during initialization, so we have to pass the proper name to the network manually
-                HandleUnitNameChange(unitController.BaseCharacter.CharacterName);
+                //HandleUnitNameChange(unitController.BaseCharacter.CharacterName);
             }
+            */
             OnCompleteCharacterRequest();
         }
 

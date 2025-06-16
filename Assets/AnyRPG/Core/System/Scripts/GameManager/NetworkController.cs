@@ -16,9 +16,10 @@ namespace AnyRPG {
             return false;
         }
         public abstract void Logout();
-        public abstract void SpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName);
-        public abstract void RequestSpawnLobbyGamePlayer(int gameId, CharacterRequestData characterRequestData, string sceneName);
-        public abstract GameObject SpawnModelPrefab(int spawnRequestId, int serverSpawnRequestId, GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract void RequestSpawnPlayer(int playerCharacterId/*, CharacterRequestData characterRequestData*/, Transform parentTransform, string sceneName);
+        public abstract void RequestSpawnLobbyGamePlayer(int gameId, /*CharacterRequestData characterRequestData,*/ string sceneName);
+        public abstract void RequestRespawnPlayerUnit();
+        public abstract GameObject RequestSpawnModelPrefab(/*int spawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();
         public abstract bool OwnPlayer(UnitController unitController);
@@ -79,7 +80,7 @@ namespace AnyRPG {
         public abstract void ReturnObjectToPool(GameObject returnedObject);
         //public abstract void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest);
         public abstract UnitController SpawnCharacterPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene);
-        public abstract GameObject SpawnModelPrefabServer(int clientSpawnRequestId, int serverSpawnRequestId,GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
+        public abstract GameObject SpawnModelPrefabServer(/*int clientSpawnRequestId, int serverSpawnRequestId,*/GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void AdvertiseMessageFeedMessage(int accountId, string message);
         public abstract void AdvertiseSystemMessage(int accountId, string message);
         public abstract void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int accountId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem);
@@ -87,7 +88,7 @@ namespace AnyRPG {
         public abstract void AddAvailableDroppedLoot(int accountId, List<LootDrop> items);
         public abstract void AddLootDrop(int accountId, int lootDropId, int itemId);
         public abstract void AdvertiseTakeLoot(int accountId, int lootDropId);
-        public abstract void SpawnLobbyGamePlayer(int accountId, int clientSpawnRequestId, int serverSpawnRequestId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
+        public abstract void SpawnLobbyGamePlayer(int accountId, /*int clientSpawnRequestId, int serverSpawnRequestId,*/ CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
         public abstract Scene GetAccountScene(int accountId, string sceneName);
         //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);

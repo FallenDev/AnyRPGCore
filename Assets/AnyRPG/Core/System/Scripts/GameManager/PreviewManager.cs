@@ -74,7 +74,7 @@ namespace AnyRPG {
             systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, transform, transform.position, transform.forward);
         }
 
-        public void ConfigureSpawnedCharacter(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
             //Debug.Log($"PreviewManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
             this.unitController = unitController;
             if (unitController.UnitModelController != null) {
@@ -84,7 +84,7 @@ namespace AnyRPG {
             BroadcastUnitCreated();
         }
 
-        public void PostInit(UnitController unitController, CharacterRequestData characterRequestData) {
+        public void PostInit(UnitController unitController) {
         }
 
 

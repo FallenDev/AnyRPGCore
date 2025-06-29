@@ -108,7 +108,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             //if (playerManager.MyPlayerUnitSpawned) {
             ProcessPlayerUnitSpawn();
             //}
@@ -122,7 +122,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
 
             eventSubscriptionsInitialized = false;
         }
@@ -143,7 +143,7 @@ namespace AnyRPG {
             playerEventSubscriptionsInitialized = false;
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             //Debug.Log($"{unitNamePlateController.UnitDisplayName}.NamePlateController.HandlePlayerUnitDespawn()");
 
             CleanupPlayerEventSubscriptions();

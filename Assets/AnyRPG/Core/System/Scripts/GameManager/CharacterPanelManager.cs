@@ -31,7 +31,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             if (playerManager.PlayerUnitSpawned == true) {
                 ProcessPlayerUnitSpawn();
             }
@@ -46,7 +46,7 @@ namespace AnyRPG {
 
             //Debug.Log("PlayerCombat.CleanupEventSubscriptions()");
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             eventSubscriptionsInitialized = false;
         }
 
@@ -68,8 +68,8 @@ namespace AnyRPG {
             characterConfigurationRequest.unitLevel = playerManager.UnitController.CharacterStats.Level;
 
             // if the game is in lobby mode, there will be no save data
-            if (playerManager.PlayerCharacterSaveData != null) {
-                characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerManager.PlayerCharacterSaveData.SaveData);
+            if (playerManager.ActiveUnitController.CharacterSaveManager.SaveData != null) {
+                characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerManager.ActiveUnitController.CharacterSaveManager.SaveData);
             }
 
             SpawnUnit(characterConfigurationRequest);
@@ -108,7 +108,7 @@ namespace AnyRPG {
             unitController.BaseCharacter.ChangeClassSpecialization(newSpecialization);
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             //Debug.Log("CharacterPanel.HandlePlayerUnitDespawn()");
             playerManager.ActiveUnitController.UnitEventController.OnUnitTypeChange -= HandleUnitTypeChange;
             //playerManager.ActiveUnitController.UnitEventController.OnRaceChange -= HandleRaceChange;

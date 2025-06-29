@@ -224,7 +224,7 @@ namespace AnyRPG {
 
             // determine if this is the game manager loading scene
             if (IsInitializationScene()) {
-                LoadMainMenu();
+                LoadMainMenu(true);
                 return;
             }
 
@@ -349,7 +349,7 @@ namespace AnyRPG {
                 uIManager.CombatTextCanvas.SetActive(true);
 
                 if (playerManager.PlayerUnitSpawned == false) {
-                    playerManager.SpawnPlayerUnit();
+                    playerManager.RequestSpawnPlayerUnit();
                 }
 
                 // test moving down here
@@ -406,9 +406,12 @@ namespace AnyRPG {
             }
         }
 
-        public void LoadMainMenu() {
-            SystemEventManager.TriggerEvent("OnExitGame", new EventParamProperties());
-            playerManager.ProcessExitToMainMenu();
+        public void LoadMainMenu(bool isInitializationScene) {
+            if (isInitializationScene == false) {
+                // since this isn't the initialization scene, we need to process the exit to main menu functionality
+                SystemEventManager.TriggerEvent("OnExitGame", new EventParamProperties());
+                playerManager.ProcessExitToMainMenu();
+            }
             if (systemConfigurationManager.MainMenuSceneNode != null) {
                 LoadLevel(systemConfigurationManager.MainMenuSceneNode.ResourceName);
             } else {

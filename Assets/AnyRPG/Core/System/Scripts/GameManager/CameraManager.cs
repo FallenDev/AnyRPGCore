@@ -253,7 +253,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             eventSubscriptionsInitialized = true;
         }
 
@@ -263,7 +263,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             eventSubscriptionsInitialized = false;
         }
 
@@ -299,7 +299,7 @@ namespace AnyRPG {
             //}
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             mainCameraController.ClearTarget();
         }
     }

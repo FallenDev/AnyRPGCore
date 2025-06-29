@@ -631,7 +631,7 @@ namespace AnyRPG {
             }
             SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             SystemEventManager.StartListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
             systemEventManager.OnAddBag += HandleAddBag;
@@ -649,7 +649,7 @@ namespace AnyRPG {
             }
             SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             //SystemEventManager.StopListening("OnPlayerUnitSpawn", HandleMainCamera);
             SystemEventManager.StopListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
             SystemEventManager.StopListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
@@ -1055,7 +1055,7 @@ namespace AnyRPG {
             InitializeMiniMapTarget(playerManager.ActiveUnitController.gameObject);
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             //Debug.Log("UIManager.HandleCharacterDespawn()");
             DeInitializeMiniMapTarget();
             (statusEffectWindow.CloseableWindowContents as StatusEffectWindowPanel).ClearTarget();

@@ -78,9 +78,7 @@ namespace AnyRPG {
         }
 
         public void SetCompleted(UnitController sourceUnitController, bool value) {
-            BehaviorSaveData saveData = sourceUnitController.CharacterSaveManager.GetBehaviorSaveData(this);
-            saveData.completed = value;
-            sourceUnitController.CharacterSaveManager.BehaviorSaveDataDictionary[saveData.BehaviorName] = saveData;
+            sourceUnitController.CharacterSaveManager.SetBehaviorCompleted(this, value);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

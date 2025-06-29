@@ -55,10 +55,8 @@ namespace AnyRPG {
         }
 
         public void SetTurnedIn(UnitController sourceUnitController, bool turnedIn) {
-            DialogSaveData saveData = sourceUnitController.CharacterSaveManager.GetDialogSaveData(this);
-            saveData.turnedIn = turnedIn;
-            sourceUnitController.CharacterSaveManager.DialogSaveDataDictionary[saveData.DialogName] = saveData;
-            if (saveData.turnedIn == true) {
+            sourceUnitController.CharacterSaveManager.SetDialogTurnedIn(this, turnedIn);
+            if (turnedIn == true) {
                 //Debug.Log(DisplayName + ".Dialog.TurnedIn = true");
                 // these events are for things that need the dialog turned in as a prerequisite
                 systemEventManager.NotifyOnDialogCompleted(sourceUnitController, this);

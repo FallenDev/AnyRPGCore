@@ -227,7 +227,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="useable"></param>
         public void SetUseable(IUseable useable, bool monitor = true) {
-            //Debug.Log($"{gameObject.name}.ActionButton.SetUsable(" + (useable == null ? "null" : useable.DisplayName) + ")");
+            Debug.Log($"{gameObject.name}.ActionButton.SetUsable({(useable == null ? "null" : useable.DisplayName)}, {monitor})");
 
             playerManager.UnitController.UnitEventController.OnAttemptPerformAbility -= OnAttemptUseableUse;
             playerManager.UnitController.UnitEventController.OnPerformAbility -= OnUseableUse;
@@ -239,8 +239,6 @@ namespace AnyRPG {
 
             useable.AssignToActionButton(this);
 
-            // replaced with new call
-            //Useable = useable;
             LoadUseable(useable);
 
             playerManager.UnitController.UnitEventController.OnAttemptPerformAbility += OnAttemptUseableUse;
@@ -383,7 +381,10 @@ namespace AnyRPG {
         /// attempt to remove unlearned spells from the button
         /// </summary>
         public void RemoveStaleActions() {
+            //Debug.Log($"{gameObject.name}.ActionButton.RemoveStaleActions()");
+
             if (Useable != null && Useable.IsUseableStale(playerManager.UnitController) == true) {
+                Debug.Log($"{gameObject.name}.ActionButton.RemoveStaleActions() removing useable: {Useable.ResourceName}");
                 savedUseable = Useable;
                 useable = null;
                 UpdateVisual();
@@ -512,10 +513,11 @@ namespace AnyRPG {
 
 
         public void ClearUseable() {
-            //Debug.Log("ActionButton.ClearUseable()");
+            //Debug.Log($"{gameObject.name}.ActionButton.ClearUseable()");
 
             UnsubscribeFromCombatEvents();
             if (Useable != null) {
+                Debug.Log($"{gameObject.name}.ActionButton.ClearUseable() useable: {Useable.ResourceName}");
                 savedUseable = Useable;
             }
             useable = null;

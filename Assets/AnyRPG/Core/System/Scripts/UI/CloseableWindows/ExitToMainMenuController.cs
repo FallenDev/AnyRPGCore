@@ -41,7 +41,7 @@ namespace AnyRPG {
             //Debug.Log("ExitMenuController.ConfirmExit()");
             uIManager.exitToMainMenuWindow.CloseWindow();
             uIManager.playerOptionsMenuWindow.CloseWindow();
-            levelManager.LoadMainMenu();
+            levelManager.LoadMainMenu(false);
         }
 
     }

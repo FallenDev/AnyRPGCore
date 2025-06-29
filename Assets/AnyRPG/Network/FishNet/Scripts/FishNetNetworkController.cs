@@ -298,18 +298,10 @@ namespace AnyRPG {
 
         }
 
-
-        public override void RequestSpawnPlayer(int playerCharacterId/*, CharacterRequestData characterRequestData*/, Transform parentTransform, string sceneName) {
-            Debug.Log($"FishNetNetworkController.SpawnPlayer({playerCharacterId})");
-
-            clientConnector.RequestSpawnPlayer(/*characterRequestData.clientSpawnRequestId,*/ playerCharacterId, parentTransform, sceneName);
-            //return null;
-        }
-
-        public override void RequestSpawnLobbyGamePlayer(int gameId/*, CharacterRequestData characterRequestData*/, string sceneName) {
+        public override void RequestSpawnPlayerUnit(string sceneName) {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
-            clientConnector.RequestSpawnLobbyGamePlayer(/*characterRequestData.clientSpawnRequestId,*/ gameId, sceneName);
+            clientConnector.RequestSpawnPlayerUnit(sceneName);
             //return null;
         }
 
@@ -409,8 +401,8 @@ namespace AnyRPG {
             clientConnector.RequestLobbyPlayerList();
         }
 
-        public override void ChooseLobbyGameCharacter(string unitProfileName, int gameId) {
-            clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId);
+        public override void ChooseLobbyGameCharacter(string unitProfileName, int gameId, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId, appearanceString, swappableMeshSaveData);
         }
 
         public override void RequestStartLobbyGame(int gameId) {
@@ -483,6 +475,10 @@ namespace AnyRPG {
 
         public override void RequestCancelCrafting() {
             clientConnector.RequestCancelCrafting();
+        }
+
+        public override void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            clientConnector.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
         #endregion

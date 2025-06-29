@@ -1094,24 +1094,12 @@ namespace AnyRPG {
             }
 
             playerManager.ActiveUnitController.UnitEventController.OnClearTarget += HandleClearTarget;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartCasting += HandleStartCasting;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndCasting += HandleEndCasting;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartActing += HandleStartActing;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndActing += HandleEndActing;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartAttacking += HandleStartAttacking;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndAttacking += HandleEndAttacking;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartLevitated += HandleStartLevitated;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndLevitated += HandleEndLevitated;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartStunned += HandleStartStunned;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndStunned += HandleEndStunned;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartRevive += HandleStartRevive;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorDeath += HandleDeath;
             playerManager.ActiveUnitController.UnitEventController.OnClassChange += HandleClassChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange += HandleFactionChange;
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange += HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState += HandleActivateMountedState;
             playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState += HandleDeActivateMountedState;
-            playerManager.ActiveUnitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
+            systemEventManager.OnPlayerUnitDespawn += HandleUnitDespawn;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel += HandleCastCancel;
             playerManager.ActiveUnitController.UnitModelController.OnModelUpdated += HandleModelUpdated;
 
@@ -1124,23 +1112,13 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.PlayerController.UnsubscribeFromUnitEvents()");
             playerManager.ActiveUnitController.UnitEventController.OnSetTarget -= HandleSetTarget;
             playerManager.ActiveUnitController.UnitEventController.OnClearTarget -= HandleClearTarget;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartCasting -= HandleStartCasting;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndCasting -= HandleEndCasting;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartAttacking -= HandleStartAttacking;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndAttacking -= HandleEndAttacking;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartLevitated -= HandleStartLevitated;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndLevitated -= HandleEndLevitated;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartStunned -= HandleStartStunned;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorEndStunned -= HandleEndStunned;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorStartRevive -= HandleStartRevive;
-            playerManager.ActiveUnitController.UnitEventController.OnAnimatorDeath -= HandleDeath;
             playerManager.ActiveUnitController.UnitEventController.OnClassChange -= HandleClassChange;
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange -= HandleFactionChange;
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState -= HandleActivateMountedState;
             playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState -= HandleDeActivateMountedState;
             playerManager.ActiveUnitController.OnInitializeNamePlate -= HandleInitializeNamePlate;
-            playerManager.ActiveUnitController.UnitEventController.OnUnitDestroy -= HandleUnitDestroy;
+            systemEventManager.OnPlayerUnitDespawn -= HandleUnitDespawn;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel -= HandleCastCancel;
             playerManager.ActiveUnitController.UnitModelController.OnModelUpdated -= HandleModelUpdated;
 
@@ -1164,12 +1142,10 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleUnitDestroy(UnitProfile unitProfile) {
+        public void HandleUnitDespawn(UnitController unitController) {
             //Debug.Log($"{gameObject.name}.PlayerController.HandleUnitDestroy()");
-            SystemEventManager.TriggerEvent("OnPlayerUnitDespawn", new EventParamProperties());
             UnsubscribeFromUnitEvents();
             NotifyInteractablesOnDespawn();
-            playerManager.SetUnitController(null);
         }
 
         public void NotifyInteractablesOnDespawn() {
@@ -1230,95 +1206,6 @@ namespace AnyRPG {
             systemEventManager.NotifyOnSpecializationChange(sourceUnitController, newSpecialization, oldSpecialization);
             if (newSpecialization != null) {
                 messageFeedManager.WriteMessage("Changed specialization to " + newSpecialization.DisplayName);
-            }
-        }
-
-
-        public void HandleDeath() {
-            //Debug.Log($"{gameObject.name}.PlayerController.HandleDeath()");
-            playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            SystemEventManager.TriggerEvent("OnDeath", new EventParamProperties());
-        }
-
-        public void HandleStartRevive() {
-            playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-        }
-
-        public void HandleStartLevitated() {
-            playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            EventParamProperties eventParam = new EventParamProperties();
-            SystemEventManager.TriggerEvent("OnStartLevitated", eventParam);
-        }
-
-        public void HandleEndLevitated(bool swapAnimator) {
-            if (swapAnimator) {
-                playerManager.ActiveUnitController.UnitAnimator.SetCorrectOverrideController();
-                EventParamProperties eventParam = new EventParamProperties();
-                SystemEventManager.TriggerEvent("OnEndLevitated", eventParam);
-            }
-        }
-
-        public void HandleStartStunned() {
-            playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            EventParamProperties eventParam = new EventParamProperties();
-            SystemEventManager.TriggerEvent("OnStartStunned", eventParam);
-        }
-
-        public void HandleEndStunned(bool swapAnimator) {
-            if (swapAnimator) {
-                playerManager.ActiveUnitController.UnitAnimator.SetCorrectOverrideController();
-                EventParamProperties eventParam = new EventParamProperties();
-                SystemEventManager.TriggerEvent("OnEndStunned", eventParam);
-            }
-        }
-
-        public void HandleStartCasting(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator == true) {
-                playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            }
-            SystemEventManager.TriggerEvent("OnStartCasting", eventParam);
-        }
-
-        public void HandleEndCasting(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator) {
-                playerManager.ActiveUnitController.UnitAnimator.SetCorrectOverrideController();
-                SystemEventManager.TriggerEvent("OnEndCasting", eventParam);
-            }
-        }
-
-        public void HandleStartActing(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator == true) {
-                playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            }
-            SystemEventManager.TriggerEvent("OnStartActing", eventParam);
-        }
-
-        public void HandleEndActing(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator) {
-                playerManager.ActiveUnitController.UnitAnimator.SetCorrectOverrideController();
-                SystemEventManager.TriggerEvent("OnEndActing", eventParam);
-            }
-        }
-
-        public void HandleStartAttacking(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator) {
-                playerManager.ActiveUnitController.UnitAnimator.SetDefaultOverrideController();
-            }
-            SystemEventManager.TriggerEvent("OnStartAttacking", eventParam);
-        }
-
-        public void HandleEndAttacking(bool swapAnimator) {
-            EventParamProperties eventParam = new EventParamProperties();
-            if (swapAnimator) {
-                if (playerManager.ActiveUnitController != null) {
-                    playerManager.ActiveUnitController.UnitAnimator.SetCorrectOverrideController();
-                }
-                SystemEventManager.TriggerEvent("OnEndAttacking", eventParam);
             }
         }
 

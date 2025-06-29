@@ -1,4 +1,5 @@
 using FishNet.Component.Animating;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -39,7 +40,7 @@ namespace AnyRPG {
             networkAnimator.SetAnimator(animator);
         }
 
-        private void CompleteModelRequest(bool isOwner) {
+        private void CompleteModelRequest(bool isOwner, AnyRPGSaveData saveData) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
             /*
             CharacterRequestData characterRequestData;
@@ -51,7 +52,12 @@ namespace AnyRPG {
             characterRequestData.spawnRequestId = clientSpawnRequestId;
             systemGameManager.CharacterManager.CompleteModelRequest(characterRequestData, unitController, isOwner);
             */
-            systemGameManager.CharacterManager.CompleteNetworkModelRequest(/*clientSpawnRequestId.Value, serverSpawnRequestId.Value,*/ unitController, gameObject, base.OwnerId == -1);
+            systemGameManager.CharacterManager.CompleteNetworkModelRequest(unitController, gameObject, base.OwnerId == -1);
+            /*
+            if (saveData != null) {
+                unitController.CharacterSaveManager.LoadSaveDataToCharacter(saveData);
+            }
+            */
         }
 
         public override void OnStartClient() {
@@ -62,7 +68,12 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            CompleteModelRequest(base.IsOwner);
+            //if (unitController.UnitControllerMode == UnitControllerMode.Player) {
+            //    GetClientSaveData();
+            //} else {
+                CompleteModelRequest(base.IsOwner, null);
+            //}
+
         }
 
 
@@ -75,9 +86,24 @@ namespace AnyRPG {
                 return;
             }
 
-            CompleteModelRequest(base.OwnerId == -1);
+            CompleteModelRequest(base.OwnerId == -1, null);
             //systemGameManager.CharacterManager.CompleteModelRequest(serverRequestId, false);
         }
+
+        /*
+        [ServerRpc(RequireOwnership = false)]
+        public void GetClientSaveData(NetworkConnection networkConnection = null) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
+
+            PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
+        }
+
+        [TargetRpc]
+        public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
+            CompleteModelRequest(base.IsOwner, saveData);
+        }
+        */
+
 
     }
 }

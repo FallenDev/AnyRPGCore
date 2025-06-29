@@ -4,9 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace AnyRPG {
-    public class PlayerManagerServer : ConfiguredMonoBehaviour {
+    public class PlayerManagerServer : ConfiguredMonoBehaviour, ICharacterRequestor {
+
+
+        /// <summary>
+        /// accountId, playerCharacterMonitor
+        /// </summary>
+        private Dictionary<int, PlayerCharacterMonitor> playerCharacterMonitors = new Dictionary<int, PlayerCharacterMonitor>();
 
         /// <summary>
         /// accountId, UnitController
@@ -30,6 +37,8 @@ namespace AnyRPG {
 
         protected bool eventSubscriptionsInitialized = false;
 
+        private Coroutine monitorPlayerCharactersCoroutine = null;
+
         // game manager references
         protected SaveManager saveManager = null;
         protected SystemItemManager systemItemManager = null;
@@ -41,7 +50,9 @@ namespace AnyRPG {
         protected SystemAchievementManager systemAchievementManager = null;
         protected QuestGiverManager questGiverManager = null;
         protected MessageFeedManager messageFeedManager = null;
+        protected CharacterManager characterManager = null;
 
+        public Dictionary<int, PlayerCharacterMonitor> PlayerCharacterMonitors { get => playerCharacterMonitors; }
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
         public Dictionary<UnitController, int> ActivePlayerLookup { get => activePlayerLookup; }
         public Dictionary<GameObject, int> ActivePlayerGameObjects { get => activePlayerGameObjects; set => activePlayerGameObjects = value; }
@@ -51,6 +62,10 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
 
             CreateEventSubscriptions();
+            if (monitorPlayerCharactersCoroutine == null) {
+                monitorPlayerCharactersCoroutine = StartCoroutine(MonitorPlayerCharacters());
+            }
+
         }
 
         public override void SetGameManagerReferences() {
@@ -65,6 +80,7 @@ namespace AnyRPG {
             systemAchievementManager = systemGameManager.SystemAchievementManager;
             questGiverManager = systemGameManager.QuestGiverManager;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
+            characterManager = systemGameManager.CharacterManager;
         }
 
 
@@ -96,6 +112,11 @@ namespace AnyRPG {
                 return;
             }
             CleanupEventSubscriptions();
+        }
+
+
+        private void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
+            networkManagerServer.SavePlayerCharacter(playerCharacterMonitor);
         }
 
         public void AddActivePlayer(int accountId, UnitController unitController) {
@@ -311,6 +332,8 @@ namespace AnyRPG {
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
+            playerCharacterMonitors[accountId].ProcessDespawn();
+
             activePlayers[accountId].Despawn(0, false, true);
             RemoveActivePlayer(accountId);
         }
@@ -448,11 +471,145 @@ namespace AnyRPG {
             return null;
         }
 
-        /*
-        public void RespawnPlayerUnit(int accountId) {
-            DespawnPlayerUnit(accountId);
+        public void RequestSpawnPlayerUnit(int accountId, string sceneName) {
+
+            SpawnPlayerRequest spawnPlayerRequest = GetSpawnPlayerRequest(accountId, sceneName);
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                // load local player
+                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData);
+                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
+                CharacterRequestData characterRequestData = new CharacterRequestData(playerManager,
+                    systemGameManager.GameMode,
+                    characterConfigurationRequest);
+                characterRequestData.isOwner = true;
+                characterRequestData.saveData = playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData;
+                characterManager.SpawnCharacterPrefab(characterRequestData, null, spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection);
+            } else {
+                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData);
+                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
+                CharacterRequestData characterRequestData = new CharacterRequestData(this, GameMode.Network, characterConfigurationRequest);
+                characterRequestData.isServer = true;
+                characterRequestData.saveData = playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData;
+
+                Vector3 position = spawnPlayerRequest.spawnLocation;
+                if (spawnPlayerRequest.overrideSpawnLocation == false) {
+                    // we were loading the default location, so randomize the spawn position a bit so players don't all spawn in the same place
+                    position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
+                }
+                networkManagerServer.SpawnPlayer(accountId, characterRequestData, position, spawnPlayerRequest.spawnForwardDirection, sceneName);
+            }
         }
-        */
+
+        public IEnumerator MonitorPlayerCharacters() {
+            while (systemGameManager.GameMode == GameMode.Network) {
+                foreach (PlayerCharacterMonitor playerCharacterMonitor in playerCharacterMonitors.Values) {
+                    if (playerCharacterMonitor.unitController != null) {
+                        SavePlayerCharacter(playerCharacterMonitor);
+                    }
+                }
+                yield return new WaitForSeconds(10);
+            }
+        }
+
+        public void AddPlayerMonitor(int accountId, PlayerCharacterSaveData playerCharacterSaveData) {
+
+            if (playerCharacterMonitors.ContainsKey(accountId)) {
+                return;
+            } else {
+                PlayerCharacterMonitor playerCharacterMonitor = new PlayerCharacterMonitor(
+                    systemGameManager,
+                    accountId,
+                    playerCharacterSaveData,
+                    null
+                );
+                playerCharacterMonitors.Add(accountId, playerCharacterMonitor);
+
+                AddSpawnRequest(accountId, new SpawnPlayerRequest());
+            }
+        }
+
+        public void MonitorPlayerUnit(int accountId, UnitController unitController) {
+            Debug.Log($"NetworkManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
+
+            if (playerCharacterMonitors.ContainsKey(accountId) == false) {
+                return;
+            }
+            playerCharacterMonitors[accountId].SetUnitController(unitController);
+            AddActivePlayer(accountId, unitController);
+        }
+
+        public void StopMonitoringPlayerUnit(UnitController unitController) {
+            Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({unitController.gameObject.name})");
+
+            if (activePlayerLookup.ContainsKey(unitController)) {
+                StopMonitoringPlayerUnit(activePlayerLookup[unitController]);
+            }
+        }
+
+        public void StopMonitoringPlayerUnit(int accountId) {
+            Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({accountId})");
+
+            if (playerCharacterMonitors.ContainsKey(accountId)) {
+                RemoveActivePlayer(accountId);
+
+                playerCharacterMonitors[accountId].StopMonitoring();
+
+                // flush data to database before stop monitoring
+                if (systemGameManager.GameMode == GameMode.Network) {
+                    SavePlayerCharacter(playerCharacterMonitors[accountId]);
+                }
+
+                //activePlayerCharactersByAccount.Remove(activePlayerCharacters[playerCharacterId].accountId);
+                playerCharacterMonitors.Remove(accountId);
+            }
+        }
+
+        
+        public void RespawnPlayerUnit(int accountId) {
+            
+            // get lobby game id, unitprofile, and scene name from the player character save data
+            if (playerCharacterMonitors.ContainsKey(accountId) == false) {
+                //Debug.LogError($"NetworkManagerServer.RequestRespawnPlayerUnit: activePlayerCharacters does not contain accountId {accountId}");
+                return;
+            }
+            string sceneName = playerCharacterMonitors[accountId].unitController.gameObject.scene.name;
+
+            DespawnPlayerUnit(accountId);
+            RequestSpawnPlayerUnit(accountId, sceneName);
+        }
+
+        public void UpdatePlayerAppearance(int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            // Always despawn units if their appearance changes.
+            SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest() {
+                overrideSpawnDirection = true,
+                spawnForwardDirection = playerCharacterMonitors[accountId].unitController.transform.forward,
+                overrideSpawnLocation = true,
+                spawnLocation = playerCharacterMonitors[accountId].unitController.transform.position
+            };
+            string sceneName = playerCharacterMonitors[accountId].unitController.gameObject.scene.name;
+            AddSpawnRequest(accountId, loadSceneRequest);
+            DespawnPlayerUnit(accountId);
+            playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.appearanceString = appearanceString;
+            playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.swappableMeshSaveData = swappableMeshSaveData;
+            playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.unitProfileName = unitProfileName;
+            RequestSpawnPlayerUnit(accountId, sceneName);
+        }
+
+        public void ConfigureSpawnedCharacter(UnitController unitController) {
+        }
+
+        public void PostInit(UnitController unitController) {
+            Debug.Log($"NetworkManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
+
+            // load player data from the active player characters dictionary
+            if (!playerCharacterMonitors.ContainsKey(unitController.CharacterRequestData.accountId)) {
+                //Debug.LogError($"NetworkManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
+                return;
+            }
+        }
+
+
     }
 
 }

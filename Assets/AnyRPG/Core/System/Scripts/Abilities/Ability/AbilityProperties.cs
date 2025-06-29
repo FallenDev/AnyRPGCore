@@ -487,7 +487,7 @@ namespace AnyRPG {
         }
 
         public virtual bool IsUseableStale(UnitController sourceUnitController) {
-            if (sourceUnitController.CharacterAbilityManager.HasAbility(DisplayName)) {
+            if (sourceUnitController.CharacterAbilityManager.HasAbility(ResourceName)) {
                 //Debug.Log(DisplayName + " is not stale");
                 return false;
             }

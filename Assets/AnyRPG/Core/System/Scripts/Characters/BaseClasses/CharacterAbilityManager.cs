@@ -150,7 +150,7 @@ namespace AnyRPG {
             CharacterRequestData characterRequestData = new CharacterRequestData(this,
                 systemGameManager.GameMode,
                 characterConfigurationRequest);
-            systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, UnitGameObject.transform.parent, UnitGameObject.transform.position, UnitGameObject.transform.forward);
+            systemGameManager.CharacterManager.SpawnUnitPrefabLocal(characterRequestData, UnitGameObject.transform.parent, UnitGameObject.transform.position, UnitGameObject.transform.forward);
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {
@@ -1138,7 +1138,8 @@ namespace AnyRPG {
         }
 
         public void LoadAbility(string abilityName) {
-            //Debug.Log($"{gameObject.name}.PlayerAbilityManager.LoadAbility(" + abilityName + ")");
+            Debug.Log($"{unitController.gameObject.name}.PlayerAbilityManager.LoadAbility({abilityName})");
+
             AbilityProperties abilityProperties = systemDataFactory.GetResource<Ability>(abilityName)?.AbilityProperties;
             if (abilityProperties == null) {
                 // if we renamed an ability, old save data could load a null.  prevent invalid abilities from loading.

@@ -1,4 +1,5 @@
 using FishNet.Component.Transforming;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -16,15 +17,8 @@ namespace AnyRPG {
 
         public readonly SyncVar<string> unitProfileName = new SyncVar<string>();
 
-        //public readonly SyncVar<string> characterName = new SyncVar<string>(new SyncTypeSettings(ReadPermission.ExcludeOwner));
-        public readonly SyncVar<string> characterName = new SyncVar<string>();
-
-        public readonly SyncVar<int> unitLevel = new SyncVar<int>();
-
         public readonly SyncVar<UnitControllerMode> unitControllerMode = new SyncVar<UnitControllerMode>();
 
-        public readonly SyncVar<CharacterAppearanceData> characterAppearanceData = new SyncVar<CharacterAppearanceData>();
-        
         private UnitProfile unitProfile = null;
         private UnitController unitController = null;
 
@@ -34,7 +28,6 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
             base.Awake();
 
-            characterName.OnChange += HandleNameSync;
             unitControllerMode.Value = UnitControllerMode.Preview;
         }
 
@@ -56,8 +49,11 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            CompleteCharacterRequest(base.IsOwner);
-            SubscribeToClientUnitEvents();
+            if (unitControllerMode.Value == UnitControllerMode.Player) {
+                GetClientSaveData();
+            }else {
+                CompleteClientCharacterRequest(null);
+            }
         }
 
         public override void OnStopClient() {
@@ -79,7 +75,7 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            CompleteCharacterRequest(false);
+            CompleteCharacterRequest(false, null);
             SubscribeToServerUnitEvents();
         }
 
@@ -92,6 +88,24 @@ namespace AnyRPG {
             UnsubscribeFromServerUnitEvents();
             systemGameManager.NetworkManagerServer.ProcessStopNetworkUnitServer(unitController);
         }
+
+        public void CompleteClientCharacterRequest(AnyRPGSaveData saveData) {
+            CompleteCharacterRequest(base.IsOwner, saveData);
+            SubscribeToClientUnitEvents();
+        }
+        /*
+        [ServerRpc(RequireOwnership = false)]
+        public void GetClientSaveData(NetworkConnection networkConnection = null) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
+
+            PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
+        }
+
+        [TargetRpc]
+        public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
+            CompleteClientCharacterRequest(saveData);
+        }
+        */
 
         public void SubscribeToClientUnitEvents() {
             if (unitController == null) {
@@ -221,6 +235,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnTakeDamage += HandleTakeDamageServer;
             unitController.UnitEventController.OnImmuneToEffect += HandleImmuneToEffectServer;
             unitController.UnitEventController.OnRecoverResource += HandleRecoverResourceServer;
+            unitController.UnitEventController.OnCurrencyChange += HandleCurrencyChangeServer;
+            unitController.UnitEventController.OnLearnRecipe += HandleLearnRecipe;
+            unitController.UnitEventController.OnUnlearnRecipe += HandleUnlearnRecipe;
+            unitController.UnitEventController.OnSetReputationAmount += HandleSetReputationAmountServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -290,6 +308,62 @@ namespace AnyRPG {
             unitController.UnitEventController.OnTakeDamage -= HandleTakeDamageServer;
             unitController.UnitEventController.OnImmuneToEffect -= HandleImmuneToEffectServer;
             unitController.UnitEventController.OnRecoverResource -= HandleRecoverResourceServer;
+            unitController.UnitEventController.OnCurrencyChange -= HandleCurrencyChangeServer;
+            unitController.UnitEventController.OnLearnRecipe -= HandleLearnRecipe;
+            unitController.UnitEventController.OnUnlearnRecipe -= HandleUnlearnRecipe;
+            unitController.UnitEventController.OnSetReputationAmount -= HandleSetReputationAmountServer;
+        }
+
+        public void HandleSetReputationAmountServer(Faction faction, float amount) {
+            HandleSetReputationAmountClient(faction.ResourceName, amount);
+        }
+
+        [ObserversRpc]
+        public void HandleSetReputationAmountClient(string factionName, float amount) {
+            Faction faction = systemDataFactory.GetResource<Faction>(factionName);
+            if (faction == null) {
+                return;
+            }
+            unitController.CharacterFactionManager.SetReputationAmount(faction, amount);
+        }
+
+        public void HandleUnlearnRecipe(Recipe recipe) {
+            HandleUnlearnRecipeClient(recipe.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleUnlearnRecipeClient(string recipeName) {
+            Recipe recipe = systemDataFactory.GetResource<Recipe>(recipeName);
+            if (recipe == null) {
+                return;
+            }
+            unitController.CharacterRecipeManager.UnlearnRecipe(recipe);
+        }
+
+        public void HandleLearnRecipe(Recipe recipe) {
+            HandleLearnRecipeClient(recipe.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleLearnRecipeClient(string recipeName) {
+            Recipe recipe = systemDataFactory.GetResource<Recipe>(recipeName);
+            if (recipe == null) {
+                return;
+            }
+            unitController.CharacterRecipeManager.LearnRecipe(recipe);
+        }
+
+        public void HandleCurrencyChangeServer(string currencyResourceName, int amount) {
+            HandleCurrencyChangeClient(currencyResourceName, amount);
+        }
+
+        [ObserversRpc]
+        public void HandleCurrencyChangeClient(string currencyResourceName, int amount) {
+            Currency currency = systemDataFactory.GetResource<Currency>(currencyResourceName);
+            if (currency == null) {
+                return;
+            }
+            unitController.CharacterCurrencyManager.LoadCurrencyValue(currency, amount);
         }
 
         public void HandleRecoverResourceServer(PowerResource resource, int amount, CombatMagnitude magnitude, AbilityEffectContext context) {
@@ -1281,27 +1355,8 @@ namespace AnyRPG {
             unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
         }
 
-        private void HandleUnitNameChange(string characterName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChange({characterName})");
-
-            HandleUnitNameChangeServer(characterName);
-        }
-
-        [ServerRpc]
-        private void HandleUnitNameChangeServer(string characterName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleUnitNameChangeServer({characterName})");
-
-            this.characterName.Value = characterName;
-        }
-
-        private void HandleNameSync(string oldValue, string newValue, bool asServer) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleNameSync({oldValue}, {newValue}, {asServer})");
-
-            unitController.BaseCharacter.ChangeCharacterName(newValue);
-        }
-
-        private void CompleteCharacterRequest(bool isOwner) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+        private void CompleteCharacterRequest(bool isOwner, AnyRPGSaveData saveData) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
 
             /*
             if (base.Owner != null ) {
@@ -1315,29 +1370,21 @@ namespace AnyRPG {
             } else {
                 CharacterConfigurationRequest characterConfigurationRequest;
                 characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
-                characterConfigurationRequest.characterName = characterName.Value;
-                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest() characterName: {characterConfigurationRequest.characterName}");
-                characterConfigurationRequest.unitLevel = unitLevel.Value;
                 characterConfigurationRequest.unitControllerMode = unitControllerMode.Value;
-                characterConfigurationRequest.characterAppearanceData = characterAppearanceData.Value;
                 CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
                 characterRequestData.isServer = false;
                 characterRequestData.isOwner = isOwner;
                 if (isOwner == true && unitControllerMode.Value == UnitControllerMode.Player) {
                     characterRequestData.characterRequestor = systemGameManager.PlayerManager;
                 }
+                if (saveData != null) {
+                    characterRequestData.saveData = saveData;
+                }
                 unitController.CharacterRequestData = characterRequestData;
-                systemGameManager.CharacterManager.CompleteCharacterRequest(unitController);
+                systemGameManager.CharacterManager.CompleteNetworkCharacterRequest(unitController);
+                
             }
 
-            /*
-            if (base.IsOwner && unitController != null) {
-                unitController.UnitEventController.OnNameChange += HandleUnitNameChange;
-
-                // OnNameChange is not called during initialization, so we have to pass the proper name to the network manually
-                //HandleUnitNameChange(unitController.BaseCharacter.CharacterName);
-            }
-            */
             OnCompleteCharacterRequest();
         }
 
@@ -1465,6 +1512,19 @@ namespace AnyRPG {
             }
             unitController.UnitActionManager.BeginActionInternal(animatedAction, playerInitiated);
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void GetClientSaveData(NetworkConnection networkConnection = null) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
+
+            PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
+        }
+
+        [TargetRpc]
+        public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
+            CompleteClientCharacterRequest(null);
+        }
+
 
     }
 }

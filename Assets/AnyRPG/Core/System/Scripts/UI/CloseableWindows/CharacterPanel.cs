@@ -95,7 +95,7 @@ namespace AnyRPG {
             //Debug.Log("CharacterPanel.CreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             if (playerManager.PlayerUnitSpawned == true) {
                 ProcessPlayerUnitSpawn();
             }
@@ -105,7 +105,7 @@ namespace AnyRPG {
             //Debug.Log("PlayerCombat.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
         }
 
         public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
@@ -125,7 +125,7 @@ namespace AnyRPG {
             systemEventManager.OnRemoveEquipment += HandleRemoveEquipment;
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             //Debug.Log("CharacterPanel.HandlePlayerUnitDespawn()");
             if (playerManager != null && playerManager.UnitController != null && playerManager.UnitController.CharacterStats != null) {
                 playerManager.UnitController.UnitEventController.OnStatChanged -= UpdateStatsDescription;

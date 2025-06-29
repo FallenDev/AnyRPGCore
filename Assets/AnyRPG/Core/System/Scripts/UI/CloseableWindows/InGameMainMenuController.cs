@@ -113,7 +113,7 @@ namespace AnyRPG {
         public void SaveGame() {
             //Debug.Log("MainMenuController.SaveGame()");
             currentNavigationController?.CurrentNavigableElement?.DeSelect();
-            if (saveManager.SaveGame(playerManager.PlayerCharacterSaveData.SaveData)) {
+            if (saveManager.SaveGame(playerManager.ActiveUnitController.CharacterSaveManager.SaveData)) {
                 uIManager.CloseSystemPopupWindows();
                 messageFeedManager.WriteMessage("Game Saved");
             }

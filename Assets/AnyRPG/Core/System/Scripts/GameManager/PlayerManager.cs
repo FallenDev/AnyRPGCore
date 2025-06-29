@@ -42,7 +42,7 @@ namespace AnyRPG {
         /// </summary>
         private GameObject playerConnectionObject = null;
 
-        private PlayerCharacterSaveData playerCharacterSaveData = null;
+        //private PlayerCharacterSaveData playerCharacterSaveData = null;
 
         private PlayerUnitMovementController playerUnitMovementController = null;
 
@@ -108,7 +108,7 @@ namespace AnyRPG {
         public UnitController UnitController { get => unitController; set => unitController = value; }
         public UnitController ActiveUnitController { get => activeUnitController; }
         public PlayerController PlayerController { get => playerController; set => playerController = value; }
-        public PlayerCharacterSaveData PlayerCharacterSaveData { get => playerCharacterSaveData; }
+        //public PlayerCharacterSaveData PlayerCharacterSaveData { get => playerCharacterSaveData; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -183,12 +183,7 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void SetCharacterSaveData(PlayerCharacterSaveData playerCharacterSaveData) {
-            //Debug.Log("PlayerManager.SetCharacterSaveData()");
-
-            this.playerCharacterSaveData = playerCharacterSaveData;
-        }
-
+        /*
         /// <summary>
         /// called when network client is stopped on the player unit
         /// </summary>
@@ -199,6 +194,7 @@ namespace AnyRPG {
             }
             playerManagerServer.DespawnPlayerUnit(networkManagerClient.AccountId);
         }
+        */
 
         public void ProcessExitToMainMenu() {
             //Debug.Log("PlayerManager.ProcessExitToMainMenu()");
@@ -291,9 +287,10 @@ namespace AnyRPG {
                 return;
             }
 
-            SpawnPlayerRequest spawnSettings = SpawnPlayerUnit();
-            //cameraManager.MainCameraController.SetTargetPositionRaw(spawnLocation, activeUnitController.transform.forward);
-            cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
+            // TODO : FIX ME : determine correct spawn location and forward direction
+            //SpawnPlayerRequest spawnSettings = SpawnPlayerUnit();
+            RequestSpawnPlayerUnit();
+            //cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
         }
 
         public void PlayLevelUpEffects(UnitController sourceUnitController, int newLevel) {
@@ -346,14 +343,7 @@ namespace AnyRPG {
                 return;
             }
 
-            playerManagerServer.DespawnPlayerUnit(0);
-            SpawnPlayerUnit();
-
-            /*
-            if (unitController.CharacterStats.IsAlive == false) {
-                unitController.CharacterStats.ReviveComplete();
-            }
-            */
+            playerManagerServer.RespawnPlayerUnit(0);
         }
 
         public void RevivePlayerUnit() {
@@ -396,59 +386,23 @@ namespace AnyRPG {
             }
         }
 
-        public SpawnPlayerRequest SpawnPlayerUnit() {
+        public void RequestSpawnPlayerUnit() {
             //Debug.Log("PlayerManager.SpawnPlayerUnit()");
 
             cameraManager.HidePlayers();
             subscribeToTargetReady = true;
-            return SpawnPlayerUnit(networkManagerClient.AccountId);
+            RequestSpawnPlayerUnit(networkManagerClient.AccountId);
         }
 
-        public SpawnPlayerRequest SpawnPlayerUnit(int accountId) {
+        public void RequestSpawnPlayerUnit(int accountId) {
             //Debug.Log($"PlayerManager.SpawnPlayerUnit({accountId})");
 
-            if (activeUnitController != null) {
-                //Debug.Log("PlayerManager.SpawnPlayerUnit(): Player Unit already exists");
-                return null;
-            }
-
-            // spawn the player unit and set references
-            SpawnPlayerRequest loadSceneRequest = playerManagerServer.GetSpawnPlayerRequest(accountId, levelManager.ActiveSceneName);
-
-            if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
-                networkManagerClient.RequestSpawnLobbyGamePlayer(networkManagerClient.LobbyGame.gameId, /*characterRequestData,*/ SceneManager.GetActiveScene().name);
-
-            } else if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.MMO ) {
-                //networkManagerClient.RequestSpawnMMOGamePlayer();
+            if (systemGameManager.GameMode == GameMode.Network) {
+                networkManagerClient.RequestSpawnPlayerUnit(SceneManager.GetActiveScene().name);
             } else {
-                // load local player
-                CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
-                characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
-                characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(playerCharacterSaveData.SaveData);
-                CharacterRequestData characterRequestData = new CharacterRequestData(this,
-                    systemGameManager.GameMode,
-                    characterConfigurationRequest);
-                characterRequestData.isOwner = true;
-                characterManager.SpawnPlayer(playerCharacterSaveData, characterRequestData, playerUnitParent.transform, loadSceneRequest.spawnLocation, loadSceneRequest.spawnForwardDirection);
-
+                playerManagerServer.RequestSpawnPlayerUnit(accountId, SceneManager.GetActiveScene().name);
             }
-            return loadSceneRequest;
         }
-
-        /*
-        private bool OwnPlayer(UnitController unitController, CharacterRequestData characterRequestData) {
-            //if (characterRequestData.requestMode == GameMode.Local) {
-            //    return true;
-            //}
-
-            // network mode, so ask if unitController is owned by us
-            //return networkManager.OwnPlayer(unitController);
-
-            // testing - for now this can always return true because we will not perform configuration on things we didn't request anyway
-            //return true;
-            return characterManager.HasUnitSpawnRequest(characterRequestData.clientSpawnRequestId);
-        }
-        */
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {
             //Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
@@ -488,18 +442,11 @@ namespace AnyRPG {
                 HandlePlayerUnitSpawn();
             }
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerClient.ClientMode == NetworkClientMode.MMO) {
-                // load player data from saveManager
-                unitController.CharacterSaveManager.LoadSaveDataToCharacter(playerCharacterSaveData.SaveData);
-            }
-
             if (systemGameManager.GameMode == GameMode.Local) {
+                // load player data from saveManager
+
                 systemAchievementManager.CreateEventSubscriptions();
             }
-
-            //SubscribeToPlayerInventoryEvents();
-            //SubscribeToPlayerEvents();
-
 
             if (PlayerPrefs.HasKey("ShowNewPlayerHints") == false) {
                 if (controlsManager.GamePadModeActive == true) {
@@ -588,10 +535,10 @@ namespace AnyRPG {
         public void SpawnPlayerConnection(PlayerCharacterSaveData playerCharacterSaveData) {
             //Debug.Log("PlayerManager.SpawnPlayerConnection()");
 
-            SetCharacterSaveData(playerCharacterSaveData);
+            // this is only called in local mode so we can safely pass zero for account id
+            playerManagerServer.AddPlayerMonitor(0, playerCharacterSaveData);
 
             SpawnPlayerConnectionObject();
-
         }
 
         public void SpawnPlayerConnection() {
@@ -707,6 +654,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnReceiveCombatTextEvent += HandleReceiveCombatTextEvent;
             unitController.UnitEventController.OnTakeDamage += HandleTakeDamage;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
+            unitController.UnitEventController.OnCurrencyChange += HandleCurrencyChange;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -759,11 +707,19 @@ namespace AnyRPG {
             unitController.UnitEventController.OnReceiveCombatTextEvent -= HandleReceiveCombatTextEvent;
             unitController.UnitEventController.OnTakeDamage -= HandleTakeDamage;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
+            unitController.UnitEventController.OnCurrencyChange -= HandleCurrencyChange;
+        }
+
+        public void HandleCurrencyChange(string currencyResourceName, int amount) {
+            //Debug.Log("PlayerManager.HandleCurrencyChange()");
+            systemEventManager.NotifyOnCurrencyChange();
         }
 
         public void HandleDespawn(UnitController controller) {
             UnsubscribeFromPlayerInventoryEvents();
             UnsubscribeFromPlayerEvents();
+            systemEventManager.NotifyOnPlayerUnitDespawn(controller);
+            SetUnitController(null);
         }
 
         public void HandleTakeDamage(IAbilityCaster sourceCaster, UnitController targetUnitController, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, AbilityEffectContext abilityEffectContext) {
@@ -1050,6 +1006,16 @@ namespace AnyRPG {
 
         public void HandleImmuneToEffect(AbilityEffectContext abilityEffectContext) {
             combatTextManager.SpawnCombatText(activeUnitController, 0, CombatTextType.immune, CombatMagnitude.normal, abilityEffectContext);
+        }
+
+        public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                //Debug.Log("PlayerManager.RequestUpdatePlayerAppearance() - local mode, updating appearance string");
+                playerManagerServer.UpdatePlayerAppearance(0, unitProfileName, appearanceString, swappableMeshSaveData);
+            } else {
+                //Debug.Log("PlayerManager.RequestUpdatePlayerAppearance() - server mode, sending request to server");
+                networkManagerClient.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
+            }
         }
 
     }

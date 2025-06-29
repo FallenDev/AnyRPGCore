@@ -28,8 +28,16 @@ namespace AnyRPG {
         }
 
         public void AddCurrentEquipmentSlot(EquipmentSlotProfile equipmentSlotProfile, EquipmentInventorySlot equipmentInventorySlot) {
-            currentEquipment.Add(equipmentSlotProfile, equipmentInventorySlot);
-            currentEquipmentLookup.Add(equipmentInventorySlot, equipmentSlotProfile);
+            if (currentEquipment.ContainsKey(equipmentSlotProfile)) {
+                currentEquipment[equipmentSlotProfile] = equipmentInventorySlot;
+            } else {
+                currentEquipment.Add(equipmentSlotProfile, equipmentInventorySlot);
+            }
+            if (currentEquipmentLookup.ContainsKey(equipmentInventorySlot)) {
+                currentEquipmentLookup[equipmentInventorySlot] = equipmentSlotProfile;
+            } else {
+                currentEquipmentLookup.Add(equipmentInventorySlot, equipmentSlotProfile);
+            }
         }
 
         public void ClearCurrentEquipment() {

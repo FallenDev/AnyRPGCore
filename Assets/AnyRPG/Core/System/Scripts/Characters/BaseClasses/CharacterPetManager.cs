@@ -73,6 +73,7 @@ namespace AnyRPG {
             if (unitProfiles != null && unitProfiles.Contains(unitProfile) == false && unitProfile.IsPet == true) {
                 unitProfiles.Add(unitProfile);
             }
+            unitController.UnitEventController.NotifyOnAddPet(unitProfile);
         }
 
         public virtual void AddPet(string unitProfileName) {
@@ -126,7 +127,7 @@ namespace AnyRPG {
                 systemGameManager.GameMode,
                 characterConfigurationRequest);
 
-            systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, unitController.transform.parent, unitController.transform.position, unitController.transform.forward);
+            systemGameManager.CharacterManager.SpawnUnitPrefabLocal(characterRequestData, unitController.transform.parent, unitController.transform.position, unitController.transform.forward);
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {

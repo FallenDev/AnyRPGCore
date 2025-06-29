@@ -48,6 +48,8 @@ namespace AnyRPG {
         public int accountId;
         public string userName = string.Empty;
         public string unitProfileName = string.Empty;
+        public string appearanceString = string.Empty;
+        public List<SwappableMeshSaveData> swappableMeshSaveData = new List<SwappableMeshSaveData>();
         public bool ready = false;
 
         public LobbyGamePlayerInfo() {

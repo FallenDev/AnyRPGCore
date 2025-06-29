@@ -63,6 +63,8 @@ namespace AnyRPG {
         }
 
         public virtual void SpawnUnit(CharacterConfigurationRequest characterConfigurationRequest) {
+            Debug.Log($"PreviewManager.SpawnUnit({characterConfigurationRequest.unitProfile.ResourceName})");
+
             unitProfile = characterConfigurationRequest.unitProfile;
             //Debug.Log("PreviewManager.SpawnUnit()");
             characterConfigurationRequest.unitControllerMode = UnitControllerMode.Preview;
@@ -71,7 +73,7 @@ namespace AnyRPG {
                 GameMode.Local,
                 characterConfigurationRequest
                 );
-            systemGameManager.CharacterManager.SpawnUnitPrefab(characterRequestData, transform, transform.position, transform.forward);
+            systemGameManager.CharacterManager.SpawnUnitPrefabLocal(characterRequestData, transform, transform.position, transform.forward);
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {

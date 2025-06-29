@@ -37,6 +37,7 @@ namespace AnyRPG {
         protected MessageFeedManager messageFeedManager = null;
         protected CurrencyConverter currencyConverter = null;
         protected VendorManager vendorManager = null;
+        protected SystemEventManager systemEventManager = null;
 
         //protected List<CurrencyAmountController> currencyAmountControllers = new List<CurrencyAmountController>();
 
@@ -67,21 +68,22 @@ namespace AnyRPG {
             messageFeedManager = uIManager.MessageFeedManager;
             currencyConverter = systemGameManager.CurrencyConverter;
             vendorManager = systemGameManager.VendorManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         protected override void ProcessCreateEventSubscriptions() {
             //Debug.Log("VendorUI.CreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
-            SystemEventManager.StartListening("OnCurrencyChange", HandleCurrencyChange);
+            systemEventManager.OnCurrencyChange += HandleCurrencyChange;
         }
 
         protected override void ProcessCleanupEventSubscriptions() {
             //Debug.Log("UnitSpawnNode.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
-            SystemEventManager.StopListening("OnCurrencyChange", HandleCurrencyChange);
+            systemEventManager.OnCurrencyChange -= HandleCurrencyChange;
         }
 
-        public void HandleCurrencyChange(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleCurrencyChange() {
             UpdateCurrencyAmount();
         }
 

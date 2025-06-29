@@ -162,6 +162,10 @@ namespace AnyRPG {
                 return;
             }
 
+            if (systemGameManager.GameMode == GameMode.Network) {
+                return;
+            }
+
             //Debug.Log($"{gameObject.name}PersistentObject.SaveProperties()");
             storedPosition = persistentObjectOwner.transform.position;
             storedForwardDirection = persistentObjectOwner.transform.forward;

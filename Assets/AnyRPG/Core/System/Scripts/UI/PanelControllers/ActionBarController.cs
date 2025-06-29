@@ -48,7 +48,8 @@ namespace AnyRPG {
 
 
         public void ClearActionBar(bool clearSavedUseables = false) {
-            //Debug.Log($"{gameObject.name}.ActionBarController.ClearActionBar()");
+            Debug.Log($"{gameObject.name}.ActionBarController.ClearActionBar({clearSavedUseables})");
+
             for (int i = 0; i < actionButtons.Count; i++) {
                 //Debug.Log($"{gameObject.name}.ActionBarController.ClearActionBar(): clearing button: " + i);
                 actionButtons[i].ClearUseable();
@@ -59,9 +60,10 @@ namespace AnyRPG {
         }
 
         public bool AddSavedAbility(AbilityProperties newAbility) {
-            //Debug.Log("AbilityBarController.AddNewAbility(" + newAbility + ")");
+            //Debug.Log($"{gameObject.name}.ActionBarController.AddSavedAbility({newAbility.ResourceName})");
+
             for (int i = 0; i < actionButtons.Count; i++) {
-                if (actionButtons[i].Useable == null && actionButtons[i].SavedUseable != null && actionButtons[i].SavedUseable.DisplayName == newAbility.DisplayName) {
+                if (actionButtons[i].Useable == null && actionButtons[i].SavedUseable != null && actionButtons[i].SavedUseable.ResourceName == newAbility.ResourceName) {
                     //Debug.Log("Adding ability: " + newAbility + " to empty action button " + i);
                     actionButtons[i].SetUseable(newAbility);
                     return true;
@@ -74,7 +76,8 @@ namespace AnyRPG {
         }
 
         public bool AddNewAbility(AbilityProperties newAbility) {
-            //Debug.Log("AbilityBarController.AddNewAbility(" + newAbility + ")");
+            //Debug.Log($"{gameObject.name}.ActionBarController.AddNewAbility({newAbility.ResourceName})");
+
             for (int i = 0; i < actionButtons.Count; i++) {
                 if (actionButtons[i].Useable == null) {
                     //Debug.Log("Adding ability: " + newAbility + " to empty action button " + i);
@@ -114,6 +117,8 @@ namespace AnyRPG {
         }
 
         public void UpdateVisuals() {
+            Debug.Log($"{gameObject.name}.ActionBarController.UpdateVisuals()");
+
             for (int i = 0; i < actionButtons.Count; i++) {
                 //Debug.Log($"{gameObject.name}.ActionBarController.ClearActionBar(): clearing button: " + i);
                 //actionButtons[i].UpdateVisual();
@@ -122,6 +127,8 @@ namespace AnyRPG {
         }
 
         public void RemoveStaleActions() {
+            Debug.Log($"{gameObject.name}.ActionBarController.RemoveStaleActions()");
+
             for (int i = 0; i < actionButtons.Count; i++) {
                 //Debug.Log($"{gameObject.name}.ActionBarController.ClearActionBar(): clearing button: " + i);
                 actionButtons[i].RemoveStaleActions();

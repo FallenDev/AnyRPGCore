@@ -712,7 +712,7 @@ namespace AnyRPG {
             SaveAppearanceData(newGameManager.PlayerCharacterSaveData.SaveData);
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerClient.ClientMode == NetworkClientMode.Lobby) {
-                networkManagerClient.ChooseLobbyGameCharacter(newGameManager.PlayerCharacterSaveData.SaveData.unitProfileName);
+                networkManagerClient.ChooseLobbyGameCharacter(newGameManager.PlayerCharacterSaveData.SaveData.unitProfileName, newGameManager.PlayerCharacterSaveData.SaveData.appearanceString, newGameManager.PlayerCharacterSaveData.SaveData.swappableMeshSaveData);
             } else {
                 uIManager.confirmNewGameMenuWindow.OpenWindow();
             }
@@ -724,7 +724,7 @@ namespace AnyRPG {
             if (characterCreatorManager.PreviewUnitController?.UnitModelController == null) {
                 return;
             }
-            characterCreatorManager.PreviewUnitController.UnitModelController.SaveAppearanceSettings(/*newGameManager, */saveData);
+            characterCreatorManager.PreviewUnitController.UnitModelController.SaveAppearanceSettings(saveData);
         }
 
 

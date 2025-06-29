@@ -93,7 +93,8 @@ namespace AnyRPG {
         }
 
         private void ClearGamepadActionButtonNodes() {
-            //Debug.Log("ActionBarManager.ClearGamepadActionButtonNodes()");
+            Debug.Log("ActionBarManager.ClearGamepadActionButtonNodes()");
+
             for (int i = 0; i < gamepadActionButtonCount; i++) {
                 gamepadActionButtons[i] = new ActionButtonNode();
             }
@@ -105,7 +106,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
             systemEventManager.OnAddEquipment += HandleAddEquipment;
             systemEventManager.OnRemoveEquipment += HandleRemoveEquipment;
@@ -118,7 +119,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnPlayerUnitDespawn", HandlePlayerUnitDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             SystemEventManager.StopListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
             systemEventManager.OnAddEquipment -= HandleAddEquipment;
             systemEventManager.OnRemoveEquipment -= HandleRemoveEquipment;
@@ -133,12 +134,15 @@ namespace AnyRPG {
         }
 
         public void ClearUseableAssignment() {
+            Debug.Log("ActionBarManager.ClearUseableAssignment()");
+
             moveIndex = -1;
             assigningUseable = null;
         }
 
         public void AssignUseableByIndex(int index) {
-            //Debug.Log("ActionBarManager.AssignUseableByIndex(" + index + ")");
+            Debug.Log($"ActionBarManager.AssignUseableByIndex({index})");
+
             int controllerIndex = Mathf.FloorToInt((float)index / 8f);
             int buttonIndex = index % 8;
 
@@ -167,7 +171,8 @@ namespace AnyRPG {
         }
 
         public void ClearUseableByIndex(int index) {
-            //Debug.Log("ActionBarManager.AssignUseableByIndex(" + index + ")");
+            Debug.Log($"ActionBarManager.AssignUseableByIndex({index})");
+
             int controllerIndex = Mathf.FloorToInt((float)index / 8f);
             int buttonIndex = index % 8;
             gamepadActionButtons[(currentActionBarSet * 16) + index].Useable = null;
@@ -243,7 +248,8 @@ namespace AnyRPG {
         }
 
         public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
-            //Debug.Log($"{gameObject.name}.InanimateUnit.HandlePlayerUnitSpawn()");
+            Debug.Log($"ActionBarManager.HandlePlayerUnitSpawn({sourceUnitController.gameObject.name})");
+
             ProcessPlayerUnitSpawn();
         }
 
@@ -257,13 +263,16 @@ namespace AnyRPG {
         }
 
         public void ProcessPlayerUnitSpawn() {
-            //Debug.Log("ActionBarmanager.HandlePlayerUnitSpawn()");
+            Debug.Log("ActionBarmanager.ProcessPlayerUnitSpawn()");
+
             playerManager.UnitController.UnitEventController.OnSetTarget += HandleSetTarget;
             playerManager.UnitController.UnitEventController.OnClearTarget += HandleClearTarget;
         }
 
-        public void HandlePlayerUnitDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             //Debug.Log("ActionBarmanager.HandlePlayerUnitDespawn()");
+
+            ClearActionBars(true);
 
             // this needs to be called manually here because if the character controller processes the player unit despawn after us, we will miss the event
             HandleClearTarget(null);
@@ -386,6 +395,7 @@ namespace AnyRPG {
 
         public List<ActionButton> GetActionButtons(List<ActionBarController> barControllers) {
             //Debug.Log("ActionBarManager.GetActionButtons()");
+
             List<ActionButton> actionButtons = new List<ActionButton>();
             int count = 0;
             foreach (ActionBarController actionBarController in barControllers) {
@@ -396,17 +406,18 @@ namespace AnyRPG {
                 }
                 //actionButtons.AddRange(actionBarController.MyActionButtons);
             }
+            //Debug.Log($"ActionBarManager.GetActionButtons(): returning {actionButtons.Count} action buttons.");
             return actionButtons;
         }
 
         public List<ActionButton> GetMouseActionButtons() {
-            //Debug.Log("ActionBarManager.GetActionButtons()");
+            Debug.Log("ActionBarManager.GetMouseActionButtons()");
 
             return GetActionButtons(actionBarControllers);
         }
 
         public List<ActionButton> GetGamepadActionButtons() {
-            //Debug.Log("ActionBarManager.GetActionButtons()");
+            Debug.Log("ActionBarManager.GetGamepadActionButtons()");
 
             return GetActionButtons(GamepadActionBarControllers.Cast<ActionBarController>().ToList());
         }
@@ -468,7 +479,7 @@ namespace AnyRPG {
         }
 
         public bool AddNewAbility(AbilityProperties newAbility) {
-            //Debug.Log($"ActionBarManager.AddNewAbility({ newAbility})");
+            Debug.Log($"ActionBarManager.AddNewAbility({newAbility.ResourceName})");
 
             bool returnValue = false;
             bool foundSlot = false;
@@ -536,7 +547,7 @@ namespace AnyRPG {
         }
 
         public void ClearActionBars(bool clearSavedUseables = false) {
-            //Debug.Log("ActionBarManager.ClearActionBars()");
+            Debug.Log($"ActionBarManager.ClearActionBars({clearSavedUseables})");
 
             foreach (ActionBarController actionBarController in actionBarControllers) {
                 //Debug.Log("ActionBarManager.AddNewAbility(): looping through a controller");
@@ -575,7 +586,8 @@ namespace AnyRPG {
         }
 
         public void SetGamepadActionButtonSet(int actionButtonSet, bool updateVisuals = true) {
-            //Debug.Log("ActionBarmanager.SetGamepadActionButtonSet(" + actionButtonSet + ")");
+            Debug.Log($"ActionBarmanager.SetGamepadActionButtonSet({actionButtonSet}, {updateVisuals})");
+
             currentActionBarSet = actionButtonSet;
             gamepadPanel.SetGamepadActionButtonSet(actionButtonSet);
             UpdateGamepadActionButtons(actionButtonSet, GetGamepadActionButtons());
@@ -585,7 +597,8 @@ namespace AnyRPG {
         }
 
         private void UpdateGamepadActionButtons(int actionButtonSet, List<ActionButton> actionButtons) {
-            //Debug.Log("ActionBarmanager.UpdateGamepadActionButtons(" + actionButtonSet + ")");
+            Debug.Log($"ActionBarmanager.UpdateGamepadActionButtons({actionButtonSet})");
+
             for (int i = 0; i < 16; i++) {
                 //Debug.Log("ActionBarmanager.UpdateGamepadActionButtons(" + actionButtonSet + ") checking: " + (i + (actionButtonSet * 16)));
                 if (gamepadActionButtons[i + (actionButtonSet * 16)].Useable == null) {
@@ -597,7 +610,8 @@ namespace AnyRPG {
         }
 
         public void UpdateVisuals() {
-            //Debug.Log("ActionBarmanager.UpdateVisuals(" + removeStaleActions + ")");
+            Debug.Log("ActionBarmanager.UpdateVisuals()");
+
             if (controlsManager.GamePadModeActive == true) {
                 foreach (ActionBarController actionBarController in gamepadActionBarControllers) {
                     //Debug.Log("ActionBarManager.AddNewAbility(): looping through a controller");
@@ -620,13 +634,6 @@ namespace AnyRPG {
                 }
             }
             UpdateGamepadActionButtons(currentActionBarSet, GetGamepadActionButtons());
-
-            /*
-            foreach (ActionBarController actionBarController in gamepadActionBarControllers) {
-                //Debug.Log("ActionBarManager.AddNewAbility(): looping through a controller");
-                actionBarController.UpdateVisuals();
-            }
-            */
         }
 
         public void RemoveStaleActions() {

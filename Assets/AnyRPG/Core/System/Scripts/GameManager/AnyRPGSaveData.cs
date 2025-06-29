@@ -58,8 +58,8 @@ namespace AnyRPG {
         public List<DialogSaveData> dialogSaveData = new List<DialogSaveData>();
         public List<SceneNodeSaveData> sceneNodeSaveData = new List<SceneNodeSaveData>();
         public List<CutsceneSaveData> cutsceneSaveData = new List<CutsceneSaveData>();
-
     }
+
 
     [Serializable]
     public struct ResourcePowerSaveData {

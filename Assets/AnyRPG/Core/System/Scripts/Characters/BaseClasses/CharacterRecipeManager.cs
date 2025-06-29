@@ -40,10 +40,8 @@ namespace AnyRPG {
                 return;
             }
             if (!recipeList.ContainsValue(newRecipe)) {
-                recipeList[SystemDataUtility.PrepareStringForMatch(newRecipe.ResourceName)] = newRecipe;
-                EventParamProperties eventParamProperties = new EventParamProperties();
-                eventParamProperties.simpleParams.StringParam = newRecipe.ResourceName;
-                SystemEventManager.TriggerEvent("OnRecipeListChanged", eventParamProperties);
+                recipeList[newRecipe.ResourceName] = newRecipe;
+                unitController.UnitEventController.NotifyOnLearnRecipe(newRecipe);
             }
         }
 
@@ -54,12 +52,11 @@ namespace AnyRPG {
             if (recipeName == null || recipeName == string.Empty) {
                 return;
             }
-            string keyName = SystemDataUtility.PrepareStringForMatch(recipeName);
-            if (!recipeList.ContainsKey(keyName)) {
-                recipeList[keyName] = systemDataFactory.GetResource<Recipe>(recipeName);
-                if (recipeList[keyName] == null) {
+            if (!recipeList.ContainsKey(recipeName)) {
+                recipeList[recipeName] = systemDataFactory.GetResource<Recipe>(recipeName);
+                if (recipeList[recipeName] == null) {
                     // failed to get a valid recipe
-                    recipeList.Remove(keyName);
+                    recipeList.Remove(recipeName);
                 }
             }
         }
@@ -67,7 +64,9 @@ namespace AnyRPG {
 
         public void UnlearnRecipe(Recipe oldRecipe) {
             if (recipeList.ContainsValue(oldRecipe)) {
-                recipeList.Remove(SystemDataUtility.PrepareStringForMatch(oldRecipe.ResourceName));
+                recipeList.Remove(oldRecipe.ResourceName);
+                unitController.UnitEventController.NotifyOnUnlearnRecipe(oldRecipe);
+
             }
         }
 

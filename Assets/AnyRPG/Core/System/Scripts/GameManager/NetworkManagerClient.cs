@@ -100,31 +100,18 @@ namespace AnyRPG {
             networkController.LoadScene(sceneName);
         }
 
-        public void RequestSpawnPlayer(int playerCharacterId, CharacterRequestData characterRequestData, Transform parentTransform, string sceneName) {
-            //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
+        public void RequestSpawnPlayerUnit(string sceneName) {
+            Debug.Log($"NetworkManagerClient.RequestSpawnPlayerUnit({sceneName})");
 
-            if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
-                Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
-            }
-            networkController.RequestSpawnPlayer(playerCharacterId, /*characterRequestData,*/ parentTransform, sceneName);
-        }
-
-        public void RequestSpawnLobbyGamePlayer(int gameId, /*CharacterRequestData characterRequestData,*/ string sceneName) {
-            //Debug.Log($"NetworkManagerClient.SpawnPlayer({playerCharacterId})");
-            /*
-            if (characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab == null) {
-                Debug.LogWarning($"NetworkManagerClient.SpawnPlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}) On UnitProfile Network Unit Prefab is null ");
-            }
-            */
-            networkController.RequestSpawnLobbyGamePlayer(gameId, /*characterRequestData,*/ sceneName);
+            networkController.RequestSpawnPlayerUnit(sceneName);
         }
 
         public void RequestRespawnPlayerUnit() {
             networkController.RequestRespawnPlayerUnit();
         }
 
-        public GameObject RequestSpawnModelPrefab(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            return networkController.RequestSpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ prefab, parentTransform, position, forward);
+        public GameObject RequestSpawnModelPrefab(GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            return networkController.RequestSpawnModelPrefab(prefab, parentTransform, position, forward);
         }
 
         public void SendLobbyChatMessage(string messageText) {
@@ -151,16 +138,12 @@ namespace AnyRPG {
             return networkController.CanSpawnCharacterOverNetwork();
         }
 
-        public bool OwnPlayer(UnitController unitController) {
-            return networkController.OwnPlayer(unitController);
-        }
-
         public void ProcessStopNetworkUnitClient(UnitController unitController) {
-            if (playerManager.UnitController == unitController) {
-                playerManager.ProcessStopClient();
-            } else {
+            //if (playerManager.UnitController == unitController) {
+                //playerManager.ProcessStopClient();
+            //} else {
                 characterManager.ProcessStopNetworkUnit(unitController);
-            }
+            //}
         }
 
         public void ProcessStopConnection() {
@@ -171,7 +154,7 @@ namespace AnyRPG {
                     uIManager.AddPopupWindowToQueue(uIManager.disconnectedWindow);
                 }
                 isLoggingInOrOut = false;
-                levelManager.LoadMainMenu();
+                levelManager.LoadMainMenu(false);
                 return;
             }
 
@@ -326,8 +309,8 @@ namespace AnyRPG {
             OnSetLobbyPlayerList(lobbyPlayers);
         }
 
-        public void ChooseLobbyGameCharacter(string unitProfileName) {
-            networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId);
+        public void ChooseLobbyGameCharacter(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId, appearanceString, swappableMeshSaveData);
         }
 
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
@@ -558,6 +541,10 @@ namespace AnyRPG {
 
         public void RequestCancelCrafting() {
             networkController.RequestCancelCrafting();
+        }
+
+        public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            networkController.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
 

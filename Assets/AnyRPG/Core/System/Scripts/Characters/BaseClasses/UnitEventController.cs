@@ -153,6 +153,11 @@ namespace AnyRPG {
         public event System.Action<InstantiatedBag, int, bool> OnRequestAddBag = delegate { };
         public event System.Action<Vector3> OnSetGroundTarget = delegate { };
         public event System.Action<UnitController, int, CombatTextType, CombatMagnitude, AbilityEffectContext> OnReceiveCombatTextEvent = delegate {};
+        public event System.Action<Recipe> OnLearnRecipe = delegate { };
+        public event System.Action<Recipe> OnUnlearnRecipe = delegate { };
+        public event System.Action<string, int> OnCurrencyChange = delegate { };
+        public event System.Action<UnitProfile> OnAddPet = delegate { };
+        public event System.Action<Faction, float> OnSetReputationAmount = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -801,6 +806,26 @@ namespace AnyRPG {
         public void NotifyOnRequestCancelStatusEffect(StatusEffectProperties statusEffect) {
             //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestCancelStatusEffect({statusEffect.ResourceName})");
             OnRequestCancelStatusEffect(statusEffect);
+        }
+
+        public void NotifyOnUnlearnRecipe(Recipe oldRecipe) {
+            OnUnlearnRecipe(oldRecipe);
+        }
+
+        public void NotifyOnLearnRecipe(Recipe newRecipe) {
+            OnLearnRecipe(newRecipe);
+        }
+
+        public void NotifyOnCurrencyChange(string currencyResourceName, int amount) {
+            OnCurrencyChange(currencyResourceName, amount);
+        }
+
+        public void NotifyOnAddPet(UnitProfile unitProfile) {
+            OnAddPet(unitProfile);
+        }
+
+        public void NotifyOnSetReputationAmount(Faction faction, float amount) {
+            OnSetReputationAmount(faction, amount);
         }
 
         #endregion

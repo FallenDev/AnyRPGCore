@@ -563,7 +563,6 @@ namespace AnyRPG {
         public void ClearSystemManagedSaveData() {
             //Debug.Log("Savemanager.ClearSystemmanagedCharacterData()");
             cutsceneSaveDataDictionary.Clear();
-            actionBarManager.ClearActionBars(true);
         }
 
         public void LoadWindowPositions() {

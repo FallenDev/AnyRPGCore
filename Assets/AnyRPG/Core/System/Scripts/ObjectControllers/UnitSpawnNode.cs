@@ -416,7 +416,7 @@ namespace AnyRPG {
                 characterRequestData.requestMode = GameMode.Network;
                 unitController = characterManager.SpawnUnitPrefab(characterRequestData, null, transform.position, transform.forward, gameObject.scene);
             } else {
-                unitController = characterManager.SpawnUnitPrefab(characterRequestData, null, transform.position, transform.forward);
+                unitController = characterManager.SpawnUnitPrefabLocal(characterRequestData, null, transform.position, transform.forward);
             }
             if (unitController != null) {
                 spawnReferences.Add(unitController);

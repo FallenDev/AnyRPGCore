@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace AnyRPG {
-    public class NetworkManagerServer : ConfiguredMonoBehaviour, ICharacterRequestor {
+    public class NetworkManagerServer : ConfiguredMonoBehaviour {
 
         public event Action<int, int, bool, bool> OnAuthenticationResult = delegate { };
         public event Action<int, List<PlayerCharacterSaveData>> OnLoadCharacterList = delegate { };
@@ -33,16 +34,6 @@ namespace AnyRPG {
         /// accountId, playerCharacterId, playerCharacterSaveData
         /// </summary>
         private Dictionary<int, Dictionary<int, PlayerCharacterSaveData>> playerCharacterDataDict = new Dictionary<int, Dictionary<int, PlayerCharacterSaveData>>();
-
-        /// <summary>
-        /// accountId, playerCharacterMonitor
-        /// </summary>
-        private Dictionary<int, PlayerCharacterMonitor> activePlayerCharacters = new Dictionary<int, PlayerCharacterMonitor>();
-
-        /// <summary>
-        /// accountId, playerCharacterMonitor
-        /// </summary>
-        //private Dictionary<int, PlayerCharacterMonitor> activePlayerCharactersByAccount = new Dictionary<int, PlayerCharacterMonitor>();
 
         /// <summary>
         /// clientId, loggedInAccount
@@ -98,7 +89,6 @@ namespace AnyRPG {
 
 
         private GameServerClient gameServerClient = null;
-        private Coroutine monitorPlayerCharactersCoroutine = null;
         private bool serverModeActive = false;
         private NetworkClientMode clientMode = NetworkClientMode.Lobby;
 
@@ -124,7 +114,6 @@ namespace AnyRPG {
         public Dictionary<int, LobbyGame> LobbyGames { get => lobbyGames; }
         public Dictionary<int, Dictionary<string, int>> LobbyGameSceneHandles { get => lobbyGameSceneHandles; }
         public Dictionary<int, int> LobbyGameAccountLookup { get => lobbyGameAccountLookup; set => lobbyGameAccountLookup = value; }
-        public Dictionary<int, PlayerCharacterMonitor> ActivePlayerCharacters { get => activePlayerCharacters; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -174,30 +163,13 @@ namespace AnyRPG {
             if (gameMode == GameMode.Network) {
                 // create instance of GameServerClient
                 gameServerClient = new GameServerClient(systemGameManager, systemConfigurationManager.ApiServerAddress);
-                if (monitorPlayerCharactersCoroutine == null) {
-                    monitorPlayerCharactersCoroutine = StartCoroutine(MonitorPlayerCharacters());
-                }
                 return;
             }
 
-            // local mode
-            if (monitorPlayerCharactersCoroutine != null) {
-                StopCoroutine(monitorPlayerCharactersCoroutine);
-            }
         }
 
-        public IEnumerator MonitorPlayerCharacters() {
-            while (systemGameManager.GameMode == GameMode.Network) {
-                foreach (PlayerCharacterMonitor playerCharacterMonitor in activePlayerCharacters.Values) {
-                    if (playerCharacterMonitor.unitController != null) {
-                        SavePlayerCharacter(playerCharacterMonitor);
-                    }
-                }
-                yield return new WaitForSeconds(10);
-            }
-        }
 
-        private void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
+        public void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
             if (playerCharacterMonitor.unitController != null) {
                 playerCharacterMonitor.SavePlayerLocation();
             }
@@ -324,10 +296,7 @@ namespace AnyRPG {
             }
 
             characterManager.ProcessStopNetworkUnit(unitController);
-
-            if (playerManagerServer.ActivePlayerLookup.ContainsKey(unitController)) {
-                StopMonitoringPlayerUnit(playerManagerServer.ActivePlayerLookup[unitController]);
-            }
+            playerManagerServer.StopMonitoringPlayerUnit(unitController);
         }
 
         public void ProcessDeletePlayerCharacterResponse(int accountId) {
@@ -344,57 +313,6 @@ namespace AnyRPG {
                 return;
             }
             gameServerClient.LoadCharacterList(accountId, loggedInAccounts[accountId].token);
-        }
-
-        public bool PlayerCharacterIsActive(int playerCharacterId) {
-            return activePlayerCharacters.ContainsKey(playerCharacterId);
-        }
-
-        public int GetPlayerCharacterAccountId(int playerCharacterId) {
-            if (activePlayerCharacters.ContainsKey(playerCharacterId)) {
-                return activePlayerCharacters[playerCharacterId].accountId;
-            }
-            return -1;
-        }
-
-        public void AddPlayerMonitor(int accountId, PlayerCharacterSaveData playerCharacterSaveData) {
-
-            if (activePlayerCharacters.ContainsKey(accountId)) {
-                return;
-            }
-            else {
-                PlayerCharacterMonitor playerCharacterMonitor = new PlayerCharacterMonitor(
-                    systemGameManager,
-                    accountId,
-                    playerCharacterSaveData,
-                    null
-                );
-                activePlayerCharacters.Add(accountId, playerCharacterMonitor);
-            }
-        }
-
-        public void MonitorPlayerUnit(int accountId, UnitController unitController) {
-            
-            if (activePlayerCharacters.ContainsKey(accountId) == false) {
-                return;
-            }
-            activePlayerCharacters[accountId].SetUnitController(unitController);
-            playerManagerServer.AddActivePlayer(accountId, unitController);
-        }
-
-        public void StopMonitoringPlayerUnit(int accountId) {
-            //Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({playerCharacterId})");
-
-            if (activePlayerCharacters.ContainsKey(accountId)) {
-                playerManagerServer.RemoveActivePlayer(accountId);
-
-                activePlayerCharacters[accountId].StopMonitoring();
-                // flush data to database before stop monitoring
-                SavePlayerCharacter(activePlayerCharacters[accountId]);
-                //activePlayerCharactersByAccount.Remove(activePlayerCharacters[playerCharacterId].accountId);
-                activePlayerCharacters.Remove(accountId);
-            }
-
         }
 
         public void ProcessLoadCharacterListResponse(int accountId, List<PlayerCharacterData> playerCharacters) {
@@ -556,7 +474,7 @@ namespace AnyRPG {
             networkController.SetLobbyPlayerList(accountId, lobbyPlayerList);
         }
 
-        public void ChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+        public void ChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
             if (lobbyGames.ContainsKey(gameId) == false || loggedInAccountsByClient.ContainsKey(accountId) == false) {
                 // game or client doesn't exist
                 return;
@@ -566,6 +484,8 @@ namespace AnyRPG {
                 return;
             }
             lobbyGames[gameId].PlayerList[accountId].unitProfileName = unitProfileName;
+            lobbyGames[gameId].PlayerList[accountId].appearanceString = appearanceString;
+            lobbyGames[gameId].PlayerList[accountId].swappableMeshSaveData = swappableMeshSaveData;
             networkController.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
 
@@ -601,7 +521,11 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerServer.JoinLobbyGameInProgress({gameId}, {accountId})");
 
             if (playerManagerServer.SpawnRequests.ContainsKey(accountId) == false) {
-                playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest());
+                PlayerCharacterSaveData playerCharacterSaveData = GetNewLobbyGamePlayerCharacterSaveData(gameId, accountId, lobbyGames[gameId].PlayerList[accountId].unitProfileName);
+                playerCharacterSaveData.SaveData.appearanceString = lobbyGames[gameId].PlayerList[accountId].appearanceString;
+                playerCharacterSaveData.SaveData.swappableMeshSaveData = lobbyGames[gameId].PlayerList[accountId].swappableMeshSaveData;
+
+                playerManagerServer.AddPlayerMonitor(accountId, playerCharacterSaveData);
             } else {
                 // player already has a spawn request, so this is a rejoin.  Leave it alone because it contains the last correct position and direction
             }
@@ -614,8 +538,13 @@ namespace AnyRPG {
             lobbyGames[gameId].inProgress = true;
             OnStartLobbyGame(gameId);
             // create spawn requests for all players in the game
-            foreach (int accountId in lobbyGames[gameId].PlayerList.Keys) {
-                playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest());
+            foreach (KeyValuePair<int, LobbyGamePlayerInfo> playerInfo in lobbyGames[gameId].PlayerList) {
+                PlayerCharacterSaveData playerCharacterSaveData = GetNewLobbyGamePlayerCharacterSaveData(gameId, playerInfo.Key, playerInfo.Value.unitProfileName);
+                playerCharacterSaveData.SaveData.appearanceString = playerInfo.Value.appearanceString;
+                playerCharacterSaveData.SaveData.swappableMeshSaveData = playerInfo.Value.swappableMeshSaveData;
+
+                playerManagerServer.AddPlayerMonitor(playerInfo.Key, playerCharacterSaveData);
+
             }
             networkController.StartLobbyGame(gameId);
         }
@@ -670,13 +599,13 @@ namespace AnyRPG {
         public void AdvertiseSceneChatMessage(string messageText, int accountId) {
             networkController.AdvertiseSendSceneChatMessage(messageText, accountId);
 
-            if (activePlayerCharacters.ContainsKey(accountId) == false) {
+            if (playerManagerServer.PlayerCharacterMonitors.ContainsKey(accountId) == false) {
                 // no unit logged in
                 return;
             }
             string addedText = $"{loggedInAccounts[accountId].username}: {messageText}\n";
 
-            activePlayerCharacters[accountId].unitController.UnitEventController.NotifyOnBeginChatMessage(addedText);
+            playerManagerServer.PlayerCharacterMonitors[accountId].unitController.UnitEventController.NotifyOnBeginChatMessage(addedText);
         }
 
         public void AdvertiseLoadScene(string sceneName, int accountId) {
@@ -689,7 +618,6 @@ namespace AnyRPG {
         public void DespawnPlayerUnit(int accountId) {
             Debug.Log($"NetworkManagerServer.DespawnPlayerUnit({accountId})");
 
-            activePlayerCharacters[accountId].ProcessDespawn();
             playerManagerServer.DespawnPlayerUnit(accountId);
         }
 
@@ -927,58 +855,33 @@ namespace AnyRPG {
             }
         }
 
-        public void RequestSpawnLobbyGamePlayer(int accountId, int gameId, UnitProfile unitProfile, string sceneName) {
-            Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {unitProfile.ResourceName}, {sceneName})");
+        public void RequestSpawnLobbyGamePlayer(int accountId, int gameId, string sceneName) {
+            Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {sceneName})");
 
-            PlayerCharacterSaveData playerCharacterSaveData = GetPlayerCharacterSaveData(gameId, accountId, unitProfile);
-
-            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterSaveData.SaveData);
-            characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
-            CharacterRequestData characterRequestData = new CharacterRequestData(this, GameMode.Network, characterConfigurationRequest);
-            characterRequestData.isServer = true;
-
-            SpawnPlayerRequest spawnPlayerRequest = playerManagerServer.GetSpawnPlayerRequest(accountId, sceneName);
-
-            Vector3 position = spawnPlayerRequest.spawnLocation;
-            if (spawnPlayerRequest.overrideSpawnLocation == false) {
-                // we were loading the default location, so randomize the spawn position a bit so players don't all spawn in the same place
-                position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
-            }
-
-            AddPlayerMonitor(accountId, playerCharacterSaveData);
-
-            networkController.SpawnLobbyGamePlayer(accountId, characterRequestData, position, spawnPlayerRequest.spawnForwardDirection, sceneName);
+            playerManagerServer.RequestSpawnPlayerUnit(accountId, sceneName);
         }
 
+        public void SpawnPlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
+            networkController.SpawnLobbyGamePlayer(accountId, characterRequestData, position, forward, sceneName);
 
-
-        private PlayerCharacterSaveData GetPlayerCharacterSaveData(int gameId, int accountId, UnitProfile unitProfile) {
-            Debug.Log($"NetworkManagerServer.GetPlayerCharacterSaveData({gameId}, {accountId}, {unitProfile.ResourceName})");
-
-            if (activePlayerCharacters.ContainsKey(accountId)) {
-                return activePlayerCharacters[accountId].playerCharacterSaveData;
-            } else {
-                PlayerCharacterSaveData playerCharacterSaveData = saveManager.CreateSaveData();
-                playerCharacterSaveData.PlayerCharacterId = accountId;
-                playerCharacterSaveData.SaveData.playerName = lobbyGames[gameId].PlayerList[accountId].userName;
-                playerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
-                playerCharacterSaveData.SaveData.CurrentScene = lobbyGames[gameId].sceneResourceName;
-                return playerCharacterSaveData;
-            }
         }
 
-        public void ConfigureSpawnedCharacter(UnitController unitController) {
+        private PlayerCharacterSaveData GetNewLobbyGamePlayerCharacterSaveData(int gameId, int accountId, string unitProfileName) {
+            Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfileName})");
+
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
+            return GetNewLobbyGamePlayerCharacterSaveData(gameId, accountId, unitProfile);
         }
 
-        public void PostInit(UnitController unitController) {
-            Debug.Log($"NetworkManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
+        private PlayerCharacterSaveData GetNewLobbyGamePlayerCharacterSaveData(int gameId, int accountId, UnitProfile unitProfile) {
+            Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfile.ResourceName})");
 
-            // load player data from the active player characters dictionary
-            if (!activePlayerCharacters.ContainsKey(unitController.CharacterRequestData.accountId)) {
-                //Debug.LogError($"NetworkManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
-                return;
-            }
-            unitController.CharacterSaveManager.LoadSaveDataToCharacter(activePlayerCharacters[unitController.CharacterRequestData.accountId].playerCharacterSaveData.SaveData);
+            PlayerCharacterSaveData playerCharacterSaveData = saveManager.CreateSaveData();
+            playerCharacterSaveData.PlayerCharacterId = accountId;
+            playerCharacterSaveData.SaveData.playerName = lobbyGames[gameId].PlayerList[accountId].userName;
+            playerCharacterSaveData.SaveData.unitProfileName = unitProfile.ResourceName;
+            playerCharacterSaveData.SaveData.CurrentScene = lobbyGames[gameId].sceneResourceName;
+            return playerCharacterSaveData;
         }
 
         public Scene GetAccountScene(int accountId, string sceneName) {
@@ -988,40 +891,16 @@ namespace AnyRPG {
         public void RequestRespawnPlayerUnit(int accountId) {
             Debug.Log($"NetworkManagerServer.RequestRespawnPlayerUnit({accountId})");
             
-            // get lobby game id, unitprofile, and scene name from the player character save data
-            if (activePlayerCharacters.ContainsKey(accountId) == false) {
-                //Debug.LogError($"NetworkManagerServer.RequestRespawnPlayerUnit: activePlayerCharacters does not contain accountId {accountId}");
-                return;
-            }
-            string sceneName = activePlayerCharacters[accountId].unitController.gameObject.scene.name;
-            UnitProfile unitProfile = activePlayerCharacters[accountId].unitController.UnitProfile;
-
-            DespawnPlayerUnit(accountId);
-
-            if (lobbyGameAccountLookup.ContainsKey(accountId) == true) {
-                RequestSpawnLobbyGamePlayer(accountId, lobbyGameAccountLookup[accountId], unitProfile, sceneName);
-            }
-
+            playerManagerServer.RespawnPlayerUnit(accountId);
         }
 
-
-        /*
-        public void SetCraftingManagerAbility(UnitController sourceUnitController, string abilityName) {
-            Debug.Log($"NetworkManagerServer.SetCraftingManagerAbility({sourceUnitController.gameObject.name}, {abilityName})");
-
-            networkController.SetCraftingManagerAbility(playerManagerServer.ActivePlayerLookup[sourceUnitController], abilityName);
-        }
-        */
-
-        /*
-        public void AdvertiseInteractWithSkillTrainerComponent(int accountId, Interactable interactable, int optionIndex) {
-            networkController.AdvertiseInteractWithSkillTrainerComponentServer(accountId, interactable, optionIndex);
+        public void MonitorPlayerUnit(int accountId, UnitController unitController) {
+            playerManagerServer.MonitorPlayerUnit(accountId, unitController);
         }
 
-        public void AdvertiseInteractWithAnimatedObjectComponent(int accountId, Interactable interactable, int optionIndex) {
-            networkController.AdvertiseInteractWithAnimatedObjectComponentServer(accountId, interactable, optionIndex);
+        public void RequestUpdatePlayerAppearance(int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            playerManagerServer.UpdatePlayerAppearance(accountId, unitProfileName, appearanceString, swappableMeshSaveData);
         }
-        */
     }
 
 }

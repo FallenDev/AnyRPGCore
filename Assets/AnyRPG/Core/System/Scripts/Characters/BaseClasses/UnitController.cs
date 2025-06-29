@@ -480,11 +480,6 @@ namespace AnyRPG {
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
             characterSaveManager = new CharacterSaveManager(this, systemGameManager);
-
-            // testing moved to SetUnitProfile to give a chance to override baseCharacter if player so equipmentManager reference is correct
-            // now that baseCharacter is not overridden, this can probably be moved back here
-            //unitModelController.Initialize();
-            //characterInventoryManager.PerformSetupActivities();
         }
 
         public override void SetGameManagerReferences() {
@@ -1130,6 +1125,10 @@ namespace AnyRPG {
             isOwner = characterRequestData.isOwner;
             isServerOwned = characterRequestData.isServerOwned;
 
+            if (characterRequestData.saveData != null) {
+                characterSaveManager.SetSaveData(characterRequestData);
+            }
+
             characterInventoryManager.PerformSetupActivities();
 
             unitModelController.LoadInitialSavedAppearance(characterConfigurationRequest.characterAppearanceData);
@@ -1174,6 +1173,17 @@ namespace AnyRPG {
 
             characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
 
+            // this must be called after setting the level in case the character has gear that is higher than level 1
+            characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
+
+            if (characterRequestData.saveData != null) {
+                characterSaveManager.LoadSaveDataToCharacter();
+                // there could have been patches that provide new capabilities since the data was saved, so we need to capture the current state again
+                characterSaveManager.SaveGameData();
+                // now that the save data has been loaded, we can create event subscriptions to monitor changes to the character
+                characterSaveManager.CreateEventSubscriptions();
+            }
+
             footstepType = unitProfile.FootstepType;
 
             if (unitProfile.FlightCapable == true) {
@@ -1185,8 +1195,6 @@ namespace AnyRPG {
 
             SetPersistenceProperties();
 
-            // this must be called after setting the level in case the character has gear that is higher than level 1
-            characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
 
             // now that equipment has had a chance to be equipped, give character combat a chance to add default unit profile hit effects
             // in case no weapons were equipped

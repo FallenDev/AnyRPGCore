@@ -25,8 +25,7 @@ namespace AnyRPG {
         private SaveManager saveManager = null;
         private LevelManager levelManager = null;
 
-        public Dictionary<string, BehaviorSaveData> BehaviorSaveDataDictionary { get => behaviorSaveDataDictionary; set => behaviorSaveDataDictionary = value; }
-        public Dictionary<string, DialogSaveData> DialogSaveDataDictionary { get => dialogSaveDataDictionary; set => dialogSaveDataDictionary = value; }
+        public Dictionary<string, DialogSaveData> DialogSaveDataDictionary { get => dialogSaveDataDictionary; }
 
         public Dictionary<string, SceneNodeSaveData> SceneNodeSaveDataDictionary { get => sceneNodeSaveDataDictionary; set => sceneNodeSaveDataDictionary = value; }
 
@@ -57,17 +56,198 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRaceChange += HandleRaceChange;
                 unitController.UnitEventController.OnClassChange += HandleClassChange;
                 unitController.UnitEventController.OnSpecializationChange += HandleSpecializationChange;
-                /*
-                unitController.CharacterInventoryManager.OnInventoryChanged += SaveInventory;
-                unitController.CharacterEquipmentManager.OnEquipmentChanged += SaveEquipment;
-                unitController.CharacterQuestLog.OnQuestLogUpdated += SaveQuestLog;
-                unitController.CharacterRecipeManager.OnRecipeListUpdated += SaveRecipeList;
-                unitController.CharacterSkillManager.OnSkillListUpdated += SaveSkillList;
-                unitController.CharacterAbilityManager.OnAbilityListUpdated += SaveAbilityList;
-                unitController.CharacterFactionManager.OnReputationChanged += SaveReputation;
-                */
+                unitController.UnitEventController.OnLearnAbility += HandleLearnAbility;
+                unitController.UnitEventController.OnUnlearnAbility += HandleUnlearnAbility;
+                unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
+                unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkill;
+                unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChanged;
+                unitController.UnitEventController.OnRebuildModelAppearance += HandleRebuildModelAppearance;
+                unitController.UnitEventController.OnAbandonQuest += HandleAbandonQuest;
+                unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
+                unitController.UnitEventController.OnTurnInQuest += HandleTurnInQuest;
+                unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestComplete;
+                unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
+                unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
+                unitController.UnitEventController.OnAddItemToInventorySlot += HandleAddItemToInventorySlot;
+                unitController.UnitEventController.OnRemoveItemFromInventorySlot += HandleRemoveItemFromInventorySlot;
+                unitController.UnitEventController.OnAddItemToBankSlot += HandleAddItemToBankSlot;
+                unitController.UnitEventController.OnRemoveItemFromBankSlot += HandleRemoveItemFromBankSlot;
+                unitController.UnitEventController.OnAddBag += HandleAddBag;
+                unitController.UnitEventController.OnRemoveBag += HandleRemoveBag;
+                unitController.UnitEventController.OnLearnRecipe += HandleLearnRecipe;
+                unitController.UnitEventController.OnUnlearnRecipe += HandleUnlearnRecipe;
+                unitController.UnitEventController.OnReputationChange += HandleReputationChange;
+                unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
+                unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
+                unitController.UnitEventController.OnCurrencyChange += HandleCurrencyChange;
+                unitController.UnitEventController.OnStatusEffectAdd += HandleStatusEffectAdd;
+                unitController.UnitEventController.OnAddStatusEffectStack += HandleAddStatusEffectStack;
+                unitController.UnitEventController.OnCancelStatusEffect += HandleCancelStatusEffect;
+                unitController.UnitEventController.OnAddPet += HandleAddPet;
+                unitController.UnitEventController.OnSetReputationAmount += HandleSetReputationAmount;
                 eventSubscriptionsInitialized = true;
             }
+        }
+
+        public void SaveGameData() {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
+
+            saveData.unitProfileName = unitController.UnitProfile.ResourceName;
+
+            SavePlayerLocation();
+            saveData.CurrentScene = levelManager.ActiveSceneName;
+            saveData.GamepadActionButtonSet = actionBarManager.CurrentActionBarSet;
+
+            SaveResourcePowerData();
+            SaveAppearanceData();
+
+            SaveQuestData();
+            SaveAchievementData();
+
+            SaveDialogData();
+            SaveBehaviorData();
+            SaveActionBarData();
+            SaveInventorySlotData();
+            SaveBankSlotData();
+            SaveEquippedBagData();
+            SaveEquippedBankBagData();
+            SaveAbilityData();
+            SaveSkillData();
+            SaveRecipeData();
+            SaveReputationData();
+            SaveEquipmentData();
+            SaveCurrencyData();
+            SaveSceneNodeData();
+            SaveStatusEffectData();
+            SavePetData();
+        }
+
+        private void HandleSetReputationAmount(Faction faction, float amount) {
+            SaveReputationData();
+        }
+
+        public void HandleAddPet(UnitProfile profile) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleAddPet({profile.ResourceName})");
+            SavePetData();
+        }
+
+        public void HandleAddStatusEffectStack(string obj) {
+            SaveStatusEffectData();
+        }
+
+        public void HandleCancelStatusEffect(StatusEffectProperties properties) {
+            SaveStatusEffectData();
+        }
+
+        public void HandleStatusEffectAdd(StatusEffectNode node) {
+            SaveStatusEffectData();
+        }
+
+        public void HandleCurrencyChange(string currencyResourceName, int amount) {
+            SaveCurrencyData();
+        }
+
+        public void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            SaveEquipmentData();
+        }
+
+        public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
+            SaveEquipmentData();
+        }
+
+        public void HandleReputationChange(UnitController sourceUnitController) {
+            SaveReputationData();
+        }
+
+        public void HandleUnlearnRecipe(Recipe recipe) {
+            SaveRecipeData();
+        }
+
+        public void HandleLearnRecipe(Recipe recipe) {
+            SaveRecipeData();
+        }
+
+        private void HandleRemoveBag(InstantiatedBag bag) {
+            SaveEquippedBagData();
+            SaveEquippedBankBagData();
+        }
+
+        private void HandleAddBag(InstantiatedBag bag, BagNode node) {
+            SaveEquippedBagData();
+            SaveEquippedBankBagData();
+        }
+
+
+        private void HandleRemoveItemFromBankSlot(InventorySlot slot, InstantiatedItem item) {
+            SaveBankSlotData();
+        }
+
+        private void HandleAddItemToBankSlot(InventorySlot slot, InstantiatedItem item) {
+            SaveBankSlotData();
+        }
+
+
+        private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            SaveInventorySlotData();
+        }
+
+        private void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
+            SaveInventorySlotData();
+        }
+
+
+        private void HandleSetQuestObjectiveCurrentAmount(string arg1, string arg2, string arg3, QuestObjectiveSaveData data) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleQuestObjectiveStatusUpdated(UnitController controller, QuestBase questBase) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleMarkQuestComplete(UnitController controller, QuestBase questBase) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleTurnInQuest(UnitController controller, QuestBase questBase) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleAcceptQuest(UnitController controller, QuestBase questBase) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleAbandonQuest(UnitController controller, QuestBase questBase) {
+            SaveQuestData();
+            SaveAchievementData();
+        }
+
+        private void HandleRebuildModelAppearance() {
+            SaveAppearanceData();
+        }
+
+        private void HandleResourceAmountChanged(PowerResource resource, int arg2, int arg3) {
+            SaveResourcePowerData();
+        }
+
+        private void HandleUnLearnSkill(UnitController controller, Skill skill) {
+            SaveSkillData();
+        }
+
+        private void HandleLearnSkill(UnitController controller, Skill skill) {
+            SaveSkillData();
+        }
+
+        private void HandleUnlearnAbility(bool updateActionBars) {
+            SaveAbilityData();
+        }
+
+        private void HandleLearnAbility(UnitController controller, AbilityProperties properties) {
+            SaveAbilityData();
         }
 
         private void HandleSpecializationChange(UnitController sourceUnitController, ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
@@ -114,10 +294,34 @@ namespace AnyRPG {
             saveData.PlayerLevel = newLevel;
         }
 
-        public void SetSaveData(AnyRPGSaveData anyRPGSaveData) {
+        public void SetSaveData(CharacterRequestData characterRequestData) {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SetSaveData()");
 
-            this.saveData = anyRPGSaveData;
+            this.saveData = characterRequestData.saveData;
+            characterRequestData.characterConfigurationRequest.characterName = saveData.playerName;
+            characterRequestData.characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(saveData);
+            characterRequestData.characterConfigurationRequest.unitLevel = saveData.PlayerLevel;
+            characterRequestData.characterConfigurationRequest.currentExperience = saveData.currentExperience;
+            if (saveData.characterClass != string.Empty) {
+                characterRequestData.characterConfigurationRequest.characterClass = systemDataFactory.GetResource<CharacterClass>(saveData.characterClass);
+            } else {
+                characterRequestData.characterConfigurationRequest.characterClass = null;
+            }
+            if (saveData.classSpecialization != string.Empty) {
+                characterRequestData.characterConfigurationRequest.classSpecialization = systemDataFactory.GetResource<ClassSpecialization>(saveData.classSpecialization);
+            } else {
+                characterRequestData.characterConfigurationRequest.classSpecialization = null;
+            }
+            if (saveData.characterRace != string.Empty) {
+                characterRequestData.characterConfigurationRequest.characterRace = systemDataFactory.GetResource<CharacterRace>(saveData.characterRace);
+            } else {
+                characterRequestData.characterConfigurationRequest.characterRace = null;
+            }
+            if (saveData.playerFaction != string.Empty) {
+                characterRequestData.characterConfigurationRequest.faction = systemDataFactory.GetResource<Faction>(saveData.playerFaction);
+            } else {
+                characterRequestData.characterConfigurationRequest.faction = null;
+            }
         }
 
         public DialogSaveData GetDialogSaveData(Dialog dialog) {
@@ -159,12 +363,14 @@ namespace AnyRPG {
             DialogSaveData saveData = GetDialogSaveData(dialog);
             saveData.dialogNodeShown[index] = value;
             dialogSaveDataDictionary[dialog.ResourceName] = saveData;
+            SaveDialogData();
         }
 
         public void ResetDialogNodes(Dialog dialog) {
             DialogSaveData saveData = GetDialogSaveData(dialog);
             saveData.dialogNodeShown = new List<bool>(new bool[dialog.DialogNodes.Count]);
             dialogSaveDataDictionary[dialog.ResourceName] = saveData;
+            SaveDialogData();
         }
 
         public SceneNodeSaveData GetSceneNodeSaveData(SceneNode sceneNode) {
@@ -181,10 +387,10 @@ namespace AnyRPG {
         }
 
 
-        public void LoadSaveDataToCharacter(AnyRPGSaveData saveData) {
+        public void LoadSaveDataToCharacter(/*AnyRPGSaveData saveData*/) {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadSaveDataToCharacter()");
 
-            SetSaveData(saveData);
+            //SetSaveData(saveData);
 
             LoadDialogData(saveData);
             LoadBehaviorData(saveData);
@@ -196,7 +402,6 @@ namespace AnyRPG {
             LoadBankSlotData(saveData);
             LoadAbilityData(saveData);
 
-            // THIS NEEDS TO BE DOWN HERE SO THE PLAYERSTATS EXISTS TO SUBSCRIBE TO THE EQUIP EVENTS AND INCREASE STATS
             // testing - move here to prevent learning auto-attack ability twice
             LoadEquipmentData(saveData);
 
@@ -211,30 +416,28 @@ namespace AnyRPG {
             LoadStatusEffectData(saveData);
             LoadPetData(saveData);
 
-
             // set resources after equipment loaded for modifiers
             LoadResourcePowerData(saveData);
 
             // quest data gets loaded last because it could rely on other data such as dialog completion status, which don't get saved because they are inferred
             LoadQuestData(saveData);
             LoadAchievementData(saveData);
-
         }
 
         public void LoadDialogData(AnyRPGSaveData anyRPGSaveData) {
-            unitController.CharacterSaveManager.DialogSaveDataDictionary.Clear();
+            dialogSaveDataDictionary.Clear();
             foreach (DialogSaveData dialogSaveData in anyRPGSaveData.dialogSaveData) {
                 if (dialogSaveData.DialogName != null && dialogSaveData.DialogName != string.Empty) {
-                    unitController.CharacterSaveManager.DialogSaveDataDictionary.Add(dialogSaveData.DialogName, dialogSaveData);
+                    dialogSaveDataDictionary.Add(dialogSaveData.DialogName, dialogSaveData);
                 }
             }
         }
 
         public void LoadBehaviorData(AnyRPGSaveData anyRPGSaveData) {
-            unitController.CharacterSaveManager.BehaviorSaveDataDictionary.Clear();
+            behaviorSaveDataDictionary.Clear();
             foreach (BehaviorSaveData behaviorSaveData in anyRPGSaveData.behaviorSaveData) {
                 if (behaviorSaveData.BehaviorName != null && behaviorSaveData.BehaviorName != string.Empty) {
-                    unitController.CharacterSaveManager.BehaviorSaveDataDictionary.Add(behaviorSaveData.BehaviorName, behaviorSaveData);
+                    behaviorSaveDataDictionary.Add(behaviorSaveData.BehaviorName, behaviorSaveData);
                 }
             }
         }
@@ -394,7 +597,7 @@ namespace AnyRPG {
         }
 
         public void LoadAbilityData(AnyRPGSaveData anyRPGSaveData) {
-            //Debug.Log("Savemanager.LoadAbilityData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadAbilityData()");
 
             foreach (AbilitySaveData abilitySaveData in anyRPGSaveData.abilitySaveData) {
                 if (abilitySaveData.AbilityName != string.Empty) {
@@ -453,7 +656,7 @@ namespace AnyRPG {
         }
 
         public void LoadActionBarData(AnyRPGSaveData anyRPGSaveData) {
-            //Debug.Log("Savemanager.LoadActionBarData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadActionBarData()");
 
             LoadActionButtonData(anyRPGSaveData.actionBarSaveData, actionBarManager.GetMouseActionButtons());
             LoadGamepadActionButtonData(anyRPGSaveData.gamepadActionBarSaveData, actionBarManager.GamepadActionButtons);
@@ -462,6 +665,8 @@ namespace AnyRPG {
         }
 
         private void LoadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas, List<ActionButton> actionButtons) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadActionButtonData(saveDataCount: {actionBarSaveDatas.Count}, actionButtonsCount: {actionButtons.Count})");
+
             IUseable useable = null;
             int counter = 0;
             foreach (ActionBarSaveData actionBarSaveData in actionBarSaveDatas) {
@@ -499,6 +704,8 @@ namespace AnyRPG {
         }
 
         private void LoadGamepadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas, List<ActionButtonNode> actionButtons) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadGamepadActionButtonData(saveDataCount: {actionBarSaveDatas.Count}, actionButtonsCount: {actionButtons.Count})");
+
             IUseable useable = null;
             int counter = 0;
             foreach (ActionBarSaveData actionBarSaveData in actionBarSaveDatas) {
@@ -540,6 +747,7 @@ namespace AnyRPG {
             if (saveData.visited == false) {
                 saveData.visited = true;
                 sceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
+                SaveSceneNodeData();
             }
         }
 
@@ -558,38 +766,6 @@ namespace AnyRPG {
             saveData.PlayerRotationY = unitController.transform.forward.y;
             saveData.PlayerRotationZ = unitController.transform.forward.z;
 
-        }
-
-
-        public void SaveGameData() {
-            saveData.unitProfileName = unitController.UnitProfile.ResourceName;
-
-            SavePlayerLocation();
-            saveData.CurrentScene = levelManager.ActiveSceneName;
-            saveData.GamepadActionButtonSet = actionBarManager.CurrentActionBarSet;
-
-            SaveResourcePowerData();
-            SaveAppearanceData();
-
-            SaveQuestData();
-            SaveAchievementData();
-
-            SaveDialogData();
-            SaveBehaviorData();
-            SaveActionBarData();
-            SaveInventorySlotData();
-            SaveBankSlotData();
-            SaveEquippedBagData();
-            SaveEquippedBankBagData();
-            SaveAbilityData();
-            SaveSkillData();
-            SaveRecipeData();
-            SaveReputationData();
-            SaveEquipmentData();
-            SaveCurrencyData();
-            SaveSceneNodeData();
-            SaveStatusEffectData();
-            SavePetData();
         }
 
         public void SaveResourcePowerData() {
@@ -653,7 +829,7 @@ namespace AnyRPG {
         public void SaveDialogData() {
             //Debug.Log("Savemanager.SaveDialogData()");
             saveData.dialogSaveData.Clear();
-            foreach (DialogSaveData dialogSaveData in unitController.CharacterSaveManager.DialogSaveDataDictionary.Values) {
+            foreach (DialogSaveData dialogSaveData in dialogSaveDataDictionary.Values) {
                 saveData.dialogSaveData.Add(dialogSaveData);
             }
         }
@@ -661,7 +837,7 @@ namespace AnyRPG {
         public void SaveBehaviorData() {
             //Debug.Log("Savemanager.SaveQuestData()");
             saveData.behaviorSaveData.Clear();
-            foreach (BehaviorSaveData behaviorSaveData in unitController.CharacterSaveManager.BehaviorSaveDataDictionary.Values) {
+            foreach (BehaviorSaveData behaviorSaveData in behaviorSaveDataDictionary.Values) {
                 saveData.behaviorSaveData.Add(behaviorSaveData);
             }
         }
@@ -691,7 +867,8 @@ namespace AnyRPG {
         }
 
         public void SaveActionBarData() {
-            //Debug.Log("Savemanager.SaveActionBarData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionBarData()");
+
             saveData.actionBarSaveData.Clear();
             saveData.gamepadActionBarSaveData.Clear();
             foreach (ActionButton actionButton in actionBarManager.GetMouseActionButtons()) {
@@ -703,6 +880,8 @@ namespace AnyRPG {
         }
 
         private void SaveActionButtonSaveData(ActionButton actionButton, List<ActionBarSaveData> actionBarSaveDataList) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionButtonSaveData({actionButton.name}");
+
             ActionBarSaveData actionBarSaveData = new ActionBarSaveData();
             actionBarSaveData.DisplayName = (actionButton.Useable == null ? string.Empty : (actionButton.Useable as IDescribable).DisplayName);
             actionBarSaveData.savedName = (actionButton.SavedUseable == null ? string.Empty : (actionButton.SavedUseable as IDescribable).DisplayName);
@@ -859,6 +1038,19 @@ namespace AnyRPG {
                 recipeSaveData.RecipeName = recipeName;
                 saveData.recipeSaveData.Add(recipeSaveData);
             }
+        }
+
+        public void SetDialogTurnedIn(Dialog dialog, bool turnedIn) {
+            DialogSaveData saveData = GetDialogSaveData(dialog);
+            saveData.turnedIn = turnedIn;
+            dialogSaveDataDictionary[saveData.DialogName] = saveData;
+            SaveDialogData();
+        }
+
+        public void SetBehaviorCompleted(BehaviorProfile behaviorProfile, bool value) {
+            BehaviorSaveData saveData = GetBehaviorSaveData(behaviorProfile);
+            saveData.completed = value;
+            behaviorSaveDataDictionary[saveData.BehaviorName] = saveData;
         }
     }
 

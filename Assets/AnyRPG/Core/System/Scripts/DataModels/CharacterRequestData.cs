@@ -5,8 +5,6 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterRequestData {
 
-        //public int clientSpawnRequestId;
-        //public int serverSpawnRequestId;
         public int accountId;
         public ICharacterRequestor characterRequestor;
         public GameMode requestMode;
@@ -14,6 +12,7 @@ namespace AnyRPG {
         public bool isServerOwned = false;
         public bool isServer = false;
         public bool isOwner = false;
+        public AnyRPGSaveData saveData = null;
 
         public CharacterRequestData(ICharacterRequestor characterRequestor, GameMode requestMode, CharacterConfigurationRequest characterConfigurationRequest) {
             this.characterRequestor = characterRequestor;

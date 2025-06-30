@@ -133,6 +133,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestAddBag += HandleRequestAddBagFromInventory;
                 unitController.UnitEventController.OnSetGroundTarget += HandleSetGroundTarget;
                 unitController.UnitEventController.OnRequestCancelStatusEffect += HandleRequestCancelStatusEffect;
+                unitController.UnitEventController.OnRequestMoveGamepadUseable += HandleRequestMoveGamepadUseable;
+                unitController.UnitEventController.OnRequestAssignGamepadUseable += HandleRequestAssignGamepadUseable;
+                unitController.UnitEventController.OnRequestClearGamepadUseable += HandleRequestClearGamepadUseable;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -161,6 +164,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestAddBag -= HandleRequestAddBagFromInventory;
                 unitController.UnitEventController.OnSetGroundTarget -= HandleSetGroundTarget;
                 unitController.UnitEventController.OnRequestCancelStatusEffect -= HandleRequestCancelStatusEffect;
+                unitController.UnitEventController.OnRequestMoveGamepadUseable -= HandleRequestMoveGamepadUseable;
+                unitController.UnitEventController.OnRequestAssignGamepadUseable -= HandleRequestAssignGamepadUseable;
+                unitController.UnitEventController.OnRequestClearGamepadUseable -= HandleRequestClearGamepadUseable;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -239,6 +245,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnRecipe += HandleLearnRecipe;
             unitController.UnitEventController.OnUnlearnRecipe += HandleUnlearnRecipe;
             unitController.UnitEventController.OnSetReputationAmount += HandleSetReputationAmountServer;
+            unitController.UnitEventController.OnSetGamepadActionButton += HandleSetGamepadActionButton;
+            unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
+            unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
+            unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -312,6 +322,101 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnRecipe -= HandleLearnRecipe;
             unitController.UnitEventController.OnUnlearnRecipe -= HandleUnlearnRecipe;
             unitController.UnitEventController.OnSetReputationAmount -= HandleSetReputationAmountServer;
+            unitController.UnitEventController.OnSetGamepadActionButton -= HandleSetGamepadActionButton;
+            unitController.UnitEventController.OnSetMouseActionButton -= HandleSetMouseActionButton;
+            unitController.UnitEventController.OnUnsetMouseActionButton -= HandleUnsetMouseActionButton;
+            unitController.UnitEventController.OnUnsetGamepadActionButton -= HandleUnsetGamepadActionButton;
+        }
+
+        public void HandleRequestClearGamepadUseable(int buttonIndex) {
+            RequestClearGamepadUseableServer(buttonIndex);
+        }
+
+        [ServerRpc]
+        public void RequestClearGamepadUseableServer(int buttonIndex) {
+            unitController.CharacterActionBarManager.UnSetGamepadActionButton(buttonIndex);
+        }
+
+        public void HandleRequestAssignGamepadUseable(IUseable useable, int buttonIndex) {
+            RequestAssignGamepadUseableServer(useable.ResourceName, useable is Item, buttonIndex);
+        }
+
+        [ServerRpc]
+        public void RequestAssignGamepadUseableServer(string useableName, bool isItem, int buttonIndex) {
+            IUseable useable = null;
+            if (isItem) {
+                useable = unitController.CharacterInventoryManager.GetNewInstantiatedItem(useableName);
+            } else {
+                useable = systemDataFactory.GetResource<Ability>(useableName).AbilityProperties;
+            }
+            if (useable == null) {
+                return;
+            }
+            unitController.CharacterActionBarManager.AssignGamepadUseable(useable, buttonIndex);
+        }
+
+        public void HandleRequestMoveGamepadUseable(int oldIndex, int newIndex) {
+            RequestMoveGamepadUseableServer(oldIndex, newIndex);
+        }
+
+        [ServerRpc]
+        public void RequestMoveGamepadUseableServer(int oldIndex, int newIndex) {
+            unitController.CharacterActionBarManager.MoveGamepadUseable(oldIndex, newIndex);
+        }
+
+
+        public void HandleUnsetGamepadActionButton(int buttonIndex) {
+            UnSetGamepadActionButtonClient(buttonIndex);
+        }
+
+        [ObserversRpc]
+        public void UnSetGamepadActionButtonClient(int buttonIndex) {
+            unitController.CharacterActionBarManager.UnSetGamepadActionButton(buttonIndex);
+        }
+
+        public void HandleUnsetMouseActionButton(int buttonIndex) {
+            UnSetMouseActionButtonClient(buttonIndex);
+        }
+
+        [ObserversRpc]
+        public void UnSetMouseActionButtonClient(int buttonIndex) {
+            unitController.CharacterActionBarManager.UnSetMouseActionButton(buttonIndex);
+        }
+
+        public void HandleSetMouseActionButton(IUseable useable, int buttonIndex) {
+            SetMouseActionButtonClient(useable.ResourceName, useable is Item, buttonIndex);
+        }
+
+        [ObserversRpc]
+        public void SetMouseActionButtonClient(string useableName, bool isItem, int buttonIndex) {
+            IUseable useable = null;
+            if (isItem) {
+                useable = unitController.CharacterInventoryManager.GetNewInstantiatedItem(useableName);
+            } else {
+                useable = systemDataFactory.GetResource<Ability>(useableName).AbilityProperties;
+            }
+            if (useable == null) {
+                return;
+            }
+            unitController.CharacterActionBarManager.SetMouseActionButton(useable, buttonIndex);
+        }
+
+        public void HandleSetGamepadActionButton(IUseable useable, int buttonIndex) {
+            SetGamepadActionButtonClient(useable.ResourceName, useable is Item, buttonIndex);
+        }
+
+        [ObserversRpc]
+        public void SetGamepadActionButtonClient(string useableName, bool isItem, int buttonIndex) {
+            IUseable useable = null;
+            if (isItem) {
+                useable = unitController.CharacterInventoryManager.GetNewInstantiatedItem(useableName);
+            } else {
+                useable = systemDataFactory.GetResource<Ability>(useableName).AbilityProperties;
+            }
+            if (useable == null) {
+                return;
+            }
+            unitController.CharacterActionBarManager.SetGamepadActionButton(useable, buttonIndex);
         }
 
         public void HandleSetReputationAmountServer(Faction faction, float amount) {

@@ -1076,18 +1076,6 @@ namespace AnyRPG {
         public void HandleAbilityListChanged(UnitController sourceUnitController, AbilityProperties newAbility) {
             //Debug.Log("UIManager.HandleAbilityListChanged(" + (newAbility == null ? "null" : newAbility.DisplayName) + ")");
 
-            // loop through ability bars and try to add ability
-            if (actionBarManager != null) {
-                if (newAbility.AutoAddToBars == true) {
-                    if (!actionBarManager.AddNewAbility(newAbility)) {
-                        //Debug.Log("UIManager.HandleAbilityListChanged(): All Ability Bars were full.  unable to add " + newAbility);
-                    }
-                } else {
-                    //Debug.Log("UIManager.HandleAbilityListChanged(): " + newAbility + ".autoaddtobars = false");
-                }
-            } else {
-                //Debug.Log("UIManager.HandleAbilityListChanged(): " + newAbility + ". actionbarmanager is null");
-            }
         }
 
         public void ActivateMouseOverWindow(GameObject newFocus) {

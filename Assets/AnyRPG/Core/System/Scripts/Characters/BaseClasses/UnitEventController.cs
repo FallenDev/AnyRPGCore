@@ -69,7 +69,7 @@ namespace AnyRPG {
         public event System.Action OnUnlearnAbilities = delegate { };
         public event System.Action<AbilityProperties> OnActivateTargetingMode = delegate { };
         public event System.Action<UnitController, AbilityProperties> OnLearnAbility = delegate { };
-        public event System.Action<bool> OnUnlearnAbility = delegate { };
+        public event System.Action<AbilityProperties> OnUnlearnAbility = delegate { };
         public event System.Action<AbilityProperties> OnAttemptPerformAbility = delegate { };
         public event System.Action<UnitController, string> OnMessageFeedMessage = delegate { };
         public event System.Action<AbilityProperties> OnLearnedCheckFail = delegate { };
@@ -158,6 +158,13 @@ namespace AnyRPG {
         public event System.Action<string, int> OnCurrencyChange = delegate { };
         public event System.Action<UnitProfile> OnAddPet = delegate { };
         public event System.Action<Faction, float> OnSetReputationAmount = delegate { };
+        public event System.Action<IUseable, int> OnSetGamepadActionButton = delegate { };
+        public event System.Action<int> OnUnsetGamepadActionButton = delegate { };
+        public event System.Action<IUseable, int> OnSetMouseActionButton = delegate { };
+        public event System.Action<int> OnUnsetMouseActionButton = delegate { };
+        public event System.Action<int, int> OnRequestMoveGamepadUseable = delegate { };
+        public event System.Action<IUseable, int> OnRequestAssignGamepadUseable = delegate { };
+        public event System.Action<int> OnRequestClearGamepadUseable = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -206,8 +213,8 @@ namespace AnyRPG {
             OnAttemptPerformAbility(abilityProperties);
         }
 
-        public void NotifyOnUnlearnAbility(bool updateActionBars) {
-            OnUnlearnAbility(updateActionBars);
+        public void NotifyOnUnlearnAbility(AbilityProperties abilityProperties) {
+            OnUnlearnAbility(abilityProperties);
         }
 
         public void NotifyOnLearnAbility(AbilityProperties abilityProperties) {
@@ -826,6 +833,34 @@ namespace AnyRPG {
 
         public void NotifyOnSetReputationAmount(Faction faction, float amount) {
             OnSetReputationAmount(faction, amount);
+        }
+
+        public void NotifyOnUnsetGamepadActionButton(int buttonIndex) {
+            OnUnsetGamepadActionButton(buttonIndex);
+        }
+
+        public void NotifyOnUnsetMouseActionButton(int buttonIndex) {
+            OnUnsetMouseActionButton(buttonIndex);
+        }
+
+        public void NotifyOnSetMouseActionButton(IUseable useable, int buttonIndex) {
+            OnSetMouseActionButton(useable, buttonIndex);
+        }
+
+        public void NotifyOnSetGamepadActionButton(IUseable useable, int buttonIndex) {
+            OnSetGamepadActionButton(useable, buttonIndex);
+        }
+
+        public void NotifyOnRequestMoveGamepadUseable(int oldIndex, int newIndex) {
+            OnRequestMoveGamepadUseable(oldIndex, newIndex);
+        }
+
+        public void NotifyOnRequestAssignGamepadUseable(IUseable useable, int buttonIndex) {
+            OnRequestAssignGamepadUseable(useable, buttonIndex);
+        }
+
+        public void NotifyOnRequestClearGamepadUseable(int buttonIndex) {
+            OnRequestClearGamepadUseable(buttonIndex);
         }
 
         #endregion

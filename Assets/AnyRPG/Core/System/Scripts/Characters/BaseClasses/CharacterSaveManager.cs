@@ -96,7 +96,6 @@ namespace AnyRPG {
 
             SavePlayerLocation();
             saveData.CurrentScene = levelManager.ActiveSceneName;
-            saveData.GamepadActionButtonSet = actionBarManager.CurrentActionBarSet;
 
             SaveResourcePowerData();
             SaveAppearanceData();
@@ -242,7 +241,7 @@ namespace AnyRPG {
             SaveSkillData();
         }
 
-        private void HandleUnlearnAbility(bool updateActionBars) {
+        private void HandleUnlearnAbility(AbilityProperties abilityProperties) {
             SaveAbilityData();
         }
 
@@ -658,14 +657,13 @@ namespace AnyRPG {
         public void LoadActionBarData(AnyRPGSaveData anyRPGSaveData) {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadActionBarData()");
 
-            LoadActionButtonData(anyRPGSaveData.actionBarSaveData, actionBarManager.GetMouseActionButtons());
-            LoadGamepadActionButtonData(anyRPGSaveData.gamepadActionBarSaveData, actionBarManager.GamepadActionButtons);
+            LoadMouseActionButtonData(anyRPGSaveData.actionBarSaveData);
+            LoadGamepadActionButtonData(anyRPGSaveData.gamepadActionBarSaveData);
             actionBarManager.SetGamepadActionButtonSet(anyRPGSaveData.GamepadActionButtonSet, false);
-            actionBarManager.UpdateVisuals();
         }
 
-        private void LoadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas, List<ActionButton> actionButtons) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadActionButtonData(saveDataCount: {actionBarSaveDatas.Count}, actionButtonsCount: {actionButtons.Count})");
+        private void LoadMouseActionButtonData(List<ActionBarSaveData> actionBarSaveDatas) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadActionButtonData(saveDataCount: {actionBarSaveDatas.Count})");
 
             IUseable useable = null;
             int counter = 0;
@@ -687,24 +685,28 @@ namespace AnyRPG {
                     if (actionBarSaveData.savedName != null && actionBarSaveData.savedName != string.Empty) {
                         IUseable savedUseable = systemDataFactory.GetResource<Ability>(actionBarSaveData.savedName).AbilityProperties;
                         if (savedUseable != null) {
-                            actionButtons[counter].SavedUseable = savedUseable;
+                            unitController.CharacterActionBarManager.MouseActionButtons[counter].SavedUseable = savedUseable;
                         }
                     }
                 }
                 if (useable != null) {
-                    actionButtons[counter].SetUseable(useable, false);
+                    unitController.CharacterActionBarManager.SetMouseActionButton(useable, counter);
                 } else {
                     //Debug.Log("Savemanager.LoadActionBarData(): no usable set on this actionbutton");
                     // testing remove things that weren't saved, it will prevent duplicate abilities if they are moved
                     // this means if new abilities are added to a class/etc between play sessions they won't be on the bars
-                    actionButtons[counter].ClearUseable();
+                    unitController.CharacterActionBarManager.UnSetMouseActionButton(counter);
                 }
                 counter++;
+                if (counter >= unitController.CharacterActionBarManager.MouseActionButtons.Count) {
+                    //Debug.Log("Savemanager.LoadActionBarData(): counter exceeded action buttons count, breaking");
+                    break; // prevent out of bounds
+                }
             }
         }
 
-        private void LoadGamepadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas, List<ActionButtonNode> actionButtons) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadGamepadActionButtonData(saveDataCount: {actionBarSaveDatas.Count}, actionButtonsCount: {actionButtons.Count})");
+        private void LoadGamepadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadGamepadActionButtonData(saveDataCount: {actionBarSaveDatas.Count})");
 
             IUseable useable = null;
             int counter = 0;
@@ -726,17 +728,17 @@ namespace AnyRPG {
                     if (actionBarSaveData.savedName != null && actionBarSaveData.savedName != string.Empty) {
                         IUseable savedUseable = systemDataFactory.GetResource<Ability>(actionBarSaveData.savedName).AbilityProperties;
                         if (savedUseable != null) {
-                            actionButtons[counter].SavedUseable = savedUseable;
+                            unitController.CharacterActionBarManager.GamepadActionButtons[counter].SavedUseable = savedUseable;
                         }
                     }
                 }
                 if (useable != null) {
-                    actionButtons[counter].Useable = useable;
+                    unitController.CharacterActionBarManager.SetGamepadActionButton(useable, counter);
                 } else {
                     //Debug.Log("Savemanager.LoadActionBarData(): no usable set on this actionbutton");
                     // testing remove things that weren't saved, it will prevent duplicate abilities if they are moved
                     // this means if new abilities are added to a class/etc between play sessions they won't be on the bars
-                    actionButtons[counter].Useable = null;
+                    unitController.CharacterActionBarManager.UnSetGamepadActionButton(counter);
                 }
                 counter++;
             }
@@ -869,16 +871,18 @@ namespace AnyRPG {
         public void SaveActionBarData() {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionBarData()");
 
+            saveData.GamepadActionButtonSet = actionBarManager.CurrentActionBarSet;
             saveData.actionBarSaveData.Clear();
             saveData.gamepadActionBarSaveData.Clear();
-            foreach (ActionButton actionButton in actionBarManager.GetMouseActionButtons()) {
-                SaveActionButtonSaveData(actionButton, saveData.actionBarSaveData);
+            foreach (ActionButtonNode actionButtonNode in unitController.CharacterActionBarManager.MouseActionButtons) {
+                SaveActionButtonNodeSaveData(actionButtonNode, saveData.actionBarSaveData);
             }
-            foreach (ActionButtonNode actionButtonNode in actionBarManager.GamepadActionButtons) {
+            foreach (ActionButtonNode actionButtonNode in unitController.CharacterActionBarManager.GamepadActionButtons) {
                 SaveActionButtonNodeSaveData(actionButtonNode, saveData.gamepadActionBarSaveData);
             }
         }
 
+        /*
         private void SaveActionButtonSaveData(ActionButton actionButton, List<ActionBarSaveData> actionBarSaveDataList) {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionButtonSaveData({actionButton.name}");
 
@@ -888,11 +892,12 @@ namespace AnyRPG {
             actionBarSaveData.isItem = (actionButton.Useable == null ? false : (actionButton.Useable is Item ? true : false));
             actionBarSaveDataList.Add(actionBarSaveData);
         }
+        */
 
         private void SaveActionButtonNodeSaveData(ActionButtonNode actionButtonNode, List<ActionBarSaveData> actionBarSaveDataList) {
             ActionBarSaveData actionBarSaveData = new ActionBarSaveData();
-            actionBarSaveData.DisplayName = (actionButtonNode.Useable == null ? string.Empty : (actionButtonNode.Useable as IDescribable).DisplayName);
-            actionBarSaveData.savedName = (actionButtonNode.SavedUseable == null ? string.Empty : (actionButtonNode.SavedUseable as IDescribable).DisplayName);
+            actionBarSaveData.DisplayName = (actionButtonNode.Useable == null ? string.Empty : (actionButtonNode.Useable as IDescribable).ResourceName);
+            actionBarSaveData.savedName = (actionButtonNode.SavedUseable == null ? string.Empty : (actionButtonNode.SavedUseable as IDescribable).ResourceName);
             actionBarSaveData.isItem = (actionButtonNode.Useable == null ? false : (actionButtonNode.Useable is Item ? true : false));
             actionBarSaveDataList.Add(actionBarSaveData);
         }

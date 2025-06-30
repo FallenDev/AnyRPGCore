@@ -1011,13 +1011,13 @@ namespace AnyRPG {
             }
         }
 
-        public void UnLearnCapabilityProviderAbilities(List<AbilityProperties> abilities, bool updateActionBars = false) {
+        public void UnLearnCapabilityProviderAbilities(List<AbilityProperties> abilities) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.UnLearnCapabilityProviderAbilities(" + updateActionBars + ")");
             if (abilities == null) {
                 return;
             }
             foreach (AbilityProperties oldAbility in abilities) {
-                UnlearnAbility(oldAbility, updateActionBars);
+                UnlearnAbility(oldAbility);
             }
             unitController.UnitEventController.NotifyOnUnlearnAbilities();
         }
@@ -1191,6 +1191,7 @@ namespace AnyRPG {
             abilityList[SystemDataUtility.PrepareStringForMatch(newAbility.DisplayName)] = newAbility;
 
             newAbility.ProcessLearnAbility(this);
+            newAbility.NotifyOnLearn(unitController);
 
             unitController.UnitEventController.NotifyOnLearnAbility(newAbility);
             return true;
@@ -1200,7 +1201,7 @@ namespace AnyRPG {
             autoAttackAbility = baseAbilityProperties;
         }
 
-        public void UnlearnAbility(AbilityProperties oldAbility, bool updateActionBars = true) {
+        public void UnlearnAbility(AbilityProperties oldAbility) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.UnleanAbility(" + oldAbility.DisplayName + ", " + updateActionBars + ")");
 
             string keyName = SystemDataUtility.PrepareStringForMatch(oldAbility.DisplayName);
@@ -1208,7 +1209,7 @@ namespace AnyRPG {
                 oldAbility.ProcessUnLearnAbility(this);
                 abilityList.Remove(keyName);
             }
-            unitController.UnitEventController.NotifyOnUnlearnAbility(updateActionBars);
+            unitController.UnitEventController.NotifyOnUnlearnAbility(oldAbility);
         }
 
         public void UnsetAutoAttackAbility() {

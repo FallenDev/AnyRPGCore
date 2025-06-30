@@ -1084,6 +1084,10 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnLevelChanged(currentLevel);
         }
 
+        public void LoadLevel(int level) {
+            currentLevel = level;
+        }
+
         public void SetLevelInternal(int newLevel) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.SetLevel(" + newLevel + ")");
 

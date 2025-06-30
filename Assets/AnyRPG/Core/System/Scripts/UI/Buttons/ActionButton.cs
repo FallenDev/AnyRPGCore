@@ -554,7 +554,7 @@ namespace AnyRPG {
             if (useable == null) {
                 return;
             }
-            actionBarManager.ClearUseableByIndex(actionButtonIndex);
+            actionBarManager.RequestClearGamepadUseable(actionButtonIndex);
             uIManager.HideToolTip();
             owner.HideControllerHints();
         }

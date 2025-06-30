@@ -34,6 +34,10 @@ namespace AnyRPG {
         public event System.Action OnCraftItem = delegate { };
         public event System.Action OnAddBag = delegate { };
         public event System.Action OnCurrencyChange = delegate { };
+        public event System.Action<IUseable, int> OnSetGamepadActionButton = delegate { };
+        public event System.Action<int> OnUnsetGamepadActionButton = delegate { };
+        public event System.Action<IUseable, int> OnSetMouseActionButton = delegate { };
+        public event System.Action<int> OnUnsetMouseActionButton = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -195,6 +199,23 @@ namespace AnyRPG {
         public void NotifyOnCurrencyChange() {
             OnCurrencyChange();
         }
+
+        public void NotifyOnUnsetGamepadActionButton(int buttonIndex) {
+            OnUnsetGamepadActionButton(buttonIndex);
+        }
+
+        public void NotifyOnUnsetMouseActionButton(int buttonIndex) {
+            OnUnsetMouseActionButton(buttonIndex);
+        }
+
+        public void NotifyOnSetMouseActionButton(IUseable useable, int buttonIndex) {
+            OnSetMouseActionButton(useable, buttonIndex);
+        }
+
+        public void NotifyOnSetGamepadActionButton(IUseable useable, int buttonIndex) {
+            OnSetGamepadActionButton(useable, buttonIndex);
+        }
+
     }
 
     [System.Serializable]

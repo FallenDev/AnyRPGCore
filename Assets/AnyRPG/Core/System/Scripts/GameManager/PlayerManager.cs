@@ -1,3 +1,4 @@
+using FishNet.Object;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -624,7 +625,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnReceiveCombatMiss += HandleCombatMiss;
             unitController.UnitEventController.OnAddEquipment += HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment += HandleRemoveEquipment;
-            unitController.UnitEventController.OnUnlearnAbilities += HandleUnlearnClassAbilities;
+            //unitController.UnitEventController.OnUnlearnAbilities += HandleUnlearnClassAbilities;
             unitController.UnitEventController.OnLearnedCheckFail += HandleLearnedCheckFail;
             unitController.UnitEventController.OnPowerResourceCheckFail += HandlePowerResourceCheckFail;
             unitController.UnitEventController.OnCombatCheckFail += HandleCombatCheckFail;
@@ -634,7 +635,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail += HandleTargetInAbilityRangeFail;
             unitController.UnitEventController.OnReputationChange += HandleReputationChange;
-            unitController.UnitEventController.OnUnlearnAbility += HandleUnlearnAbility;
+            //unitController.UnitEventController.OnUnlearnAbility += HandleUnlearnAbility;
             unitController.UnitEventController.OnLearnAbility += HandleLearnAbility;
             unitController.UnitEventController.OnActivateTargetingMode += HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage += HandleCombatMessage;
@@ -655,6 +656,10 @@ namespace AnyRPG {
             unitController.UnitEventController.OnTakeDamage += HandleTakeDamage;
             unitController.UnitEventController.OnDespawn += HandleDespawn;
             unitController.UnitEventController.OnCurrencyChange += HandleCurrencyChange;
+            unitController.UnitEventController.OnSetGamepadActionButton += HandleSetGamepadActionButton;
+            unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
+            unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
+            unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -677,7 +682,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnReceiveCombatMiss -= HandleCombatMiss;
             unitController.UnitEventController.OnAddEquipment -= HandleAddEquipment;
             unitController.UnitEventController.OnRemoveEquipment -= HandleRemoveEquipment;
-            unitController.UnitEventController.OnUnlearnAbilities -= HandleUnlearnClassAbilities;
+            //unitController.UnitEventController.OnUnlearnAbilities -= HandleUnlearnClassAbilities;
             unitController.UnitEventController.OnLearnedCheckFail -= HandleLearnedCheckFail;
             unitController.UnitEventController.OnPowerResourceCheckFail -= HandlePowerResourceCheckFail;
             unitController.UnitEventController.OnCombatCheckFail -= HandleCombatCheckFail;
@@ -687,7 +692,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail -= HandleTargetInAbilityRangeFail;
             unitController.UnitEventController.OnReputationChange -= HandleReputationChange;
-            unitController.UnitEventController.OnUnlearnAbility -= HandleUnlearnAbility;
+            //unitController.UnitEventController.OnUnlearnAbility -= HandleUnlearnAbility;
             unitController.UnitEventController.OnLearnAbility -= HandleLearnAbility;
             unitController.UnitEventController.OnActivateTargetingMode -= HandleActivateTargetingMode;
             unitController.UnitEventController.OnCombatMessage -= HandleCombatMessage;
@@ -708,6 +713,26 @@ namespace AnyRPG {
             unitController.UnitEventController.OnTakeDamage -= HandleTakeDamage;
             unitController.UnitEventController.OnDespawn -= HandleDespawn;
             unitController.UnitEventController.OnCurrencyChange -= HandleCurrencyChange;
+            unitController.UnitEventController.OnSetGamepadActionButton += HandleSetGamepadActionButton;
+            unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
+            unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
+            unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
+        }
+
+        private void HandleUnsetGamepadActionButton(int buttonIndex) {
+            systemEventManager.NotifyOnUnsetGamepadActionButton(buttonIndex);
+        }
+
+        private void HandleUnsetMouseActionButton(int buttonIndex) {
+            systemEventManager.NotifyOnUnsetMouseActionButton(buttonIndex);
+        }
+
+        private void HandleSetMouseActionButton(IUseable useable, int buttonIndex) {
+            systemEventManager.NotifyOnSetMouseActionButton(useable, buttonIndex);
+        }
+
+        public void HandleSetGamepadActionButton(IUseable useable, int buttonIndex) {
+            systemEventManager.NotifyOnSetGamepadActionButton(useable, buttonIndex);
         }
 
         public void HandleCurrencyChange(string currencyResourceName, int amount) {
@@ -839,13 +864,6 @@ namespace AnyRPG {
             //Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
 
             systemEventManager.NotifyOnAbilityListChanged(sourceUnitController, baseAbility);
-            baseAbility.NotifyOnLearn(unitController);
-        }
-
-        public void HandleUnlearnAbility(bool updateActionBars) {
-            if (updateActionBars) {
-                actionBarManager.RemoveStaleActions();
-            }
         }
 
         /*
@@ -901,12 +919,6 @@ namespace AnyRPG {
 
         public void HandleLearnedCheckFail(AbilityProperties ability) {
             logManager.WriteCombatMessage("You have not learned the ability " + ability.DisplayName + " yet");
-        }
-
-        public void HandleUnlearnClassAbilities() {
-            //Debug.Log("PlayerManager.HandleUnlearnClassAbilities()");
-            // now perform a single action bar update
-            actionBarManager.RemoveStaleActions();
         }
 
         private void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {

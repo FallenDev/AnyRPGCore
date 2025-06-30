@@ -78,6 +78,7 @@ namespace AnyRPG {
         private CharacterInventoryManager characterInventoryManager = null;
         private CharacterQuestLog characterQuestLog = null;
         private CharacterSaveManager characterSaveManager = null;
+        private CharacterActionBarManager characterActionBarManager = null;
 
 
         // control logic
@@ -442,6 +443,7 @@ namespace AnyRPG {
         public bool IsServer { get => isServer; set => isServer = value; }
         public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
         public CharacterRequestData CharacterRequestData { get => characterRequestData; set => characterRequestData = value; }
+        public CharacterActionBarManager CharacterActionBarManager { get => characterActionBarManager; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -480,6 +482,7 @@ namespace AnyRPG {
             characterAbilityManager = new CharacterAbilityManager(this, systemGameManager);
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
             characterSaveManager = new CharacterSaveManager(this, systemGameManager);
+            characterActionBarManager = new CharacterActionBarManager(this, systemGameManager);
         }
 
         public override void SetGameManagerReferences() {
@@ -1013,6 +1016,7 @@ namespace AnyRPG {
             characterRecipeManager = null;
             characterCraftingManager = null;
             characterSaveManager = null;
+            characterActionBarManager = null;
             characterQuestLog = null;
 
             currentState = null;
@@ -1134,7 +1138,7 @@ namespace AnyRPG {
             unitModelController.LoadInitialSavedAppearance(characterConfigurationRequest.characterAppearanceData);
 
             // get a snapshot of the current state
-            CapabilityConsumerSnapshot oldSnapshot = new CapabilityConsumerSnapshot(baseCharacter, systemGameManager);
+            //CapabilityConsumerSnapshot oldSnapshot = new CapabilityConsumerSnapshot(baseCharacter, systemGameManager);
 
             unitProfile = characterConfigurationRequest.unitProfile;
             if (string.IsNullOrEmpty(characterConfigurationRequest.characterName) == false) {
@@ -1165,11 +1169,17 @@ namespace AnyRPG {
             baseCharacter.SpawnDead = unitProfile.SpawnDead;
 
             // get a snapshot of the new state
-            CapabilityConsumerSnapshot newSnapshot = new CapabilityConsumerSnapshot(baseCharacter, systemGameManager);
+            //CapabilityConsumerSnapshot newSnapshot = new CapabilityConsumerSnapshot(baseCharacter, systemGameManager);
 
-            baseCharacter.ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot, false);
+            //baseCharacter.ProcessCapabilityConsumerChange(oldSnapshot, newSnapshot, false);
             baseCharacter.CapabilityConsumerProcessor.UpdateCapabilityProviderList();
             baseCharacter.UpdateStatProviderList();
+
+            characterStats.LoadLevel(characterConfigurationRequest.unitLevel);
+
+            if (characterRequestData.saveData != null) {
+                characterSaveManager.LoadSaveDataToCharacter();
+            }
 
             characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
 
@@ -1177,7 +1187,6 @@ namespace AnyRPG {
             characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
 
             if (characterRequestData.saveData != null) {
-                characterSaveManager.LoadSaveDataToCharacter();
                 // there could have been patches that provide new capabilities since the data was saved, so we need to capture the current state again
                 characterSaveManager.SaveGameData();
                 // now that the save data has been loaded, we can create event subscriptions to monitor changes to the character

@@ -59,38 +59,6 @@ namespace AnyRPG {
             }
         }
 
-        public bool AddSavedAbility(AbilityProperties newAbility) {
-            //Debug.Log($"{gameObject.name}.ActionBarController.AddSavedAbility({newAbility.ResourceName})");
-
-            for (int i = 0; i < actionButtons.Count; i++) {
-                if (actionButtons[i].Useable == null && actionButtons[i].SavedUseable != null && actionButtons[i].SavedUseable.ResourceName == newAbility.ResourceName) {
-                    //Debug.Log("Adding ability: " + newAbility + " to empty action button " + i);
-                    actionButtons[i].SetUseable(newAbility);
-                    return true;
-                } else if (actionButtons[i].Useable == (newAbility as IUseable)) {
-                    //Debug.Log("Ability exists on bars already!");
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool AddNewAbility(AbilityProperties newAbility) {
-            //Debug.Log($"{gameObject.name}.ActionBarController.AddNewAbility({newAbility.ResourceName})");
-
-            for (int i = 0; i < actionButtons.Count; i++) {
-                if (actionButtons[i].Useable == null) {
-                    //Debug.Log("Adding ability: " + newAbility + " to empty action button " + i);
-                    actionButtons[i].SetUseable(newAbility);
-                    return true;
-                } else if (actionButtons[i].Useable == (newAbility as IUseable)) {
-                    //Debug.Log("Ability exists on bars already!");
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public void SetBackGroundColor(Color color) {
             if (backGroundImage != null) {
                 backGroundImage.color = color;

@@ -70,6 +70,7 @@ namespace AnyRPG {
         public Coroutine MonitorCoroutine { get => monitorCoroutine; set => monitorCoroutine = value; }
         public Image BackgroundImage { get => backgroundImage; set => backgroundImage = value; }
         public Image RangeIndicator { get => rangeIndicator; }
+        public int ActionButtonIndex { get => actionButtonIndex; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             if (configureCount > 0) {
@@ -82,7 +83,6 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             handScript = uIManager.HandScript;
             actionBarManager = uIManager.ActionBarManager;
-            //inventoryManager = systemGameManager.InventoryManager;
 
             // setting useable to null should not be necessary since useable is already null at start
             //Useable = null;
@@ -98,7 +98,7 @@ namespace AnyRPG {
         }
 
 
-        public void SetIndex(int index) {
+        public void SetIndex(int index, bool gamepadButton) {
             actionButtonIndex = index;
             // for now, we only set index on gamepad buttons, so this call can tell the button it's a gamepad button
             gamepadButton = true;
@@ -184,16 +184,21 @@ namespace AnyRPG {
                             if (actionBarManager.FromButton != null) {
                                 //Debug.Log("ActionButton: OnPointerClick(): FROMBUTTON IS NOT NULL, SWAPPING ACTIONBAR ITEMS");
                                 // this came from another action button slot.  now decide to swap (if we are not empty), or remove from original (if we are empty)
+                                /*
                                 if (Useable != null) {
                                     actionBarManager.FromButton.ClearUseable();
                                     actionBarManager.FromButton.SetUseable(Useable);
                                 } else {
                                     actionBarManager.FromButton.ClearUseable();
                                 }
+                                */
+                                actionBarManager.RequestMoveMouseUseable(actionBarManager.FromButton.actionButtonIndex, actionButtonIndex);
+                            } else {
+                                actionBarManager.RequestAssignMouseUseable(handScript.Moveable as IUseable, actionButtonIndex);
                             }
-                            // no matter whether we sent our useable over or not, we can now clear our useable and set whatever is in the handscript
-                            ClearUseable();
-                            SetUseable(handScript.Moveable as IUseable);
+                                // no matter whether we sent our useable over or not, we can now clear our useable and set whatever is in the handscript
+                            //ClearUseable();
+                            //SetUseable(handScript.Moveable as IUseable);
                         }
 
                         handScript.Drop();

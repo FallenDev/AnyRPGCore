@@ -165,6 +165,9 @@ namespace AnyRPG {
         public event System.Action<int, int> OnRequestMoveGamepadUseable = delegate { };
         public event System.Action<IUseable, int> OnRequestAssignGamepadUseable = delegate { };
         public event System.Action<int> OnRequestClearGamepadUseable = delegate { };
+        public event System.Action<int, int> OnRequestMoveMouseUseable = delegate { };
+        public event System.Action<IUseable, int> OnRequestAssignMouseUseable = delegate { };
+        public event System.Action<int> OnRequestClearMouseUseable = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -857,6 +860,18 @@ namespace AnyRPG {
 
         public void NotifyOnRequestAssignGamepadUseable(IUseable useable, int buttonIndex) {
             OnRequestAssignGamepadUseable(useable, buttonIndex);
+        }
+
+        public void NotifyOnRequestMoveMouseUseable(int oldIndex, int newIndex) {
+            OnRequestMoveMouseUseable(oldIndex, newIndex);
+        }
+
+        public void NotifyOnRequestAssignMouseUseable(IUseable useable, int buttonIndex) {
+            OnRequestAssignMouseUseable(useable, buttonIndex);
+        }
+
+        public void NotifyOnRequestClearMouseUseable(int buttonIndex) {
+            OnRequestClearMouseUseable(buttonIndex);
         }
 
         public void NotifyOnRequestClearGamepadUseable(int buttonIndex) {

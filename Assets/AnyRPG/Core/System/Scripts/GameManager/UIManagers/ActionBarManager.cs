@@ -88,6 +88,11 @@ namespace AnyRPG {
         private void InitializeMouseActionButtons() {
             //Debug.Log("ActionBarManager.InitializeGamepadActionButtonNodes()");
             mouseActionButtons.AddRange(GetMouseActionButtons());
+            int counter = 0;
+            foreach (ActionButton actionButton in mouseActionButtons) {
+                actionButton.SetIndex(counter, false);
+                counter++;
+            }
         }
 
         private void InitializeGamepadActionButtons() {
@@ -182,6 +187,21 @@ namespace AnyRPG {
 
             playerManager.UnitController.CharacterActionBarManager.RequestClearGamepadUseable((currentActionBarSet * 16) + index);
         }
+
+        public void RequestMoveMouseUseable(int oldIndex, int newIndex) {
+            playerManager.UnitController.CharacterActionBarManager.RequestMoveMouseUseable(oldIndex, newIndex);
+        }
+
+        public void RequestAssignMouseUseable(IUseable useable, int actionButtonIndex) {
+            playerManager.UnitController.CharacterActionBarManager.RequestAssignMouseUseable(useable, actionButtonIndex);
+        }
+
+        public void RequestClearMouseUseable(int index) {
+            //Debug.Log($"ActionBarManager.RequestClearGamepadUseable({index})");
+
+            playerManager.UnitController.CharacterActionBarManager.RequestClearMouseUseable(index);
+        }
+
 
         public void ProcessGamepadInput() {
             if (controlsManager.LeftTriggerDown) {

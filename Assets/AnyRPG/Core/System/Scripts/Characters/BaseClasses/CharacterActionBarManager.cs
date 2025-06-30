@@ -197,6 +197,49 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnUnsetMouseActionButton(buttonIndex);
         }
 
+        public void RequestMoveMouseUseable(int oldIndex, int newIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                MoveMouseUseable(oldIndex, newIndex);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestMoveMouseUseable(oldIndex, newIndex);
+            }
+        }
+
+        public void RequestAssignMouseUseable(IUseable useable, int buttonIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                SetMouseActionButton(useable, buttonIndex);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestAssignMouseUseable(useable, buttonIndex);
+            }
+        }
+
+        public void RequestClearMouseUseable(int buttonIndex) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                UnSetMouseActionButton(buttonIndex);
+            } else {
+                unitController.UnitEventController.NotifyOnRequestClearMouseUseable(buttonIndex);
+            }
+        }
+
+        public void MoveMouseUseable(int oldIndex, int newIndex) {
+            Debug.Log($"ActionBarManager.MoveMouseUseable({oldIndex}, {newIndex})");
+
+            IUseable oldUseable = mouseActionButtons[newIndex].Useable;
+
+            if (mouseActionButtons[oldIndex].Useable != null) {
+                SetMouseActionButton(mouseActionButtons[oldIndex].Useable, newIndex);
+            } else {
+                UnSetMouseActionButton(newIndex);
+            }
+
+            if (oldUseable != null) {
+                SetMouseActionButton(oldUseable, oldIndex);
+            } else {
+                UnSetMouseActionButton(oldIndex);
+            }
+        }
+
+
         public void RequestMoveGamepadUseable(int oldIndex, int newIndex) {
             if (systemGameManager.GameMode == GameMode.Local) {
                 MoveGamepadUseable(oldIndex, newIndex);
@@ -207,7 +250,8 @@ namespace AnyRPG {
 
         public void RequestAssignGamepadUseable(IUseable useable, int buttonIndex) {
             if (systemGameManager.GameMode == GameMode.Local) {
-                AssignGamepadUseable(useable, buttonIndex);
+                //AssignGamepadUseable(useable, buttonIndex);
+                SetGamepadActionButton(useable, buttonIndex);
             } else {
                 unitController.UnitEventController.NotifyOnRequestAssignGamepadUseable(useable, buttonIndex);
             }
@@ -221,11 +265,13 @@ namespace AnyRPG {
             }
         }
 
+        /*
         public void AssignGamepadUseable(IUseable useable, int index) {
             Debug.Log($"ActionBarManager.AssignUseableByIndex({index})");
 
             gamepadActionButtons[index].Useable = useable;
         }
+        */
 
         public void MoveGamepadUseable(int oldIndex, int newIndex) {
             Debug.Log($"ActionBarManager.MoveGamepadUseable({oldIndex}, {newIndex})");

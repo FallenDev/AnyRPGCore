@@ -57,7 +57,8 @@ namespace AnyRPG {
                     } else if (Moveable is Ability) {
                         // DROP ABILITY SAFELY
                         if (actionBarManager.FromButton != null) {
-                            actionBarManager.FromButton.ClearUseable();
+                            //actionBarManager.FromButton.ClearUseable();
+                            actionBarManager.RequestClearMouseUseable(actionBarManager.FromButton.ActionButtonIndex);
                         }
                         Drop();
                     }

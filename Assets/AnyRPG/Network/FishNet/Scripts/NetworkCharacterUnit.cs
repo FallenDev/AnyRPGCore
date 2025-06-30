@@ -136,6 +136,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveGamepadUseable += HandleRequestMoveGamepadUseable;
                 unitController.UnitEventController.OnRequestAssignGamepadUseable += HandleRequestAssignGamepadUseable;
                 unitController.UnitEventController.OnRequestClearGamepadUseable += HandleRequestClearGamepadUseable;
+                unitController.UnitEventController.OnRequestMoveMouseUseable += HandleRequestMoveMouseUseable;
+                unitController.UnitEventController.OnRequestAssignMouseUseable += HandleRequestAssignMouseUseable;
+                unitController.UnitEventController.OnRequestClearMouseUseable += HandleRequestClearMouseUseable;
             }
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
@@ -167,6 +170,9 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveGamepadUseable -= HandleRequestMoveGamepadUseable;
                 unitController.UnitEventController.OnRequestAssignGamepadUseable -= HandleRequestAssignGamepadUseable;
                 unitController.UnitEventController.OnRequestClearGamepadUseable -= HandleRequestClearGamepadUseable;
+                unitController.UnitEventController.OnRequestMoveMouseUseable -= HandleRequestMoveMouseUseable;
+                unitController.UnitEventController.OnRequestAssignMouseUseable -= HandleRequestAssignMouseUseable;
+                unitController.UnitEventController.OnRequestClearMouseUseable -= HandleRequestClearMouseUseable;
             }
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
@@ -328,6 +334,43 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetGamepadActionButton -= HandleUnsetGamepadActionButton;
         }
 
+        public void HandleRequestClearMouseUseable(int buttonIndex) {
+            RequestClearMouseUseableServer(buttonIndex);
+        }
+
+        [ServerRpc]
+        public void RequestClearMouseUseableServer(int buttonIndex) {
+            unitController.CharacterActionBarManager.UnSetMouseActionButton(buttonIndex);
+        }
+
+        public void HandleRequestAssignMouseUseable(IUseable useable, int buttonIndex) {
+            RequestAssignMouseUseableServer(useable.ResourceName, useable is Item, buttonIndex);
+        }
+
+        [ServerRpc]
+        public void RequestAssignMouseUseableServer(string useableName, bool isItem, int buttonIndex) {
+            IUseable useable = null;
+            if (isItem) {
+                useable = unitController.CharacterInventoryManager.GetNewInstantiatedItem(useableName);
+            } else {
+                useable = systemDataFactory.GetResource<Ability>(useableName).AbilityProperties;
+            }
+            if (useable == null) {
+                return;
+            }
+            unitController.CharacterActionBarManager.SetMouseActionButton(useable, buttonIndex);
+        }
+
+        public void HandleRequestMoveMouseUseable(int oldIndex, int newIndex) {
+            RequestMoveMouseUseableServer(oldIndex, newIndex);
+        }
+
+        [ServerRpc]
+        public void RequestMoveMouseUseableServer(int oldIndex, int newIndex) {
+            unitController.CharacterActionBarManager.MoveMouseUseable(oldIndex, newIndex);
+        }
+
+
         public void HandleRequestClearGamepadUseable(int buttonIndex) {
             RequestClearGamepadUseableServer(buttonIndex);
         }
@@ -352,7 +395,8 @@ namespace AnyRPG {
             if (useable == null) {
                 return;
             }
-            unitController.CharacterActionBarManager.AssignGamepadUseable(useable, buttonIndex);
+            //unitController.CharacterActionBarManager.AssignGamepadUseable(useable, buttonIndex);
+            unitController.CharacterActionBarManager.SetGamepadActionButton(useable, buttonIndex);
         }
 
         public void HandleRequestMoveGamepadUseable(int oldIndex, int newIndex) {

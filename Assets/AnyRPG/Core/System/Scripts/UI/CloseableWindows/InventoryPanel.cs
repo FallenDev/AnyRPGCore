@@ -16,6 +16,7 @@ namespace AnyRPG {
 
         // game manager references
         //protected PlayerManager playerManager = null;
+        protected SystemEventManager systemEventManager = null;
 
         public BagBarController BagBarController { get => bagBarController; set => bagBarController = value; }
 
@@ -29,13 +30,14 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             //playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         protected override void ProcessCreateEventSubscriptions() {
             //Debug.Log("InventoryPanel.ProcessCreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
 
-            SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             inventoryManager.OnAddInventoryBagNode += HandleAddInventoryBagNode;
             inventoryManager.OnAddInventorySlot += HandleAddSlot;
             inventoryManager.OnRemoveInventorySlot += HandleRemoveSlot;
@@ -44,14 +46,14 @@ namespace AnyRPG {
         protected override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
 
-            SystemEventManager.StopListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             inventoryManager.OnAddInventoryBagNode -= HandleAddInventoryBagNode;
             inventoryManager.OnAddInventorySlot -= HandleAddSlot;
             inventoryManager.OnRemoveInventorySlot -= HandleRemoveSlot;
         }
 
-        public void HandlePlayerConnectionDespawn(string eventName, EventParamProperties eventParamProperties) {
-            //Debug.Log("InventoryPanel.HandlePlayerConnectionDespawn()");
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
+            //Debug.Log("InventoryPanel.HandlePlayerUnitDespawn()");
 
             ClearSlots();
             bagBarController.ClearBagButtons();

@@ -547,6 +547,10 @@ namespace AnyRPG {
             networkController.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
+        public void RequestChangePlayerName(string newName) {
+            networkController.RequestChangePlayerName(newName);
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

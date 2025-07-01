@@ -10,15 +10,24 @@ namespace AnyRPG {
 
         // game manager references
         private PlayerManager playerManager = null;
+        private PlayerManagerServer playerManagerServer = null;
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
             playerManager = systemGameManager.PlayerManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
-        public void ChangePlayerName(string newName) {
-            playerManager.SetPlayerName(newName);
+        public void RequestChangePlayerName(string newName) {
+            Debug.Log($"NameChangeManager.RequestChangePlayerName({newName})");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                playerManagerServer.SetPlayerName(playerManager.UnitController, newName);
+            } else {
+                networkManagerClient.RequestChangePlayerName(newName);
+            }
+
             ConfirmAction(playerManager.UnitController);
         }
 

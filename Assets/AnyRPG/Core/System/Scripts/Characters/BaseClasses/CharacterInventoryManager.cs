@@ -231,6 +231,8 @@ namespace AnyRPG {
         }
 
         public void ClearSlots(List<InventorySlot> clearSlots) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.ClearSlots()");
+
             foreach (InventorySlot inventorySlot in clearSlots) {
                 if (inventorySlots.Contains(inventorySlot)) {
                     RemoveInventorySlot(inventorySlot);

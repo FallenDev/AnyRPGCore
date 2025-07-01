@@ -204,16 +204,6 @@ namespace AnyRPG {
             saveManager.ClearSystemManagedSaveData();
         }
 
-        public void SetPlayerName(string newName) {
-            //Debug.Log("PlayerManager.SetPlayerName()");
-            if (newName != null && newName != string.Empty) {
-                unitController.BaseCharacter.ChangeCharacterName(newName);
-            }
-
-            SystemEventManager.TriggerEvent("OnPlayerNameChanged", new EventParamProperties());
-            uIManager.PlayerUnitFrameController.SetTarget(UnitController.NamePlateController);
-        }
-
         public void SetPlayerCharacterClass(CharacterClass newCharacterClass) {
             //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
             if (systemGameManager.GameMode == GameMode.Network) {
@@ -660,6 +650,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
+            unitController.UnitEventController.OnNameChange += HandleNameChange;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -717,17 +708,22 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
+            unitController.UnitEventController.OnNameChange -= HandleNameChange;
         }
 
-        private void HandleUnsetGamepadActionButton(int buttonIndex) {
+        public void HandleNameChange(string newName) {
+            uIManager.PlayerUnitFrameController.SetTarget(unitController.NamePlateController);
+        }
+
+        public void HandleUnsetGamepadActionButton(int buttonIndex) {
             systemEventManager.NotifyOnUnsetGamepadActionButton(buttonIndex);
         }
 
-        private void HandleUnsetMouseActionButton(int buttonIndex) {
+        public void HandleUnsetMouseActionButton(int buttonIndex) {
             systemEventManager.NotifyOnUnsetMouseActionButton(buttonIndex);
         }
 
-        private void HandleSetMouseActionButton(IUseable useable, int buttonIndex) {
+        public void HandleSetMouseActionButton(IUseable useable, int buttonIndex) {
             systemEventManager.NotifyOnSetMouseActionButton(useable, buttonIndex);
         }
 

@@ -481,6 +481,12 @@ namespace AnyRPG {
             clientConnector.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
+        public override void RequestChangePlayerName(string newName) {
+            Debug.Log($"FishNetNetworkController.RequestChangePlayerName({newName})");
+
+            clientConnector.RequestChangePlayerName(newName);
+        }
+
         #endregion
 
         #region server functions

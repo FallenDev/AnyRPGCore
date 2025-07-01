@@ -17,6 +17,8 @@ namespace AnyRPG {
         public event System.Action OnSetSlotBackgroundColor = delegate { };
 
         public void AddInventoryBagNode(BagNode bagNode) {
+            Debug.Log("InventoryManager.AddInventoryBagNode()");
+
             OnAddInventoryBagNode(bagNode);
         }
 
@@ -25,7 +27,7 @@ namespace AnyRPG {
         }
 
         public void AddInventorySlot(InventorySlot inventorySlot) {
-            //Debug.Log("InventoryManager.AddInventorySlot()");
+            Debug.Log("InventoryManager.AddInventorySlot()");
 
             OnAddInventorySlot(inventorySlot);
         }
@@ -35,6 +37,8 @@ namespace AnyRPG {
         }
 
         public void RemoveInventorySlot(InventorySlot inventorySlot) {
+            Debug.Log("InventoryManager.RemoveInventorySlot()");
+
             OnRemoveInventorySlot(inventorySlot);
         }
 

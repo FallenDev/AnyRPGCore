@@ -255,6 +255,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetMouseActionButton += HandleSetMouseActionButton;
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
+            unitController.UnitEventController.OnNameChange += HandleNameChangeServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -332,7 +333,18 @@ namespace AnyRPG {
             unitController.UnitEventController.OnSetMouseActionButton -= HandleSetMouseActionButton;
             unitController.UnitEventController.OnUnsetMouseActionButton -= HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton -= HandleUnsetGamepadActionButton;
+            unitController.UnitEventController.OnNameChange -= HandleNameChangeServer;
         }
+
+        public void HandleNameChangeServer(string newName) {
+            HandleNameChangeClient(newName);
+        }
+        
+        [ObserversRpc]
+        public void HandleNameChangeClient(string newName) {
+            unitController.BaseCharacter.ChangeCharacterName(newName);
+        }
+
 
         public void HandleRequestClearMouseUseable(int buttonIndex) {
             RequestClearMouseUseableServer(buttonIndex);

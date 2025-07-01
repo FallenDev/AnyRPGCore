@@ -54,6 +54,7 @@ namespace AnyRPG {
         public abstract void RequestBeginCrafting(Recipe recipe, int craftAmount);
         public abstract void RequestCancelCrafting();
         public abstract void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData);
+        public abstract void RequestChangePlayerName(string newName);
 
         // server functions
         public abstract void StartServer();

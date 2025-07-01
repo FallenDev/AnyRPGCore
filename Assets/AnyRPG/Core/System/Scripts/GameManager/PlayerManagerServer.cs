@@ -348,6 +348,22 @@ namespace AnyRPG {
             }
         }
 
+        public void SetPlayerName(string newName, int accountId) {
+            //Debug.Log("PlayerManager.SetPlayerName()");
+            if (activePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+            SetPlayerName(activePlayers[accountId], newName);
+        }
+
+        public void SetPlayerName(UnitController unitController, string newName) {
+            //Debug.Log("PlayerManager.SetPlayerName()");
+            if (newName != null && newName != string.Empty) {
+                unitController.BaseCharacter.ChangeCharacterName(newName);
+            }
+        }
+
+
         public void SetPlayerCharacterClass(CharacterClass characterClass, int accountId) {
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;

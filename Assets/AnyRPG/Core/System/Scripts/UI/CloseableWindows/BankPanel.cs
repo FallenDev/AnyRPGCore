@@ -15,6 +15,7 @@ namespace AnyRPG {
 
         // game manager references
         //protected PlayerManager playerManager = null;
+        protected SystemEventManager systemEventManager = null;
 
         public BagBarController BagBarController { get => bagBarController; set => bagBarController = value; }
 
@@ -28,13 +29,14 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             //playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         protected override void ProcessCreateEventSubscriptions() {
             //Debug.Log("BankPanel.ProcessCreateEventSubscriptions()");
             base.ProcessCreateEventSubscriptions();
 
-            SystemEventManager.StartListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
+            systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             inventoryManager.OnAddBankBagNode += HandleAddBankBagNode;
             inventoryManager.OnAddBankSlot += HandleAddSlot;
             inventoryManager.OnRemoveBankSlot += HandleRemoveSlot;
@@ -44,13 +46,13 @@ namespace AnyRPG {
         protected override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
 
-            SystemEventManager.StopListening("OnPlayerConnectionDespawn", HandlePlayerConnectionDespawn);
+            systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             inventoryManager.OnAddBankBagNode -= HandleAddBankBagNode;
             inventoryManager.OnAddBankSlot -= HandleAddSlot;
             inventoryManager.OnRemoveBankSlot -= HandleRemoveSlot;
         }
 
-        public void HandlePlayerConnectionDespawn(string eventName, EventParamProperties eventParamProperties) {
+        public void HandlePlayerUnitDespawn(UnitController unitController) {
             ClearSlots();
             bagBarController.ClearBagButtons();
         }

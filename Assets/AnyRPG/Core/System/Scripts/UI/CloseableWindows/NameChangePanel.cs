@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace AnyRPG {
-    public class NameChangePanelController : WindowContentController {
+    public class NameChangePanel : WindowContentController {
 
         [SerializeField]
         private TMP_InputField textInput = null;
@@ -49,7 +49,7 @@ namespace AnyRPG {
         public void ConfirmAction() {
             //Debug.Log("NameChangePanelController.ConfirmAction()");
             if (textInput.text != null && textInput.text != string.Empty) {
-                nameChangeManager.ChangePlayerName(textInput.text);
+                nameChangeManager.RequestChangePlayerName(textInput.text);
                 uIManager.nameChangeWindow.CloseWindow();
             }
         }

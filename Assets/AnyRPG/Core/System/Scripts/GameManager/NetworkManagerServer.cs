@@ -901,6 +901,10 @@ namespace AnyRPG {
         public void RequestUpdatePlayerAppearance(int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
             playerManagerServer.UpdatePlayerAppearance(accountId, unitProfileName, appearanceString, swappableMeshSaveData);
         }
+
+        internal void RequestChangePlayerName(int accountId, string newName) {
+            playerManagerServer.SetPlayerName(newName, accountId);
+        }
     }
 
 }

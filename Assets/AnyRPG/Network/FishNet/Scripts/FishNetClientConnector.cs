@@ -1087,6 +1087,17 @@ namespace AnyRPG {
             networkManagerServer.RequestUpdatePlayerAppearance(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestChangePlayerName(string newName, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestChangePlayerName({newName})");
+
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            networkManagerServer.RequestChangePlayerName(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, newName);
+
+        }
+
         /*
         public override void OnStartServer() {
             base.OnStartServer();

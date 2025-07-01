@@ -61,14 +61,7 @@ namespace AnyRPG {
             foreach (InventorySlot inventorySlot in inventorySlots) {
                 inventorySlot.Clear();
             }
-            /*
-            if (BagPanel != null) {
-                BagPanel.ClearSlots(inventorySlots);
-            }
-            */
             characterInventoryManager.ClearSlots(inventorySlots);
-            //bagPanel = null;
-
             ClearSlots();
         }
 

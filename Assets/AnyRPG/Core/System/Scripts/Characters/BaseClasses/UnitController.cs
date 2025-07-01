@@ -1369,11 +1369,11 @@ namespace AnyRPG {
         protected /*override*/ void Update() {
             //base.Update();
 
-            /*
+            // with new network code that requests save data before the configuration is complete, we need to check if the unit is initialized
+            // because it may take a while to get the save data back
             if (initialized == false) {
                 return;
             }
-            */
 
             if (characterStats.IsAlive == false) {
                 // can't handle movement when dead

@@ -223,12 +223,18 @@ namespace AnyRPG {
         }
 
         // this method needs to exist to allow timeline controlled units to add a nameplate when enabled
+        // TO DO : FIX ME; timelines will have to send some event to the unit controller to initialize the nameplate
+        // this was breaking in network mode
+        /*
         public void OnEnable() {
+            //Debug.Log($"{gameObject.name}.NamePlateUnit.OnEnable()");
+
             // characters can get disabled by cutscenes, so need to initialize nameplate on re-enable
             if (startHasRun && namePlateController != null) {
                 namePlateController.InitializeNamePlate();
             }
         }
+        */
 
         public override void ConfigureDialogPanel(DialogPanelController dialogPanelController) {
             dialogPanelController.ConfigureSnapshotPortrait();

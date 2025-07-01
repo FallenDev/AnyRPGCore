@@ -1191,7 +1191,9 @@ namespace AnyRPG {
             abilityList[SystemDataUtility.PrepareStringForMatch(newAbility.DisplayName)] = newAbility;
 
             newAbility.ProcessLearnAbility(this);
-            newAbility.NotifyOnLearn(unitController);
+
+            // for now prerequisites are only used on the client
+            //newAbility.NotifyOnLearn(unitController);
 
             unitController.UnitEventController.NotifyOnLearnAbility(newAbility);
             return true;

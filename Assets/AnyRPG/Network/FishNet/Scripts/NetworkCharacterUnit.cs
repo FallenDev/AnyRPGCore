@@ -1671,7 +1671,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
-            CompleteClientCharacterRequest(null);
+            CompleteClientCharacterRequest(saveData);
         }
 
 

@@ -864,6 +864,8 @@ namespace AnyRPG {
             //Debug.Log($"PlayerManager.HandleLearnAbility({baseAbility.ResourceName})");
 
             systemEventManager.NotifyOnAbilityListChanged(sourceUnitController, baseAbility);
+            // this is ok to have here for now because prerequisites are only used on the client
+            baseAbility.NotifyOnLearn(sourceUnitController);
         }
 
         /*

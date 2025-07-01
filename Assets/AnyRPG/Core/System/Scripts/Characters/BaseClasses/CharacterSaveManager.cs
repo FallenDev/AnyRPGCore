@@ -290,6 +290,8 @@ namespace AnyRPG {
         }
 
         public void HandleLevelChanged(int newLevel) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleLevelChanged({newLevel})");
+
             saveData.PlayerLevel = newLevel;
         }
 

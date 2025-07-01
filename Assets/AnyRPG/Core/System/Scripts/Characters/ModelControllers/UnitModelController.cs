@@ -154,7 +154,11 @@ namespace AnyRPG {
 
         public void SaveAppearanceSettings(AnyRPGSaveData saveData) {
             //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SaveAppearanceSettings()");
-
+            
+            if (modelAppearanceController == null) {
+                // this function will be called once before the model is spawned
+                return;
+            }
             modelAppearanceController.SaveAppearanceSettings(saveData);
         }
 

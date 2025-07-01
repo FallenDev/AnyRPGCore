@@ -29,10 +29,12 @@ namespace AnyRPG {
         }
 
         private void InitializeActionButtons() {
-            for (int i = 0; i < actionBarManager.GetMouseActionButtons().Count; i++) {
+            int mouseActionButtonCount = actionBarManager.GetMouseActionButtons().Count;
+            int gamepadActionButtonCount = actionBarManager.GetGamepadActionButtons().Count;
+            for (int i = 0; i < mouseActionButtonCount; i++) {
                 mouseActionButtons.Add(new ActionButtonNode());
             }
-            for (int i = 0; i < actionBarManager.GetGamepadActionButtons().Count; i++) {
+            for (int i = 0; i < gamepadActionButtonCount; i++) {
                 gamepadActionButtons.Add(new ActionButtonNode());
             }
         }

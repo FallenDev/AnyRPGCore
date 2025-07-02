@@ -59,6 +59,16 @@ namespace AnyRPG {
             }
         }
 
+        public virtual void LoadSaveData(EquipmentSaveData equipmentSaveData) {
+            displayName = equipmentSaveData.DisplayName;
+            dropLevel = equipmentSaveData.dropLevel;
+            if (equipmentSaveData.randomSecondaryStatIndexes != null) {
+                randomStatIndexes = equipmentSaveData.randomSecondaryStatIndexes;
+                InitializeRandomStatsFromIndex();
+            }
+        }
+
+
         public override void PostInitialization() {
             base.PostInitialization();
             if (equipment.RandomSecondaryStats == false) {

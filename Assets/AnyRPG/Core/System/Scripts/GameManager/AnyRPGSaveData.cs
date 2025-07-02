@@ -32,6 +32,7 @@ namespace AnyRPG {
         public string DataSavedOn = string.Empty;
         public string DataFileName = string.Empty;
         public int GamepadActionButtonSet;
+        public int ClientItemIdCount = 1;
 
         public List<ResourcePowerSaveData> resourcePowerSaveData = new List<ResourcePowerSaveData>();
         public List<SwappableMeshSaveData> swappableMeshSaveData = new List<SwappableMeshSaveData>();
@@ -154,6 +155,7 @@ namespace AnyRPG {
         public string DisplayName;
         public string itemQuality;
         public int dropLevel;
+        public int itemInstanceId;
 
         public int stackCount;
         public List<int> randomSecondaryStatIndexes;
@@ -173,7 +175,11 @@ namespace AnyRPG {
     public struct EquippedBagSaveData {
 
         public string BagName;
+        public string DisplayName;
+        public string itemQuality;
+        public int dropLevel;
         public int slotCount;
+        public int itemInstanceId;
     }
 
     [Serializable]
@@ -197,6 +203,7 @@ namespace AnyRPG {
         public string DisplayName;
         public string itemQuality;
         public int dropLevel;
+        public int itemInstanceId;
 
         public List<int> randomSecondaryStatIndexes;
     }

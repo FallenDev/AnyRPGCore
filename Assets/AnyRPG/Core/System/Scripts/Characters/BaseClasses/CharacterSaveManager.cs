@@ -453,7 +453,7 @@ namespace AnyRPG {
         }
 
         public void LoadQuestData(AnyRPGSaveData anyRPGSaveData) {
-            Debug.Log($"{unitController.gameObject.name}.Savemanager.LoadQuestData()");
+            //Debug.Log($"{unitController.gameObject.name}.Savemanager.LoadQuestData()");
 
             unitController.CharacterQuestLog.QuestSaveDataDictionary.Clear();
             unitController.CharacterQuestLog.QuestObjectiveSaveDataDictionary.Clear();
@@ -583,7 +583,7 @@ namespace AnyRPG {
         private void LoadSlotData(InventorySlotSaveData inventorySlotSaveData, int counter, bool bank) {
             if (inventorySlotSaveData.ItemName != string.Empty && inventorySlotSaveData.ItemName != null) {
                 for (int i = 0; i < inventorySlotSaveData.stackCount; i++) {
-                    InstantiatedItem newInstantiatedItem = unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData.ItemName, inventorySlotSaveData);
+                    InstantiatedItem newInstantiatedItem = unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
                     if (newInstantiatedItem == null) {
                         Debug.Log("Savemanager.LoadInventorySlotData(): COULD NOT LOAD ITEM FROM ITEM MANAGER: " + inventorySlotSaveData.ItemName);
                     } else {
@@ -612,17 +612,8 @@ namespace AnyRPG {
 
             foreach (EquipmentSaveData equipmentSaveData in anyRPGSaveData.equipmentSaveData) {
                 if (equipmentSaveData.EquipmentName != string.Empty) {
-                    InstantiatedEquipment newInstantiatedEquipment = unitController.CharacterInventoryManager.GetNewInstantiatedItem(equipmentSaveData.EquipmentName) as InstantiatedEquipment;
+                    InstantiatedEquipment newInstantiatedEquipment = unitController.CharacterInventoryManager.GetNewInstantiatedEquipmentFromSaveData(equipmentSaveData);
                     if (newInstantiatedEquipment != null) {
-                        newInstantiatedEquipment.DisplayName = equipmentSaveData.DisplayName;
-                        newInstantiatedEquipment.DropLevel = equipmentSaveData.dropLevel;
-                        if (equipmentSaveData.itemQuality != null && equipmentSaveData.itemQuality != string.Empty) {
-                            newInstantiatedEquipment.ItemQuality = systemDataFactory.GetResource<ItemQuality>(equipmentSaveData.itemQuality);
-                        }
-                        if (equipmentSaveData.randomSecondaryStatIndexes != null) {
-                            newInstantiatedEquipment.RandomStatIndexes = equipmentSaveData.randomSecondaryStatIndexes;
-                            newInstantiatedEquipment.InitializeRandomStatsFromIndex();
-                        }
                         unitController.CharacterEquipmentManager.Equip(newInstantiatedEquipment, null);
                     }
                 }
@@ -983,6 +974,11 @@ namespace AnyRPG {
             EquippedBagSaveData saveData = new EquippedBagSaveData();
             saveData.BagName = (bagNode.InstantiatedBag != null ? bagNode.InstantiatedBag.ResourceName : string.Empty);
             saveData.slotCount = (bagNode.InstantiatedBag != null ? bagNode.InstantiatedBag.Slots : 0);
+            if (bagNode.InstantiatedBag != null) {
+                saveData.DisplayName = bagNode.InstantiatedBag.DisplayName;
+                saveData.dropLevel = bagNode.InstantiatedBag.DropLevel;
+                saveData.itemInstanceId = bagNode.InstantiatedBag.InstanceId;
+            }
 
             return saveData;
         }
@@ -1020,6 +1016,7 @@ namespace AnyRPG {
                             equipmentSaveData.itemQuality = (equipmentInventorySlot.InstantiatedEquipment == null ? string.Empty : equipmentInventorySlot.InstantiatedEquipment.ItemQuality.ResourceName);
                         }
                         equipmentSaveData.dropLevel = equipmentInventorySlot.InstantiatedEquipment.DropLevel;
+                        equipmentSaveData.itemInstanceId = equipmentInventorySlot.InstantiatedEquipment.InstanceId;
                         equipmentSaveData.randomSecondaryStatIndexes = (equipmentInventorySlot.InstantiatedEquipment == null ? null : equipmentInventorySlot.InstantiatedEquipment.RandomStatIndexes);
                     }
                     saveData.equipmentSaveData.Add(equipmentSaveData);

@@ -668,6 +668,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestEquipToSlot(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestEquipToSlot({equipmentSlotProfile.ResourceName}, {newEquipment.Item.ResourceName})");
+
             OnRequestEquipToSlot(newEquipment, equipmentSlotProfile);
         }
 
@@ -682,7 +684,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
 
             OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }
@@ -756,7 +758,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
+
             OnRequestUnequipToSlot(instantiatedEquipment, inventorySlotId);
         }
 

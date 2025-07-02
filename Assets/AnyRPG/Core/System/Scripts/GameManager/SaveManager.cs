@@ -293,6 +293,7 @@ namespace AnyRPG {
             SystemEventManager.TriggerEvent("OnSaveGame", new EventParamProperties());
 
             SaveCutsceneData(anyRPGSaveData);
+            SaveItemIdCount(anyRPGSaveData);
             playerManager.UnitController.CharacterSaveManager.SaveGameData();
 
             SaveWindowPositions();
@@ -305,6 +306,10 @@ namespace AnyRPG {
             }
 
             return saveResult;
+        }
+
+        public void SaveItemIdCount(AnyRPGSaveData saveData) {
+            saveData.ClientItemIdCount = systemItemManager.ClientItemIdCount;
         }
 
         public bool SaveDataFile(AnyRPGSaveData dataToSave) {
@@ -467,6 +472,7 @@ namespace AnyRPG {
         public void ClearSharedData() {
             //Debug.Log("SaveManager.ClearSharedData()");
 
+            systemItemManager.ClearInstantiatedItems();
             ClearSystemManagedSaveData();
         }
 
@@ -535,6 +541,7 @@ namespace AnyRPG {
             playerManager.SpawnPlayerConnection(playerCharacterSaveData);
 
             LoadCutsceneData(playerCharacterSaveData.SaveData);
+            LoadItemIdData(playerCharacterSaveData.SaveData);
 
             LoadWindowPositions();
 
@@ -558,7 +565,9 @@ namespace AnyRPG {
             levelManager.LoadLevel(playerCharacterSaveData.SaveData.CurrentScene);
         }
 
-        
+        private void LoadItemIdData(AnyRPGSaveData saveData) {
+            systemItemManager.SetClientItemIdCount(saveData.ClientItemIdCount);
+        }
 
         public void ClearSystemManagedSaveData() {
             //Debug.Log("Savemanager.ClearSystemmanagedCharacterData()");

@@ -435,13 +435,13 @@ namespace AnyRPG {
         }
 
         public List<ActionButton> GetMouseActionButtons() {
-            Debug.Log("ActionBarManager.GetMouseActionButtons()");
+            //Debug.Log("ActionBarManager.GetMouseActionButtons()");
 
             return GetActionButtons(actionBarControllers);
         }
 
         public List<ActionButton> GetGamepadActionButtons() {
-            Debug.Log("ActionBarManager.GetGamepadActionButtons()");
+            //Debug.Log("ActionBarManager.GetGamepadActionButtons()");
 
             return GetActionButtons(GamepadActionBarControllers.Cast<ActionBarController>().ToList());
         }
@@ -504,7 +504,7 @@ namespace AnyRPG {
         }
 
         public void UpdateVisuals() {
-            Debug.Log("ActionBarmanager.UpdateVisuals()");
+            //Debug.Log("ActionBarmanager.UpdateVisuals()");
 
             if (controlsManager.GamePadModeActive == true) {
                 foreach (ActionBarController actionBarController in gamepadActionBarControllers) {

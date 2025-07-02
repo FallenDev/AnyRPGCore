@@ -82,6 +82,7 @@ namespace AnyRPG {
             }
             saveData.dropLevel = DropLevel;
             saveData.randomSecondaryStatIndexes = new List<int>();
+            saveData.itemInstanceId = InstanceId;
             return saveData;
 
         }

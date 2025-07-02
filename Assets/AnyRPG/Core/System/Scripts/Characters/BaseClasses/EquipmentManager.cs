@@ -166,7 +166,7 @@ namespace AnyRPG {
         }
 
         public void EquipToList(InstantiatedEquipment equipment, EquipmentSlotProfile equipmentSlotProfile) {
-            //Debug.Log($"EquipmentManager.EquipToList({equipment.ResourceName}, {equipmentSlotProfile.DisplayName})");
+            Debug.Log($"EquipmentManager.EquipToList({equipment.ResourceName}, {equipmentSlotProfile.DisplayName})");
 
             currentEquipment[equipmentSlotProfile].AddItem(equipment);
         }

@@ -140,8 +140,7 @@ namespace AnyRPG {
             int counter = 0;
             foreach (EquippedBagSaveData saveData in equippedBagSaveData) {
                 if (saveData.slotCount > 0) {
-                    //InstantiatedBag newBag = systemItemManager.GetNewInstantiatedItem(saveData.BagName) as InstantiatedBag;
-                    InstantiatedBag newBag = GetNewInstantiatedItem(saveData.BagName) as InstantiatedBag;
+                    InstantiatedBag newBag = GetNewInstantiatedBagFromSaveData(saveData) as InstantiatedBag;
                     if (newBag != null) {
                         if (bank == true) {
                             AddBag(newBag, BankNodes[counter]);
@@ -687,6 +686,20 @@ namespace AnyRPG {
         }
         */
 
+        /*
+        /// <summary>
+        /// Get a new instantiated Item
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns></returns>
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(Item item, InventorySlotSaveData inventorySlotSaveData) {
+            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            int itemInstanceId = systemItemManager.GetNewItemInstanceId();
+            return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
+        }
+        */
+
+
         public InstantiatedItem GetNewInstantiatedItem(string itemName, ItemQuality itemQuality = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
             Item item = systemDataFactory.GetResource<Item>(itemName);
@@ -707,34 +720,29 @@ namespace AnyRPG {
         }
 
 
-        public InstantiatedItem GetNewInstantiatedItemFromSaveData(string itemName, InventorySlotSaveData inventorySlotSaveData) {
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(InventorySlotSaveData inventorySlotSaveData) {
             //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemName}, {itemName})");
 
-            Item item = systemDataFactory.GetResource<Item>(itemName);
+            if (systemItemManager.InstantiatedItems.ContainsKey(inventorySlotSaveData.itemInstanceId)) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData() item already exists in instantiated items");
+                return systemItemManager.InstantiatedItems[inventorySlotSaveData.itemInstanceId];
+            }
+
+            Item item = systemDataFactory.GetResource<Item>(inventorySlotSaveData.ItemName);
             if (item == null) {
                 return null;
             }
             return GetNewInstantiatedItemFromSaveData(item, inventorySlotSaveData);
         }
 
-        public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, string itemName, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {itemName})");
-
-            Item item = systemDataFactory.GetResource<Item>(itemName);
-            if (item == null) {
-                return null;
-            }
-            return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
-        }
-
-        public InstantiatedItem GetNewInstantiatedItemFromSaveData(int itemInstanceId, Item item, InventorySlotSaveData inventorySlotSaveData) {
+        public InstantiatedItem GetNewInstantiatedItemFromSaveData(Item item, InventorySlotSaveData inventorySlotSaveData) {
             //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {item.ResourceName})");
 
             ItemQuality usedItemQuality = null;
             if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {
                 usedItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
             }
-            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(itemInstanceId, item, usedItemQuality);
+            InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(inventorySlotSaveData.itemInstanceId, item, usedItemQuality);
             instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItem.LoadSaveData(inventorySlotSaveData);
 
@@ -742,16 +750,64 @@ namespace AnyRPG {
             return instantiatedItem;
         }
 
+        public InstantiatedBag GetNewInstantiatedBagFromSaveData(EquippedBagSaveData equippedBagSaveData) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {itemName})");
 
-        /// <summary>
-        /// Get a new instantiated Item
-        /// </summary>
-        /// <param name="resourceName"></param>
-        /// <returns></returns>
-        public InstantiatedItem GetNewInstantiatedItemFromSaveData(Item item, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
-            int itemInstanceId = systemItemManager.GetNewItemInstanceId();
-            return GetNewInstantiatedItemFromSaveData(itemInstanceId, item, inventorySlotSaveData);
+            if (systemItemManager.InstantiatedItems.ContainsKey(equippedBagSaveData.itemInstanceId)) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData() item already exists in instantiated items");
+                return systemItemManager.InstantiatedItems[equippedBagSaveData.itemInstanceId] as InstantiatedBag;
+            }
+
+            Bag item = systemDataFactory.GetResource<Item>(equippedBagSaveData.BagName) as Bag;
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedBagFromSaveData(item, equippedBagSaveData);
+        }
+
+        public InstantiatedBag GetNewInstantiatedBagFromSaveData(Item item, EquippedBagSaveData equippedBagSaveData) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {item.ResourceName})");
+
+            ItemQuality usedItemQuality = null;
+            if (equippedBagSaveData.itemQuality != null && equippedBagSaveData.itemQuality != string.Empty) {
+                usedItemQuality = systemDataFactory.GetResource<ItemQuality>(equippedBagSaveData.itemQuality);
+            }
+            InstantiatedBag instantiatedItem = systemItemManager.GetNewInstantiatedItem(equippedBagSaveData.itemInstanceId, item, usedItemQuality) as InstantiatedBag;
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            instantiatedItem.LoadSaveData(equippedBagSaveData);
+
+            //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            return instantiatedItem;
+        }
+
+        public InstantiatedEquipment GetNewInstantiatedEquipmentFromSaveData(EquipmentSaveData equipmentSaveData) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {itemName})");
+
+            if (systemItemManager.InstantiatedItems.ContainsKey(equipmentSaveData.itemInstanceId)) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData() item already exists in instantiated items");
+                return systemItemManager.InstantiatedItems[equipmentSaveData.itemInstanceId] as InstantiatedEquipment;
+            }
+
+            Equipment item = systemDataFactory.GetResource<Item>(equipmentSaveData.EquipmentName) as Equipment;
+            if (item == null) {
+                return null;
+            }
+            return GetNewInstantiatedEquipmentFromSaveData(item, equipmentSaveData);
+        }
+
+        public InstantiatedEquipment GetNewInstantiatedEquipmentFromSaveData(Item item, EquipmentSaveData equipmentSaveData) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {item.ResourceName})");
+
+            ItemQuality usedItemQuality = null;
+            if (equipmentSaveData.itemQuality != null && equipmentSaveData.itemQuality != string.Empty) {
+                usedItemQuality = systemDataFactory.GetResource<ItemQuality>(equipmentSaveData.itemQuality);
+            }
+            InstantiatedEquipment instantiatedItem = systemItemManager.GetNewInstantiatedItem(equipmentSaveData.itemInstanceId, item, usedItemQuality) as InstantiatedEquipment;
+            instantiatedItem.InitializeNewItem(usedItemQuality);
+            instantiatedItem.LoadSaveData(equipmentSaveData);
+
+            //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
+            return instantiatedItem;
         }
 
         public void RequestDeleteItem(InstantiatedItem instantiatedItem) {

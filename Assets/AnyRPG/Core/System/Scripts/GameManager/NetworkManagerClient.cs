@@ -367,7 +367,7 @@ namespace AnyRPG {
 
             // this is our lobby game
             uIManager.clientLobbyGameWindow.CloseWindow();
-
+            systemItemManager.ClearInstantiatedItems();
             playerManager.SpawnPlayerConnection();
             //levelManager.LoadLevel(sceneName);
             levelManager.ProcessBeforeLevelUnload();

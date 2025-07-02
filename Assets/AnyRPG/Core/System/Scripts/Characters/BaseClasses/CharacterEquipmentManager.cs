@@ -168,7 +168,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddEquipment(EquipmentInventorySlot equipmentInventorySlot, InstantiatedEquipment instantiatedEquipment) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.HandleAddEquipment({equipmentInventorySlot.ToString()}, {(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.HandleAddEquipment({equipmentInventorySlot.ToString()}, {(instantiatedEquipment != null ? instantiatedEquipment.ResourceName : "null")})");
 
             EquipmentSlotProfile equipmentSlotProfile = currentEquipmentLookup[equipmentInventorySlot];
 
@@ -349,6 +349,7 @@ namespace AnyRPG {
 
         public void UnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
             Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+
             EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(instantiatedEquipment);
             if (equipmentSlotProfile != null) {
                 Unequip(equipmentSlotProfile, inventorySlotId);

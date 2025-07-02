@@ -77,7 +77,7 @@ namespace AnyRPG {
 
 
         public bool AddAbility(AbilityProperties newAbility) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterActionBarManager.AddNewAbility({newAbility.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterActionBarManager.AddNewAbility({newAbility.ResourceName})");
 
             bool returnValue = false;
             bool foundSlot = false;

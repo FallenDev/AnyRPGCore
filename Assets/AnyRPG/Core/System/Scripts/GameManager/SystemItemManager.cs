@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace AnyRPG {
         NetworkManagerServer networkManagerServer = null;
 
         public Dictionary<int, InstantiatedItem> InstantiatedItems { get => instantiatedItems; set => instantiatedItems = value; }
+        public int ClientItemIdCount { get => clientItemIdCount; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -60,6 +62,14 @@ namespace AnyRPG {
             instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItems.Add(itemInstanceId, instantiatedItem);
             return instantiatedItem;
+        }
+
+        public void SetClientItemIdCount(int clientItemIdCount) {
+            this.clientItemIdCount = clientItemIdCount;
+        }
+
+        public void ClearInstantiatedItems() {
+            instantiatedItems.Clear();
         }
 
         /*

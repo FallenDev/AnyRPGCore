@@ -855,7 +855,8 @@ namespace AnyRPG {
                 if (equipmentSlotProfile == null) {
                     return;
                 }
-                unitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].AddItem(systemItemManager.InstantiatedItems[itemInstanceId]);
+                //unitController.CharacterEquipmentManager.CurrentEquipment[equipmentSlotProfile].AddItem(systemItemManager.InstantiatedItems[itemInstanceId]);
+                unitController.CharacterEquipmentManager.EquipToList(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, equipmentSlotProfile);
             }
         }
 
@@ -908,11 +909,14 @@ namespace AnyRPG {
         }
 
         public void HandleRequestUnequipToSlot(InstantiatedEquipment equipment, int inventorySlotId) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestUnequipToSlot({equipment.Equipment.ResourceName}, {inventorySlotId}) instanceId: {equipment.InstanceId}");
             RequestUnequipToSlot(equipment.InstanceId, inventorySlotId);
         }
 
         [ServerRpc]
         public void RequestUnequipToSlot(int itemInstanceId, int inventorySlotId) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestUnequipToSlot({itemInstanceId}, {inventorySlotId})");
+
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 unitController.CharacterEquipmentManager.UnequipToSlot(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, inventorySlotId);
             }
@@ -1033,11 +1037,14 @@ namespace AnyRPG {
 
 
         public void HandleRequestEquipToSlot(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestEquipToSlot({equipment.Equipment.ResourceName}, {profile.ResourceName}) instanceId: {equipment.InstanceId}");
             RequestEquipToSlot(equipment.InstanceId, profile.ResourceName);
         }
 
         [ServerRpc]
         public void RequestEquipToSlot(int itemInstanceId, string equipmentSlotProfileName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestEquipToSlot({itemInstanceId}, {equipmentSlotProfileName})");
+
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
                 if (equipmentSlotProfile == null) {
@@ -1068,7 +1075,7 @@ namespace AnyRPG {
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
             
-            unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(itemInstanceId, inventorySlotSaveData.ItemName, inventorySlotSaveData);
+            unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
         }
 
         public void HandleMarkQuestCompleteServer(UnitController controller, QuestBase questBase) {

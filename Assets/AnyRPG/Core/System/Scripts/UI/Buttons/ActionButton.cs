@@ -232,7 +232,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="useable"></param>
         public void SetUseable(IUseable useable, bool monitor = true) {
-            Debug.Log($"{gameObject.name}.ActionButton.SetUsable({(useable == null ? "null" : useable.DisplayName)}, {monitor})");
+            //Debug.Log($"{gameObject.name}.ActionButton.SetUsable({(useable == null ? "null" : useable.DisplayName)}, {monitor})");
 
             playerManager.UnitController.UnitEventController.OnAttemptPerformAbility -= OnAttemptUseableUse;
             playerManager.UnitController.UnitEventController.OnPerformAbility -= OnUseableUse;

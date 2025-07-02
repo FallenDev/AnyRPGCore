@@ -36,6 +36,11 @@ namespace AnyRPG {
             this.slots = bag.Slots;
         }
 
+        public virtual void LoadSaveData(EquippedBagSaveData equippedBagSaveData) {
+            displayName = equippedBagSaveData.DisplayName;
+            dropLevel = equippedBagSaveData.dropLevel;
+        }
+
         /*
         public void Initalize(int slots, string title, Sprite bagIcon) {
             //Debug.Log("Bag.Initialize(" + slots + ", " + title + ")");

@@ -113,7 +113,7 @@ namespace AnyRPG {
         }
 
         public virtual Dictionary<PrefabProfile, List<GameObject>> Cast(IAbilityCaster source, Interactable target, Interactable originalTarget, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{ResourceName}.AbilityEffectProperties.Cast(" + source.AbilityManager.Name + ", " + (target? target.name : "null") + ")");
+            Debug.Log($"{ResourceName}.AbilityEffectProperties.Cast({source.AbilityManager.Name}, {(target? target.name : "null")})");
             /*
             if (abilityEffectInput != null) {
                 this.abilityEffectInput = abilityEffectInput;

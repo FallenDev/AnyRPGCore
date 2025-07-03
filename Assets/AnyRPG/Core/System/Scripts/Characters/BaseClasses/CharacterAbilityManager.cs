@@ -980,7 +980,7 @@ namespace AnyRPG {
             if (savedEffect != null) {
                 ApplyStatusEffect(savedEffect.AbilityEffectProperties, statusEffectSaveData.remainingSeconds);
             } else {
-                Debug.LogWarning(unitController.BaseCharacter.CharacterName + ".CharacterAbilityManager.ApplySavedStatusEffects() could not find effect in database with name " + statusEffectSaveData.StatusEffectName);
+                Debug.LogWarning($"{unitController.gameObject.name}.CharacterAbilityManager.ApplySavedStatusEffects() could not find effect in database with name {statusEffectSaveData.StatusEffectName}");
             }
         }
 

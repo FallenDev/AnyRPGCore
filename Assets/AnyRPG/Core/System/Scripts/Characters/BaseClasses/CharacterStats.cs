@@ -350,12 +350,15 @@ namespace AnyRPG {
         /// spawn the physical prefabs associated with any status effects on this character
         /// </summary>
         public void HandleCharacterUnitSpawn() {
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleCharacterUnitSpawn()");
+
             foreach (StatusEffectNode statusEffectNode in StatusEffects.Values) {
                 if (statusEffectNode.StatusEffect.StatusEffectObjectList.Count > 0
                     && (statusEffectNode.PrefabObjects == null || statusEffectNode.PrefabObjects.Count == 0)) {
-                    statusEffectNode.PrefabObjects = statusEffectNode.StatusEffect.RawCast(unitController, unitController, unitController, new AbilityEffectContext(unitController));
+                    unitController.UnitModelController.ProcessAddStatusEffect(statusEffectNode, statusEffectNode.StatusEffect, statusEffectNode.AbilityEffectContext);
                 }
             }
+            
         }
 
         public void HandleUpdateStatProviders() {
@@ -927,13 +930,7 @@ namespace AnyRPG {
             }
 
             if (newStatusEffectNode != null) {
-                Dictionary<PrefabProfile, List<GameObject>> returnObjects = unitController.CharacterAbilityManager.SpawnStatusEffectPrefabs(unitController, statusEffect, abilityEffectContext);
-                if (returnObjects != null) {
-                    // pass in the ability effect object so we can independently destroy it and let it last as long as the status effect (which could be refreshed).
-                    newStatusEffectNode.PrefabObjects = returnObjects;
-                }
-                statusEffect.PerformMaterialChange(unitController);
-
+                unitController.UnitModelController.ProcessAddStatusEffect(newStatusEffectNode, statusEffect, abilityEffectContext);
             }
 
             return newStatusEffectNode;

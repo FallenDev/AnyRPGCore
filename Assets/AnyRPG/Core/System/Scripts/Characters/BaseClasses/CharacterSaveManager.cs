@@ -388,7 +388,7 @@ namespace AnyRPG {
         }
 
 
-        public void LoadSaveDataToCharacter(/*AnyRPGSaveData saveData*/) {
+        public void LoadSaveDataToCharacter() {
             Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadSaveDataToCharacter()");
 
             //SetSaveData(saveData);
@@ -414,7 +414,7 @@ namespace AnyRPG {
             LoadActionBarData(saveData);
 
             LoadCurrencyData(saveData);
-            LoadStatusEffectData(saveData);
+            LoadStatusEffectData();
             LoadPetData(saveData);
 
             // set resources after equipment loaded for modifiers
@@ -530,9 +530,9 @@ namespace AnyRPG {
 
         }
 
-        public void LoadStatusEffectData(AnyRPGSaveData anyRPGSaveData) {
+        public void LoadStatusEffectData() {
             //Debug.Log("Savemanager.LoadStatusEffectData()");
-            foreach (StatusEffectSaveData statusEffectSaveData in anyRPGSaveData.statusEffectSaveData) {
+            foreach (StatusEffectSaveData statusEffectSaveData in saveData.statusEffectSaveData) {
                 unitController.CharacterAbilityManager.ApplySavedStatusEffects(statusEffectSaveData);
             }
         }

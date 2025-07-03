@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -330,11 +331,9 @@ namespace AnyRPG {
         }
 
         public void SetModelReady() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetModelReady()");
+            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetModelReady()");
 
-            if (modelCreated == false) {
-                unitController.CharacterStats.HandleCharacterUnitSpawn();
-            }
+            bool modelWasCreated = modelCreated;
 
             //RebuildModelAppearance();
             // give mecanim model controller a chance to spawn or despawn weapons now that character skeleton is available (if UMA was used)
@@ -351,7 +350,13 @@ namespace AnyRPG {
                 //Debug.Log("OnModelUpdated()");
                 OnModelUpdated();
             }
+
+            if (modelWasCreated == false) {
+                unitController.CharacterStats.HandleCharacterUnitSpawn();
+            }
+
             unitController.SetModelReady();
+
         }
 
         public void CalculateFloatHeight() {
@@ -374,6 +379,22 @@ namespace AnyRPG {
 
 
             //Debug.Log($"{unitController.gameObject.name}.UnitModelController.CalculateFloatHeight() new float height: " + unitController.FloatHeight);
+        }
+
+        public void ProcessAddStatusEffect(StatusEffectNode newStatusEffectNode, StatusEffectProperties statusEffect, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{unitController.gameObject.name}.UnitModelController.ProcessAddStatusEffect({statusEffect.DisplayName})");
+
+            if (modelCreated == false) {
+                return;
+            }
+
+            Dictionary<PrefabProfile, List<GameObject>> returnObjects = unitController.CharacterAbilityManager.SpawnStatusEffectPrefabs(unitController, statusEffect, abilityEffectContext);
+            if (returnObjects != null) {
+                // pass in the ability effect object so we can independently destroy it and let it last as long as the status effect (which could be refreshed).
+                newStatusEffectNode.PrefabObjects = returnObjects;
+            }
+            statusEffect.PerformMaterialChange(unitController);
+
         }
     }
 

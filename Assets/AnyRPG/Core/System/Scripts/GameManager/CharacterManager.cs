@@ -117,15 +117,19 @@ namespace AnyRPG {
         }
         */
 
+        public void BeginCharacterRequest(UnitController unitController) {
+            ConfigureUnitController(unitController);
+        }
+
         public void CompleteNetworkCharacterRequest(UnitController unitController) {
             //Debug.Log($"CharacterManager.CompleteNetworkCharacterRequest({unitController.gameObject.name}, {saveData})");
-            ConfigureUnitController(unitController);
+            SetUnitControllerConfiguration(unitController);
         }
 
         public void CompleteCharacterRequest(UnitController unitController) {
             //Debug.Log($"CharacterManager.CompleteCharacterRequest({characterGameObject.name}, {characterRequestData.isServerOwned}, {isOwner})");
 
-            ConfigureUnitController(unitController);
+            SetUnitControllerConfiguration(unitController);
 
             if (unitController.CharacterRequestData.requestMode == GameMode.Network) {
                 // if this is being spawned over the network, the model is not spawned yet, so return and wait for it to spawn
@@ -162,7 +166,11 @@ namespace AnyRPG {
 
         }
 
-        public UnitController ConfigureUnitController(UnitController unitController) {
+        public void ConfigureUnitController(UnitController unitController) {
+            unitController.Configure(systemGameManager);
+        }
+
+        public UnitController SetUnitControllerConfiguration(UnitController unitController) {
             //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name})");
 
             if (unitController != null) {
@@ -172,7 +180,7 @@ namespace AnyRPG {
                 // give this unit a unique name
                 //Debug.Log($"CharacterManager.ConfigureUnitController({unitProfile.ResourceName}, {prefabObject.name}) renaming gameobject from {unitController.gameObject.name}");
                 unitController.gameObject.name = unitController.CharacterRequestData.characterConfigurationRequest.unitProfile.ResourceName.Replace(" ", "") + systemGameManager.GetSpawnCount();
-                unitController.Configure(systemGameManager);
+                //ConfigureUnitController(unitController);
 
                 if (unitController.CharacterRequestData.requestMode == GameMode.Local) {
                     //Debug.Log($"adding {unitController.gameObject.name} to local owned units");
@@ -262,6 +270,7 @@ namespace AnyRPG {
                 // this should always be true in this function because it's only called if not network mode
                 unitController = prefabObject.GetComponent<UnitController>();
                 unitController.CharacterRequestData = characterRequestData;
+                BeginCharacterRequest(unitController);
                 CompleteCharacterRequest(unitController);
             }
             return unitController;

@@ -1448,7 +1448,10 @@ namespace AnyRPG {
 
             while ((statusEffect.LimitedDuration == false || statusEffect.ClassTrait == true || statusEffectNode.GetRemainingDuration() > 0f) && unitController != null) {
                 yield return null;
-                statusEffectNode.SetRemainingDuration(statusEffectNode.GetRemainingDuration() - Time.deltaTime);
+                if (statusEffect.LimitedDuration == true && statusEffect.ClassTrait == false) {
+                    statusEffectNode.SetRemainingDuration(statusEffectNode.GetRemainingDuration() - Time.deltaTime);
+                    unitController.CharacterSaveManager.SaveStatusEffectData();
+                }
                 elapsedTime += Time.deltaTime;
                 // check for tick first so we can do final tick;
 

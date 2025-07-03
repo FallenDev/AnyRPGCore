@@ -50,8 +50,10 @@ namespace AnyRPG {
                 return;
             }
             if (unitControllerMode.Value == UnitControllerMode.Player) {
+                BeginCharacterRequest();
                 GetClientSaveData();
             }else {
+                BeginCharacterRequest();
                 CompleteClientCharacterRequest(null);
             }
         }
@@ -75,6 +77,7 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
+            BeginCharacterRequest();
             CompleteCharacterRequest(false, null);
             SubscribeToServerUnitEvents();
         }
@@ -1521,6 +1524,10 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
 
             unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
+        }
+
+        private void BeginCharacterRequest() {
+            systemGameManager.CharacterManager.BeginCharacterRequest(unitController);
         }
 
         private void CompleteCharacterRequest(bool isOwner, AnyRPGSaveData saveData) {

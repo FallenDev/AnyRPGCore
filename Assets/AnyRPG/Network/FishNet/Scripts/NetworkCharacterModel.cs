@@ -17,7 +17,7 @@ namespace AnyRPG {
         private Animator animator = null;
 
         private void FindGameManager() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
 
             // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
@@ -25,7 +25,6 @@ namespace AnyRPG {
             unitController = GetComponentInParent<UnitController>();
             animator = GetComponent<Animator>();
             unitController.UnitEventController.OnInitializeAnimator += HandleInitializeAnimator;
-
             if (base.IsOwner) {
                 unitController.UnitEventController.OnAnimatorSetTrigger += HandleSetTrigger;
             }
@@ -40,24 +39,10 @@ namespace AnyRPG {
             networkAnimator.SetAnimator(animator);
         }
 
-        private void CompleteModelRequest(bool isOwner, AnyRPGSaveData saveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
-            /*
-            CharacterRequestData characterRequestData;
-            characterRequestData = new CharacterRequestData(null, 
-                GameMode.Network,
-                null, // does not matter since it's unused to the CompleteModelRequest() process
-                UnitControllerMode.Preview, // does not matter since it's unused to the CompleteModelRequest() process
-                new CharacterConfigurationRequest());
-            characterRequestData.spawnRequestId = clientSpawnRequestId;
-            systemGameManager.CharacterManager.CompleteModelRequest(characterRequestData, unitController, isOwner);
-            */
+        private void CompleteModelRequest(bool isOwner) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
+
             systemGameManager.CharacterManager.CompleteNetworkModelRequest(unitController, gameObject, base.OwnerId == -1);
-            /*
-            if (saveData != null) {
-                unitController.CharacterSaveManager.LoadSaveDataToCharacter(saveData);
-            }
-            */
         }
 
         public override void OnStartClient() {
@@ -68,11 +53,11 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            //if (unitController.UnitControllerMode == UnitControllerMode.Player) {
-            //    GetClientSaveData();
-            //} else {
-                CompleteModelRequest(base.IsOwner, null);
-            //}
+            if (unitController.CharacterConfigured == true) {
+                CompleteModelRequest(base.IsOwner);
+            } else {
+                SubscribeToUnitConfigured();
+            }
 
         }
 
@@ -86,8 +71,28 @@ namespace AnyRPG {
                 return;
             }
 
-            CompleteModelRequest(base.OwnerId == -1, null);
-            //systemGameManager.CharacterManager.CompleteModelRequest(serverRequestId, false);
+            if (unitController.CharacterConfigured == true) {
+                CompleteModelRequest(base.OwnerId == -1);
+            } else {
+                SubscribeToUnitConfigured();
+            }
+        }
+
+        private void SubscribeToUnitConfigured() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.SubscribeToUnitConfigured()");
+
+            unitController.UnitEventController.OnCharacterConfigured += HandleCharacterConfigured;
+        }
+
+        private void HandleCharacterConfigured() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleCharacterConfigured()");
+
+            unitController.UnitEventController.OnCharacterConfigured -= HandleCharacterConfigured;
+            if (systemGameManager.NetworkManagerServer.ServerModeActive == false) {
+                CompleteModelRequest(base.IsOwner);
+            } else {
+                CompleteModelRequest(base.OwnerId == -1);
+            }
         }
 
         /*

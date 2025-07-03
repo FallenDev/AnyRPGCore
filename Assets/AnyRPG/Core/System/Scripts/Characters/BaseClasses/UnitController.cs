@@ -153,6 +153,7 @@ namespace AnyRPG {
 
         // initial configuration
         private CharacterRequestData characterRequestData = null;
+        bool characterConfigured = false;
 
         // game manager references
         protected LevelManager levelManager = null;
@@ -444,6 +445,7 @@ namespace AnyRPG {
         public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
         public CharacterRequestData CharacterRequestData { get => characterRequestData; set => characterRequestData = value; }
         public CharacterActionBarManager CharacterActionBarManager { get => characterActionBarManager; }
+        public bool CharacterConfigured { get => characterConfigured; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -1059,6 +1061,7 @@ namespace AnyRPG {
             riderUnitController = null;
             movementSoundArea = null;
 
+            characterConfigured = false;
 
             base.ResetSettings();
         }
@@ -1224,6 +1227,9 @@ namespace AnyRPG {
             SetUnitProfileInteractables();
 
             SetUnitFootstepAudioProfile();
+
+            characterConfigured = true;
+            unitEventController.NotifyOnCharacterConfigured();
         }
 
         private void SetUnitProfileInteractables() {

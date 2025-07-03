@@ -324,7 +324,7 @@ namespace AnyRPG {
             
             OnChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
 
-            if (gameId == lobbyGame.gameId && accountId == this.accountId) {
+            if (lobbyGame != null && gameId == lobbyGame.gameId && accountId == this.accountId) {
                 // the character was chosen for this client so close the new game window
                 uIManager.newGameWindow.CloseWindow();
             }

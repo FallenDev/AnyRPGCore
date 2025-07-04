@@ -17,7 +17,7 @@ namespace AnyRPG {
         private Animator animator = null;
 
         private void FindGameManager() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
 
             // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
@@ -40,7 +40,7 @@ namespace AnyRPG {
         }
 
         private void CompleteModelRequest(bool isOwner) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.CompleteModelRequest() isOwner: {isOwner}");
 
             systemGameManager.CharacterManager.CompleteNetworkModelRequest(unitController, gameObject, base.OwnerId == -1);
         }

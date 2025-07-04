@@ -38,6 +38,7 @@ namespace AnyRPG {
         public event System.Action<int> OnUnsetGamepadActionButton = delegate { };
         public event System.Action<IUseable, int> OnSetMouseActionButton = delegate { };
         public event System.Action<int> OnUnsetMouseActionButton = delegate { };
+        public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -216,6 +217,9 @@ namespace AnyRPG {
             OnSetGamepadActionButton(useable, buttonIndex);
         }
 
+        public void NotifyOnRemoveActivePet(UnitProfile unitProfile) {
+            OnRemoveActivePet(unitProfile);
+        }
     }
 
     [System.Serializable]

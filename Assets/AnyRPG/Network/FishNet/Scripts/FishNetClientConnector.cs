@@ -146,7 +146,7 @@ namespace AnyRPG {
             NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
             if (networkCharacterUnit != null) {
                 networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
-                networkCharacterUnit.unitControllerMode.Value = UnitControllerMode.AI;
+                networkCharacterUnit.unitControllerMode.Value = characterRequestData.characterConfigurationRequest.unitControllerMode;
             }
 
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
@@ -1096,6 +1096,36 @@ namespace AnyRPG {
             }
             networkManagerServer.RequestChangePlayerName(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, newName);
 
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestSpawnPet(string resourceName, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestSpawnPet({resourceName})");
+
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(resourceName);
+            if (unitProfile == null) {
+                Debug.LogWarning($"FishNetClientConnector.RequestSpawnPet() could not find unit profile {resourceName}");
+                return;
+            }
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            networkManagerServer.RequestSpawnPet(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfile);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestDespawnPet(string resourceName, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestDespawnPet({resourceName})");
+
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(resourceName);
+            if (unitProfile == null) {
+                Debug.LogWarning($"FishNetClientConnector.RequestDespawnPet() could not find unit profile {resourceName}");
+                return;
+            }
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            networkManagerServer.RequestDespawnPet(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfile);
         }
 
         /*

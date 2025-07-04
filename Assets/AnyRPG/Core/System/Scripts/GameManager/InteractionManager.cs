@@ -66,7 +66,7 @@ namespace AnyRPG {
         }
 
         public bool InteractWithInteractable(UnitController sourceUnitController, Interactable targetInteractable) {
-            Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
+            //Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
 
             // perform range check
             bool passedRangeCheck = false;

@@ -19,6 +19,10 @@ namespace AnyRPG {
 
         protected bool eventSubscriptionsInitialized = false;
 
+        // game manager references
+        protected CharacterManager characterManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
+
         public List<UnitProfile> UnitProfiles { get => unitProfiles; set => unitProfiles = value; }
         public Dictionary<UnitProfile, UnitController> ActiveUnitProfiles { get => activeUnitProfiles; set => activeUnitProfiles = value; }
         public List<UnitType> ValidPetTypeList { get => validPetTypeList; set => validPetTypeList = value; }
@@ -26,6 +30,13 @@ namespace AnyRPG {
         public CharacterPetManager(UnitController unitController, SystemGameManager systemGameManager) {
             this.unitController = unitController;
             Configure(systemGameManager);
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+
+            characterManager = systemGameManager.CharacterManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void ProcessCapabilityProviderChange(CapabilityConsumerSnapshot newSnapshot) {
@@ -37,7 +48,8 @@ namespace AnyRPG {
             }
         }
 
-        public void AddTemporaryPet(UnitProfile unitProfile, UnitController petUnitController) {
+        public void AddActivePet(UnitProfile unitProfile, UnitController petUnitController) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddActivePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
 
             if (petUnitController == null) {
                 return;
@@ -47,28 +59,25 @@ namespace AnyRPG {
                 activeUnitProfiles.Add(unitProfile, petUnitController);
                 petUnitController.SetPetMode(unitController, true);
                 petUnitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
+                unitController.UnitEventController.NotifyOnAddActivePet(unitProfile, petUnitController);
             }
         }
 
-        public void CapturePet(UnitProfile unitProfile, UnitController unitController) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.CapturePet(" + (unitProfile == null ? "null" : unitProfile.DisplayName) + ", " + (unitController == null ? "null" : unitController.gameObject.name) + ")");
+        public void CapturePet(UnitProfile unitProfile, UnitController petUnitController) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.CapturePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
 
-            if (unitController == null) {
+            if (petUnitController == null) {
                 return;
             }
 
-            // you can only have one of the same pet active at a time
-            if (activeUnitProfiles.ContainsKey(unitProfile) == false) {
-                activeUnitProfiles.Add(unitProfile, unitController);
-                unitController.SetPetMode(this.unitController, true);
-                unitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
-            }
+            AddActivePet(unitProfile, petUnitController);
 
             AddPet(unitProfile);
         }
 
         public virtual void AddPet(UnitProfile unitProfile) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.AddPet(" + unitProfile.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfile.DisplayName})");
+
             // need more logic in here about whether this class or spec is allowed to capture this type of pet
             if (unitProfiles != null && unitProfiles.Contains(unitProfile) == false && unitProfile.IsPet == true) {
                 unitProfiles.Add(unitProfile);
@@ -77,17 +86,19 @@ namespace AnyRPG {
         }
 
         public virtual void AddPet(string unitProfileName) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.AddPet(" + unitProfileName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfileName})");
+
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
             if (unitProfile != null) {
                 AddPet(unitProfile);
             } else {
-                Debug.LogWarning(unitController.gameObject.name + ".CharacterPetManager.AddPet() Could not find unitProfile: " + unitProfileName);
+                Debug.LogWarning($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfileName}) Could not find unitProfile");
             }
         }
 
         public virtual void DespawnPet(UnitProfile unitProfile) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.DeSpawnPet(" + unitProfile.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.DespawnPet({unitProfile.DisplayName})");
+
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 if (activeUnitProfiles[unitProfile] != null) {
                     activeUnitProfiles[unitProfile].Despawn(0f, false, true);
@@ -108,48 +119,64 @@ namespace AnyRPG {
         }
 
         public virtual void HandleUnitDestroy(UnitProfile unitProfile) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.HandleUnitDestroy(" + unitProfile.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.HandleUnitDestroy({unitProfile.ResourceName})");
+
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 activeUnitProfiles[unitProfile].UnitEventController.OnUnitDestroy -= HandleUnitDestroy;
                 activeUnitProfiles.Remove(unitProfile);
+                unitController.UnitEventController.NotifyOnRemoveActivePet(unitProfile);
             }
         }
 
         public virtual void SpawnPet(UnitProfile unitProfile) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.SpawnPet(" + unitProfile.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.SpawnPet({unitProfile.ResourceName})");
+
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 // can't add the same dictionary key twice
                 return;
             }
             CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
             characterConfigurationRequest.unitControllerMode = UnitControllerMode.Pet;
+            characterConfigurationRequest.faction = unitController.BaseCharacter.Faction;
+            characterConfigurationRequest.unitLevel = unitController.CharacterStats.Level;
             CharacterRequestData characterRequestData = new CharacterRequestData(this,
                 systemGameManager.GameMode,
                 characterConfigurationRequest);
 
-            systemGameManager.CharacterManager.SpawnUnitPrefabLocal(characterRequestData, unitController.transform.parent, unitController.transform.position, unitController.transform.forward);
+            if (networkManagerServer.ServerModeActive == true) {
+                characterRequestData.isServerOwned = true;
+                characterRequestData.requestMode = GameMode.Network;
+                characterManager.SpawnUnitPrefab(characterRequestData, null, unitController.transform.position, unitController.transform.forward, unitController.gameObject.scene);
+            } else {
+                characterManager.SpawnUnitPrefabLocal(characterRequestData, unitController.transform.parent, unitController.transform.position, unitController.transform.forward);
+            }
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {
-            unitController.SetPetMode(this.unitController);
+            //unitController.SetPetMode(this.unitController);
         }
 
         public void PostInit(UnitController unitController) {
-            unitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
-            activeUnitProfiles.Add(unitController.CharacterRequestData.characterConfigurationRequest.unitProfile, unitController);
+            AddActivePet(unitController.CharacterRequestData.characterConfigurationRequest.unitProfile, unitController);
         }
 
-
-
-        //public void ProcessLevelUnload() {
         public void HandleCharacterUnitDespawn() {
-            DespawnAllPets();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                DespawnAllPets();
+            }
         }
 
         public void HandleDie() {
-            DespawnAllPets();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                DespawnAllPets();
+            }
         }
 
+        public void UpdatePetList(int currentLevel) {
+            CapabilityConsumerSnapshot capabilityConsumerSnapshot = new CapabilityConsumerSnapshot(unitController.BaseCharacter, systemGameManager);
+
+            ProcessCapabilityProviderChange(capabilityConsumerSnapshot);
+        }
     }
 
 }

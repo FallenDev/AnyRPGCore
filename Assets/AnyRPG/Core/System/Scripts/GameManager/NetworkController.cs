@@ -55,6 +55,8 @@ namespace AnyRPG {
         public abstract void RequestCancelCrafting();
         public abstract void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData);
         public abstract void RequestChangePlayerName(string newName);
+        public abstract void RequestSpawnPet(UnitProfile unitProfile);
+        public abstract void RequestDespawnPet(UnitProfile unitProfile);
 
         // server functions
         public abstract void StartServer();
@@ -91,6 +93,7 @@ namespace AnyRPG {
         public abstract void AdvertiseTakeLoot(int accountId, int lootDropId);
         public abstract void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
         public abstract Scene GetAccountScene(int accountId, string sceneName);
+
         //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);
         //public abstract void AdvertiseInteractWithAnimatedObjectComponentServer(int accountId, Interactable interactable, int optionIndex);

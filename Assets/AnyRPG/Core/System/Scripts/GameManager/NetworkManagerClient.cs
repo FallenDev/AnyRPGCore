@@ -551,6 +551,14 @@ namespace AnyRPG {
             networkController.RequestChangePlayerName(newName);
         }
 
+        public void RequestSpawnPet(UnitProfile unitProfile) {
+            networkController.RequestSpawnPet(unitProfile);
+        }
+
+        public void RequestDespawnPet(UnitProfile unitProfile) {
+            networkController.RequestDespawnPet(unitProfile);
+        }
+
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

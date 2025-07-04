@@ -480,7 +480,7 @@ namespace AnyRPG {
         }
 
         public void SetGamepadActionButtonSet(int actionButtonSet, bool updateVisuals = true) {
-            Debug.Log($"ActionBarmanager.SetGamepadActionButtonSet({actionButtonSet}, {updateVisuals})");
+            //Debug.Log($"ActionBarmanager.SetGamepadActionButtonSet({actionButtonSet}, {updateVisuals})");
 
             currentActionBarSet = actionButtonSet;
             gamepadPanel.SetGamepadActionButtonSet(actionButtonSet);
@@ -491,7 +491,7 @@ namespace AnyRPG {
         }
 
         private void UpdateGamepadActionButtons(int actionButtonSet, List<ActionButton> actionButtons) {
-            Debug.Log($"ActionBarmanager.UpdateGamepadActionButtons({actionButtonSet})");
+            //Debug.Log($"ActionBarmanager.UpdateGamepadActionButtons({actionButtonSet})");
 
             for (int i = 0; i < 16; i++) {
                 //Debug.Log("ActionBarmanager.UpdateGamepadActionButtons(" + actionButtonSet + ") checking: " + (i + (actionButtonSet * 16)));

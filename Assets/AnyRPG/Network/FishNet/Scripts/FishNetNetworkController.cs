@@ -487,6 +487,16 @@ namespace AnyRPG {
             clientConnector.RequestChangePlayerName(newName);
         }
 
+        public override void RequestSpawnPet(UnitProfile unitProfile) {
+            //Debug.Log($"FishNetNetworkController.RequestSpawnPet({unitProfile.DisplayName})");
+            clientConnector.RequestSpawnPet(unitProfile.ResourceName);
+        }
+
+        public override void RequestDespawnPet(UnitProfile unitProfile) {
+            //Debug.Log($"FishNetNetworkController.RequestSpawnPet({unitProfile.DisplayName})");
+            clientConnector.RequestDespawnPet(unitProfile.ResourceName);
+        }
+
         #endregion
 
         #region server functions

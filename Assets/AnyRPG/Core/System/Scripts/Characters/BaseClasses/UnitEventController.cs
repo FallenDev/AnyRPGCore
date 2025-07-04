@@ -157,6 +157,8 @@ namespace AnyRPG {
         public event System.Action<Recipe> OnUnlearnRecipe = delegate { };
         public event System.Action<string, int> OnCurrencyChange = delegate { };
         public event System.Action<UnitProfile> OnAddPet = delegate { };
+        public event System.Action<UnitProfile, UnitController> OnAddActivePet = delegate { };
+        public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
         public event System.Action<Faction, float> OnSetReputationAmount = delegate { };
         public event System.Action<IUseable, int> OnSetGamepadActionButton = delegate { };
         public event System.Action<int> OnUnsetGamepadActionButton = delegate { };
@@ -567,7 +569,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityCast() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityCast()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityCast()");
 
             OnAnimatorClearAbilityCast();
         }
@@ -838,6 +840,10 @@ namespace AnyRPG {
             OnAddPet(unitProfile);
         }
 
+        public void NotifyOnAddActivePet(UnitProfile unitProfile, UnitController petUnitController) {
+            OnAddActivePet(unitProfile, petUnitController);
+        }
+
         public void NotifyOnSetReputationAmount(Faction faction, float amount) {
             OnSetReputationAmount(faction, amount);
         }
@@ -883,9 +889,13 @@ namespace AnyRPG {
         }
 
         public void NotifyOnCharacterConfigured() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnCharacterConfigured()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnCharacterConfigured()");
 
             OnCharacterConfigured();
+        }
+
+        public void NotifyOnRemoveActivePet(UnitProfile unitProfile) {
+            OnRemoveActivePet(unitProfile);
         }
 
         #endregion

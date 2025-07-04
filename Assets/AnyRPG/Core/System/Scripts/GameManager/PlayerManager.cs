@@ -651,6 +651,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange += HandleNameChange;
+            unitController.UnitEventController.OnRemoveActivePet += HandleRemoveActivePet;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -709,6 +710,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange -= HandleNameChange;
+            unitController.UnitEventController.OnRemoveActivePet -= HandleRemoveActivePet;
+        }
+
+        public void HandleRemoveActivePet(UnitProfile unitProfile) {
+            systemEventManager.NotifyOnRemoveActivePet(unitProfile);
         }
 
         public void HandleNameChange(string newName) {
@@ -962,7 +968,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAdd(StatusEffectNode statusEffectNode) {
-            Debug.Log("PlayerManager.HandleStatusEffectAdd()");
+            //Debug.Log("PlayerManager.HandleStatusEffectAdd()");
 
             if (statusEffectNode == null) {
                 return;
@@ -1028,6 +1034,21 @@ namespace AnyRPG {
             }
         }
 
+        public void SpawnPet(UnitProfile unitProfile) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                playerManagerServer.SpawnPet(unitController, unitProfile);
+            } else {
+                networkManagerClient.RequestSpawnPet(unitProfile);
+            }
+        }
+
+        public void DespawnPet(UnitProfile unitProfile) {
+            if (systemGameManager.GameMode == GameMode.Local) {
+                playerManagerServer.DespawnPet(unitController, unitProfile);
+            } else {
+                networkManagerClient.RequestDespawnPet(unitProfile);
+            }
+        }
     }
 
 }

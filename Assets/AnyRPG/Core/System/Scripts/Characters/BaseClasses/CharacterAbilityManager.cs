@@ -449,7 +449,7 @@ namespace AnyRPG {
 
         public override void AddTemporaryPet(UnitProfile unitProfile, UnitController unitController) {
             base.AddTemporaryPet(unitProfile, unitController);
-            this.unitController.CharacterPetManager.AddTemporaryPet(unitProfile, unitController);
+            this.unitController.CharacterPetManager.AddActivePet(unitProfile, unitController);
         }
 
         public override void CapturePet(UnitController targetUnitController) {
@@ -1122,7 +1122,7 @@ namespace AnyRPG {
         }
 
         public void DeActivateTargettingMode() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DeActivateTargettingMode()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DeActivateTargettingMode()");
 
             targettingModeActive = false;
             groundTargetAbility = null;
@@ -1138,7 +1138,7 @@ namespace AnyRPG {
         }
 
         public void LoadAbility(string abilityName) {
-            Debug.Log($"{unitController.gameObject.name}.PlayerAbilityManager.LoadAbility({abilityName})");
+            //Debug.Log($"{unitController.gameObject.name}.PlayerAbilityManager.LoadAbility({abilityName})");
 
             AbilityProperties abilityProperties = systemDataFactory.GetResource<Ability>(abilityName)?.AbilityProperties;
             if (abilityProperties == null) {

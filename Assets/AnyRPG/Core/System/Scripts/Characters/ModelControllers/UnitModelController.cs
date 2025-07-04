@@ -331,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void SetModelReady() {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetModelReady()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetModelReady()");
 
             bool modelWasCreated = modelCreated;
 
@@ -382,7 +382,7 @@ namespace AnyRPG {
         }
 
         public void ProcessAddStatusEffect(StatusEffectNode newStatusEffectNode, StatusEffectProperties statusEffect, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{unitController.gameObject.name}.UnitModelController.ProcessAddStatusEffect({statusEffect.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.ProcessAddStatusEffect({statusEffect.DisplayName})");
 
             if (modelCreated == false) {
                 return;

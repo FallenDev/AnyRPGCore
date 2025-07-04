@@ -259,6 +259,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetMouseActionButton += HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange += HandleNameChangeServer;
+            unitController.UnitEventController.OnAddPet += HandleAddPetServer;
+            unitController.UnitEventController.OnAddActivePet += HandleAddActivePetServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -337,7 +339,52 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetMouseActionButton -= HandleUnsetMouseActionButton;
             unitController.UnitEventController.OnUnsetGamepadActionButton -= HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange -= HandleNameChangeServer;
+            unitController.UnitEventController.OnAddPet -= HandleAddPetServer;
+            unitController.UnitEventController.OnAddActivePet -= HandleAddActivePetServer;
         }
+
+        public void HandleAddActivePetServer(UnitProfile profile, UnitController petUnitController) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer({profile?.ResourceName}, {petUnitController?.gameObject.name})");
+
+            NetworkCharacterUnit targetNetworkCharacterUnit = petUnitController.GetComponent<NetworkCharacterUnit>();
+            if (targetNetworkCharacterUnit == null) {
+                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer(): targetNetworkCharacterUnit is null for {petUnitController?.gameObject.name}");
+                return;
+            }
+
+            HandleAddActivePetClient(profile.ResourceName, targetNetworkCharacterUnit);
+        }
+
+        [ObserversRpc]
+        public void HandleAddActivePetClient(string petResourceName, NetworkCharacterUnit targetNetworkCharacterUnit) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetClient({petResourceName}, {targetNetworkCharacterUnit?.gameObject.name})");
+            
+            if (targetNetworkCharacterUnit?.unitController == null) {
+                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetClient(): targetNetworkCharacterUnit is null");
+                return;
+            }
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(petResourceName);
+            if (unitProfile == null) {
+                return;
+            }
+            
+            unitController.CharacterPetManager.AddActivePet(unitProfile, targetNetworkCharacterUnit.unitController);
+        }
+
+        public void HandleAddPetServer(UnitProfile profile) {
+            HandleAddPetClient(profile.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleAddPetClient(string petResourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddPetClient({petResourceName})");
+            
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(petResourceName);
+            
+            unitController.CharacterPetManager.AddPet(unitProfile);
+        }
+
+
 
         public void HandleNameChangeServer(string newName) {
             HandleNameChangeClient(newName);
@@ -1641,7 +1688,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleClearCastingClient() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearCastingClient()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearCastingClient()");
 
             unitController.UnitAnimator.ClearCasting();
         }
@@ -1654,7 +1701,7 @@ namespace AnyRPG {
         */
 
         public void HandleBeginAbilityLocal(AbilityProperties abilityProperties, Interactable target, bool playerInitiated) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
 
 
             NetworkInteractable targetNetworkInteractable = null;

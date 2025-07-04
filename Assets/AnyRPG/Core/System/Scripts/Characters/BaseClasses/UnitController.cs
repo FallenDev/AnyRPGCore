@@ -722,16 +722,20 @@ namespace AnyRPG {
         }
 
         private void EnablePetMode() {
-            //Debug.Log($"{gameObject.name}.UnitController.EnablePetMode()");
+            Debug.Log($"{gameObject.name}.UnitController.EnablePetMode()");
+
             InitializeNamePlateController();
             EnableAICommon();
 
             // it is necessary to keep track of leash position because it was already set as destination by setting pet mode
             // enabling idle state will reset the destination so we need to re-enable it
             //Vector3 leashDestination = LeashPosition;
-            ChangeState(new IdleState());
-            SetAggroRange();
-            SetDestination(LeashPosition);
+
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                ChangeState(new IdleState());
+                SetAggroRange();
+                SetDestination(LeashPosition);
+            }
         }
 
         /// <summary>
@@ -804,15 +808,18 @@ namespace AnyRPG {
         /// </summary>
         private void EnableAI() {
             //Debug.Log($"{gameObject.name}.UnitController.EnableAI()");
+
             InitializeNamePlateController();
             EnableAICommon();
 
-            if (baseCharacter.SpawnDead == true) {
-                ChangeState(new DeathState());
-            } else {
-                ChangeState(new IdleState());
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (baseCharacter.SpawnDead == true) {
+                    ChangeState(new DeathState());
+                } else {
+                    ChangeState(new IdleState());
+                }
+                SetAggroRange();
             }
-            SetAggroRange();
         }
 
         private void EnableAICommon() {
@@ -869,7 +876,8 @@ namespace AnyRPG {
         }
 
         public void ActivateUnitControllerMode() {
-            //Debug.Log($"{gameObject.name}.UnitController.ActivateUnitControllerMode() to " + unitControllerMode);
+            //Debug.Log($"{gameObject.name}.UnitController.ActivateUnitControllerMode() to {unitControllerMode}");
+
             if (unitControllerMode == UnitControllerMode.AI) {
                 EnableAI();
             } else if (unitControllerMode == UnitControllerMode.Player) {

@@ -250,7 +250,7 @@ namespace AnyRPG {
         }
 
         private GameObject LocalSpawnPrefab(GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.LocalSpawnPrefab({spawnPrefab.name}, {position}, {forward})");
+            //Debug.Log($"CharacterManager.LocalSpawnPrefab({spawnPrefab.name}, {position}, {forward})");
 
             if (spawnPrefab == null) {
                 return null;

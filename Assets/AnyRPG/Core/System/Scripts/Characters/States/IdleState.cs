@@ -9,7 +9,8 @@ namespace AnyRPG {
         private UnitController unitController;
 
         public void Enter(UnitController unitController) {
-            //Debug.Log($"{unitController.gameObject.name} entering Idle state");
+            Debug.Log($"{unitController.gameObject.name} entering Idle state");
+
             this.unitController = unitController;
             this.unitController.Reset();
             TryToEnterPatrolState();
@@ -46,6 +47,7 @@ namespace AnyRPG {
 
         public void Update() {
             //Debug.Log(aiController.gameObject.name + ": IdleState.Update()");
+
             unitController.UpdateTarget();
 
             // change into follow state if the player is close

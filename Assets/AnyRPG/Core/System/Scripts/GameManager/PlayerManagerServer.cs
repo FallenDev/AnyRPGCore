@@ -546,7 +546,7 @@ namespace AnyRPG {
         }
 
         public void MonitorPlayerUnit(int accountId, UnitController unitController) {
-            Debug.Log($"NetworkManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
+            Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
 
             if (playerCharacterMonitors.ContainsKey(accountId) == false) {
                 return;
@@ -556,7 +556,7 @@ namespace AnyRPG {
         }
 
         public void StopMonitoringPlayerUnit(UnitController unitController) {
-            Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({unitController.gameObject.name})");
+            Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({unitController.gameObject.name})");
 
             if (activePlayerLookup.ContainsKey(unitController)) {
                 StopMonitoringPlayerUnit(activePlayerLookup[unitController]);
@@ -564,7 +564,7 @@ namespace AnyRPG {
         }
 
         public void StopMonitoringPlayerUnit(int accountId) {
-            Debug.Log($"NetworkManagerServer.StopMonitoringPlayerUnit({accountId})");
+            Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({accountId})");
 
             if (playerCharacterMonitors.ContainsKey(accountId)) {
                 RemoveActivePlayer(accountId);
@@ -586,7 +586,7 @@ namespace AnyRPG {
             
             // get lobby game id, unitprofile, and scene name from the player character save data
             if (playerCharacterMonitors.ContainsKey(accountId) == false) {
-                //Debug.LogError($"NetworkManagerServer.RequestRespawnPlayerUnit: activePlayerCharacters does not contain accountId {accountId}");
+                //Debug.LogError($"PlayerManagerServer.RequestRespawnPlayerUnit: activePlayerCharacters does not contain accountId {accountId}");
                 return;
             }
             string sceneName = playerCharacterMonitors[accountId].unitController.gameObject.scene.name;
@@ -616,13 +616,42 @@ namespace AnyRPG {
         }
 
         public void PostInit(UnitController unitController) {
-            Debug.Log($"NetworkManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
+            Debug.Log($"PlayerManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
 
             // load player data from the active player characters dictionary
             if (!playerCharacterMonitors.ContainsKey(unitController.CharacterRequestData.accountId)) {
+                //Debug.LogError($"PlayerManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
+                return;
+            }
+        }
+
+        public void RequestSpawnPet(int accountId, UnitProfile unitProfile) {
+            Debug.Log($"PlayerManagerServer.RequestSpawnPet({accountId}, {unitProfile.ResourceName})");
+
+            if (!playerCharacterMonitors.ContainsKey(accountId)) {
                 //Debug.LogError($"NetworkManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
                 return;
             }
+            SpawnPet(playerCharacterMonitors[accountId].unitController, unitProfile);
+        }
+
+        public void SpawnPet(UnitController unitController, UnitProfile unitProfile) {
+            Debug.Log($"PlayerManagerServer.SpawnPet({unitController.gameObject.name}, {unitProfile.ResourceName})");
+
+            unitController.CharacterPetManager.SpawnPet(unitProfile);
+        }
+
+        public void RequestDespawnPet(int accountId, UnitProfile unitProfile) {
+
+            if (!playerCharacterMonitors.ContainsKey(accountId)) {
+                //Debug.LogError($"NetworkManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
+                return;
+            }
+            DespawnPet(playerCharacterMonitors[accountId].unitController, unitProfile);
+        }
+
+        public void DespawnPet(UnitController unitController, UnitProfile unitProfile) {
+            unitController.CharacterPetManager.DespawnPet(unitProfile);
         }
 
 

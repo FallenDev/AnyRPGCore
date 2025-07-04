@@ -90,7 +90,7 @@ namespace AnyRPG {
         }
 
         public void SaveGameData() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
 
             saveData.unitProfileName = unitController.UnitProfile.ResourceName;
 
@@ -126,7 +126,8 @@ namespace AnyRPG {
         }
 
         public void HandleAddPet(UnitProfile profile) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleAddPet({profile.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleAddPet({profile.ResourceName})");
+
             SavePetData();
         }
 
@@ -546,7 +547,7 @@ namespace AnyRPG {
 
 
         public void LoadPetData(AnyRPGSaveData anyRPGSaveData) {
-            //Debug.Log("Savemanager.LoadAbilityData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.LoadPetData()");
 
             foreach (PetSaveData petSaveData in anyRPGSaveData.petSaveData) {
                 if (petSaveData.PetName != string.Empty) {
@@ -699,7 +700,7 @@ namespace AnyRPG {
         }
 
         private void LoadGamepadActionButtonData(List<ActionBarSaveData> actionBarSaveDatas) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadGamepadActionButtonData(saveDataCount: {actionBarSaveDatas.Count})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadGamepadActionButtonData(saveDataCount: {actionBarSaveDatas.Count})");
 
             IUseable useable = null;
             int counter = 0;
@@ -862,7 +863,7 @@ namespace AnyRPG {
         }
 
         public void SaveActionBarData() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionBarData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveActionBarData()");
 
             saveData.GamepadActionButtonSet = actionBarManager.CurrentActionBarSet;
             saveData.actionBarSaveData.Clear();
@@ -984,7 +985,7 @@ namespace AnyRPG {
         }
 
         public void SaveAbilityData() {
-            //Debug.Log("Savemanager.SaveAbilityData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.SaveAbilityData()");
             saveData.abilitySaveData.Clear();
             foreach (AbilityProperties baseAbility in unitController.CharacterAbilityManager.RawAbilityList.Values) {
                 AbilitySaveData abilitySaveData = new AbilitySaveData();
@@ -994,7 +995,8 @@ namespace AnyRPG {
         }
 
         public void SavePetData() {
-            //Debug.Log("Savemanager.SaveAbilityData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.SavePetData()");
+
             saveData.petSaveData.Clear();
             foreach (UnitProfile unitProfile in unitController.CharacterPetManager.UnitProfiles) {
                 PetSaveData petSaveData = new PetSaveData();
@@ -1004,7 +1006,7 @@ namespace AnyRPG {
         }
 
         public void SaveEquipmentData() {
-            //Debug.Log("Savemanager.SaveEquipmentData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager..SaveEquipmentData()");
             saveData.equipmentSaveData.Clear();
             if (unitController.CharacterEquipmentManager != null) {
                 foreach (EquipmentInventorySlot equipmentInventorySlot in unitController.CharacterEquipmentManager.CurrentEquipment.Values) {

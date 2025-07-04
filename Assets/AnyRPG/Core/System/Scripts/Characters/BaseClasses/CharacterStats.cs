@@ -350,7 +350,7 @@ namespace AnyRPG {
         /// spawn the physical prefabs associated with any status effects on this character
         /// </summary>
         public void HandleCharacterUnitSpawn() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleCharacterUnitSpawn()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleCharacterUnitSpawn()");
 
             foreach (StatusEffectNode statusEffectNode in StatusEffects.Values) {
                 if (statusEffectNode.StatusEffect.StatusEffectObjectList.Count > 0
@@ -1098,6 +1098,7 @@ namespace AnyRPG {
             unitController.CharacterSkillManager.UpdateSkillList(currentLevel);
             unitController.CharacterAbilityManager.UpdateAbilityList(currentLevel);
             unitController.CharacterRecipeManager.UpdateRecipeList(currentLevel);
+            unitController.CharacterPetManager.UpdatePetList(currentLevel);
 
             float primaryStatMultiplier = 1;
             if (unitController.BaseCharacter.UnitToughness != null) {

@@ -709,10 +709,10 @@ namespace AnyRPG {
             return networkController.SpawnCharacterPrefab(characterRequestData, parentTransform, position, forward, scene);
         }
 
-        public GameObject SpawnModelPrefab(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+        public GameObject SpawnModelPrefab(GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             //Debug.Log($"NetworkManagerServer.SpawnModelPrefab({spawnRequestId})");
 
-            return networkController.SpawnModelPrefabServer(/*clientSpawnRequestId, serverSpawnRequestId,*/ spawnPrefab, parentTransform, position, forward);
+            return networkController.SpawnModelPrefabServer(spawnPrefab, parentTransform, position, forward);
         }
 
         public void SetPlayerCharacterClass(string className, int accountId) {
@@ -902,8 +902,18 @@ namespace AnyRPG {
             playerManagerServer.UpdatePlayerAppearance(accountId, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
-        internal void RequestChangePlayerName(int accountId, string newName) {
+        public void RequestChangePlayerName(int accountId, string newName) {
             playerManagerServer.SetPlayerName(newName, accountId);
+        }
+
+        public void RequestSpawnPet(int accountId, UnitProfile unitProfile) {
+            Debug.Log($"NetworkManagerServer.RequestSpawnPet({accountId}, {unitProfile.ResourceName})");
+
+            playerManagerServer.RequestSpawnPet(accountId, unitProfile);
+        }
+
+        public void RequestDespawnPet(int accountId, UnitProfile unitProfile) {
+            playerManagerServer.RequestDespawnPet(accountId, unitProfile);
         }
     }
 

@@ -131,7 +131,7 @@ namespace AnyRPG {
             }
         }
 
-        public void FixedUpdate() {
+        public void FixedTick() {
             //Debug.Log($"{gameObject.name}.UnitMotor.FixedUpdate(). current location: " + transform.position);
             if (frozen) {
                 return;

@@ -706,7 +706,8 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="characterUnit.BaseCharacter"></param>
         public void SetPetMode(UnitController masterUnitController, bool enableMode = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.SetPetMode(" + (masterBaseCharacter == null ? "null" : masterBaseCharacter.gameObject.name) + ")");
+            Debug.Log($"{gameObject.name}.UnitController.SetPetMode({(masterUnitController == null ? "null" : masterUnitController.gameObject.name)}, {enableMode})");
+
             SetUnitControllerMode(UnitControllerMode.Pet);
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
             if (masterUnitController != null) {
@@ -826,10 +827,12 @@ namespace AnyRPG {
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
 
             // enable agent needs to be done before changing state or idle -> patrol transition will not work because of an inactive navmeshagent
-            if (unitProfile != null && unitProfile.IsMobile == true) {
-                useAgent = true;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (unitProfile != null && unitProfile.IsMobile == true) {
+                    useAgent = true;
+                }
+                EnableAgent();
             }
-            EnableAgent();
 
             rigidBody.interpolation = RigidbodyInterpolation.None;
             if (unitProfile != null && unitProfile.IsMobile == true) {
@@ -865,14 +868,6 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.UnitController.SetUnitControllerMode(" + unitControllerMode + ")");
 
             this.unitControllerMode = unitControllerMode;
-            
-            // testing - do this in playerManager instead *after* the model has spawned
-            // actually now doing it after base has spawned, but before model has spawned so we get action buttons
-            /*
-            if (unitControllerMode == UnitControllerMode.Player && isOwner) {
-                ConfigurePlayer();
-            }
-            */
         }
 
         public void ActivateUnitControllerMode() {
@@ -1132,7 +1127,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="unitProfile"></param>
         public void SetCharacterConfiguration() {
-            //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
+            Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
 
             CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
 
@@ -1197,9 +1192,11 @@ namespace AnyRPG {
             // this must be called after setting the level in case the character has gear that is higher than level 1
             characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
 
+            // there could have been patches that provide new capabilities since the data was saved, so we need to capture the current state again
+            // this is also necessary in order to transfer settings like toughness and faction to network clients for pets
+            characterSaveManager.SaveGameData();
+
             if (characterRequestData.saveData != null) {
-                // there could have been patches that provide new capabilities since the data was saved, so we need to capture the current state again
-                characterSaveManager.SaveGameData();
                 // now that the save data has been loaded, we can create event subscriptions to monitor changes to the character
                 characterSaveManager.CreateEventSubscriptions();
             }
@@ -1407,6 +1404,7 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.UnitController.Update() : position: " + transform.position + "; apparentVelocity: " + apparentVelocity);
                 characterAbilityManager.HandleManualMovement();
                 unitActionManager.HandleManualMovement();
+                unitEventController.NotifyOnMovement();
             }
             HandleMovementAudio();
 
@@ -1434,7 +1432,7 @@ namespace AnyRPG {
                 currentState.Update();
             }
             if (motorEnabled) {
-                unitMotor?.FixedUpdate();
+                unitMotor?.FixedTick();
             }
         }
 
@@ -1456,7 +1454,8 @@ namespace AnyRPG {
         }
 
         public void ApplyControlEffects(UnitController masterUnitController) {
-            //Debug.Log($"{gameObject.name}.UnitController.ApplyControlEffects()");
+            Debug.Log($"{gameObject.name}.UnitController.ApplyControlEffects({masterUnitController.gameObject.name})");
+
             if (!underControl) {
                 underControl = true;
                 masterUnit = masterUnitController;
@@ -1469,7 +1468,7 @@ namespace AnyRPG {
                 masterUnit.UnitEventController.OnClearTarget += HandleClearTarget;
                 masterUnit.UnitEventController.OnBeginCastOnEnemy += HandleMasterAttack;
                 masterUnit.UnitEventController.OnDropCombat += HandleMasterDropCombat;
-                masterUnit.UnitEventController.OnManualMovement += HandleMasterMovement;
+                masterUnit.UnitEventController.OnMovement += HandleMasterMovement;
 
                 // CLEAR AGRO TABLE OR NOTIFY REPUTATION CHANGE - THIS SHOULD PREVENT ATTACKING SOMETHING THAT SUDDENLY IS UNDER CONTROL AND NOW YOUR FACTION WHILE YOU ARE INCOMBAT WITH IT
                 characterCombat.AggroTable.ClearTable();
@@ -1485,7 +1484,7 @@ namespace AnyRPG {
                 masterUnit.UnitEventController.OnClearTarget -= HandleClearTarget;
                 masterUnit.UnitEventController.OnBeginCastOnEnemy -= HandleMasterAttack;
                 masterUnit.UnitEventController.OnDropCombat -= HandleMasterDropCombat;
-                masterUnit.UnitEventController.OnManualMovement -= HandleMasterMovement;
+                masterUnit.UnitEventController.OnMovement -= HandleMasterMovement;
             }
             masterUnit = null;
             underControl = false;

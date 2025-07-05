@@ -508,7 +508,7 @@ namespace AnyRPG {
 
 
         public void PerformAbilityCast(AbilityProperties baseAbility, int clipIndex) {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityCast({baseAbility.ResourceName}, {clipIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityCast({baseAbility.ResourceName}, {clipIndex})");
 
             if (animator == null) {
                 return;
@@ -555,7 +555,7 @@ namespace AnyRPG {
         }
 
         public void SetAnimationClipOverride(string originalClipName, AnimationClip animationClip) {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetAnimationClipOverride({originalClipName}, {animationClip.name})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetAnimationClipOverride({originalClipName}, {animationClip.name})");
 
             unitController.UnitEventController.NotifyOnSetAnimationClipOverride(originalClipName, animationClip);
             
@@ -785,6 +785,8 @@ namespace AnyRPG {
         }
 
         public void SetMoving(bool varValue) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.SetMoving({varValue})");
+
             if (animator == null) {
                 return;
             }

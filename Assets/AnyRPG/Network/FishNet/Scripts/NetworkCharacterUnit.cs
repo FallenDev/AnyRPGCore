@@ -49,7 +49,7 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            if (unitControllerMode.Value == UnitControllerMode.Player) {
+            if (unitControllerMode.Value == UnitControllerMode.Player || unitControllerMode.Value == UnitControllerMode.Pet) {
                 BeginCharacterRequest();
                 GetClientSaveData();
             }else {
@@ -93,22 +93,11 @@ namespace AnyRPG {
         }
 
         public void CompleteClientCharacterRequest(AnyRPGSaveData saveData) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteClientCharacterRequest()");
+
             CompleteCharacterRequest(base.IsOwner, saveData);
             SubscribeToClientUnitEvents();
         }
-        /*
-        [ServerRpc(RequireOwnership = false)]
-        public void GetClientSaveData(NetworkConnection networkConnection = null) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
-
-            PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
-        }
-
-        [TargetRpc]
-        public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
-            CompleteClientCharacterRequest(saveData);
-        }
-        */
 
         public void SubscribeToClientUnitEvents() {
             if (unitController == null) {
@@ -680,7 +669,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddStatusEffectClient(string resourceName, NetworkCharacterUnit sourceNetworkCharacterUnit) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {
@@ -1478,7 +1467,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleSpawnAbilityObjectsClient(string abilityName, int index) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
 
             Ability ability = systemGameManager.SystemDataFactory.GetResource<Ability>(abilityName);
             if (ability != null) {
@@ -1488,14 +1477,14 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleDespawnAbilityObjects() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnAbilityObjects()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnAbilityObjects()");
 
             unitController.CharacterAbilityManager.DespawnAbilityObjects();
         }
 
         [ObserversRpc]
         public void HandleDropCombat() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleEnterCombatClient()");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDropCombat()");
 
             unitController.CharacterCombat.TryToDropCombat();
         }
@@ -1578,7 +1567,7 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner, AnyRPGSaveData saveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, {(saveData == null ? "null" : "valid save data")})");
 
             /*
             if (base.Owner != null ) {
@@ -1636,7 +1625,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandlePerformAbilityCastAnimationClient(string abilityName, int clipIndex) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
@@ -1744,6 +1733,8 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.PutClientSaveData()");
+
             CompleteClientCharacterRequest(saveData);
         }
 

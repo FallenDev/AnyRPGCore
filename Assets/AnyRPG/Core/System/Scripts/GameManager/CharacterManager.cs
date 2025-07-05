@@ -122,7 +122,8 @@ namespace AnyRPG {
         }
 
         public void CompleteNetworkCharacterRequest(UnitController unitController) {
-            //Debug.Log($"CharacterManager.CompleteNetworkCharacterRequest({unitController.gameObject.name}, {saveData})");
+            Debug.Log($"CharacterManager.CompleteNetworkCharacterRequest({unitController.gameObject.name})");
+
             SetUnitControllerConfiguration(unitController);
         }
 
@@ -171,7 +172,7 @@ namespace AnyRPG {
         }
 
         public UnitController SetUnitControllerConfiguration(UnitController unitController) {
-            //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name})");
+            Debug.Log($"CharacterManager.ConfigureUnitController({unitController.gameObject.name})");
 
             if (unitController != null) {
                 //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name}) adding {unitController.gameObject.name} to modelSpawnRequests");

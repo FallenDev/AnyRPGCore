@@ -15,6 +15,7 @@ namespace AnyRPG {
         public event System.Action OnTakeFallDamage = delegate { };
         public event System.Action OnKillTarget = delegate { };
         public event System.Action OnInteract = delegate { };
+        public event System.Action OnMovement = delegate { };
         public event System.Action OnManualMovement = delegate { };
         public event System.Action OnJump = delegate { };
         public event System.Action<UnitController> OnReputationChange = delegate { };
@@ -326,6 +327,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnDropCombat() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDropCombat()");
+
             OnDropCombat();
         }
 
@@ -366,6 +369,10 @@ namespace AnyRPG {
 
         public void NotifyOnKillTarget() {
             OnKillTarget();
+        }
+
+        public void NotifyOnMovement() {
+            OnMovement();
         }
 
         public void NotifyOnManualMovement() {
@@ -446,26 +453,33 @@ namespace AnyRPG {
         public void NotifyOnFactionChange(Faction newFaction, Faction oldFaction) {
             OnFactionChange(newFaction, oldFaction);
         }
+
         public void NotifyOnNameChange(string newName) {
             OnNameChange(newName);
         }
+
         public void NotifyOnTitleChange(string newTitle) {
             OnTitleChange(newTitle);
         }
+
         public void NotifyOnResourceAmountChanged(PowerResource powerResource, int maxAmount, int currentAmount) {
             OnResourceAmountChanged(powerResource, maxAmount, currentAmount);
         }
+
         public void NotifyOnStatusEffectAdd(StatusEffectNode statusEffectNode) {
             Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName})");
 
             OnStatusEffectAdd(statusEffectNode);
         }
+
         public void NotifyOnCastTimeChanged(IAbilityCaster source, AbilityProperties baseAbility, float castPercent) {
             OnCastTimeChanged(source, baseAbility, castPercent);
         }
+
         public void NotifyOnCastComplete() {
             OnCastComplete();
         }
+
         public void NotifyOnCastCancel() {
             OnCastCancel();
         }
@@ -549,7 +563,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnPerformAbilityCastAnimation(AbilityProperties abilityProperties, int clipIndex) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnPerformAbilityCastAnimation()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnPerformAbilityCastAnimation()");
 
             OnPerformAbilityCastAnimation(abilityProperties, clipIndex);
         }
@@ -563,7 +577,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityAction() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
 
             OnAnimatorClearAbilityAction();
         }
@@ -575,13 +589,13 @@ namespace AnyRPG {
         }
 
         public void NotifyOnSpawnAbilityObjects(AbilityProperties abilityProperties, int index) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSpawnAbilityObjects({abilityProperties.ResourceName}, {index})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSpawnAbilityObjects({abilityProperties.ResourceName}, {index})");
 
             OnSpawnAbilityObjects(abilityProperties, index);
         }
 
         public void NotifyOnDespawnAbilityObjects() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnAbilityObjects()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnAbilityObjects()");
 
             OnDespawnAbilityObjects();
         }
@@ -671,7 +685,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestEquipToSlot(InstantiatedEquipment newEquipment, EquipmentSlotProfile equipmentSlotProfile) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestEquipToSlot({equipmentSlotProfile.ResourceName}, {newEquipment.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestEquipToSlot({equipmentSlotProfile.ResourceName}, {newEquipment.Item.ResourceName})");
 
             OnRequestEquipToSlot(newEquipment, equipmentSlotProfile);
         }
@@ -687,7 +701,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddEquipment(EquipmentSlotProfile equipmentSlotProfile, InstantiatedEquipment instantiatedEquipment) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddEquipment({equipmentSlotProfile.ResourceName}, {instantiatedEquipment.Item.ResourceName})");
 
             OnAddEquipment(equipmentSlotProfile, instantiatedEquipment);
         }

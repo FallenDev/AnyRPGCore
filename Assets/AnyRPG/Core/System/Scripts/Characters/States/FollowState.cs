@@ -5,18 +5,19 @@ using UnityEngine;
 
 namespace AnyRPG {
     public class FollowState : IState {
-        private UnitController baseController;
+        private UnitController unitController;
 
         public void Enter(UnitController baseController) {
-            //Debug.Log(baseController.gameObject.name + ".FollowState.Enter()");
-            this.baseController = baseController;
-            this.baseController.UnitMotor.MovementSpeed = baseController.MovementSpeed;
+            Debug.Log($"{baseController.gameObject.name}.FollowState.Enter()");
+
+            this.unitController = baseController;
+            this.unitController.UnitMotor.MovementSpeed = baseController.MovementSpeed;
             MakeFollowDecision();
         }
 
         public void Exit() {
             //Debug.Log(baseController.gameObject.name + ".FollowState.Exit()");
-            baseController.UnitMotor.StopFollowingTarget();
+            unitController.UnitMotor.StopFollowingTarget();
             // stop following target code goes here
         }
 
@@ -26,9 +27,9 @@ namespace AnyRPG {
         }
 
         private void MakeFollowDecision() {
-            baseController.UpdateTarget();
+            unitController.UpdateTarget();
 
-            if (baseController.Target != null) {
+            if (unitController.Target != null) {
                 //Debug.Log("current agro range is " + baseController.Target.name + " and current distance to target is " + baseController.DistanceToTarget);
                 // evade if the target is out of aggro range.  In the future this could also be calculated as distance from start point if we would rather use a leash approach
                 // temporarily disable leashing.
@@ -45,26 +46,26 @@ namespace AnyRPG {
                 }
                 */
 
-                if (baseController.CanGetValidAttack()) {
-                    baseController.ChangeState(new AttackState());
+                if (unitController.CanGetValidAttack()) {
+                    unitController.ChangeState(new AttackState());
                     return;
                 }
-                if (baseController.IsTargetInHitBox(baseController.Target)) {
+                if (unitController.IsTargetInHitBox(unitController.Target)) {
                     // they are in the hitbox and we can attack them
-                    baseController.ChangeState(new AttackState());
+                    unitController.ChangeState(new AttackState());
                     return;
                 } else {
                     //Debug.Log(aiController.gameObject.name + ": FollowTarget: " + aiController.MyTarget.name);
                     // if within agro distance but out of hitbox range, move toward target
-                    if (baseController.HasMeleeAttack() || (baseController.GetMinAttackRange() > 0f && (baseController.GetMinAttackRange() < baseController.DistanceToTarget))) {
-                        baseController.FollowTarget(baseController.Target, baseController.GetMinAttackRange());
+                    if (unitController.HasMeleeAttack() || (unitController.GetMinAttackRange() > 0f && (unitController.GetMinAttackRange() < unitController.DistanceToTarget))) {
+                        unitController.FollowTarget(unitController.Target, unitController.GetMinAttackRange());
                     } else {
-                        baseController.UnitMotor.StopFollowingTarget();
+                        unitController.UnitMotor.StopFollowingTarget();
                     }
                 }
             } else {
                 // there is no target so start idling.  should we return to our start position instead?
-                baseController.ChangeState(new ReturnState());
+                unitController.ChangeState(new ReturnState());
                 return;
             }
         }

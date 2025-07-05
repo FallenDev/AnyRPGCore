@@ -272,7 +272,7 @@ namespace AnyRPG {
         }
 
         public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
-            Debug.Log($"ActionBarManager.HandlePlayerUnitSpawn({sourceUnitController.gameObject.name})");
+            //Debug.Log($"ActionBarManager.HandlePlayerUnitSpawn({sourceUnitController.gameObject.name})");
 
             ProcessPlayerUnitSpawn();
         }
@@ -287,7 +287,7 @@ namespace AnyRPG {
         }
 
         public void ProcessPlayerUnitSpawn() {
-            Debug.Log("ActionBarmanager.ProcessPlayerUnitSpawn()");
+            //Debug.Log("ActionBarmanager.ProcessPlayerUnitSpawn()");
 
             playerManager.UnitController.UnitEventController.OnSetTarget += HandleSetTarget;
             playerManager.UnitController.UnitEventController.OnClearTarget += HandleClearTarget;
@@ -467,7 +467,7 @@ namespace AnyRPG {
         }
 
         public void ClearActionBars(bool clearSavedUseables = false) {
-            Debug.Log($"ActionBarManager.ClearActionBars({clearSavedUseables})");
+            //Debug.Log($"ActionBarManager.ClearActionBars({clearSavedUseables})");
 
             foreach (ActionBarController actionBarController in actionBarControllers) {
                 //Debug.Log("ActionBarManager.AddNewAbility(): looping through a controller");

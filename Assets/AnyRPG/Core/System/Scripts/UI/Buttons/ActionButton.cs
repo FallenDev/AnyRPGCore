@@ -522,7 +522,7 @@ namespace AnyRPG {
 
             UnsubscribeFromCombatEvents();
             if (Useable != null) {
-                Debug.Log($"{gameObject.name}.ActionButton.ClearUseable() useable: {Useable.ResourceName}");
+                //Debug.Log($"{gameObject.name}.ActionButton.ClearUseable() useable: {Useable.ResourceName}");
                 savedUseable = Useable;
             }
             useable = null;

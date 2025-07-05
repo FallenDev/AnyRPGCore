@@ -90,9 +90,32 @@ namespace AnyRPG {
         }
 
         public void SaveGameData() {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
 
             saveData.unitProfileName = unitController.UnitProfile.ResourceName;
+            saveData.playerName = unitController.BaseCharacter.CharacterName;
+            saveData.PlayerLevel = unitController.CharacterStats.Level;
+            saveData.currentExperience = unitController.CharacterStats.CurrentXP;
+            if (unitController.BaseCharacter.Faction != null) {
+                saveData.playerFaction = unitController.BaseCharacter.Faction.ResourceName;
+            } else {
+                saveData.playerFaction = string.Empty;
+            }
+            if (unitController.BaseCharacter.CharacterClass != null) {
+                saveData.characterClass = unitController.BaseCharacter.CharacterClass.ResourceName;
+            } else {
+                saveData.characterClass = string.Empty;
+            }
+            if (unitController.BaseCharacter.ClassSpecialization != null) {
+                saveData.classSpecialization = unitController.BaseCharacter.ClassSpecialization.ResourceName;
+            } else {
+                saveData.classSpecialization = string.Empty;
+            }
+            if (unitController.BaseCharacter.CharacterRace != null) {
+                saveData.characterRace = unitController.BaseCharacter.CharacterRace.ResourceName;
+            } else {
+                saveData.characterRace = string.Empty;
+            }
 
             SavePlayerLocation();
             saveData.CurrentScene = levelManager.ActiveSceneName;
@@ -390,7 +413,7 @@ namespace AnyRPG {
 
 
         public void LoadSaveDataToCharacter() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadSaveDataToCharacter()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.LoadSaveDataToCharacter()");
 
             //SetSaveData(saveData);
 
@@ -547,7 +570,7 @@ namespace AnyRPG {
 
 
         public void LoadPetData(AnyRPGSaveData anyRPGSaveData) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.LoadPetData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.LoadPetData()");
 
             foreach (PetSaveData petSaveData in anyRPGSaveData.petSaveData) {
                 if (petSaveData.PetName != string.Empty) {
@@ -995,7 +1018,7 @@ namespace AnyRPG {
         }
 
         public void SavePetData() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.SavePetData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.SavePetData()");
 
             saveData.petSaveData.Clear();
             foreach (UnitProfile unitProfile in unitController.CharacterPetManager.UnitProfiles) {

@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace AnyRPG {
     public class AttackState : IState {
-        private UnitController baseUnitController;
+        private UnitController unitController;
 
-        public void Enter(UnitController baseController) {
-            //Debug.Log(baseController.gameObject.name + ".AttackState.Enter()");
-            this.baseUnitController = baseController;
-            this.baseUnitController.UnitMotor.StopFollowingTarget();
+        public void Enter(UnitController unitController) {
+            Debug.Log($"{unitController.gameObject.name}.AttackState.Enter()");
+
+            this.unitController = unitController;
+            this.unitController.UnitMotor.StopFollowingTarget();
         }
 
         public void Exit() {
@@ -21,32 +22,32 @@ namespace AnyRPG {
             //Debug.Log($"{baseUnitController.gameObject.name}.AttackState.Update()");
 
 
-            baseUnitController.UpdateTarget();
+            unitController.UpdateTarget();
 
-            if (baseUnitController.Target == null) {
+            if (unitController.Target == null) {
                 //Debug.Log(aiController.gameObject.name + ": about to change to returnstate");
-                baseUnitController.ChangeState(new ReturnState());
+                unitController.ChangeState(new ReturnState());
                 return;
             }
 
-            if (baseUnitController.CharacterAbilityManager.PerformingAnyAbility() == true) {
+            if (unitController.CharacterAbilityManager.PerformingAnyAbility() == true) {
                 //Debug.Log(baseController.gameObject.name + ".AttackState.Update() WaitingForAnimatedAbility is true");
                 // nothing to do, other attack or ability in progress
                 return;
             }
 
             // face target before attack to ensure they are in the hitbox
-            baseUnitController.UnitMotor.FaceTarget(baseUnitController.Target);
+            unitController.UnitMotor.FaceTarget(unitController.Target);
 
-            if (baseUnitController.CanGetValidAttack(true)) {
+            if (unitController.CanGetValidAttack(true)) {
                 //Debug.Log(baseController.gameObject.name + ".AttackState.Update(): got valid ability");
                 return;
             }
 
             // no valid ability found, try auto attack range check
-            if (!baseUnitController.IsTargetInHitBox(baseUnitController.Target)) {
+            if (!unitController.IsTargetInHitBox(unitController.Target)) {
                 // target is out of range, follow it
-                baseUnitController.ChangeState(new FollowState());
+                unitController.ChangeState(new FollowState());
                 return;
             }
 

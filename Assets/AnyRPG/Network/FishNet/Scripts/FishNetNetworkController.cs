@@ -60,11 +60,11 @@ namespace AnyRPG {
         }
 
         private void HandleQueueEnd() {
-            Debug.Log("FishNetNetworkController.HandleQueueEnd()");
+            //Debug.Log("FishNetNetworkController.HandleQueueEnd()");
         }
 
         private void HandleQueueStart() {
-            Debug.Log("FishNetNetworkController.HandleQueueStart()");
+            //Debug.Log("FishNetNetworkController.HandleQueueStart()");
         }
 
         public override void SetGameManagerReferences() {

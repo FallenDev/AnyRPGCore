@@ -263,7 +263,7 @@ namespace AnyRPG {
         }
 
         public void SpawnAbilityObjectsInternal(AbilityProperties ability, int index) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjectsInternal({ability.DisplayName}, {index})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjectsInternal({ability.DisplayName}, {index})");
 
             //ability.abilityProperties.GetHoldableObjectList(unitController)
             if (index == -1) {
@@ -279,7 +279,7 @@ namespace AnyRPG {
         }
 
         public void SpawnAbilityObjects(List<AbilityAttachmentNode> abilityAttachmentNodes) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects(count {abilityAttachmentNodes.Count})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityObjects(count {abilityAttachmentNodes.Count})");
 
             // ensure that any current ability objects are cleared before spawning new ones
             DespawnAbilityObjects();
@@ -333,7 +333,7 @@ namespace AnyRPG {
         }
 
         public override void DespawnAbilityObjects() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DespawnAbilityObjects()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DespawnAbilityObjects()");
 
             base.DespawnAbilityObjects();
 

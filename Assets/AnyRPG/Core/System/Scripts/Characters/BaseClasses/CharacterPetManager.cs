@@ -57,7 +57,9 @@ namespace AnyRPG {
 
             if (activeUnitProfiles.ContainsKey(unitProfile) == false) {
                 activeUnitProfiles.Add(unitProfile, petUnitController);
-                petUnitController.SetPetMode(unitController, true);
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    petUnitController.SetPetMode(unitController, true);
+                }
                 petUnitController.UnitEventController.OnUnitDestroy += HandleUnitDestroy;
                 unitController.UnitEventController.NotifyOnAddActivePet(unitProfile, petUnitController);
             }

@@ -63,7 +63,7 @@ namespace AnyRPG {
         }
 
         public virtual void SpawnUnit(CharacterConfigurationRequest characterConfigurationRequest) {
-            Debug.Log($"PreviewManager.SpawnUnit({characterConfigurationRequest.unitProfile.ResourceName})");
+            //Debug.Log($"PreviewManager.SpawnUnit({characterConfigurationRequest.unitProfile.ResourceName})");
 
             unitProfile = characterConfigurationRequest.unitProfile;
             //Debug.Log("PreviewManager.SpawnUnit()");

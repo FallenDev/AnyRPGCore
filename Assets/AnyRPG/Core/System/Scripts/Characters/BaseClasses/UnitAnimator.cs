@@ -785,7 +785,7 @@ namespace AnyRPG {
         }
 
         public void SetMoving(bool varValue) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.SetMoving({varValue})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAnimator.SetMoving({varValue})");
 
             if (animator == null) {
                 return;

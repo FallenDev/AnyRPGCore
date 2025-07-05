@@ -107,7 +107,7 @@ namespace AnyRPG {
         }
 
         public void ShowUnit(PetSpawnButton petSpawnButton) {
-            //Debug.Log("LoadGamePanel.ShowSavedGame()");
+            Debug.Log($"PetSpawnControlPanel.ShowUnit({petSpawnButton.UnitProfile.ResourceName})");
 
             selectedPetSpawnButton = petSpawnButton;
 
@@ -119,13 +119,14 @@ namespace AnyRPG {
             UpdateButtons(petSpawnButton);
             UpdateUnitInformation();
 
-            nameText.text = unitProfile.CharacterName;
             petSpawnButton.HighlightBackground();
             uINavigationControllers[0].UnHightlightButtonBackgrounds(petSpawnButton);
         }
    
         public void UpdateUnitInformation() {
-            nameText.text = unitProfile.DisplayName;
+            Debug.Log($"PetSpawnControlPanel.UpdateUnitInformation()");
+
+            nameText.text = (unitProfile.CharacterName != string.Empty ? unitProfile.CharacterName : unitProfile.DisplayName);
 
             if (unitProfile.CharacterClass == null) {
                 classLabel.SetActive(false);
@@ -194,13 +195,14 @@ namespace AnyRPG {
                 Debug.Log($"PetSpawnControlPanel.ProcessOpenWindowNotification() setting unit profile list count : {playerManager.UnitController.CharacterPetManager.UnitProfiles.Count}");
                 unitProfileList = playerManager.UnitController.CharacterPetManager.UnitProfiles;
             }
-            ShowPreviewButtonsCommon();
 
             // inform the preview panel so the character can be rendered
             //characterPreviewPanel.OnTargetReady += HandleTargetReady;
             characterPreviewPanel.CharacterConfigurationProvider = this;
             characterPreviewPanel.ReceiveOpenWindowNotification();
             characterCreatorManager.EnableLight();
+
+            ShowPreviewButtonsCommon();
         }
 
         private void HandleRemoveActivePet(UnitProfile profile) {

@@ -910,7 +910,7 @@ namespace AnyRPG {
         }
 
         public void Despawn(float delayTime = 0f, bool addSystemDefaultTime = true, bool forceDespawn = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+            Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
 
             if (forceDespawn == true) {
                 DespawnImmediate();
@@ -924,6 +924,8 @@ namespace AnyRPG {
         }
 
         private IEnumerator DespawnDelay(float delayTime, bool addSystemDefaultTime) {
+            Debug.Log($"{gameObject.name}.UnitController.DespawnDelay({delayTime}, {addSystemDefaultTime})");
+
             // add all possible delays together
             float extraTime = 0f;
             if (addSystemDefaultTime) {

@@ -476,7 +476,7 @@ namespace AnyRPG {
                 }
 
             } else if (respawnOn == respawnCondition.Death) {
-                unitController.UnitEventController.OnBeforeDie += HandleDie;
+                unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;
             }
             
             /*
@@ -640,8 +640,9 @@ namespace AnyRPG {
             ProcessRespawn(unitController);
         }
 
-        public void HandleDie(UnitController unitController) {
+        public void HandleBeforeDie(UnitController unitController) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandleDie(): timer: " + respawnTimer);
+            unitController.UnitEventController.OnBeforeDie -= HandleBeforeDie;
             if (respawnOn != respawnCondition.Death) {
                 return;
             }

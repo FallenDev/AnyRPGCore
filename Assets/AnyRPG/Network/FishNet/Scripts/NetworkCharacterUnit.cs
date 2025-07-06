@@ -669,7 +669,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddStatusEffectClient(string resourceName, NetworkCharacterUnit sourceNetworkCharacterUnit) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {

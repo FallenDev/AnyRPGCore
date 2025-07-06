@@ -605,12 +605,10 @@ namespace AnyRPG {
         }
 
         public void HandleDie() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
             unitController.UnitEventController.NotifyOnAnimatorDeath();
-            if (unitController.IsOwner == false) {
-                return;
-            }
+
             // add these to prevent characters from dying floating or upright
             HandleUnLevitated(false);
             HandleUnStunned(false);
@@ -619,8 +617,8 @@ namespace AnyRPG {
 
             SetJumping(0);
 
-            SetTrigger("DeathTrigger");
             SetBool("IsDead", true);
+            SetTrigger("DeathTrigger");
         }
 
         public IEnumerator WaitForResurrectionAnimation(float animationLength) {

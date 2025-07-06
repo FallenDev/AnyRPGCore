@@ -64,7 +64,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int accountId, List<int> lootDropIds) {
-            //Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {lootDropIds.Count})");
+            Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {lootDropIds.Count})");
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {

@@ -987,7 +987,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableDroppedLoot(int accountId, List<LootDrop> items) {
-            //Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({accountId}, {items.Count})");
+            Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot({accountId}, {items.Count})");
 
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
                 Debug.Log($"FishNetClientConnector.AddAvailableDroppedLoot() could not find client id {accountId}");

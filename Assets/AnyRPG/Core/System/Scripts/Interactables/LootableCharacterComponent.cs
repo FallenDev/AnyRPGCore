@@ -82,7 +82,9 @@ namespace AnyRPG {
             characterUnit = CharacterUnit.GetCharacterUnit(interactable);
             if (characterUnit != null) {
                 unitController = characterUnit.UnitController;
-                unitController.UnitEventController.OnBeforeDie += HandleDeath;
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;
+                }
             }
         }
 
@@ -90,7 +92,9 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.LootableCharacter.CleanupEventSubscriptions()");
             base.ProcessCleanupEventSubscriptions();
             if (characterUnit?.UnitController.CharacterStats != null) {
-                characterUnit.UnitController.UnitEventController.OnBeforeDie -= HandleDeath;
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    characterUnit.UnitController.UnitEventController.OnBeforeDie -= HandleBeforeDie;
+                }
                 //(characterUnit.Interactable as UnitController).UnitEventController.OnReviveComplete -= HandleRevive;
             }
             if (monitoringTakeLoot) {
@@ -129,8 +133,9 @@ namespace AnyRPG {
             lootHolder.ClearLootTableStates();
         }
 
-        public void HandleDeath(UnitController sourceUnitController) {
-            //Debug.Log(interactable.gameObject.name + "LootableCharacter.HandleDeath()");
+        public void HandleBeforeDie(UnitController sourceUnitController) {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.HandleBeforeDie({sourceUnitController})");
+
             int lootCount = 0;
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): MyLootTable != null.  Getting loot");
             //Debug.Log($"{gameObject.name}LootableCharacter.HandleDeath(): characterinAgrotable: " + characterUnit.BaseCharacter.CharacterCombat.MyAggroTable.AggroTableContains(playerManager.UnitController.CharacterUnit));

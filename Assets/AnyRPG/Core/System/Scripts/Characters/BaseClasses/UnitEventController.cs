@@ -551,6 +551,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorDeath() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAnimatorDeath()");
+
             OnAnimatorDeath();
         }
 

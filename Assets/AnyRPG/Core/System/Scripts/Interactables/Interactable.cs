@@ -736,6 +736,11 @@ namespace AnyRPG {
                 return;
             }
 
+            if (initialized == false) {
+                // if the unit despawns while the mouse is over it, we don't want to do anything
+                return;
+            }
+
             // prevent moving mouse from unit to namePlate from stopping glow or hiding tooltip
             if (isMouseOverNameplate || isMouseOverUnit) {
                 return;

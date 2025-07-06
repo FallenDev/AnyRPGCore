@@ -1341,16 +1341,30 @@ namespace AnyRPG {
 
             if (isAlive) {
                 isAlive = false;
-                ClearStatusEffects(false);
-                ClearPowerAmounts();
                 unitController.UnitEventController.NotifyOnBeforeDie(unitController);
-                unitController.CharacterPetManager.HandleDie();
-                unitController.CharacterCombat.HandleDie();
-                unitController.CharacterAbilityManager.HandleDie(this);
-                unitController.FreezePositionXZ();
-                unitController.UnitAnimator.HandleDie();
-                unitController.RemoveNamePlate();
-                unitController.CharacterUnit.HandleDie(this);
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                    // should only be done on server
+                    ClearStatusEffects(false);
+                    // should only be done on server
+                    ClearPowerAmounts();
+                    // should only be done on server
+                    unitController.CharacterPetManager.HandleDie();
+                    // should only be done on server
+                    unitController.CharacterCombat.HandleDie();
+                    // should only be done on server
+                    unitController.CharacterAbilityManager.HandleDie(this);
+                    // should only be done on server
+                    unitController.FreezePositionXZ();
+                    // should only be done on server
+                    unitController.UnitAnimator.HandleDie();
+                }
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                    // should be done on client
+                    unitController.RemoveNamePlate();
+                    // should be done on client
+                    unitController.CharacterUnit.HandleDie(this);
+                }
+
                 unitController.UnitEventController.NotifyOnAfterDie(this);
             }
         }

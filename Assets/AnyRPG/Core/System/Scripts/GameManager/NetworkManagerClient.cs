@@ -52,6 +52,7 @@ namespace AnyRPG {
         private SystemItemManager systemItemManager = null;
         private LootManager lootManager = null;
         private CraftingManager craftingManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -77,6 +78,7 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public bool Login(string username, string password, string server) {
@@ -560,6 +562,11 @@ namespace AnyRPG {
             networkController.RequestDespawnPet(unitProfile);
         }
 
+        public void AdvertiseSpawnPlayerRequest(SpawnPlayerRequest spawnPlayerRequest) {
+            Debug.Log($"NetworkManagerClient.AdvertiseSpawnPlayerRequest()");
+
+            systemEventManager.NotifyOnGetSpawnPlayerRequest(spawnPlayerRequest);
+        }
 
         /*
         public void AdvertiseInteractWithAnimatedObjectComponent(Interactable interactable, int optionIndex) {

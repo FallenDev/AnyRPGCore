@@ -90,7 +90,7 @@ namespace AnyRPG {
         }
 
         public void SaveGameData() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData()");
 
             saveData.unitProfileName = unitController.UnitProfile.ResourceName;
             saveData.playerName = unitController.BaseCharacter.CharacterName;

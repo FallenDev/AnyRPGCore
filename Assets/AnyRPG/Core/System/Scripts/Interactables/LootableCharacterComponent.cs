@@ -154,7 +154,7 @@ namespace AnyRPG {
         }
 
         public void TryToDespawn() {
-            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.TryToDespawn()");
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.TryToDespawn()");
 
             if (characterUnit.UnitController.CharacterStats.IsAlive == true) {
                 //Debug.Log("LootableCharacter.TryToDespawn(): Character is alive.  Returning and doing nothing.");
@@ -188,6 +188,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseLootComplete() {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.AdvertiseLootComplete()");
+
             if (interactable != null) {
                 UnitController unitController = interactable.gameObject.GetComponent<UnitController>();
                 if (unitController != null) {
@@ -217,7 +219,8 @@ namespace AnyRPG {
         }
 
         public int GetLootCount(UnitController sourceUnitController) {
-            //Debug.Log(interactable.gameObject.name + ".LootableCharacter.GetLootCount()");
+            Debug.Log(interactable.gameObject.name + ".LootableCharacter.GetLootCount()");
+
             int lootCount = 0;
             
             foreach (LootTable lootTable in lootHolder.LootTableStates.Keys) {
@@ -395,6 +398,8 @@ namespace AnyRPG {
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
             uIManager.lootWindow.OpenWindow();
@@ -416,7 +421,7 @@ namespace AnyRPG {
         }
 
         public void Despawn() {
-            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Despawn()");
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Despawn()");
 
             //gameObject.SetActive(false);
             //ResetLootTableStates();

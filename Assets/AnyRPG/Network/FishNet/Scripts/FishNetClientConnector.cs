@@ -80,6 +80,8 @@ namespace AnyRPG {
 
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
 
+            AdvertiseSpawnPlayerRequest(networkConnection, new SpawnPlayerRequest(position, forward));
+
             NetworkObject nob = GetSpawnablePrefab(characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab, null, position, forward);
             if (nob == null) {
                 return;
@@ -103,6 +105,13 @@ namespace AnyRPG {
             networkManagerServer.MonitorPlayerUnit(accountId, unitController);
 
             SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
+        }
+
+        [TargetRpc]
+        public void AdvertiseSpawnPlayerRequest(NetworkConnection networkConnection, SpawnPlayerRequest spawnPlayerRequest) {
+            Debug.Log($"FishNetNetworkConnector.AdvertiseSpawnPlayerRequest()");
+
+            networkManagerClient.AdvertiseSpawnPlayerRequest(spawnPlayerRequest);
         }
 
 

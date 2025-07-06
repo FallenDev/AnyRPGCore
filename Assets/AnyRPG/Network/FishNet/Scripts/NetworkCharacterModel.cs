@@ -27,7 +27,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnInitializeAnimator += HandleInitializeAnimator;
 
             // clients are authoritative for their own animators, and server is authoritative for all others
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager(): IsOwner: {base.IsOwner}, OwnerId: {base.OwnerId}, ServerModeActive: {systemGameManager.NetworkManagerServer.ServerModeActive}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager(): IsOwner: {base.IsOwner}, OwnerId: {base.OwnerId}, ServerModeActive: {systemGameManager.NetworkManagerServer.ServerModeActive}");
             if (base.IsOwner || (systemGameManager.NetworkManagerServer.ServerModeActive == true && base.OwnerId == -1)) {
                 unitController.UnitEventController.OnAnimatorSetTrigger += HandleSetTrigger;
             }

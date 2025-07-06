@@ -863,7 +863,6 @@ namespace AnyRPG {
 
         public void SpawnPlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
             networkController.SpawnLobbyGamePlayer(accountId, characterRequestData, position, forward, sceneName);
-
         }
 
         private PlayerCharacterSaveData GetNewLobbyGamePlayerCharacterSaveData(int gameId, int accountId, string unitProfileName) {

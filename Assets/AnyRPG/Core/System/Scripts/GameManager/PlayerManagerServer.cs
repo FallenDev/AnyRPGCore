@@ -51,6 +51,7 @@ namespace AnyRPG {
         protected QuestGiverManager questGiverManager = null;
         protected MessageFeedManager messageFeedManager = null;
         protected CharacterManager characterManager = null;
+        protected SystemEventManager systemEventManager = null;
 
         public Dictionary<int, PlayerCharacterMonitor> PlayerCharacterMonitors { get => playerCharacterMonitors; }
         public Dictionary<int, UnitController> ActivePlayers { get => activePlayers; }
@@ -81,6 +82,7 @@ namespace AnyRPG {
             questGiverManager = systemGameManager.QuestGiverManager;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             characterManager = systemGameManager.CharacterManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
 
@@ -425,7 +427,7 @@ namespace AnyRPG {
 
 
         public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId, string sceneName) {
-            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId})");
+            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName})");
 
             SpawnPlayerRequest inputLoadSceneRequest = null;
             SpawnPlayerRequest outputLoadSceneRequest = new SpawnPlayerRequest();
@@ -492,6 +494,7 @@ namespace AnyRPG {
             SpawnPlayerRequest spawnPlayerRequest = GetSpawnPlayerRequest(accountId, sceneName);
 
             if (systemGameManager.GameMode == GameMode.Local) {
+                systemEventManager.NotifyOnGetSpawnPlayerRequest(spawnPlayerRequest);
                 // load local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
@@ -508,12 +511,11 @@ namespace AnyRPG {
                 characterRequestData.isServer = true;
                 characterRequestData.saveData = playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData;
 
-                Vector3 position = spawnPlayerRequest.spawnLocation;
                 if (spawnPlayerRequest.overrideSpawnLocation == false) {
                     // we were loading the default location, so randomize the spawn position a bit so players don't all spawn in the same place
-                    position = new Vector3(position.x + UnityEngine.Random.Range(-2f, 2f), position.y, position.z + UnityEngine.Random.Range(-2f, 2f));
+                    spawnPlayerRequest.spawnLocation = new Vector3(spawnPlayerRequest.spawnLocation.x + UnityEngine.Random.Range(-2f, 2f), spawnPlayerRequest.spawnLocation.y, spawnPlayerRequest.spawnLocation.z + UnityEngine.Random.Range(-2f, 2f));
                 }
-                networkManagerServer.SpawnPlayer(accountId, characterRequestData, position, spawnPlayerRequest.spawnForwardDirection, sceneName);
+                networkManagerServer.SpawnPlayer(accountId, characterRequestData, spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection, sceneName);
             }
         }
 

@@ -11,6 +11,11 @@ namespace AnyRPG {
         public SpawnPlayerRequest () {
         }
 
+        public SpawnPlayerRequest (Vector3 position, Vector3 forwardDirection) {
+            spawnLocation = position;
+            spawnForwardDirection = forwardDirection;
+        }
+
     }
 }
 

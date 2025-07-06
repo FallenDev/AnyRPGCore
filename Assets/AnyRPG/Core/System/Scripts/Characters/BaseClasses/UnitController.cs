@@ -705,20 +705,25 @@ namespace AnyRPG {
         /// set this unit to be the pet of characterUnit.BaseCharacter
         /// </summary>
         /// <param name="characterUnit.BaseCharacter"></param>
-        public void SetPetMode(UnitController masterUnitController, bool enableMode = false) {
-            Debug.Log($"{gameObject.name}.UnitController.SetPetMode({(masterUnitController == null ? "null" : masterUnitController.gameObject.name)}, {enableMode})");
+        public void SetPetMode(UnitController masterUnitController) {
+            Debug.Log($"{gameObject.name}.UnitController.SetPetMode({(masterUnitController == null ? "null" : masterUnitController.gameObject.name)})");
 
             SetUnitControllerMode(UnitControllerMode.Pet);
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
             if (masterUnitController != null) {
-                characterStats.SetLevelInternal(masterUnitController.CharacterStats.Level);
                 ApplyControlEffects(masterUnitController);
-                if (enableMode == true) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    characterStats.SetLevelInternal(masterUnitController.CharacterStats.Level);
                     ChangeState(new IdleState());
                     SetAggroRange();
+                    SetMasterRelativeDestination(true);
+                    startPosition = LeashPosition;
+                } else {
+                    // network client pets should have no state
+                    if (currentState != null) {
+                        currentState.Exit();
+                    }
                 }
-                SetMasterRelativeDestination(true);
-                startPosition = LeashPosition;
             }
         }
 
@@ -1129,7 +1134,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="unitProfile"></param>
         public void SetCharacterConfiguration() {
-            Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
+            //Debug.Log($"{gameObject.name}.UnitController.SetCharacterConfiguration({characterRequestData.isServerOwned})");
 
             CharacterConfigurationRequest characterConfigurationRequest = characterRequestData.characterConfigurationRequest;
 
@@ -1467,13 +1472,16 @@ namespace AnyRPG {
                     //Debug.Log($"{gameObject.name}.AIController.ApplyControlEffects(): masterUnit is null, returning");
                     return;
                 }
-                masterUnit.UnitEventController.OnClearTarget += HandleClearTarget;
-                masterUnit.UnitEventController.OnBeginCastOnEnemy += HandleMasterAttack;
-                masterUnit.UnitEventController.OnDropCombat += HandleMasterDropCombat;
-                masterUnit.UnitEventController.OnMovement += HandleMasterMovement;
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                    masterUnit.UnitEventController.OnClearTarget += HandleClearTarget;
+                    masterUnit.UnitEventController.OnBeginCastOnEnemy += HandleMasterAttack;
+                    masterUnit.UnitEventController.OnDropCombat += HandleMasterDropCombat;
+                    masterUnit.UnitEventController.OnMovement += HandleMasterMovement;
 
-                // CLEAR AGRO TABLE OR NOTIFY REPUTATION CHANGE - THIS SHOULD PREVENT ATTACKING SOMETHING THAT SUDDENLY IS UNDER CONTROL AND NOW YOUR FACTION WHILE YOU ARE INCOMBAT WITH IT
-                characterCombat.AggroTable.ClearTable();
+                    // CLEAR AGRO TABLE OR NOTIFY REPUTATION CHANGE - THIS SHOULD PREVENT ATTACKING SOMETHING THAT SUDDENLY IS UNDER CONTROL AND NOW YOUR FACTION WHILE YOU ARE INCOMBAT WITH IT
+                    characterCombat.AggroTable.ClearTable();
+                }
+
                 CharacterFactionManager.NotifyOnReputationChange();
             } else {
                 //Debug.Log("Can only be under the control of one master at a time");

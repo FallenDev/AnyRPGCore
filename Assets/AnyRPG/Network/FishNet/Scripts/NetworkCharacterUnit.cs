@@ -93,7 +93,7 @@ namespace AnyRPG {
         }
 
         public void CompleteClientCharacterRequest(AnyRPGSaveData saveData) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteClientCharacterRequest()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteClientCharacterRequest()");
 
             CompleteCharacterRequest(base.IsOwner, saveData);
             SubscribeToClientUnitEvents();
@@ -1279,6 +1279,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleFactionChangeClient(string newFactionName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleFactionChangeClient({newFactionName})");
+
             Faction newFaction = systemDataFactory.GetResource<Faction>(newFactionName);
             if (newFaction == null) {
                 return;

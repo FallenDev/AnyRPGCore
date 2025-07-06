@@ -1477,6 +1477,7 @@ namespace AnyRPG {
                     masterUnit.UnitEventController.OnBeginCastOnEnemy += HandleMasterAttack;
                     masterUnit.UnitEventController.OnDropCombat += HandleMasterDropCombat;
                     masterUnit.UnitEventController.OnMovement += HandleMasterMovement;
+                    masterUnit.UnitEventController.OnLevelChanged += HandleMasterLevelChanged;
 
                     // CLEAR AGRO TABLE OR NOTIFY REPUTATION CHANGE - THIS SHOULD PREVENT ATTACKING SOMETHING THAT SUDDENLY IS UNDER CONTROL AND NOW YOUR FACTION WHILE YOU ARE INCOMBAT WITH IT
                     characterCombat.AggroTable.ClearTable();
@@ -1495,6 +1496,7 @@ namespace AnyRPG {
                 masterUnit.UnitEventController.OnBeginCastOnEnemy -= HandleMasterAttack;
                 masterUnit.UnitEventController.OnDropCombat -= HandleMasterDropCombat;
                 masterUnit.UnitEventController.OnMovement -= HandleMasterMovement;
+                masterUnit.UnitEventController.OnLevelChanged -= HandleMasterLevelChanged;
             }
             masterUnit = null;
             underControl = false;
@@ -1509,6 +1511,12 @@ namespace AnyRPG {
             characterFactionManager.NotifyOnReputationChange();
 
             // should we reset leash position to start position here ?
+        }
+
+        private void HandleMasterLevelChanged(int newLevel) {
+            Debug.Log($"{gameObject.name}.UnitController.HandleMasterLevelChanged({newLevel})");
+
+            characterStats.SetLevel(newLevel);
         }
 
         public void HandleMasterMovement() {

@@ -51,9 +51,6 @@ namespace AnyRPG {
         public List<StatusEffectSaveData> statusEffectSaveData = new List<StatusEffectSaveData>();
         public List<PetSaveData> petSaveData = new List<PetSaveData>();
         public List<BehaviorSaveData> behaviorSaveData = new List<BehaviorSaveData>();
-
-        // the properties below currently overwrite properties of scriptableObjects
-        // this is undesired and if any similar data is added, it needs to be intentionally cleared between game loads
         public List<QuestSaveData> questSaveData = new List<QuestSaveData>();
         public List<QuestSaveData> achievementSaveData = new List<QuestSaveData>();
         public List<DialogSaveData> dialogSaveData = new List<DialogSaveData>();
@@ -77,7 +74,7 @@ namespace AnyRPG {
     }
 
     [Serializable]
-    public struct QuestSaveData {
+    public class QuestSaveData {
 
         public string QuestName;
         public int questStep;
@@ -85,7 +82,7 @@ namespace AnyRPG {
         public bool markedComplete;
         public bool inLog;
 
-        public List<QuestObjectiveSaveData> questObjectives;
+        public List<QuestObjectiveSaveData> questObjectives = new List<QuestObjectiveSaveData>();
     }
 
     [Serializable]
@@ -96,12 +93,12 @@ namespace AnyRPG {
     }
 
     [Serializable]
-    public struct SceneNodeSaveData {
+    public class SceneNodeSaveData {
 
         public string SceneName;
         public bool visited;
 
-        public List<PersistentObjectSaveData> persistentObjects;
+        public List<PersistentObjectSaveData> persistentObjects = new List<PersistentObjectSaveData>();
     }
 
     [Serializable]
@@ -125,12 +122,12 @@ namespace AnyRPG {
     }
 
     [Serializable]
-    public struct DialogSaveData {
+    public class DialogSaveData {
 
         public string DialogName;
         public bool turnedIn;
 
-        public List<bool> dialogNodeShown;
+        public List<bool> dialogNodeShown = new List<bool>();
     }
 
     [Serializable]
@@ -149,7 +146,7 @@ namespace AnyRPG {
     }
 
     [Serializable]
-    public struct InventorySlotSaveData {
+    public class InventorySlotSaveData {
 
         public string ItemName;
         public string DisplayName;
@@ -158,7 +155,7 @@ namespace AnyRPG {
         public int itemInstanceId;
 
         public int stackCount;
-        public List<int> randomSecondaryStatIndexes;
+        public List<int> randomSecondaryStatIndexes = new List<int>();
         public string gainCurrencyName;
         public int gainCurrencyAmount;
     }
@@ -197,7 +194,7 @@ namespace AnyRPG {
     }
 
     [Serializable]
-    public struct EquipmentSaveData {
+    public class EquipmentSaveData {
 
         public string EquipmentName;
         public string DisplayName;
@@ -205,7 +202,7 @@ namespace AnyRPG {
         public int dropLevel;
         public int itemInstanceId;
 
-        public List<int> randomSecondaryStatIndexes;
+        public List<int> randomSecondaryStatIndexes = new List<int>();
     }
 
     [Serializable]

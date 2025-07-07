@@ -66,8 +66,7 @@ namespace AnyRPG {
             quest.AcceptQuest(unitController, false, false);
             // gotta check here because kills and ability use are not automatically checked on accept because under normal circumstances those amounts must start at 0
             quest.CheckCompletion(unitController, true, false);
-            string keyName = SystemDataUtility.PrepareStringForMatch(quest.ResourceName);
-            quests[keyName] = quest;
+            quests[quest.ResourceName] = quest;
 
             // just in case one quest was complete but not turned in
             //CheckCompletion();
@@ -83,8 +82,7 @@ namespace AnyRPG {
             // AVOID ACCIDENTALLY ACCEPTING TURNED IN QUESTS THAT ARE NOT REPEATABLE
             if (newQuest != null && (newQuest.TurnedIn(unitController) == false || newQuest.RepeatableQuest == true)) {
                 // add first, then use acceptquest because it needs to be in the log for the accepquest completion check to pass
-                string keyName = SystemDataUtility.PrepareStringForMatch(newQuest.ResourceName);
-                quests[keyName] = newQuest;
+                quests[newQuest.ResourceName] = newQuest;
                 newQuest.AcceptQuest(unitController);
 
                 // if the quest has steps, then the completion check will be triggered by the objectives
@@ -97,8 +95,7 @@ namespace AnyRPG {
 
         public bool HasQuest(string questName) {
             //Debug.Log("QuestLog.HasQuest(" + questName + ")");
-            string keyName = SystemDataUtility.PrepareStringForMatch(questName);
-            if (quests.ContainsKey(keyName)) {
+            if (quests.ContainsKey(questName)) {
                 return true;
             }
             return false;
@@ -128,9 +125,8 @@ namespace AnyRPG {
         public void RemoveQuest(Quest oldQuest) {
             Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest()");
 
-            string keyName = SystemDataUtility.PrepareStringForMatch(oldQuest.ResourceName);
-            if (quests.ContainsKey(keyName)) {
-                quests.Remove(keyName);
+            if (quests.ContainsKey(oldQuest.ResourceName)) {
+                quests.Remove(oldQuest.ResourceName);
             }
             // reset the quest objective save data so any completed portion is reset in case the quest is picked back up
             ResetQuestObjectiveSaveData(oldQuest.ResourceName);
@@ -280,8 +276,7 @@ namespace AnyRPG {
             achievement.AcceptQuest(unitController, false, false);
             // gotta check here because kills and ability use are not automatically checked on accept because under normal circumstances those amounts must start at 0
             achievement.CheckCompletion(unitController, true, false);
-            string keyName = SystemDataUtility.PrepareStringForMatch(achievement.ResourceName);
-            achievements[keyName] = achievement;
+            achievements[achievement.ResourceName] = achievement;
 
             // just in case one quest was complete but not turned in
             //CheckCompletion();
@@ -289,8 +284,7 @@ namespace AnyRPG {
 
         public bool HasAchievement(string achievementName) {
             //Debug.Log("QuestLog.HasAchievement(" + questName + ")");
-            string keyName = SystemDataUtility.PrepareStringForMatch(achievementName);
-            if (achievements.ContainsKey(keyName)) {
+            if (achievements.ContainsKey(achievementName)) {
                 return true;
             }
             return false;

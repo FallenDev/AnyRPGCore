@@ -71,7 +71,8 @@ namespace AnyRPG {
         }
 
         public void CancelStatusEffect() {
-            //Debug.Log("StatusEffectNode.CancelStatusEffect(): " + StatusEffect.DisplayName);
+            Debug.Log($"StatusEffectNode.CancelStatusEffect(): {StatusEffect.ResourceName}");
+
             ClearEffectPrefabs();
             statusEffect.CancelEffect(unitController);
             unitController.UnitEventController.NotifyOnCancelStatusEffect(statusEffect);

@@ -296,7 +296,9 @@ namespace AnyRPG {
             }
 
             characterManager.ProcessStopNetworkUnit(unitController);
-            playerManagerServer.StopMonitoringPlayerUnit(unitController);
+            if (unitController.UnitControllerMode == UnitControllerMode.Player) {
+                playerManagerServer.StopMonitoringPlayerUnit(unitController);
+            }
         }
 
         public void ProcessDeletePlayerCharacterResponse(int accountId) {

@@ -433,7 +433,7 @@ namespace AnyRPG {
         }
 
         public virtual Dictionary<PrefabProfile, List<GameObject>> ProcessSpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectInput) {
-            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.ProcessSpawnAbilityEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {fixedLengthEffectProperties.ResourceName})");
+            //Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.ProcessSpawnAbilityEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {fixedLengthEffectProperties.ResourceName})");
 
             Dictionary<PrefabProfile, List<GameObject>> prefabObjects = new Dictionary<PrefabProfile, List<GameObject>>();
 

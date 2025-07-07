@@ -438,10 +438,7 @@ namespace AnyRPG {
         /*
         public bool PerformLearnedCheck(AnimatedAction animatedAction) {
 
-            
-            //string keyName = SystemDataUtility.PrepareStringForMatch(animatedAction.DisplayName);
-            
-            //if (!animatedAction.UseableWithoutLearning && !AbilityList.ContainsKey(keyName)) {
+            //if (!animatedAction.UseableWithoutLearning && !AbilityList.ContainsKey(animatedAction.ResourceName)) {
               //  OnLearnedCheckFail(animatedAction);
                // return false;
             //}

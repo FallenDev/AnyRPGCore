@@ -293,6 +293,7 @@ namespace AnyRPG {
         }
 
         public override void CancelEffect(UnitController targetCharacter) {
+            Debug.Log($"{DisplayName}.StatusEffectProperties.CancelEffect({(targetCharacter == null ? "null" : targetCharacter.gameObject.name)})");
             base.CancelEffect(targetCharacter);
             RemoveControlEffects(targetCharacter);
             UndoMaterialChange(targetCharacter);
@@ -333,7 +334,7 @@ namespace AnyRPG {
             if (SceneNames.Count > 0) {
                 bool sceneFound = false;
                 foreach (string sceneName in SceneNames) {
-                    if (SystemDataUtility.PrepareStringForMatch(sceneName) == SystemDataUtility.PrepareStringForMatch(levelManager.GetActiveSceneNode().SceneName)) {
+                    if (sceneName == levelManager.GetActiveSceneNode().SceneName || sceneName == levelManager.GetActiveSceneNode().SceneFile || sceneName == levelManager.GetActiveSceneNode().ResourceName) {
                         sceneFound = true;
                     }
                 }

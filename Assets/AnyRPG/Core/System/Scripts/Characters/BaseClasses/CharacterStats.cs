@@ -203,7 +203,7 @@ namespace AnyRPG {
                 if (statusEffectNode.StatusEffect.SceneNames.Count > 0) {
                     bool sceneFound = false;
                     foreach (string sceneName in statusEffectNode.StatusEffect.SceneNames) {
-                        if (SystemDataUtility.PrepareStringForMatch(sceneName) == SystemDataUtility.PrepareStringForMatch(levelManager.GetActiveSceneNode().ResourceName)) {
+                        if (SystemDataUtility.PrepareStringForMatch(sceneName) == levelManager.GetActiveSceneNode().ResourceName) {
                             sceneFound = true;
                         }
                     }
@@ -1035,7 +1035,8 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectRemoval(StatusEffectProperties statusEffect) {
-            //Debug.Log("CharacterStats.HandleStatusEffectRemoval(" + statusEffect.name + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleStatusEffectRemoval({statusEffect.ResourceName})");
+
             if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
                 if (statusEffects[statusEffect.ResourceName].MonitorCoroutine != null) {
                     unitController.StopCoroutine(statusEffects[statusEffect.ResourceName].MonitorCoroutine);
@@ -1353,9 +1354,13 @@ namespace AnyRPG {
                     unitController.CharacterCombat.HandleDie();
                     // should only be done on server
                     unitController.CharacterAbilityManager.HandleDie(this);
-                    // should only be done on server
+                }
+                if (systemGameManager.GameMode == GameMode.Local
+                    || unitController.IsOwner
+                    || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                    // should only be done on server or authoritative client
                     unitController.FreezePositionXZ();
-                    // should only be done on server
+                    // should only be done on server or authoritative client
                     unitController.UnitAnimator.HandleDie();
                 }
                 if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
@@ -1446,7 +1451,8 @@ namespace AnyRPG {
         }
 
         public IEnumerator Tick(IAbilityCaster characterSource, AbilityEffectContext abilityEffectContext, StatusEffectProperties statusEffect, StatusEffectNode statusEffectNode) {
-            //Debug.Log($"{gameObject.name}.StatusEffect.Tick() start");
+            Debug.Log($"{unitController.gameObject.name}.StatusEffect.Tick({statusEffect.ResourceName})");
+
             float elapsedTime = 0f;
 
             statusEffect.ApplyControlEffects(unitController);
@@ -1612,7 +1618,8 @@ namespace AnyRPG {
         }
 
         public void CancelStatusEffect(StatusEffectProperties statusEffect) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.CancelStatusEffect(" + statusEffect.DisplayName + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.CancelStatusEffect({statusEffect.ResourceName})");
+
             if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
                 statusEffects[statusEffect.ResourceName].CancelStatusEffect();
             }

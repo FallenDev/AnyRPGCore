@@ -876,13 +876,13 @@ namespace AnyRPG {
                 if (statusEffect != null) {
                     if (equipmentCount > i) {
                         // we are allowed to have this buff
-                        if (!unitController.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName))) {
+                        if (!unitController.CharacterStats.StatusEffects.ContainsKey(statusEffect.ResourceName)) {
                             ApplyStatusEffect(statusEffect);
                         }
                     } else {
                         // we are not allowed to have this buff
-                        if (unitController.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName))) {
-                            unitController.CharacterStats.StatusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.DisplayName)].CancelStatusEffect();
+                        if (unitController.CharacterStats.StatusEffects.ContainsKey(statusEffect.ResourceName)) {
+                            unitController.CharacterStats.StatusEffects[statusEffect.ResourceName].CancelStatusEffect();
                         }
                     }
                 }
@@ -989,8 +989,8 @@ namespace AnyRPG {
                 return;
             }
             foreach (StatusEffect statusEffect in statusEffects) {
-                if (unitController.CharacterStats != null && unitController.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName))) {
-                    unitController.CharacterStats.StatusEffects[SystemDataUtility.PrepareStringForMatch(statusEffect.ResourceName)].CancelStatusEffect();
+                if (unitController.CharacterStats != null && unitController.CharacterStats.StatusEffects.ContainsKey(statusEffect.ResourceName)) {
+                    unitController.CharacterStats.StatusEffects[statusEffect.ResourceName].CancelStatusEffect();
                 }
             }
         }
@@ -1071,7 +1071,7 @@ namespace AnyRPG {
 
         public override bool HasAbility(string abilityName) {
 
-            if (AbilityList.ContainsKey(SystemDataUtility.PrepareStringForMatch(abilityName))) {
+            if (AbilityList.ContainsKey(abilityName)) {
                 //Debug.Log($"{gameObject.name}.CharacterAbilitymanager.HasAbility( " + abilityName + "): keyname: " + keyName + " TRUE!");
                 return true;
             }
@@ -1146,8 +1146,7 @@ namespace AnyRPG {
                 return;
             }
 
-            string keyName = SystemDataUtility.PrepareStringForMatch(abilityProperties.DisplayName);
-            if (abilityList.ContainsKey(keyName)) {
+            if (abilityList.ContainsKey(abilityName)) {
                 // ability is already known, exit
                 return;
             }
@@ -1156,7 +1155,7 @@ namespace AnyRPG {
             }
             abilityProperties.ProcessLoadAbility(this);
 
-            abilityList[keyName] = abilityProperties;
+            abilityList[abilityName] = abilityProperties;
         }
 
         public void LearnAutoAttack(AbilityProperties baseAbilityProperties) {
@@ -1188,7 +1187,7 @@ namespace AnyRPG {
             }
 
             // if we made it this far, there is no reason to not learn the ability
-            abilityList[SystemDataUtility.PrepareStringForMatch(newAbility.DisplayName)] = newAbility;
+            abilityList[newAbility.ResourceName] = newAbility;
 
             newAbility.ProcessLearnAbility(this);
 
@@ -1206,10 +1205,9 @@ namespace AnyRPG {
         public void UnlearnAbility(AbilityProperties oldAbility) {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.UnleanAbility(" + oldAbility.DisplayName + ", " + updateActionBars + ")");
 
-            string keyName = SystemDataUtility.PrepareStringForMatch(oldAbility.DisplayName);
-            if (abilityList.ContainsKey(keyName)) {
+            if (abilityList.ContainsKey(oldAbility.ResourceName)) {
                 oldAbility.ProcessUnLearnAbility(this);
-                abilityList.Remove(keyName);
+                abilityList.Remove(oldAbility.ResourceName);
             }
             unitController.UnitEventController.NotifyOnUnlearnAbility(oldAbility);
         }
@@ -1672,9 +1670,7 @@ namespace AnyRPG {
 
         public bool PerformLearnedCheck(AbilityProperties ability) {
 
-            string keyName = SystemDataUtility.PrepareStringForMatch(ability.DisplayName);
-
-            if (!ability.UseableWithoutLearning && !AbilityList.ContainsKey(keyName)) {
+            if (!ability.UseableWithoutLearning && !AbilityList.ContainsKey(ability.ResourceName)) {
                 unitController.UnitEventController.NotifyOnLearnedCheckFail(ability);
                 return false;
             }
@@ -1960,7 +1956,7 @@ namespace AnyRPG {
         }
 
         public override Dictionary<PrefabProfile, List<GameObject>> SpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, FixedLengthEffectProperties fixedLengthEffectProperties, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityEffectPrefabs({target?.name}, {originalTarget?.name}, {fixedLengthEffectProperties.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SpawnAbilityEffectPrefabs({target?.name}, {originalTarget?.name}, {fixedLengthEffectProperties.ResourceName})");
 
             Dictionary<PrefabProfile, List<GameObject>> returnValue = base.SpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);
             unitController.UnitEventController.NotifyOnSpawnAbilityEffectPrefabs(target, originalTarget, fixedLengthEffectProperties, abilityEffectContext);

@@ -32,7 +32,7 @@ namespace AnyRPG {
                     // ATTEMPT BUFF AND IMMEDIATELY RETURN ANY BUFF THAT NEEDS CASTING
                     foreach (AbilityProperties baseAbility in validPhaseNode.MaintainBuffList) {
                         if (sourceCharacter.AbilityManager.HasAbility(baseAbility)) {
-                            if (!sourceCharacter.CharacterStats.StatusEffects.ContainsKey(SystemDataUtility.PrepareStringForMatch(baseAbility.GetCastEndEffects(sourceCharacter)[0].DisplayName))
+                            if (!sourceCharacter.CharacterStats.StatusEffects.ContainsKey(baseAbility.GetCastEndEffects(sourceCharacter)[0].ResourceName)
                                 && sourceCharacter.AbilityManager.CanCastAbility(baseAbility)
                                 && baseAbility.CanUseOn(sourceCharacter, sourceCharacter)) {
                                 return baseAbility;

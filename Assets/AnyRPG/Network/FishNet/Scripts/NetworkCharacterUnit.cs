@@ -633,12 +633,16 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnCombatMessage(message);
         }
 
-        public void HandleCancelStatusEffectServer(StatusEffectProperties properties) {
-            CancelStatusEffectClient(properties.ResourceName);
+        public void HandleCancelStatusEffectServer(StatusEffectProperties statusEffectProperties) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCancelStatusEffectServer({statusEffectProperties.ResourceName})");
+
+            CancelStatusEffectClient(statusEffectProperties.ResourceName);
         }
 
         [ObserversRpc]
         public void CancelStatusEffectClient(string resourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CancelStatusEffectClient({resourceName})");
+
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {
                 return;

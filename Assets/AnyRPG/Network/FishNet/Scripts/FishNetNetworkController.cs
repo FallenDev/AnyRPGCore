@@ -689,6 +689,10 @@ namespace AnyRPG {
             clientConnector.AdvertiseTakeLoot(accountId, lootDropId);
         }
 
+        public override void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
+        }
+
         public override void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
             clientConnector.SpawnLobbyGamePlayer(accountId, characterRequestData, position, forward, sceneName);
         }

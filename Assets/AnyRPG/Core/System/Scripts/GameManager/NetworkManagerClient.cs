@@ -43,6 +43,7 @@ namespace AnyRPG {
 
         // game manager references
         private PlayerManager playerManager = null;
+        private PlayerManagerServer playerManagerServer = null;
         private CharacterManager characterManager = null;
         private UIManager uIManager = null;
         private LevelManager levelManager = null;
@@ -79,6 +80,7 @@ namespace AnyRPG {
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
             systemEventManager = systemGameManager.SystemEventManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         public bool Login(string username, string password, string server) {
@@ -565,7 +567,7 @@ namespace AnyRPG {
         public void AdvertiseSpawnPlayerRequest(SpawnPlayerRequest spawnPlayerRequest) {
             Debug.Log($"NetworkManagerClient.AdvertiseSpawnPlayerRequest()");
 
-            systemEventManager.NotifyOnGetSpawnPlayerRequest(spawnPlayerRequest);
+            playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
         }
 
         /*

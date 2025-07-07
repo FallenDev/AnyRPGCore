@@ -301,29 +301,33 @@ namespace AnyRPG {
         }
 
         private void TeleportInternal(UnitController unitController, TeleportEffectProperties teleportEffectProperties) {
+            Debug.Log($"PlayerManagerServer.TeleportInternal({unitController.gameObject.name}, {teleportEffectProperties.levelName})");
+
+            if (activePlayerLookup.ContainsKey(unitController) == false) {
+                return;
+            }
+
+            SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
+            if (teleportEffectProperties.overrideSpawnDirection == true) {
+                loadSceneRequest.overrideSpawnDirection = true;
+                loadSceneRequest.spawnForwardDirection = teleportEffectProperties.spawnForwardDirection;
+            }
+            if (teleportEffectProperties.overrideSpawnLocation == true) {
+                loadSceneRequest.overrideSpawnLocation = true;
+                loadSceneRequest.spawnLocation = teleportEffectProperties.spawnLocation;
+            }
+            if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
+                loadSceneRequest.locationTag = teleportEffectProperties.locationTag;
+            }
+            AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+
             if (networkManagerServer.ServerModeActive == true) {
-                if (activePlayerLookup.ContainsKey(unitController) == false) {
-                    return;
-                }
                 networkManagerServer.AdvertiseTeleport(activePlayerLookup[unitController], teleportEffectProperties);
                 return;
             }
 
             // local mode active, continue with teleport
             if (teleportEffectProperties.levelName != null) {
-                SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
-                if (teleportEffectProperties.overrideSpawnDirection == true) {
-                    loadSceneRequest.overrideSpawnDirection = true;
-                    loadSceneRequest.spawnForwardDirection = teleportEffectProperties.spawnForwardDirection;
-                }
-                if (teleportEffectProperties.overrideSpawnLocation == true) {
-                    loadSceneRequest.overrideSpawnLocation = true;
-                    loadSceneRequest.spawnLocation = teleportEffectProperties.spawnLocation;
-                }
-                if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
-                    loadSceneRequest.locationTag = teleportEffectProperties.locationTag;
-                }
-                AddSpawnRequest(activePlayerLookup[unitController] , loadSceneRequest);
                 levelManager.LoadLevel(teleportEffectProperties.levelName);
             }
         }
@@ -417,6 +421,11 @@ namespace AnyRPG {
             } else {
                 spawnRequests.Add(accountId, loadSceneRequest);
             }
+            if (networkManagerServer.ServerModeActive == true) {
+                networkManagerServer.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
+            } else {
+                //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}) not in server mode, not advertising");
+            }
         }
 
         public void RemoveSpawnRequest(int accountId) {
@@ -439,6 +448,10 @@ namespace AnyRPG {
                 Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
                 inputLoadSceneRequest = new SpawnPlayerRequest();
             }
+            outputLoadSceneRequest.overrideSpawnLocation = inputLoadSceneRequest.overrideSpawnLocation;
+            outputLoadSceneRequest.overrideSpawnDirection = inputLoadSceneRequest.overrideSpawnDirection;
+            outputLoadSceneRequest.xOffset = inputLoadSceneRequest.xOffset;
+            outputLoadSceneRequest.zOffset = inputLoadSceneRequest.zOffset;
 
             Scene accountScene;
             if (networkManagerServer.ServerModeActive == true ) {
@@ -446,7 +459,6 @@ namespace AnyRPG {
             } else {
                 accountScene = SceneManager.GetSceneByName(sceneName);
             }
-
             if (inputLoadSceneRequest.overrideSpawnLocation == true) {
                 //Debug.Log("Levelmanager.GetSpawnLocation(). SpawnLocationOverride is set.  returning " + spawnLocationOverride);
                 outputLoadSceneRequest.spawnLocation = inputLoadSceneRequest.spawnLocation;
@@ -494,7 +506,6 @@ namespace AnyRPG {
             SpawnPlayerRequest spawnPlayerRequest = GetSpawnPlayerRequest(accountId, sceneName);
 
             if (systemGameManager.GameMode == GameMode.Local) {
-                systemEventManager.NotifyOnGetSpawnPlayerRequest(spawnPlayerRequest);
                 // load local player
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
@@ -513,7 +524,7 @@ namespace AnyRPG {
 
                 if (spawnPlayerRequest.overrideSpawnLocation == false) {
                     // we were loading the default location, so randomize the spawn position a bit so players don't all spawn in the same place
-                    spawnPlayerRequest.spawnLocation = new Vector3(spawnPlayerRequest.spawnLocation.x + UnityEngine.Random.Range(-2f, 2f), spawnPlayerRequest.spawnLocation.y, spawnPlayerRequest.spawnLocation.z + UnityEngine.Random.Range(-2f, 2f));
+                    spawnPlayerRequest.spawnLocation = new Vector3(spawnPlayerRequest.spawnLocation.x + spawnPlayerRequest.xOffset, spawnPlayerRequest.spawnLocation.y, spawnPlayerRequest.spawnLocation.z + spawnPlayerRequest.zOffset);
                 }
                 networkManagerServer.SpawnPlayer(accountId, characterRequestData, spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection, sceneName);
             }

@@ -914,6 +914,10 @@ namespace AnyRPG {
         public void RequestDespawnPet(int accountId, UnitProfile unitProfile) {
             playerManagerServer.RequestDespawnPet(accountId, unitProfile);
         }
+
+        public void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            networkController.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
+        }
     }
 
 }

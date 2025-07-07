@@ -39,7 +39,6 @@ namespace AnyRPG {
         public event System.Action<IUseable, int> OnSetMouseActionButton = delegate { };
         public event System.Action<int> OnUnsetMouseActionButton = delegate { };
         public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
-        public event System.Action<SpawnPlayerRequest> OnGetSpawnPlayerRequest = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -222,11 +221,6 @@ namespace AnyRPG {
             OnRemoveActivePet(unitProfile);
         }
 
-        public void NotifyOnGetSpawnPlayerRequest(SpawnPlayerRequest spawnPlayerRequest) {
-            Debug.Log("SystemEventManager.NotifyOnGetSpawnPlayerRequest()");
-
-            OnGetSpawnPlayerRequest(spawnPlayerRequest);
-        }
     }
 
     [System.Serializable]

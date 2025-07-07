@@ -252,16 +252,9 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            systemEventManager.OnGetSpawnPlayerRequest += HandleGetSpawnPlayerRequest;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             eventSubscriptionsInitialized = true;
-        }
-
-        private void HandleGetSpawnPlayerRequest(SpawnPlayerRequest spawnPlayerRequest) {
-            Debug.Log("CameraManager.HandleGetSpawnPlayerRequest()");
-
-            mainCameraController.SetTargetPositionRaw(spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection);
         }
 
         private void CleanupEventSubscriptions() {

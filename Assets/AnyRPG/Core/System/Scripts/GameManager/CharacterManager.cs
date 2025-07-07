@@ -172,7 +172,7 @@ namespace AnyRPG {
         }
 
         public UnitController SetUnitControllerConfiguration(UnitController unitController) {
-            Debug.Log($"CharacterManager.ConfigureUnitController({unitController.gameObject.name})");
+            //Debug.Log($"CharacterManager.ConfigureUnitController({unitController.gameObject.name})");
 
             if (unitController != null) {
                 //Debug.Log($"CharacterManager.ConfigureUnitController({prefabObject.name}) adding {unitController.gameObject.name} to modelSpawnRequests");

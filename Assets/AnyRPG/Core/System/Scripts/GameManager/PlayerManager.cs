@@ -71,6 +71,8 @@ namespace AnyRPG {
 
         private Coroutine waitForPlayerReadyCoroutine = null;
 
+        //private SpawnPlayerRequest spawnPlayerRequest = null;
+
         protected bool eventSubscriptionsInitialized = false;
 
         // game manager references
@@ -278,10 +280,16 @@ namespace AnyRPG {
                 return;
             }
 
-            // TODO : FIX ME : determine correct spawn location and forward direction
-            //SpawnPlayerRequest spawnSettings = SpawnPlayerUnit();
+            SpawnPlayerRequest spawnSettings = playerManagerServer.GetSpawnPlayerRequest(networkManagerClient.AccountId, SceneManager.GetActiveScene().name);
+            if (spawnSettings.overrideSpawnLocation == false && systemGameManager.GameMode == GameMode.Network) {
+                // it is a network game, and we were loading the default location,
+                // so randomize the spawn position a bit so players don't all spawn in the same place
+                spawnSettings.spawnLocation = new Vector3(spawnSettings.spawnLocation.x + spawnSettings.xOffset, spawnSettings.spawnLocation.y, spawnSettings.spawnLocation.z + spawnSettings.zOffset);
+            }
+
+            cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
+
             RequestSpawnPlayerUnit();
-            //cameraManager.MainCameraController.SetTargetPositionRaw(spawnSettings.spawnLocation, spawnSettings.spawnForwardDirection);
         }
 
         public void PlayLevelUpEffects(UnitController sourceUnitController, int newLevel) {
@@ -1049,6 +1057,14 @@ namespace AnyRPG {
                 networkManagerClient.RequestDespawnPet(unitProfile);
             }
         }
+
+        /*
+        // this spawn request is only used for the camera positioning.
+        // the spawn request that controls the player position is handed by the playerManagerServer
+        public void AddSpawnRequest(int accountId, SpawnPlayerRequest spawnPlayerRequest) {
+            this.spawnPlayerRequest = spawnPlayerRequest;
+        }
+        */
     }
 
 }

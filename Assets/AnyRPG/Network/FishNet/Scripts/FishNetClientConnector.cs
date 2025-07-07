@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace AnyRPG {
     public class FishNetClientConnector : ConfiguredNetworkBehaviour {
@@ -80,8 +81,6 @@ namespace AnyRPG {
 
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
 
-            AdvertiseSpawnPlayerRequest(networkConnection, new SpawnPlayerRequest(position, forward));
-
             NetworkObject nob = GetSpawnablePrefab(characterRequestData.characterConfigurationRequest.unitProfile.UnitPrefabProps.NetworkUnitPrefab, null, position, forward);
             if (nob == null) {
                 return;
@@ -107,8 +106,15 @@ namespace AnyRPG {
             SpawnPrefab(nob, networkConnection, GetConnectionScene(networkConnection, sceneName));
         }
 
+
+        public void AdvertiseAddSpawnRequestServer(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+
+            AdvertiseAddSpawnRequestClient(networkConnection, loadSceneRequest);
+        }
+
         [TargetRpc]
-        public void AdvertiseSpawnPlayerRequest(NetworkConnection networkConnection, SpawnPlayerRequest spawnPlayerRequest) {
+        public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, SpawnPlayerRequest spawnPlayerRequest) {
             Debug.Log($"FishNetNetworkConnector.AdvertiseSpawnPlayerRequest()");
 
             networkManagerClient.AdvertiseSpawnPlayerRequest(spawnPlayerRequest);

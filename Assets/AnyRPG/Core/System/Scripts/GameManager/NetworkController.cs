@@ -93,6 +93,7 @@ namespace AnyRPG {
         public abstract void AdvertiseTakeLoot(int accountId, int lootDropId);
         public abstract void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
         public abstract Scene GetAccountScene(int accountId, string sceneName);
+        public abstract void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest);
 
         //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);

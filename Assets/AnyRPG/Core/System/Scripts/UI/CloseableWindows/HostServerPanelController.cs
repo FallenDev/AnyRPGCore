@@ -73,7 +73,8 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int accountId, string userName) {
-            //Debug.Log($"HostServerPanelController.AddPlayerToList({userName})");
+            Debug.Log($"HostServerPanelController.AddPlayerToList({accountId}, {userName})");
+
             if (playerButtons.ContainsKey(accountId)) {
                 //Debug.Warning($"HostServerPanelController.AddPlayerToList() - player was already connected, and is reconnecting");
                 playerButtons[accountId].UpdateIPAddress(networkManagerServer.LoggedInAccounts[accountId].ipAddress);
@@ -88,7 +89,7 @@ namespace AnyRPG {
         }
 
         public void RemovePlayerFromList(int accountId) {
-            //Debug.Log($"HostServerPanelController.RemovePlayerFromList({accountId})");
+            Debug.Log($"HostServerPanelController.RemovePlayerFromList({accountId})");
 
             if (playerButtons.ContainsKey(accountId)) {
                 uINavigationControllers[1].ClearActiveButton(playerButtons[accountId].KickButton);
@@ -96,6 +97,7 @@ namespace AnyRPG {
                     playerButtons[accountId].gameObject.transform.SetParent(null);
                     objectPooler.ReturnObjectToPool(playerButtons[accountId].gameObject);
                 }
+                playerButtons.Remove(accountId);
             }
         }
 
@@ -143,7 +145,7 @@ namespace AnyRPG {
         }
 
         public void HandleLobbyLogin(int accountId) {
-            //Debug.Log($"HostServerPanelController.HandleLobbyLogin({accountId})");
+            Debug.Log($"HostServerPanelController.HandleLobbyLogin({accountId})");
 
             AddPlayerToList(accountId, networkManagerServer.LoggedInAccounts[accountId].username);
         }

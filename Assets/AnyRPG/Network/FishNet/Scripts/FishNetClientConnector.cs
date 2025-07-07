@@ -418,8 +418,10 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void ChooseLobbyGameCharacter(string unitProfileName, int gameId, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData, NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetNetworkConnector.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
+
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                //Debug.LogWarning($"FishNetNetworkConnector.ChooseLobbyGameCharacter() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetNetworkConnector.ChooseLobbyGameCharacter({unitProfileName}, {gameId}) could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
             networkManagerServer.ChooseLobbyGameCharacter(gameId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfileName, appearanceString, swappableMeshSaveData);
@@ -626,6 +628,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            Debug.Log($"FishNetNetworkConnector.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+
             networkManagerClient.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
 

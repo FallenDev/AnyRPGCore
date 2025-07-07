@@ -490,7 +490,8 @@ namespace AnyRPG {
         }
 
         public GameObject GetSceneObjectByTag(string locationTag, Scene scene) {
-            Debug.Log($"PlayerManagerServer.GetSpawnLocationMarker({locationTag})");
+            //Debug.Log($"PlayerManagerServer.GetSpawnLocationMarker({locationTag})");
+
             List<GameObject> spawnLocationMarkers = new List<GameObject>();
             spawnLocationMarkers = GameObject.FindGameObjectsWithTag(locationTag).ToList();
             foreach (GameObject spawnLocationMarker in spawnLocationMarkers) {

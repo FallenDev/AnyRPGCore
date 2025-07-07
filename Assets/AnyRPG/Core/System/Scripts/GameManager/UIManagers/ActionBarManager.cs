@@ -158,7 +158,7 @@ namespace AnyRPG {
         }
 
         public void ClearUseableAssignment() {
-            Debug.Log("ActionBarManager.ClearUseableAssignment()");
+            //Debug.Log("ActionBarManager.ClearUseableAssignment()");
 
             moveIndex = -1;
             assigningUseable = null;

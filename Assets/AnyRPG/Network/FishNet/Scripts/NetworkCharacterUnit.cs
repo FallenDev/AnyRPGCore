@@ -1569,7 +1569,7 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner, AnyRPGSaveData saveData) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, {(saveData == null ? "null" : "valid save data")})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, {(saveData == null ? "null" : "valid save data")})");
 
             /*
             if (base.Owner != null ) {

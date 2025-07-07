@@ -9,7 +9,7 @@ namespace AnyRPG {
         private UnitController unitController;
 
         public void Enter(UnitController unitController) {
-            Debug.Log($"IdleState.Enter({unitController.gameObject.name})");
+            //Debug.Log($"IdleState.Enter({unitController.gameObject.name})");
 
             this.unitController = unitController;
             this.unitController.Reset();

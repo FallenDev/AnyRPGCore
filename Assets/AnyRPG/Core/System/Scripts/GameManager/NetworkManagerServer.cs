@@ -231,7 +231,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginResponse(int clientId, int accountId, bool correctPassword, string token) {
-            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {accountId}, {correctPassword}, {token})");
+            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {accountId}, {correctPassword}, {token})");
 
             if (correctPassword == true) {
                 if (loggedInAccounts.ContainsKey(accountId)) {
@@ -475,12 +475,14 @@ namespace AnyRPG {
         }
 
         public void ChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            if (lobbyGames.ContainsKey(gameId) == false || loggedInAccountsByClient.ContainsKey(accountId) == false) {
-                // game or client doesn't exist
+            Debug.Log($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+
+            if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.LogWarning($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName}) - lobby game or client does not exist");
                 return;
             }
             if (lobbyGames[gameId].PlayerList.ContainsKey(accountId) == false) {
-                // client isn't part of lobby game
+                Debug.LogWarning($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName}) - client not in lobby game");
                 return;
             }
             lobbyGames[gameId].PlayerList[accountId].unitProfileName = unitProfileName;
@@ -533,7 +535,7 @@ namespace AnyRPG {
         }
 
         public void StartLobbyGame(int gameId) {
-            Debug.Log($"NetworkManagerServer.StartLobbyGame({gameId})");
+            //Debug.Log($"NetworkManagerServer.StartLobbyGame({gameId})");
 
             lobbyGames[gameId].inProgress = true;
             OnStartLobbyGame(gameId);

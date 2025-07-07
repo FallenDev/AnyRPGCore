@@ -193,7 +193,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginSuccess(int accountId) {
-            //Debug.Log($"NetworkManagerClient.ProcessLoginSuccess()");
+            Debug.Log($"NetworkManagerClient.ProcessLoginSuccess({accountId})");
 
             // not doing this here because the connector has not spawned yet.
             //uIManager.ProcessLoginSuccess();
@@ -228,7 +228,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderAccountId}) accountId: {accountId}");
+            Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderAccountId}) accountId: {accountId}");
 
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             if (lobbyGame.leaderAccountId == accountId) {
@@ -239,7 +239,8 @@ namespace AnyRPG {
         }
 
         public void SetLobbyGame(LobbyGame lobbyGame) {
-            //Debug.Log($"NetworkManagerClient.SetLobbyGame({lobbyGame.gameId}) accountId: {accountId}");
+            Debug.Log($"NetworkManagerClient.SetLobbyGame({lobbyGame.gameId}) accountId: {accountId}");
+
             this.lobbyGame = lobbyGame;
         }
 
@@ -260,6 +261,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName) {
+            Debug.Log($"NetworkManagerClient.AdvertiseAccountJoinLobbyGame({gameId}, {accountId}, {userName})");
+
             lobbyGames[gameId].AddPlayer(accountId, userName);
             OnJoinLobbyGame(gameId, accountId, userName);
             if (accountId == this.accountId) {
@@ -314,14 +317,16 @@ namespace AnyRPG {
         }
 
         public void ChooseLobbyGameCharacter(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            Debug.Log($"NetworkManagerClient.ChooseLobbyGameCharacter({unitProfileName})");
+
             networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId, appearanceString, swappableMeshSaveData);
         }
 
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             if (lobbyGames.ContainsKey(gameId) == false) {
-                // game does not exist
+                Debug.LogWarning($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter: gameId {gameId} does not exist");
                 return;
             }
             lobbyGames[gameId].PlayerList[accountId].unitProfileName = unitProfileName;

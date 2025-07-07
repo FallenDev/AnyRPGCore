@@ -84,13 +84,13 @@ namespace AnyRPG {
         }
 
         private void SubscribeToUnitConfigured() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.SubscribeToUnitConfigured()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.SubscribeToUnitConfigured()");
 
             unitController.UnitEventController.OnCharacterConfigured += HandleCharacterConfigured;
         }
 
         private void HandleCharacterConfigured() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleCharacterConfigured()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleCharacterConfigured()");
 
             unitController.UnitEventController.OnCharacterConfigured -= HandleCharacterConfigured;
             if (systemGameManager.NetworkManagerServer.ServerModeActive == false) {

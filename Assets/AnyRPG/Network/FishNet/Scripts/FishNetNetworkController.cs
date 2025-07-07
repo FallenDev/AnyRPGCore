@@ -402,6 +402,8 @@ namespace AnyRPG {
         }
 
         public override void ChooseLobbyGameCharacter(string unitProfileName, int gameId, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            Debug.Log($"FishNetNetworkController.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
+
             clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId, appearanceString, swappableMeshSaveData);
         }
 
@@ -586,6 +588,8 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
+            Debug.Log($"FishNetNetworkController.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+
             clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
 

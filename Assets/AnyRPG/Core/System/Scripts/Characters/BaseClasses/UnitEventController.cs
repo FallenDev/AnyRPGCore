@@ -472,6 +472,12 @@ namespace AnyRPG {
             OnStatusEffectAdd(statusEffectNode);
         }
 
+        public void NotifyOnAddStatusEffectStack(string resourceName) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddStatusEffectStack({resourceName})");
+
+            OnAddStatusEffectStack(resourceName);
+        }
+
         public void NotifyOnCastTimeChanged(IAbilityCaster source, AbilityProperties baseAbility, float castPercent) {
             OnCastTimeChanged(source, baseAbility, castPercent);
         }
@@ -809,10 +815,6 @@ namespace AnyRPG {
 
         public void NotifyOnRequestUnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
             OnRequestUnequipBag(instantiatedBag, isBank);
-        }
-
-        public void NotifyOnAddStatusEffectStack(string resourceName) {
-            OnAddStatusEffectStack(resourceName);
         }
 
         public void NotifyOnCancelStatusEffect(StatusEffectProperties statusEffect) {

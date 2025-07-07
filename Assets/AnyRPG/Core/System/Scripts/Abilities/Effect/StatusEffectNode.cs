@@ -172,6 +172,7 @@ namespace AnyRPG {
             if (statusEffect.RefreshableDuration) {
                 SetRemainingDuration(statusEffect.Duration);
             }
+            unitController.UnitEventController.NotifyOnAddStatusEffectStack(statusEffect.ResourceName);
             return returnValue;
         }
 

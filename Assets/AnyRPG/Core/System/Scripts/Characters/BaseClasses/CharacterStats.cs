@@ -952,7 +952,6 @@ namespace AnyRPG {
                 } else {
                     //AddStatusEffectModifiers(statusEffect);
                     ProcessStatusEffectChanges(comparedStatusEffect);
-                    unitController.UnitEventController.NotifyOnAddStatusEffectStack(statusEffect.ResourceName);
                 }
                 return true;
             }

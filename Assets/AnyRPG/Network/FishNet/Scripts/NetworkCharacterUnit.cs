@@ -651,11 +651,15 @@ namespace AnyRPG {
         }
 
         public void HandleAddStatusEffectStackServer(string resourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddStatusEffectStackServer({resourceName})");
+
             AddStatusEffectStackClient(resourceName);
         }
 
         [ObserversRpc]
         public void AddStatusEffectStackClient(string resourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectStackClient({resourceName})");
+
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {
                 return;

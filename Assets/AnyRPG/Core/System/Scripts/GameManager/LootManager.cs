@@ -33,6 +33,7 @@ namespace AnyRPG {
         private NetworkManagerClient networkManagerClient = null;
         private NetworkManagerServer networkManagerServer = null;
         private SystemItemManager systemItemManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public Dictionary<int, List<LootDrop>> AvailableDroppedLoot { get => availableDroppedLoot; }
         public CurrencyItem CurrencyLootItem { get => currencyLootItem; }
@@ -53,10 +54,11 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemItemManager = systemGameManager.SystemItemManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void AddAvailableLoot(UnitController sourceUnitController, List<LootDrop> items) {
-            //Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
+            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
 
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 AddAvailableLoot(playerManagerServer.ActivePlayerLookup[sourceUnitController], items);
@@ -131,7 +133,7 @@ namespace AnyRPG {
                 networkManagerServer.AdvertiseTakeLoot(accountId, lootDrop.LootDropId);
             }
 
-            SystemEventManager.TriggerEvent("OnTakeLoot", new EventParamProperties());
+            systemEventManager.NotifyOnTakeLoot(accountId);
             OnTakeLoot();
         }
 
@@ -171,7 +173,7 @@ namespace AnyRPG {
         }
 
         public void AddLootTableState(LootTableState lootTableState) {
-            //Debug.Log("LootManager.AddLootTableState()");
+            Debug.Log("LootManager.AddLootTableState()");
 
             if (lootTableStates.Contains(lootTableState) == false) {
                 lootTableStates.Add(lootTableState);
@@ -238,7 +240,7 @@ namespace AnyRPG {
         }
 
         public void AddNetworkLootDrop(int lootDropId, int itemId) {
-            //Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
+            Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemId) == false) {
                 return;

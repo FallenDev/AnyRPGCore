@@ -607,7 +607,8 @@ namespace AnyRPG {
         public void HandleDie() {
             Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
-            unitController.UnitEventController.NotifyOnAnimatorDeath();
+            // not subscribed to
+            //unitController.UnitEventController.NotifyOnAnimatorDeath();
 
             // add these to prevent characters from dying floating or upright
             HandleUnLevitated(false);
@@ -735,9 +736,7 @@ namespace AnyRPG {
             if (animator == null) {
                 return;
             }
-            if (varValue == true) {
-                unitController.UnitEventController.NotifyOnAnimatorStartAttacking(swapAnimator);
-            }
+
             if (ParameterExists("Attacking")) {
                 animator.SetBool("Attacking", varValue);
             }

@@ -43,12 +43,17 @@ namespace AnyRPG {
 
         public LootableNodeComponent(Interactable interactable, LootableNodeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             // initialize loot tables and states
-            InitializeLootTableStates();
+            //InitializeLootTableStates();
         }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             lootManager = systemGameManager.LootManager;
+        }
+
+        public override void Configure(SystemGameManager systemGameManager) {
+            base.Configure(systemGameManager);
+            lootHolder.Configure(systemGameManager);
         }
 
         public override void Cleanup() {
@@ -118,7 +123,7 @@ namespace AnyRPG {
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (LootTable lootTable in Props.LootTables) {
-                lootDrops.AddRange(lootHolder.LootTableStates[lootTable].GetLoot(sourceUnitController, lootTable));
+                lootDrops.AddRange(lootHolder.GetLoot(sourceUnitController, lootTable, true));
             }
             //lootManager.CreatePages(lootDrops);
             lootManager.AddAvailableLoot(sourceUnitController, lootDrops);
@@ -141,12 +146,12 @@ namespace AnyRPG {
 
         public void CreateWindowEventSubscriptions() {
             //Debug.Log($"{gameObject.name}.LootableNode.CreateWindowEventSubscriptions()");
-            SystemEventManager.StartListening("OnTakeLoot", HandleTakeLoot);
+            systemEventManager.OnTakeLoot += HandleTakeLoot;
         }
 
         public void CleanupWindowEventSubscriptions() {
             //Debug.Log($"{gameObject.name}.LootableNode.CleanupWindowEventSubscriptions()");
-            SystemEventManager.StopListening("OnTakeLoot", HandleTakeLoot);
+            systemEventManager.OnTakeLoot += HandleTakeLoot;
             if (uIManager?.lootWindow?.CloseableWindowContents != null) {
                 uIManager.lootWindow.CloseableWindowContents.OnCloseWindow -= ClearTakeLootHandler;
             }
@@ -158,7 +163,7 @@ namespace AnyRPG {
             CleanupWindowEventSubscriptions();
         }
 
-        public void HandleTakeLoot(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleTakeLoot(int accountId) {
             CheckDropListSize();
         }
 
@@ -169,8 +174,10 @@ namespace AnyRPG {
         public void CheckDropListSize() {
             //Debug.Log($"{gameObject.name}.LootableNode.CheckDropListSize()");
             int lootCount = 0;
-            foreach (LootTable lootTable in Props.LootTables) {
-                lootCount += lootHolder.LootTableStates[lootTable].DroppedItems.Count;
+            foreach (Dictionary<int, LootTableState> lootTableStateDict in lootHolder.LootTableStates.Values) {
+                foreach (LootTableState lootTableState in lootTableStateDict.Values) {
+                    lootCount += lootTableState.DroppedItems.Count;
+                }
             }
             if (lootCount == 0) {
                 // since this method is only called on take loot, we can consider everything picked up if there is no loot left
@@ -210,7 +217,7 @@ namespace AnyRPG {
         private void InitializeLootTableStates() {
             lootHolder.InitializeLootTableStates();
             foreach (LootTable lootTable in Props.LootTables) {
-                lootHolder.AddLootTableState(lootTable, new LootTableState(systemGameManager));
+                lootHolder.AddLootTableState(lootTable);
             }
         }
 

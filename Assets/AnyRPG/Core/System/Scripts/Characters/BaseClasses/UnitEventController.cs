@@ -87,7 +87,6 @@ namespace AnyRPG {
         public event System.Action<bool> OnAnimatorEndCasting = delegate { };
         public event System.Action<bool> OnAnimatorStartActing = delegate { };
         public event System.Action<bool> OnAnimatorEndActing = delegate { };
-        public event System.Action<bool> OnAnimatorStartAttacking = delegate { };
         public event System.Action<bool> OnAnimatorEndAttacking = delegate { };
         public event System.Action OnAnimatorStartLevitated = delegate { };
         public event System.Action<bool> OnAnimatorEndLevitated = delegate { };
@@ -528,10 +527,6 @@ namespace AnyRPG {
             OnAnimatorEndActing(swapAnimator);
         }
 
-        public void NotifyOnAnimatorStartAttacking(bool swapAnimator) {
-            OnAnimatorStartAttacking(swapAnimator);
-        }
-
         public void NotifyOnAnimatorEndAttacking(bool swapAnimator) {
             OnAnimatorEndAttacking(swapAnimator);
         }
@@ -585,7 +580,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityAction() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
 
             OnAnimatorClearAbilityAction();
         }

@@ -1341,18 +1341,23 @@ namespace AnyRPG {
 
             if (isAlive) {
                 isAlive = false;
-                unitController.UnitEventController.NotifyOnBeforeDie(unitController);
                 if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
                     // should only be done on server
                     ClearStatusEffects(false);
                     // should only be done on server
                     ClearPowerAmounts();
                     // should only be done on server
+                    unitController.CharacterAbilityManager.HandleDie(this);
+                }
+
+                // because this results in loot roll, it needs to be done after status effects are cleared, but before aggro table is cleared
+                unitController.UnitEventController.NotifyOnBeforeDie(unitController);
+
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                    // should only be done on server
                     unitController.CharacterPetManager.HandleDie();
                     // should only be done on server
                     unitController.CharacterCombat.HandleDie();
-                    // should only be done on server
-                    unitController.CharacterAbilityManager.HandleDie(this);
                 }
                 if (systemGameManager.GameMode == GameMode.Local
                     || unitController.IsOwner

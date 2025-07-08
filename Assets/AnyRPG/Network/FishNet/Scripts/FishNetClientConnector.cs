@@ -734,6 +734,8 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void InteractWithOptionServer(NetworkCharacterUnit sourceNetworkCharacterUnit, NetworkInteractable targetNetworkInteractable, int componentIndex, int choiceIndex) {
+            Debug.Log($"FishNetNetworkConnector.InteractWithOptionServer({sourceNetworkCharacterUnit?.gameObject.name}, {targetNetworkInteractable?.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit != null) {
                 sourceUnitController = sourceNetworkCharacterUnit.UnitController;

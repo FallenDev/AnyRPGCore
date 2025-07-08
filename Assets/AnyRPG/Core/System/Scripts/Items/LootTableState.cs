@@ -48,7 +48,7 @@ namespace AnyRPG {
         }
 
         private void RollLoot(UnitController sourceUnitController, LootTable lootTable) {
-            //Debug.Log($"{gameObject.name}.LootTable.RollLoot()");
+            Debug.Log($"LootTableState.RollLoot({sourceUnitController.gameObject.name})");
             int lootTableRemainingDrops = lootTable.DropLimit;
             bool lootTableUnlimitedDrops = (lootTable.DropLimit == 0);
 
@@ -171,8 +171,9 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public List<LootDrop> GetLoot(UnitController sourceUnitController, LootTable lootTable, bool rollLoot = true) {
-            //Debug.Log("LootTable.GetLoot().");
+        public List<LootDrop> GetLoot(UnitController sourceUnitController, LootTable lootTable, bool rollLoot) {
+            Debug.Log($"LootTableState.GetLoot({sourceUnitController.gameObject.name}, {rollLoot})");
+
             if (!rolled && rollLoot == true) {
                 //Debug.Log("LootTable.GetLoot() !rolled. rolling...");
                 RollLoot(sourceUnitController, lootTable);

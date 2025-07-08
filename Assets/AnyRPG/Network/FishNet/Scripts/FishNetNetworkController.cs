@@ -680,7 +680,7 @@ namespace AnyRPG {
         }
 
         public override void AddAvailableDroppedLoot(int accountId, List<LootDrop> items) {
-            //Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({accountId}, {items.Count})");
+            Debug.Log($"FishNetNetworkController.AddAvailableDroppedLoot({accountId}, {items.Count})");
 
             clientConnector.AddAvailableDroppedLoot(accountId, items);
         }

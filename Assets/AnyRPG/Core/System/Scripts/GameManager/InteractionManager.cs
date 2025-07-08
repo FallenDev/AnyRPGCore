@@ -53,6 +53,8 @@ namespace AnyRPG {
         }
 
         public bool Interact(UnitController sourceUnitController, Interactable target) {
+            Debug.Log($"InteractionManager.Interact({sourceUnitController.gameObject.name}, {target.gameObject.name})");
+
             // get reference to name now since interactable could change scene and then target reference is lost
             string targetDisplayName = target.DisplayName;
 
@@ -66,7 +68,7 @@ namespace AnyRPG {
         }
 
         public bool InteractWithInteractable(UnitController sourceUnitController, Interactable targetInteractable) {
-            //Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
+            Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
 
             // perform range check
             bool passedRangeCheck = false;
@@ -150,6 +152,8 @@ namespace AnyRPG {
         }
 
         public void InteractWithOptionServer(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
+            Debug.Log($"InteractionManager.InteractWithOptionServer({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             Dictionary<int, InteractableOptionComponent> interactionOptions = targetInteractable.GetCurrentInteractables(sourceUnitController);
             if (interactionOptions.ContainsKey(componentIndex)) {
                 InteractWithOptionInternal(sourceUnitController, targetInteractable, interactionOptions[componentIndex], componentIndex, choiceIndex);

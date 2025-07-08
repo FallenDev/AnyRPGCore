@@ -39,6 +39,7 @@ namespace AnyRPG {
         public event System.Action<IUseable, int> OnSetMouseActionButton = delegate { };
         public event System.Action<int> OnUnsetMouseActionButton = delegate { };
         public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
+        public event System.Action<int> OnTakeLoot = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -221,6 +222,9 @@ namespace AnyRPG {
             OnRemoveActivePet(unitProfile);
         }
 
+        public void NotifyOnTakeLoot(int accountId) {
+            OnTakeLoot(accountId);
+        }
     }
 
     [System.Serializable]

@@ -12,6 +12,7 @@ namespace AnyRPG {
         public event System.Action<string, int> OnPlayDialogNode = delegate { };
         public event System.Action<UnitController, InstantiatedItem> OnAddToBuyBackCollection = delegate { };
         public event System.Action<VendorItem> OnSellItemToPlayer = delegate { };
+        public event System.Action<Dictionary<int, List<int>>> OnDropLoot = delegate { };
 
         // interactable this controller is attached to
         private Interactable interactable;
@@ -43,6 +44,10 @@ namespace AnyRPG {
 
         public void NotifyOnSellItemToPlayer(VendorItem vendorItem) {
             OnSellItemToPlayer(vendorItem);
+        }
+
+        public void NotifyOnDropLoot(Dictionary<int, List<int>> lootDropIdLookup) {
+            OnDropLoot(lootDropIdLookup);
         }
 
         // temporarily disabled because this object is not created early enough in the process when its a unitcontroller

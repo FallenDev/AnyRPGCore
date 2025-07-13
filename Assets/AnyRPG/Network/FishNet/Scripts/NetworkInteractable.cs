@@ -1,4 +1,5 @@
 using FishNet.Component.Transforming;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -111,6 +112,7 @@ namespace AnyRPG {
             interactable.OnInteractionWithOptionStarted += HandleInteractionWithOptionStarted;
             interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
             interactable.OnInteractableDisable += HandleInteractableDisableServer;
+            interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
 
             eventRegistrationComplete = true;
         }
@@ -131,6 +133,7 @@ namespace AnyRPG {
             interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
             interactable.InteractableEventController.OnPlayDialogNode -= HandlePlayDialogNode;
             interactable.OnInteractableDisable -= HandleInteractableDisableServer;
+            interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
 
             eventRegistrationComplete = false;
         }
@@ -211,6 +214,29 @@ namespace AnyRPG {
                 sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(currentInteractables[componentIndex], componentIndex, choiceIndex);
             }
             
+        }
+
+        private void HandleDropLoot(Dictionary<int, List<int>> lootDropIdLookup) {
+            foreach (KeyValuePair<int, List<int>> kvp in lootDropIdLookup) {
+                int accountId = kvp.Key;
+                List<int> lootDropIds = kvp.Value;
+                Dictionary<int, List<int>> targetLootDropIdLookup = new Dictionary<int, List<int>>();
+                targetLootDropIdLookup.Add(accountId, lootDropIds);
+                if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) && base.NetworkManager.ServerManager.Clients.ContainsKey(networkManagerServer.LoggedInAccounts[accountId].clientId)) {
+                    NetworkConnection networkConnection = base.NetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+                    HandleDropLootTarget(networkConnection, targetLootDropIdLookup);
+                }
+            }
+        }
+
+        [TargetRpc]
+        public void HandleDropLootTarget(NetworkConnection networkConnection, Dictionary<int, List<int>> lootDropIdLookup) {
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.HandleDropLootTarget()");
+            if (interactable == null) {
+                Debug.Log($"{gameObject.name}.NetworkInteractable.HandleDropLootTarget(): interactable is null");
+                return;
+            }
+            interactable.InteractableEventController.NotifyOnDropLoot(lootDropIdLookup);
         }
 
 

@@ -8,6 +8,10 @@ using UnityEngine;
 namespace AnyRPG {
     public class LootTableState : ConfiguredClass {
 
+        public event System.Action<LootDrop, int> OnRemoveDroppedItem = delegate { };
+
+        private int accountId = 0;
+
         // keep track of remaining drops if there is a drop limit
         private int lootTableRemainingDrops = 0;
 
@@ -24,8 +28,9 @@ namespace AnyRPG {
         public bool Rolled { get => rolled; set => rolled = value; }
         public int LootTableRemainingDrops { get => lootTableRemainingDrops; set => lootTableRemainingDrops = value; }
 
-        public LootTableState(SystemGameManager systemGameManager) {
+        public LootTableState(SystemGameManager systemGameManager, int accountId) {
             Configure(systemGameManager);
+            this.accountId = accountId;
         }
 
         public override void SetGameManagerReferences() {
@@ -37,6 +42,7 @@ namespace AnyRPG {
 
         public void RemoveDroppedItem(LootDrop lootDrop) {
             droppedItems.Remove(lootDrop);
+            OnRemoveDroppedItem(lootDrop, accountId);
         }
 
         private void AddDroppedItem(LootDrop droppedItem) {

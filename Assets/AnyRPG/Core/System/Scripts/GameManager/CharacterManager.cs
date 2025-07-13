@@ -203,8 +203,9 @@ namespace AnyRPG {
 
                 if (unitController.CharacterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player) {
                     if (unitController.CharacterRequestData.isOwner) {
+                        // this is only true on the client
                         playerManager.SetUnitController(unitController);
-                        playerManagerServer.AddActivePlayer(0, unitController);
+                        playerManagerServer.AddActivePlayer(networkManagerClient.AccountId, unitController);
                         playerManagerServer.MonitorPlayer(unitController);
                     } else if (networkManagerServer.ServerModeActive) {
                         playerManagerServer.MonitorPlayer(unitController);

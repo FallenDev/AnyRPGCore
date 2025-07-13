@@ -8,6 +8,8 @@ using UnityEngine;
 namespace AnyRPG {
     public class LootHolder : ConfiguredClass {
 
+        public event System.Action<LootDrop, int> OnRemoveDroppedItem = delegate { };
+
         /// <summary>
         /// lootTable, accountId, lootTableState
         /// </summary>
@@ -54,9 +56,16 @@ namespace AnyRPG {
 
             // add account if it does not exist
             if (lootTableStates[lootTable].ContainsKey(accountId) == false) {
-                lootTableStates[lootTable].Add(accountId, new LootTableState(systemGameManager));
+                LootTableState lootTableState = new LootTableState(systemGameManager, accountId);
+                lootTableState.OnRemoveDroppedItem += HandleRemoveDroppedItem;
+                lootTableStates[lootTable].Add(accountId, lootTableState);
             }
             return lootTableStates[lootTable][accountId].GetLoot(sourceUnitController, lootTable, rollLoot);
+        }
+
+        public void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
+            Debug.Log($"LootHolder.HandleRemoveDroppedItem({lootDrop.DisplayName})");
+            OnRemoveDroppedItem(lootDrop, accountId);
         }
     }
 }

@@ -64,7 +64,7 @@ namespace AnyRPG {
         }
 
         public void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
-            Debug.Log($"LootHolder.HandleRemoveDroppedItem({lootDrop.DisplayName})");
+            Debug.Log($"LootHolder.HandleRemoveDroppedItem({lootDrop.DisplayName}, {accountId})");
             OnRemoveDroppedItem(lootDrop, accountId);
         }
     }

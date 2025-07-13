@@ -721,7 +721,7 @@ namespace AnyRPG {
 
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemName}, {itemName})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({inventorySlotSaveData.ItemName})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(inventorySlotSaveData.itemInstanceId)) {
                 //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData() item already exists in instantiated items");
@@ -736,7 +736,7 @@ namespace AnyRPG {
         }
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(Item item, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({itemInstanceId}, {item.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({item.ResourceName})");
 
             ItemQuality usedItemQuality = null;
             if (inventorySlotSaveData.itemQuality != null && inventorySlotSaveData.itemQuality != string.Empty) {

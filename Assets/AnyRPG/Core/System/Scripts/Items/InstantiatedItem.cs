@@ -29,7 +29,15 @@ namespace AnyRPG {
 
         public int InstanceId { get => instanceId; set => instanceId = value; }
         public Item Item { get => item; set => item = value; }
-        public ItemQuality ItemQuality { get => itemQuality; set => itemQuality = value; }
+        public ItemQuality ItemQuality {
+            get {
+                if (itemQuality == null) {
+                    return item.ItemQuality;
+                }
+                return itemQuality;
+            }
+            set => itemQuality = value;
+        }
         public string DisplayName { get => displayName; set => displayName = value; }
         public int DropLevel {
             get => dropLevel;
@@ -50,7 +58,11 @@ namespace AnyRPG {
         public InstantiatedItem(SystemGameManager systemGameManager, int instanceId, Item item, ItemQuality itemQuality) {
             this.instanceId = instanceId;
             this.item = item;
-            this.itemQuality = itemQuality;
+            //if (itemQuality == null) {
+                //this.itemQuality = item.ItemQuality;
+            //} else {
+                this.itemQuality = itemQuality;
+            //}
             Configure(systemGameManager);
         }
 
@@ -77,8 +89,8 @@ namespace AnyRPG {
             InventorySlotSaveData saveData = new InventorySlotSaveData();
             saveData.ItemName = ResourceName;
             saveData.DisplayName = DisplayName;
-            if (ItemQuality != null) {
-                saveData.itemQuality = ItemQuality.ResourceName;
+            if (itemQuality != null) {
+                saveData.itemQuality = itemQuality.ResourceName;
             }
             saveData.dropLevel = DropLevel;
             saveData.randomSecondaryStatIndexes = new List<int>();

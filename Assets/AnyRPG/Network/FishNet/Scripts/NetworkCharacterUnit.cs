@@ -1112,7 +1112,7 @@ namespace AnyRPG {
         }
 
         public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem({instantiatedItem.InstanceId})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem({instantiatedItem.InstanceId})");
             
             InventorySlotSaveData inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
             HandleGetNewInstantiatedItemClient(instantiatedItem.InstanceId, inventorySlotSaveData);
@@ -1120,7 +1120,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
             
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
         }

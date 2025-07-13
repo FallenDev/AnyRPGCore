@@ -57,7 +57,8 @@ namespace AnyRPG {
         }
 
         public InstantiatedItem GetNewInstantiatedItem(int itemInstanceId, Item item, ItemQuality usedItemQuality = null) {
-            //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
+            Debug.Log($"SystemItemManager.GetNewInstantiatedItem({itemInstanceId}, {item?.ResourceName}, {usedItemQuality?.ResourceName})");
+
             InstantiatedItem instantiatedItem = item.GetNewInstantiatedItem(systemGameManager, itemInstanceId, item, usedItemQuality);
             instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItems.Add(itemInstanceId, instantiatedItem);

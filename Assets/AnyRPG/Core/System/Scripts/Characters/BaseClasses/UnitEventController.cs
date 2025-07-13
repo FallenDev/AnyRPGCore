@@ -676,6 +676,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnGetNewInstantiatedItem({instantiatedItem.Item.ResourceName})");
+
             OnGetNewInstantiatedItem(instantiatedItem);
         }
 

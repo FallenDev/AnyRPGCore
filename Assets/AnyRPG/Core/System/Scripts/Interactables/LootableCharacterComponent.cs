@@ -123,9 +123,11 @@ namespace AnyRPG {
             this.lootDropIdLookup = lootDropIdLookup;
         }
 
+        /*
         public void HandleTakeLoot(int accountId) {
             TryToDespawn();
         }
+        */
 
         public void CreateLootTables() {
             //Debug.Log($"{gameObject.name}.LootableCharacter.CreateLootTables()");
@@ -305,14 +307,20 @@ namespace AnyRPG {
         }
 
         public int GetExistingLootCount() {
-            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount()");
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount()");
+
             int lootCount = 0;
+            /*
             foreach (Dictionary<int, LootTableState> lootTableStateLookup in lootHolder.LootTableStates.Values) {
                 if (lootTableStateLookup != null) {
                     foreach (LootTableState state in lootTableStateLookup.Values) {
                         lootCount += state.DroppedItems.Count;
                     }
                 }
+            }
+            */
+            foreach (KeyValuePair<int, List<int>> lootDropId in lootDropIdLookup) {
+                lootCount += lootDropId.Value.Count;
             }
             /*
             if (Props.AutomaticCurrency == true) {
@@ -468,8 +476,9 @@ namespace AnyRPG {
         public override void StopInteract() {
             //Debug.Log($"{gameObject.name}.LootableCharacter.StopInteract()");
             base.StopInteract();
-            uIManager.lootWindow.CloseWindow();
-            TryToDespawn();
+            // TO DO : FIX ME need a stopInteract that is only on the client
+            //uIManager.lootWindow.CloseWindow();
+            //TryToDespawn();
         }
 
         public void Despawn() {
@@ -508,9 +517,11 @@ namespace AnyRPG {
         */
 
         private void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleRemoveDroppedItem({lootDrop.LootDropId}, {accountId})");
             if (lootDropIdLookup.ContainsKey(accountId)) {
                 lootDropIdLookup[accountId].Remove(lootDrop.LootDropId);
             }
+            TryToDespawn();
         }
 
         public void ResetLootTableStates() {
@@ -522,7 +533,12 @@ namespace AnyRPG {
         }
 
         public override string GetSummary(UnitController sourceUnitController) {
-            return "Lootable";
+
+            if (GetLootCount(sourceUnitController) > 0) {
+                return "Lootable";
+            } else {
+                return "";
+            }
         }
         
     }

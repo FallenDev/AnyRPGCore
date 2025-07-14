@@ -528,10 +528,14 @@ namespace AnyRPG {
         }
 
         public void AdvertiseTakeLoot(int lootDropId) {
+            Debug.Log($"NetworkManagerClient.AdvertiseTakeLoot({lootDropId})");
+
             lootManager.TakeLoot(accountId, lootDropId);
         }
 
         public void RequestTakeLoot(int lootDropId) {
+            Debug.Log($"NetworkManagerClient.RequestTakeLoot({lootDropId})");
+
             networkController.RequestTakeLoot(lootDropId);
         }
 

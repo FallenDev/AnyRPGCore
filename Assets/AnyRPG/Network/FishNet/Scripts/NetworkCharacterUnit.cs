@@ -818,7 +818,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
+            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
             int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
             AddItemToInventorySlotClient(slotIndex, item.InstanceId);

@@ -822,7 +822,11 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerServer.RequestTakeLoot({lootDropId}, {accountId})");
 
             if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == true) {
-                lootManager.TakeLoot(accountId, lootDropId);
+                //lootManager.TakeLoot(accountId, lootDropId);
+                if (lootManager.LootDropIndex.ContainsKey(lootDropId) == false) {
+                    return;
+                }
+                lootManager.LootDropIndex[lootDropId].TakeLoot(playerManagerServer.ActivePlayers[accountId]);
             }
         }
 

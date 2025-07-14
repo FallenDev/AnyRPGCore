@@ -39,6 +39,7 @@ namespace AnyRPG {
 
         public Dictionary<int, List<LootDrop>> AvailableDroppedLoot { get => availableDroppedLoot; }
         public CurrencyItem CurrencyLootItem { get => currencyLootItem; }
+        public Dictionary<int, LootDrop> LootDropIndex { get => lootDropIndex; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -103,6 +104,8 @@ namespace AnyRPG {
         }
 
         public void RequestTakeLoot(LootDrop lootDrop, UnitController sourceUnitController) {
+            Debug.Log($"LootManager.RequestTakeLoot({lootDrop.LootDropId}, {sourceUnitController.gameObject.name})");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 lootDrop.TakeLoot(playerManager.UnitController);
             } else {
@@ -148,6 +151,8 @@ namespace AnyRPG {
         }
 
         public void TakeAllLoot(UnitController sourceUnitController) {
+            Debug.Log($"LootManager.TakeAllLoot({sourceUnitController.gameObject.name})");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 TakeAllLootInternal(0, sourceUnitController);
             } else {

@@ -466,6 +466,8 @@ namespace AnyRPG {
         }
 
         public override void RequestTakeLoot(int lootDropId) {
+            Debug.Log($"FishNetNetworkController.RequestTakeLoot({lootDropId})");
+
             clientConnector.RequestTakeLoot(lootDropId);
         }
 

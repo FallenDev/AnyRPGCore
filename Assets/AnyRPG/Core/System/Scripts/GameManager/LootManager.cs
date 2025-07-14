@@ -22,7 +22,9 @@ namespace AnyRPG {
 
         private CurrencyItem currencyLootItem = null;
 
-        private int lootDropId = 0;
+        // a counter to ensure that loot drop ids are unique
+        private int lootDropIdCounter = 0;
+
         // a dictionary of all dropped loot
         private Dictionary<int, LootDrop> lootDropIndex = new Dictionary<int, LootDrop>();
 
@@ -126,7 +128,7 @@ namespace AnyRPG {
         public void TakeLoot(int accountId, LootDrop lootDrop) {
             //Debug.Log("LootManager.TakeLoot()");
 
-            RemoveLootTableStateIndex(lootDropId);
+            RemoveLootTableStateIndex(lootDrop.LootDropId);
             RemoveFromAvailableDroppedItems(accountId, lootDrop);
 
             if (networkManagerServer.ServerModeActive == true) {
@@ -188,7 +190,7 @@ namespace AnyRPG {
             }
         }
 
-        public void AddLootTableStateIndex(int LootDropId, LootTableState lootTableState) {
+        public void AddLootTableStateIndex(int lootDropId, LootTableState lootTableState) {
             //Debug.Log("LootManager.AddLootTableState()");
 
             if (lootTableStateDict.ContainsKey(lootDropId) == false) {
@@ -226,8 +228,8 @@ namespace AnyRPG {
         }
 
         public int GetLootDropId() {
-            lootDropId++;
-            return lootDropId;
+            lootDropIdCounter++;
+            return lootDropIdCounter;
         }
 
         public void AddLootDropToIndex(UnitController sourceUnitController, LootDrop lootDrop) {
@@ -235,7 +237,7 @@ namespace AnyRPG {
             
             lootDropIndex.Add(lootDrop.LootDropId, lootDrop);
             if (networkManagerServer.ServerModeActive == true) {
-                networkManagerServer.AddLootDrop(playerManagerServer.ActivePlayerLookup[sourceUnitController], lootDropId, lootDrop.InstantiatedItem.InstanceId);
+                networkManagerServer.AddLootDrop(playerManagerServer.ActivePlayerLookup[sourceUnitController], lootDrop.LootDropId, lootDrop.InstantiatedItem.InstanceId);
             }
         }
 

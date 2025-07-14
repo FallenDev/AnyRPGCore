@@ -819,6 +819,8 @@ namespace AnyRPG {
         }
 
         public void RequestTakeLoot(int lootDropId, int accountId) {
+            Debug.Log($"NetworkManagerServer.RequestTakeLoot({lootDropId}, {accountId})");
+
             if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == true) {
                 lootManager.TakeLoot(accountId, lootDropId);
             }

@@ -74,10 +74,10 @@ namespace AnyRPG {
             if (equipment.RandomSecondaryStats == false) {
                 return;
             }
-            if (itemQuality == null) {
+            if (ItemQuality == null) {
                 return;
             }
-            if (itemQuality.RandomStatCount == 0) {
+            if (ItemQuality.RandomStatCount == 0) {
                 return;
             }
 
@@ -95,7 +95,7 @@ namespace AnyRPG {
         }
 
         public void PopulateRandomStatIndexes() {
-            int maxCount = Mathf.Min(equipment.SecondaryStats.Count, itemQuality.RandomStatCount);
+            int maxCount = Mathf.Min(equipment.SecondaryStats.Count, ItemQuality.RandomStatCount);
             while (randomStatIndexes.Count < maxCount) {
                 int randomNumber = UnityEngine.Random.Range(0, equipment.SecondaryStats.Count);
                 if (!RandomStatIndexes.Contains(randomNumber)) {
@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public override string GetDescription() {
-            return equipment.GetEquipmentDescription(itemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level), SecondaryStats);
+            return equipment.GetEquipmentDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level), SecondaryStats);
         }
 
     }

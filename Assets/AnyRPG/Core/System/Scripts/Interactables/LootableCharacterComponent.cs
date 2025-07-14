@@ -97,6 +97,7 @@ namespace AnyRPG {
                 if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
                     // network client only
                     interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
+                    interactable.InteractableEventController.OnRemoveDroppedItem += HandleRemoveDroppedItemClient;
                 }
             }
         }
@@ -111,6 +112,7 @@ namespace AnyRPG {
                 if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
                     // network client only
                     interactable.InteractableEventController.OnDropLoot -= HandleDropLoot;
+                    interactable.InteractableEventController.OnRemoveDroppedItem -= HandleRemoveDroppedItemClient;
                 }
             }
             if (monitoringTakeLoot) {
@@ -332,6 +334,7 @@ namespace AnyRPG {
                 }
             }
             */
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount(): returning loot count: {lootCount}");
             return lootCount;
         }
 
@@ -516,11 +519,22 @@ namespace AnyRPG {
         }
         */
 
+        private void HandleRemoveDroppedItemClient(int lootDropId, int accountId) {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleRemoveDroppedItemClient({lootDropId}, {accountId})");
+
+            if (lootDropIdLookup.ContainsKey(accountId)) {
+                lootDropIdLookup[accountId].Remove(lootDropId);
+            }
+        }
+
+
         private void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
             Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleRemoveDroppedItem({lootDrop.LootDropId}, {accountId})");
+
             if (lootDropIdLookup.ContainsKey(accountId)) {
                 lootDropIdLookup[accountId].Remove(lootDrop.LootDropId);
             }
+            interactable.InteractableEventController.NotifyOnRemoveDroppedItem(lootDrop, accountId);
             TryToDespawn();
         }
 

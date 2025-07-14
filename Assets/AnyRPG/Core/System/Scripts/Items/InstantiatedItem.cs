@@ -77,6 +77,8 @@ namespace AnyRPG {
         }
 
         public virtual void InitializeNewItem(ItemQuality usedItemQuality) {
+            Debug.Log($"{ResourceName}.InstantiatedItem.InitializeNewItem({usedItemQuality?.ResourceName})");
+
             item.InitializeNewItem(this, usedItemQuality);
             PostInitialization();
         }
@@ -114,10 +116,10 @@ namespace AnyRPG {
             int returnLevel = item.GetItemLevel(characterLevel);
 
             // item quality can override regular individual item scaling (example, heirlooms always scale)
-            if (itemQuality == null) {
+            if (ItemQuality == null) {
                 return returnLevel;
             } else {
-                if (itemQuality.DynamicItemLevel) {
+                if (ItemQuality.DynamicItemLevel) {
                     return (int)Mathf.Clamp(characterLevel, 1, (item.LevelCap > 0 ? item.LevelCap : Mathf.Infinity));
                 } else {
                     return returnLevel;
@@ -240,11 +242,11 @@ namespace AnyRPG {
         }
 
         public virtual string GetSummary() {
-            return item.GetSummary(itemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
+            return item.GetSummary(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }
 
         public virtual string GetDescription() {
-            return item.GetDescription(itemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
+            return item.GetDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }
 
         /*

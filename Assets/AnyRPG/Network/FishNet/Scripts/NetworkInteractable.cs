@@ -113,6 +113,7 @@ namespace AnyRPG {
             interactable.InteractableEventController.OnPlayDialogNode += HandlePlayDialogNode;
             interactable.OnInteractableDisable += HandleInteractableDisableServer;
             interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
+            interactable.InteractableEventController.OnRemoveDroppedItem += HandleRemoveDroppedItem;
 
             eventRegistrationComplete = true;
         }
@@ -133,7 +134,8 @@ namespace AnyRPG {
             interactable.OnInteractionWithOptionStarted -= HandleInteractionWithOptionStarted;
             interactable.InteractableEventController.OnPlayDialogNode -= HandlePlayDialogNode;
             interactable.OnInteractableDisable -= HandleInteractableDisableServer;
-            interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
+            interactable.InteractableEventController.OnDropLoot -= HandleDropLoot;
+            interactable.InteractableEventController.OnRemoveDroppedItem -= HandleRemoveDroppedItem;
 
             eventRegistrationComplete = false;
         }
@@ -239,7 +241,22 @@ namespace AnyRPG {
             interactable.InteractableEventController.NotifyOnDropLoot(lootDropIdLookup);
         }
 
+        private void HandleRemoveDroppedItem(int lootDropId, int accountId) {
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) && base.NetworkManager.ServerManager.Clients.ContainsKey(networkManagerServer.LoggedInAccounts[accountId].clientId)) {
+                NetworkConnection networkConnection = base.NetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+                HandleRemoveDroppedItemTarget(networkConnection, lootDropId, accountId);
+            }
+        }
 
+        [TargetRpc]
+        public void HandleRemoveDroppedItemTarget(NetworkConnection networkConnection, int lootDropId, int accountId) {
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.HandleRemoveDroppedItemTarget({lootDropId}, {accountId})");
+            if (interactable == null) {
+                Debug.Log($"{gameObject.name}.NetworkInteractable.HandleRemoveDroppedItemTarget(): interactable is null");
+                return;
+            }
+            interactable.InteractableEventController.NotifyOnRemoveDroppedItemClient(lootDropId, accountId);
+        }
 
     }
 }

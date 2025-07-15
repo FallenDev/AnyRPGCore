@@ -31,7 +31,8 @@ namespace AnyRPG {
         }
 
         public override string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
-            //Debug.Log(DisplayName + ".CurrencyItem.GetSummary();");
+            Debug.Log($"CurrencyItem.GetDescription({usedItemQuality?.ResourceName}, {usedItemLevel});");
+
             string tmpCurrencyName = string.Empty;
             if (currencyNode.currency != null) {
                 tmpCurrencyName = currencyNode.currency.DisplayName;

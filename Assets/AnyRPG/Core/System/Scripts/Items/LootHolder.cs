@@ -9,6 +9,7 @@ namespace AnyRPG {
     public class LootHolder : ConfiguredClass {
 
         public event System.Action<LootDrop, int> OnRemoveDroppedItem = delegate { };
+        public event System.Action<InstantiatedItem> OnInitializeItem = delegate { };
 
         /// <summary>
         /// lootTable, accountId, lootTableState
@@ -58,9 +59,16 @@ namespace AnyRPG {
             if (lootTableStates[lootTable].ContainsKey(accountId) == false) {
                 LootTableState lootTableState = new LootTableState(systemGameManager, accountId);
                 lootTableState.OnRemoveDroppedItem += HandleRemoveDroppedItem;
+                lootTableState.OnInitializeItem += HandleInitializeItem;
                 lootTableStates[lootTable].Add(accountId, lootTableState);
             }
             return lootTableStates[lootTable][accountId].GetLoot(sourceUnitController, lootTable, rollLoot);
+        }
+
+        private void HandleInitializeItem(InstantiatedItem item) {
+            Debug.Log($"LootHolder.HandleInitializeItem({item.ResourceName})");
+
+            OnInitializeItem(item);
         }
 
         public void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {

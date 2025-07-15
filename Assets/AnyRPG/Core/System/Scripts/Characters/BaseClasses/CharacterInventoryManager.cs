@@ -35,6 +35,7 @@ namespace AnyRPG {
         private SystemItemManager systemItemManager = null;
         private SystemEventManager systemEventManager = null;
         private LogManager logManager = null;
+        private LootManager lootManager = null;
 
         protected bool eventSubscriptionsInitialized = false;
 
@@ -89,6 +90,7 @@ namespace AnyRPG {
             systemItemManager = systemGameManager.SystemItemManager;
             systemEventManager = systemGameManager.SystemEventManager;
             logManager = systemGameManager.LogManager;
+            lootManager = systemGameManager.LootManager;
         }
 
 
@@ -709,16 +711,18 @@ namespace AnyRPG {
             return GetNewInstantiatedItem(item, itemQuality);
         }
 
-        public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality itemQuality = null) {
+        public InstantiatedItem GetNewInstantiatedItem(Item item, ItemQuality itemQuality = null, IInstantiatedItemRequestor requestor = null) {
             //Debug.Log(this.GetType().Name + ".GetNewResource(" + resourceName + ")");
             InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(item, itemQuality);
-            instantiatedItem.InitializeNewItem(itemQuality);
+            //instantiatedItem.InitializeNewItem(itemQuality);
             instantiatedItem.DropLevel = unitController.CharacterStats.Level;
+            if (requestor != null) {
+                requestor.InitializeItem(instantiatedItem);
+            }
             //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
             unitController.UnitEventController.NotifyOnGetNewInstantiatedItem(instantiatedItem);
             return instantiatedItem;
         }
-
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(InventorySlotSaveData inventorySlotSaveData) {
             Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({inventorySlotSaveData.ItemName})");
@@ -728,7 +732,12 @@ namespace AnyRPG {
                 return systemItemManager.InstantiatedItems[inventorySlotSaveData.itemInstanceId];
             }
 
-            Item item = systemDataFactory.GetResource<Item>(inventorySlotSaveData.ItemName);
+            Item item = null;
+            if (inventorySlotSaveData.ItemName == "System Currency Loot Item") {
+                item = lootManager.CurrencyLootItem;
+            } else {
+                item = systemDataFactory.GetResource<Item>(inventorySlotSaveData.ItemName);
+            }
             if (item == null) {
                 return null;
             }
@@ -743,7 +752,7 @@ namespace AnyRPG {
                 usedItemQuality = systemDataFactory.GetResource<ItemQuality>(inventorySlotSaveData.itemQuality);
             }
             InstantiatedItem instantiatedItem = systemItemManager.GetNewInstantiatedItem(inventorySlotSaveData.itemInstanceId, item, usedItemQuality);
-            instantiatedItem.InitializeNewItem(usedItemQuality);
+            //instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItem.LoadSaveData(inventorySlotSaveData);
 
             //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);

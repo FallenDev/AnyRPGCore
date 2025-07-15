@@ -238,7 +238,7 @@ namespace AnyRPG {
         }
 
         public void AddLootDropToIndex(UnitController sourceUnitController, LootDrop lootDrop) {
-            //Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
+            Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
             
             lootDropIndex.Add(lootDrop.LootDropId, lootDrop);
             if (networkManagerServer.ServerModeActive == true) {

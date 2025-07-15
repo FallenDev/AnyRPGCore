@@ -242,33 +242,19 @@ namespace AnyRPG {
         }
 
         public virtual string GetSummary() {
-            return item.GetSummary(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
+            Debug.Log($"{item.ResourceName}.InstantiatedItem.GetSummary()");
+
+            return string.Format("<color={0}>{1}</color>{2}", QualityColor.GetQualityColorString(itemQuality), DisplayName, GetDescription());
         }
 
+
+
         public virtual string GetDescription() {
+            Debug.Log($"{item.ResourceName}.InstantiatedItem.GetDescription()");
+
             return item.GetDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }
 
-        /*
-        public virtual string GetSummary(ItemQuality usedItemQuality) {
-
-            return string.Format("<color={0}>{1}</color>{2}", QualityColor.GetQualityColorString(usedItemQuality), DisplayName, GetDescription(usedItemQuality));
-        }
-
-        public string GetSummary() {
-            //Debug.Log(DisplayName + ".Item.GetDescription()");
-            return GetSummary(itemQuality);
-        }
-
-        public virtual string GetDescription(ItemQuality usedItemQuality) {
-            return item.GetDescription(usedItemQuality);
-        }
-
-        public string GetDescription() {
-            //Debug.Log(DisplayName + ".Item.GetDescription()");
-            return GetDescription(itemQuality);
-        }
-        */
 
     }
  }

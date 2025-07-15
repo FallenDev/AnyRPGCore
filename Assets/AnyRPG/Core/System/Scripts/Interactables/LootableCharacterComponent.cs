@@ -24,7 +24,7 @@ namespace AnyRPG {
         private bool monitoringTakeLoot = false;
 
         // hold the rolled currency amount
-        private CurrencyNode currencyNode;
+        //private CurrencyNode currencyNode;
 
         private LootTable currencyLootTable = null;
         private LootHolder lootHolder = new LootHolder();
@@ -38,7 +38,7 @@ namespace AnyRPG {
 
         public CharacterUnit CharacterUnit { get => characterUnit; set => characterUnit = value; }
         public bool CurrencyRolled { get => currencyRolled; }
-        public CurrencyNode CurrencyNode { get => currencyNode; set => currencyNode = value; }
+        //public CurrencyNode CurrencyNode { get => currencyNode; set => currencyNode = value; }
         public bool CurrencyCollected { get => currencyCollected; set => currencyCollected = value; }
         public LootHolder LootHolder { get => lootHolder; set => lootHolder = value; }
 
@@ -53,6 +53,7 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
             lootHolder.Configure(systemGameManager);
             lootHolder.OnRemoveDroppedItem += HandleRemoveDroppedItem;
+            lootHolder.OnInitializeItem += HandleInitializeItem;
         }
 
         public override void SetGameManagerReferences() {
@@ -132,7 +133,8 @@ namespace AnyRPG {
         */
 
         public void CreateLootTables() {
-            //Debug.Log($"{gameObject.name}.LootableCharacter.CreateLootTables()");
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.CreateLootTables()");
+
             if (Props.AutomaticCurrency == true) {
                 currencyLootTable = ScriptableObject.CreateInstance<LootTable>();
                 LootGroup lootGroup = new LootGroup();
@@ -142,6 +144,7 @@ namespace AnyRPG {
                 loot.Item = lootManager.CurrencyLootItem;
                 lootGroup.Loot.Add(loot);
                 currencyLootTable.LootGroups.Add(lootGroup);
+                LootHolder.AddLootTableState(currencyLootTable);
             }
             foreach (string lootTableName in Props.LootTableNames) {
                 LootTable lootTable = systemDataFactory.GetResource<LootTable>(lootTableName);
@@ -266,14 +269,24 @@ namespace AnyRPG {
                     // special case for currency drop.  Maybe this could go in a PostDrop() call on the InstantiatedItems ?  Not sure that makes sense since only currencyItem would
                     // make use of the call
                     // This is here rather than the other places GetLootCount() is called because this *should* be the first time that is called immediately after death
+                    /*
                     if (lootTable == currencyLootTable) {
 
                         if (tableDroppedItems.Count > 0 && tableDroppedItems[0].InstantiatedItem is InstantiatedCurrencyItem) {
                             InstantiatedCurrencyItem currencyItem = tableDroppedItems[0].InstantiatedItem as InstantiatedCurrencyItem;
+                            currencyNode.currency = systemConfigurationManager.KillCurrency;
+                            if (characterUnit != null) {
+                                currencyNode.Amount = systemConfigurationManager.KillCurrencyAmountPerLevel * characterUnit.UnitController.CharacterStats.Level;
+                                if (characterUnit.UnitController.BaseCharacter.UnitToughness != null) {
+                                    currencyNode.Amount *= (int)characterUnit.UnitController.BaseCharacter.UnitToughness.CurrencyMultiplier;
+                                }
+                            }
                             currencyItem.GainCurrencyAmount = currencyNode.Amount;
                             currencyItem.GainCurrencyName = currencyNode.currency.ResourceName;
+                            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.DropLoot({sourceUnitController.gameObject.name}): gaincurrencyAmount: {currencyItem.GainCurrencyAmount}, currency: {currencyItem.GainCurrencyName}");
                         }
                     }
+                    */
                     //Debug.Log($"{gameObject.name}.LootableCharacter.GetLootCount(): after loot table count: " + lootCount);
                 }
             }
@@ -357,6 +370,7 @@ namespace AnyRPG {
             return validTargets;
         }
 
+        /*
         public void TakeCurrencyLoot() {
             currencyCollected = true;
             currencyNode = new CurrencyNode();
@@ -383,6 +397,7 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.LootableCharacter.GetCurrencyLoot(): returning currency: " + currencyNode.currency.MyDisplayName + "; amount: " + currencyNode.MyAmount);
             return currencyNode;
         }
+        */
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
@@ -537,6 +552,25 @@ namespace AnyRPG {
             interactable.InteractableEventController.NotifyOnRemoveDroppedItem(lootDrop, accountId);
             TryToDespawn();
         }
+
+        private void HandleInitializeItem(InstantiatedItem item) {
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName})");
+            
+            if (item.Item.ResourceName != lootManager.CurrencyLootItem.ResourceName) {
+                return;
+            }
+            InstantiatedCurrencyItem currencyItem = item as InstantiatedCurrencyItem;
+            int gainCurrencyAmount = 0;
+            if (characterUnit != null) {
+                gainCurrencyAmount = systemConfigurationManager.KillCurrencyAmountPerLevel * characterUnit.UnitController.CharacterStats.Level;
+                if (characterUnit.UnitController.BaseCharacter.UnitToughness != null) {
+                    gainCurrencyAmount *= (int)characterUnit.UnitController.BaseCharacter.UnitToughness.CurrencyMultiplier;
+                }
+            }
+            currencyItem.OverrideCurrency(systemConfigurationManager.KillCurrency.ResourceName, gainCurrencyAmount);
+            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName}) name: {currencyItem.GainCurrencyName} amount: {currencyItem.GainCurrencyAmount}");
+        }
+
 
         public void ResetLootTableStates() {
             foreach (Dictionary<int, LootTableState> lootTableDict in lootHolder.LootTableStates.Values) {

@@ -6,9 +6,10 @@ using System.Linq;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class LootTableState : ConfiguredClass {
+    public class LootTableState : ConfiguredClass, IInstantiatedItemRequestor {
 
         public event System.Action<LootDrop, int> OnRemoveDroppedItem = delegate { };
+        public event System.Action<InstantiatedItem> OnInitializeItem = delegate { };
 
         private int accountId = 0;
 
@@ -150,12 +151,14 @@ namespace AnyRPG {
         }
 
         private List<LootDrop> GetLootDrop(UnitController sourceUnitController, Loot loot, bool lootGroupUnlimitedDrops, bool ignoreDropLimit, bool lootTableUnlimitedDrops, ref int lootGroupRemainingDrops) {
+            Debug.Log($"LootTableState.GetLootDrop({sourceUnitController.gameObject.name}, {loot.Item.ResourceName}, {lootGroupUnlimitedDrops}, {ignoreDropLimit}, {lootTableRemainingDrops}, {lootGroupRemainingDrops})");
+            
             List<LootDrop> returnValue = new List<LootDrop>();
             int itemCount = Random.Range(loot.MinDrops, loot.MaxDrops + 1);
             //Debug.Log("GatherLootTable.RollLoot(): itemCount: " + itemCount);
             for (int i = 0; i < itemCount; i++) {
                 int lootDropId = systemGameManager.LootManager.GetLootDropId();
-                LootDrop droppedItem = new LootDrop(lootDropId, sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item.ResourceName), systemGameManager);
+                LootDrop droppedItem = new LootDrop(lootDropId, sourceUnitController.CharacterInventoryManager.GetNewInstantiatedItem(loot.Item, null, this), systemGameManager);
                 lootManager.AddLootDropToIndex(sourceUnitController, droppedItem);
                 lootManager.AddLootTableStateIndex(droppedItem.LootDropId, this);
                 AddDroppedItem(droppedItem);
@@ -187,6 +190,13 @@ namespace AnyRPG {
             //Debug.Log("LootTable.GetLoot(). MyDroppedItems.Length: " + MyDroppedItems.Count);
             return droppedItems;
         }
+
+        public void InitializeItem(InstantiatedItem instantiatedItem) {
+            Debug.Log($"LootTableState.InitializeItem({instantiatedItem.Item.ResourceName})");
+
+            OnInitializeItem(instantiatedItem);
+        }
+
 
         /*
         public void ResetLootTableState() {

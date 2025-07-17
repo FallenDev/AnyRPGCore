@@ -634,14 +634,14 @@ namespace AnyRPG {
         }
 
         public void HandleCancelStatusEffectServer(StatusEffectProperties statusEffectProperties) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCancelStatusEffectServer({statusEffectProperties.ResourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCancelStatusEffectServer({statusEffectProperties.ResourceName})");
 
             CancelStatusEffectClient(statusEffectProperties.ResourceName);
         }
 
         [ObserversRpc]
         public void CancelStatusEffectClient(string resourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CancelStatusEffectClient({resourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CancelStatusEffectClient({resourceName})");
 
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {
@@ -651,14 +651,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddStatusEffectStackServer(string resourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddStatusEffectStackServer({resourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddStatusEffectStackServer({resourceName})");
 
             AddStatusEffectStackClient(resourceName);
         }
 
         [ObserversRpc]
         public void AddStatusEffectStackClient(string resourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectStackClient({resourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectStackClient({resourceName})");
 
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {

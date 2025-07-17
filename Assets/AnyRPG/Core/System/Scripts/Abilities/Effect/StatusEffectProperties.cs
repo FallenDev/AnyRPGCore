@@ -293,7 +293,8 @@ namespace AnyRPG {
         }
 
         public override void CancelEffect(UnitController targetCharacter) {
-            Debug.Log($"{DisplayName}.StatusEffectProperties.CancelEffect({(targetCharacter == null ? "null" : targetCharacter.gameObject.name)})");
+            //Debug.Log($"{DisplayName}.StatusEffectProperties.CancelEffect({(targetCharacter == null ? "null" : targetCharacter.gameObject.name)})");
+
             base.CancelEffect(targetCharacter);
             RemoveControlEffects(targetCharacter);
             UndoMaterialChange(targetCharacter);

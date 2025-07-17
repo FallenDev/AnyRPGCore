@@ -322,7 +322,7 @@ namespace AnyRPG {
         }
 
         public int GetExistingLootCount() {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount()");
 
             int lootCount = 0;
             /*

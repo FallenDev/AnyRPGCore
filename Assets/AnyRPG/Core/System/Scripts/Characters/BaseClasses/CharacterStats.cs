@@ -1034,7 +1034,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectRemoval(StatusEffectProperties statusEffect) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleStatusEffectRemoval({statusEffect.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleStatusEffectRemoval({statusEffect.ResourceName})");
 
             if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
                 if (statusEffects[statusEffect.ResourceName].MonitorCoroutine != null) {
@@ -1048,7 +1048,7 @@ namespace AnyRPG {
         }
 
         public void GainXP(int xp) {
-            //Debug.Log($"{gameObject.name}: GainXP(" + xp + ")");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.GainXP({xp})");
             currentXP += xp;
             int overflowXP = 0;
             int initialLevel = currentLevel;
@@ -1622,7 +1622,7 @@ namespace AnyRPG {
         }
 
         public void CancelStatusEffect(StatusEffectProperties statusEffect) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.CancelStatusEffect({statusEffect.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.CancelStatusEffect({statusEffect.ResourceName})");
 
             if (statusEffects.ContainsKey(statusEffect.ResourceName)) {
                 statusEffects[statusEffect.ResourceName].CancelStatusEffect();

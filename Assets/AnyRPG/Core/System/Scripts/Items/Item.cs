@@ -252,7 +252,7 @@ namespace AnyRPG {
         }
 
         public virtual void InitializeNewItem(InstantiatedItem instantiatedItem, ItemQuality usedItemQuality) {
-            //Debug.Log(DisplayName + ".Item.InitializeNewItem()");
+            Debug.Log($"Item.InitializeNewItem({instantiatedItem.ResourceName}, {(usedItemQuality == null ? "null" : usedItemQuality.ResourceName)})");
 
             // for now items that have item quality set by non random means (vendor overrides) will not change their display name
             if (usedItemQuality != null) {
@@ -297,11 +297,13 @@ namespace AnyRPG {
                     }
 
                     instantiatedItem.ItemQuality = validItemQualities[usedIndex];
+                    Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting itemQuality: {instantiatedItem.ItemQuality.ResourceName}");
+
 
                     if (instantiatedItem.ItemQuality.RandomQualityPrefix != null && instantiatedItem.ItemQuality.RandomQualityPrefix != string.Empty) {
-                        //Debug.Log(DisplayName + ".Item.InitializeNewItem() setting displayName: " + realItemQuality.RandomQualityPrefix + " " + DisplayName);
-                        displayName = $"{instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}";
-                        //Debug.Log(DisplayName + ".Item.InitializeNewItem() setting displayName: " + displayName);
+                        Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting displayName: {instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}");
+                        instantiatedItem.DisplayName = $"{instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}";
+                        Debug.Log($"Item.InitializeNewItem() setting displayName: {instantiatedItem.DisplayName}");
                     }
                 }
             }

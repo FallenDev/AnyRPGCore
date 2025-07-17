@@ -85,7 +85,7 @@ namespace AnyRPG {
         }
 
         public virtual void InitializeNewItem(ItemQuality usedItemQuality) {
-            //Debug.Log($"{ResourceName}.InstantiatedItem.InitializeNewItem({usedItemQuality?.ResourceName})");
+            Debug.Log($"{ResourceName}.InstantiatedItem.InitializeNewItem({(usedItemQuality == null ? "null" : usedItemQuality.ResourceName)})");
 
             item.InitializeNewItem(this, usedItemQuality);
             PostInitialization();

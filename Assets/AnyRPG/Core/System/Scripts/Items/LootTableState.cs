@@ -181,7 +181,7 @@ namespace AnyRPG {
         }
 
         public List<LootDrop> GetLoot(UnitController sourceUnitController, LootTable lootTable, bool rollLoot) {
-            Debug.Log($"LootTableState.GetLoot({sourceUnitController.gameObject.name}, {rollLoot})");
+            //Debug.Log($"LootTableState.GetLoot({sourceUnitController.gameObject.name}, {rollLoot})");
 
             if (!rolled && rollLoot == true) {
                 //Debug.Log("LootTable.GetLoot() !rolled. rolling...");

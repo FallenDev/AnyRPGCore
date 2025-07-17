@@ -52,7 +52,8 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestSpawnPlayerUnit(string sceneName, NetworkConnection networkConnection = null) {
-            //Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({clientSpawnRequestId}, {gameId})");
+            Debug.Log($"FishNetNetworkConnector.RequestSpawnPlayerUnit({sceneName}, {networkConnection.ClientId})");
+
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 return;
             }

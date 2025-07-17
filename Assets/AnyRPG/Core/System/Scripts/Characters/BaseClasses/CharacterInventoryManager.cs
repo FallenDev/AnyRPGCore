@@ -782,7 +782,7 @@ namespace AnyRPG {
                 usedItemQuality = systemDataFactory.GetResource<ItemQuality>(equippedBagSaveData.itemQuality);
             }
             InstantiatedBag instantiatedItem = systemItemManager.GetNewInstantiatedItem(equippedBagSaveData.itemInstanceId, item, usedItemQuality) as InstantiatedBag;
-            instantiatedItem.InitializeNewItem(usedItemQuality);
+            //instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItem.LoadSaveData(equippedBagSaveData);
 
             //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);
@@ -812,7 +812,7 @@ namespace AnyRPG {
                 usedItemQuality = systemDataFactory.GetResource<ItemQuality>(equipmentSaveData.itemQuality);
             }
             InstantiatedEquipment instantiatedItem = systemItemManager.GetNewInstantiatedItem(equipmentSaveData.itemInstanceId, item, usedItemQuality) as InstantiatedEquipment;
-            instantiatedItem.InitializeNewItem(usedItemQuality);
+            //instantiatedItem.InitializeNewItem(usedItemQuality);
             instantiatedItem.LoadSaveData(equipmentSaveData);
 
             //instantiatedItems.Add(instantiatedItem.InstanceId, instantiatedItem);

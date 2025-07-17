@@ -1743,7 +1743,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.PutClientSaveData()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.PutClientSaveData()");
 
             CompleteClientCharacterRequest(saveData);
         }

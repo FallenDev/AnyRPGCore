@@ -23,6 +23,7 @@ namespace AnyRPG {
         // game manager references
         private LootManager lootManager = null;
         private PlayerManager playerManager = null;
+        private NetworkManagerClient networkManagerClient = null;
 
         public List<LootButton> LootButtons { get => lootButtons; set => lootButtons = value; }
 
@@ -41,6 +42,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             lootManager = systemGameManager.LootManager;
             playerManager = systemGameManager.PlayerManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
         protected override void PopulatePages() {
@@ -50,7 +52,10 @@ namespace AnyRPG {
 
             pages.Clear();
             LootDropContentList page = new LootDropContentList();
-            foreach (LootDrop lootDrop in lootManager.AvailableDroppedLoot[0]) {
+            if (!lootManager.AvailableDroppedLoot.ContainsKey(networkManagerClient.AccountId)) {
+                return;
+            }
+            foreach (LootDrop lootDrop in lootManager.AvailableDroppedLoot[networkManagerClient.AccountId]) {
                 page.lootDrops.Add(lootDrop);
                 if (page.lootDrops.Count == pageSize) {
                     pages.Add(page);
@@ -122,7 +127,8 @@ namespace AnyRPG {
         }
 
         public override void ProcessOpenWindowNotification() {
-            //Debug.Log("LootUI.ProcessOpenWindowNotification()");
+            Debug.Log("LootUI.ProcessOpenWindowNotification()");
+
             base.ProcessOpenWindowNotification();
             SetBackGroundColor(new Color32(0, 0, 0, (byte)(int)(PlayerPrefs.GetFloat("PopupWindowOpacity") * 255)));
             //BroadcastPageCountUpdate();
@@ -145,7 +151,7 @@ namespace AnyRPG {
         */
 
         public void HandleTakeLoot() {
-            //Debug.Log("LootUI.HandleTakeLoot()");
+            Debug.Log("LootUI.HandleTakeLoot()");
 
             ClearButtons();
             PopulatePages();

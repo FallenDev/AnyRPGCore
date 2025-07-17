@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPlayerUnit(string sceneName) {
-            Debug.Log($"NetworkManagerClient.RequestSpawnPlayerUnit({sceneName})");
+            //Debug.Log($"NetworkManagerClient.RequestSpawnPlayerUnit({sceneName})");
 
             networkController.RequestSpawnPlayerUnit(sceneName);
         }
@@ -148,6 +148,11 @@ namespace AnyRPG {
             //} else {
                 characterManager.ProcessStopNetworkUnit(unitController);
             //}
+            /*
+            if (unitController.UnitControllerMode == UnitControllerMode.Player) {
+                playerManagerServer.StopMonitoringPlayerUnit(unitController);
+            }
+            */
         }
 
         public void ProcessStopConnection() {
@@ -228,7 +233,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseCreateLobbyGame(LobbyGame lobbyGame) {
-            Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderAccountId}) accountId: {accountId}");
+            //Debug.Log($"NetworkManagerClient.AdvertiseCreateLobbyGame({lobbyGame.leaderAccountId}) accountId: {accountId}");
 
             lobbyGames.Add(lobbyGame.gameId, lobbyGame);
             if (lobbyGame.leaderAccountId == accountId) {
@@ -317,13 +322,13 @@ namespace AnyRPG {
         }
 
         public void ChooseLobbyGameCharacter(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            Debug.Log($"NetworkManagerClient.ChooseLobbyGameCharacter({unitProfileName})");
+            //Debug.Log($"NetworkManagerClient.ChooseLobbyGameCharacter({unitProfileName})");
 
             networkController.ChooseLobbyGameCharacter(unitProfileName, lobbyGame.gameId, appearanceString, swappableMeshSaveData);
         }
 
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
-            Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             if (lobbyGames.ContainsKey(gameId) == false) {
                 Debug.LogWarning($"NetworkManagerClient.AdvertiseChooseLobbyGameCharacter: gameId {gameId} does not exist");
@@ -522,9 +527,7 @@ namespace AnyRPG {
         public void AddAvailableDroppedLoot(List<int> lootDropIds) {
             Debug.Log($"NetworkManagerClient.AddAvailableDroppedLoot(count: {lootDropIds.Count})");
 
-            //lootManager.AddAvailableLoot(accountId, lootDropIds);
-            // available loot is always accountId 0 on client
-            lootManager.AddAvailableLoot(0, lootDropIds);
+            lootManager.AddAvailableLoot(accountId, lootDropIds);
         }
 
         public void AdvertiseTakeLoot(int lootDropId) {

@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public override string GetDescription() {
-            return equipment.GetEquipmentDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level), SecondaryStats);
+            return base.GetDescription() + "\n\n" + equipment.GetEquipmentDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level), SecondaryStats);
         }
 
     }

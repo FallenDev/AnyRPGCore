@@ -402,7 +402,7 @@ namespace AnyRPG {
         }
 
         public override void ChooseLobbyGameCharacter(string unitProfileName, int gameId, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            Debug.Log($"FishNetNetworkController.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
+            //Debug.Log($"FishNetNetworkController.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
 
             clientConnector.ChooseLobbyGameCharacter(unitProfileName, gameId, appearanceString, swappableMeshSaveData);
         }

@@ -85,7 +85,7 @@ namespace AnyRPG {
         }
 
         public virtual void InitializeNewItem(ItemQuality usedItemQuality) {
-            Debug.Log($"{ResourceName}.InstantiatedItem.InitializeNewItem({usedItemQuality?.ResourceName})");
+            //Debug.Log($"{ResourceName}.InstantiatedItem.InitializeNewItem({usedItemQuality?.ResourceName})");
 
             item.InitializeNewItem(this, usedItemQuality);
             PostInitialization();
@@ -250,7 +250,7 @@ namespace AnyRPG {
         }
 
         public virtual string GetSummary() {
-            Debug.Log($"{item.ResourceName}.InstantiatedItem.GetSummary()");
+            //Debug.Log($"{item.ResourceName}.InstantiatedItem.GetSummary()");
 
             return string.Format("<color={0}>{1}</color>{2}", QualityColor.GetQualityColorString(itemQuality), DisplayName, GetDescription());
         }
@@ -258,7 +258,7 @@ namespace AnyRPG {
 
 
         public virtual string GetDescription() {
-            Debug.Log($"{item.ResourceName}.InstantiatedItem.GetDescription()");
+            //Debug.Log($"{item.ResourceName}.InstantiatedItem.GetDescription()");
 
             return item.GetItemDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }

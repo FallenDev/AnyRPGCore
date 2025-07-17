@@ -952,7 +952,7 @@ namespace AnyRPG {
         }
 
         private void DespawnImmediate() {
-            Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
+            //Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
 
             despawning = true;
             unitEventController.NotifyOnDespawn(this);

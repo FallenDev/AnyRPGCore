@@ -137,7 +137,8 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int accountId, string userName) {
-            Debug.Log($"ClientLobbyPanelController.AddPlayerToList({accountId}, {userName})");
+            //Debug.Log($"ClientLobbyPanelController.AddPlayerToList({accountId}, {userName})");
+
             if (playerButtons.ContainsKey(accountId)) {
                 //Debug.Log($"ClientLobbyPanelController.AddPlayerToList({accountId}, {userName}) - already exists, account is reconnecting");
                 return;
@@ -183,7 +184,7 @@ namespace AnyRPG {
         }
 
         public void HandleSetLobbyGameList(List<LobbyGame> lobbyGames) {
-            Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList()");
+            //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList()");
 
             PopulateLobbyGameList(lobbyGames);
             

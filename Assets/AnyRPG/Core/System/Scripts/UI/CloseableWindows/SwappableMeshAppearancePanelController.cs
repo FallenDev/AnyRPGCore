@@ -91,7 +91,7 @@ namespace AnyRPG {
 
 
         public override void SetupOptions() {
-            Debug.Log("SwappableMeshAppearancePanelController.SetupOptions()");
+            //Debug.Log("SwappableMeshAppearancePanelController.SetupOptions()");
 
             base.SetupOptions();
 

@@ -73,7 +73,7 @@ namespace AnyRPG {
         */
 
         public override string GetDescription() {
-            Debug.Log($"InstantiatedCurrencyItem.GetDescription()");
+            //Debug.Log($"{item.ResourceName}.InstantiatedCurrencyItem.GetDescription()");
 
             return base.GetDescription() + currencyItem.GetCurrencyItemDescription(gainCurrencyName, gainCurrencyAmount);
         }

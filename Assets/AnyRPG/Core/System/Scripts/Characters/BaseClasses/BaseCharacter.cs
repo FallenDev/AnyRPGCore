@@ -133,7 +133,7 @@ namespace AnyRPG {
         }
 
         public void SetCharacterFaction(Faction newFaction) {
-            Debug.Log($"{unitController.gameObject.name}.BaseCharacter.SetCharacterFaction({(newFaction == null ? "null" : newFaction.ResourceName)})");
+            //Debug.Log($"{unitController.gameObject.name}.BaseCharacter.SetCharacterFaction({(newFaction == null ? "null" : newFaction.ResourceName)})");
 
             if (newFaction == null) {
                 return;

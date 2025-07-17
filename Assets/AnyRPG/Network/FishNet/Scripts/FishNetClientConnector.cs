@@ -628,7 +628,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
-            Debug.Log($"FishNetNetworkConnector.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"FishNetNetworkConnector.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             networkManagerClient.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
@@ -1036,7 +1036,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseTakeLoot(int accountId, int lootDropId) {
-            //Debug.Log($"FishNetClientConnector.AdvertiseTakeLoot({accountId}, {lootDropId})");
+            Debug.Log($"FishNetClientConnector.AdvertiseTakeLoot({accountId}, {lootDropId})");
+
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
                 Debug.Log($"FishNetClientConnector.AdvertiseTakeLoot() could not find client id {accountId}");
                 return;
@@ -1050,6 +1051,8 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseTakeLootClient(NetworkConnection networkConnection, int lootDropId) {
+            Debug.Log($"FishNetClientConnector.AdvertiseTakeLootClient({networkConnection.ClientId}, {lootDropId})");
+
             networkManagerClient.AdvertiseTakeLoot(lootDropId);
         }
 

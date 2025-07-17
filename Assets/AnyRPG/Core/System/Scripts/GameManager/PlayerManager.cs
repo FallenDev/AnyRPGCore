@@ -471,7 +471,7 @@ namespace AnyRPG {
             activeUnitController = unitController;
 
             if (unitController == null) {
-                playerManagerServer.RemoveActivePlayer(0);
+                playerManagerServer.RemoveActivePlayer(networkManagerClient.AccountId);
                 playerUnitSpawned = false;
                 return;
             }

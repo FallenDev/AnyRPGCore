@@ -205,7 +205,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int accountId, string userName, string unitProfileName) {
-            Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({accountId}, {userName}, {unitProfileName})");
+            //Debug.Log($"ClientLobbyGamePanel.AddPlayerToList({accountId}, {userName}, {unitProfileName})");
 
             GameObject go = objectPooler.GetPooledObject(playerConnectionTemplate, playerConnectionContainer);
             ClientPlayerLobbyGameConnectionButton clientPlayerLobbyGameConnectionButton = go.GetComponent<ClientPlayerLobbyGameConnectionButton>();
@@ -249,7 +249,7 @@ namespace AnyRPG {
         }
 
         public void HandleChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
-            Debug.Log($"ClientLobbyGamePanel.HandleChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"ClientLobbyGamePanel.HandleChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             if (accountId == networkManagerClient.AccountId) {
                 unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);

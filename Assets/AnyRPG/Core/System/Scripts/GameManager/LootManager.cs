@@ -121,7 +121,8 @@ namespace AnyRPG {
         }
 
         public void TakeLoot(int accountId, int lootDropId) {
-            //Debug.Log("LootManager.TakeLoot()");
+            Debug.Log($"LootManager.TakeLoot({accountId}, {lootDropId})");
+
             if (lootDropIndex.ContainsKey(lootDropId) == false) {
                 return;
             }
@@ -130,7 +131,7 @@ namespace AnyRPG {
         }
 
         public void TakeLoot(int accountId, LootDrop lootDrop) {
-            //Debug.Log("LootManager.TakeLoot()");
+            Debug.Log($"LootManager.TakeLoot({accountId}, {lootDrop.DisplayName}) lootDropId: {lootDrop.LootDropId})");
 
             RemoveLootTableStateIndex(lootDrop.LootDropId);
             RemoveFromAvailableDroppedItems(accountId, lootDrop);

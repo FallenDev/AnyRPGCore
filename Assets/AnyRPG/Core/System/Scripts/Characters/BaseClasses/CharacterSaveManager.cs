@@ -320,7 +320,7 @@ namespace AnyRPG {
         }
 
         public void SetSaveData(CharacterRequestData characterRequestData) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SetSaveData()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SetSaveData()");
 
             this.saveData = characterRequestData.saveData;
             characterRequestData.characterConfigurationRequest.characterName = saveData.playerName;

@@ -179,7 +179,15 @@ namespace AnyRPG {
         }
 
         public virtual string GetDescription(ItemQuality usedItemQuality, int usedItemLevel) {
+
+            return GetItemDescription(usedItemQuality, usedItemLevel);
+        }
+
+        public virtual string GetItemDescription(ItemQuality usedItemQuality, int usedItemLevel) {
             string descriptionString = base.GetDescription();
+            if (descriptionString != string.Empty) {
+                descriptionString = string.Format("\n\n<color=yellow><size=14>{0}</size></color>", descriptionString);
+            }
             if (descriptionString != string.Empty) {
                 descriptionString = string.Format("\n\n<color=yellow><size=14>{0}</size></color>", descriptionString);
             }
@@ -345,7 +353,7 @@ namespace AnyRPG {
                 if (tmpCurrency != null) {
                     currency = tmpCurrency;
                 } else {
-                    Debug.LogError("SystemSkillManager.SetupScriptableObjects(): Could not find currency : " + currencyName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"Item.SetupScriptableObjects(): Could not find currency : {currencyName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -355,7 +363,7 @@ namespace AnyRPG {
                 if (tmpItemQuality != null) {
                     itemQualityRef = tmpItemQuality;
                 } else {
-                    Debug.LogError("SystemSkillManager.SetupScriptableObjects(): Could not find item quality : " + itemQuality + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"Item.SetupScriptableObjects(): Could not find item quality : {itemQuality} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -366,7 +374,7 @@ namespace AnyRPG {
                     if (tmpCharacterClass != null) {
                         realCharacterClassRequirementList.Add(tmpCharacterClass);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find character class : " + characterClassName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"Item.SetupScriptableObjects(): Could not find character class : {characterClassName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }

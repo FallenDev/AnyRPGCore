@@ -567,6 +567,7 @@ namespace AnyRPG {
                     gainCurrencyAmount *= (int)characterUnit.UnitController.BaseCharacter.UnitToughness.CurrencyMultiplier;
                 }
             }
+            item.DisplayName = $"{gainCurrencyAmount} {systemConfigurationManager.KillCurrency.DisplayName}";
             currencyItem.OverrideCurrency(systemConfigurationManager.KillCurrency.ResourceName, gainCurrencyAmount);
             Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName}) name: {currencyItem.GainCurrencyName} amount: {currencyItem.GainCurrencyAmount}");
         }

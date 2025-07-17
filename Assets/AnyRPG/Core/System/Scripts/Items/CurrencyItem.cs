@@ -37,7 +37,13 @@ namespace AnyRPG {
             if (currencyNode.currency != null) {
                 tmpCurrencyName = currencyNode.currency.DisplayName;
             }
-            return base.GetDescription(usedItemQuality, usedItemLevel) + string.Format("\n<color=green>Use: Gain {0} {1}</color>", tmpCurrencyName, currencyNode.Amount);
+            return base.GetDescription(usedItemQuality, usedItemLevel) + GetCurrencyItemDescription(tmpCurrencyName, gainCurrencyAmount);
+        }
+
+        public string GetCurrencyItemDescription(string currencyDisplayName, int currencyGainAmount) {
+            //Debug.Log($"CurrencyItem.GetCurrencyItemDescription({currencyDisplayName}, {currencyGainAmount})");
+
+            return string.Format("\n<color=green>Use: Gain {0} {1}</color>", currencyGainAmount, currencyDisplayName);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {

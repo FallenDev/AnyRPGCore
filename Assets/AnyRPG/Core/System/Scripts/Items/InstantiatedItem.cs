@@ -15,7 +15,7 @@ namespace AnyRPG {
         protected int instanceId;
         protected Item item;
         protected ItemQuality itemQuality;
-        protected string displayName;
+        protected string displayName = string.Empty;
         protected int dropLevel;
 
         // A reference to the slot that this item is sitting on
@@ -38,7 +38,15 @@ namespace AnyRPG {
             }
             set => itemQuality = value;
         }
-        public string DisplayName { get => displayName; set => displayName = value; }
+        public string DisplayName {
+            get {
+                if (displayName != string.Empty) {
+                    return displayName;
+                }
+                return item.DisplayName;
+            }
+            set => displayName = value;
+        }
         public int DropLevel {
             get => dropLevel;
             set {
@@ -90,7 +98,7 @@ namespace AnyRPG {
         public virtual InventorySlotSaveData GetSlotSaveData() {
             InventorySlotSaveData saveData = new InventorySlotSaveData();
             saveData.ItemName = ResourceName;
-            saveData.DisplayName = DisplayName;
+            saveData.DisplayName = displayName;
             if (itemQuality != null) {
                 saveData.itemQuality = itemQuality.ResourceName;
             }
@@ -252,7 +260,7 @@ namespace AnyRPG {
         public virtual string GetDescription() {
             Debug.Log($"{item.ResourceName}.InstantiatedItem.GetDescription()");
 
-            return item.GetDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
+            return item.GetItemDescription(ItemQuality, GetItemLevel(playerManager.UnitController.CharacterStats.Level));
         }
 
 

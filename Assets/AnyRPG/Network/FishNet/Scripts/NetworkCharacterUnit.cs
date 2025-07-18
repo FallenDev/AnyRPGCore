@@ -250,6 +250,9 @@ namespace AnyRPG {
             unitController.UnitEventController.OnNameChange += HandleNameChangeServer;
             unitController.UnitEventController.OnAddPet += HandleAddPetServer;
             unitController.UnitEventController.OnAddActivePet += HandleAddActivePetServer;
+            unitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCoolDownServer;
+            unitController.UnitEventController.OnBeginActionCoolDown += HandleBeginActionCoolDownServer;
+            unitController.UnitEventController.OnInitiateGlobalCooldown += HandleInitiateGlobalCooldownServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -330,7 +333,57 @@ namespace AnyRPG {
             unitController.UnitEventController.OnNameChange -= HandleNameChangeServer;
             unitController.UnitEventController.OnAddPet -= HandleAddPetServer;
             unitController.UnitEventController.OnAddActivePet -= HandleAddActivePetServer;
+            unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDownServer;
+            unitController.UnitEventController.OnBeginActionCoolDown -= HandleBeginActionCoolDownServer;
+            unitController.UnitEventController.OnInitiateGlobalCooldown -= HandleInitiateGlobalCooldownServer;
         }
+
+        public void HandleInitiateGlobalCooldownServer(float coolDownLength) {
+            if (base.OwnerId != -1 && base.ServerManager.Clients.ContainsKey(base.OwnerId)) {
+                NetworkConnection networkConnection = base.ServerManager.Clients[base.OwnerId];
+                HandleInitiateGlobalCooldownClient(networkConnection, coolDownLength);
+            }
+        }
+
+        [TargetRpc]
+        public void HandleInitiateGlobalCooldownClient(NetworkConnection networkConnection, float coolDownLength) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleInitiateGlobalCooldownClient({coolDownLength})");
+            unitController.CharacterAbilityManager.InitiateGlobalCooldown(coolDownLength);
+        }
+
+        public void HandleBeginAbilityCoolDownServer(AbilityProperties abilityProperties, float coolDownLength) {
+            if (base.OwnerId != -1 && base.ServerManager.Clients.ContainsKey(base.OwnerId)) {
+                NetworkConnection networkConnection = base.ServerManager.Clients[base.OwnerId];
+                HandleBeginAbilityCoolDownClient(networkConnection, abilityProperties.ResourceName, coolDownLength);
+            }
+        }
+
+        [TargetRpc]
+        public void HandleBeginAbilityCoolDownClient(NetworkConnection networkConnection, string abilityResourceName, float coolDownLength) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityCoolDownClient({abilityResourceName}, {coolDownLength})");
+            Ability ability = systemDataFactory.GetResource<Ability>(abilityResourceName);
+            if (ability == null) {
+                return;
+            }
+            unitController.CharacterAbilityManager.BeginAbilityCoolDown(ability.AbilityProperties, coolDownLength);
+        }
+
+        private void HandleBeginActionCoolDownServer(InstantiatedActionItem item, float coolDownLength) {
+            if (base.OwnerId != -1 && base.ServerManager.Clients.ContainsKey(base.OwnerId)) {
+                NetworkConnection networkConnection = base.ServerManager.Clients[base.OwnerId];
+                HandleBeginActionCoolDownClient(networkConnection, item.InstanceId, coolDownLength);
+            }
+        }
+
+        [TargetRpc]
+        private void HandleBeginActionCoolDownClient(NetworkConnection networkConnection, int itemInstanceId, float coolDownLength) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginActionCoolDownClient({actionResourceName}, {coolDownLength})");
+            if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedActionItem) {
+                unitController.CharacterAbilityManager.BeginActionCoolDown(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedActionItem, coolDownLength);
+            }
+        }
+
+
 
         public void HandleAddActivePetServer(UnitProfile profile, UnitController petUnitController) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer({profile?.ResourceName}, {petUnitController?.gameObject.name})");

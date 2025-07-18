@@ -289,7 +289,7 @@ namespace AnyRPG {
             ChooseMonitorCoroutine();
         }
 
-        public void HandleBeginAbilityCooldown() {
+        public void HandleBeginAbilityCooldown(AbilityProperties abilityProperties, float coolDownLength) {
             //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + ")");
             ChooseMonitorCoroutine();
         }

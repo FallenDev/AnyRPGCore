@@ -66,7 +66,8 @@ namespace AnyRPG {
         public event System.Action<string> OnCombatMessage = delegate { };
         public event System.Action<string, bool> OnBeginAction = delegate { };
         public event System.Action<AbilityProperties, Interactable, bool> OnBeginAbility = delegate { };
-        public event System.Action OnBeginAbilityCoolDown = delegate { };
+        public event System.Action<AbilityProperties, float> OnBeginAbilityCoolDown = delegate { };
+        public event System.Action<InstantiatedActionItem, float> OnBeginActionCoolDown = delegate { };
         public event System.Action OnUnlearnAbilities = delegate { };
         public event System.Action<AbilityProperties> OnActivateTargetingMode = delegate { };
         public event System.Action<UnitController, AbilityProperties> OnLearnAbility = delegate { };
@@ -171,6 +172,7 @@ namespace AnyRPG {
         public event System.Action<IUseable, int> OnRequestAssignMouseUseable = delegate { };
         public event System.Action<int> OnRequestClearMouseUseable = delegate { };
         public event System.Action OnCharacterConfigured = delegate { };
+        public event System.Action<float> OnInitiateGlobalCooldown = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -245,8 +247,8 @@ namespace AnyRPG {
             OnBeginAbility(baseAbility, target, playerInitiated);
         }
 
-        public void NotifyOnBeginAbilityCoolDown() {
-            OnBeginAbilityCoolDown();
+        public void NotifyOnBeginAbilityCoolDown(AbilityProperties baseAbility, float coolDownLength) {
+            OnBeginAbilityCoolDown(baseAbility, coolDownLength);
         }
 
         public void NotifyOnCombatMessage(string message) {
@@ -913,6 +915,14 @@ namespace AnyRPG {
 
         public void NotifyOnRemoveActivePet(UnitProfile unitProfile) {
             OnRemoveActivePet(unitProfile);
+        }
+
+        public void NotifyOnInitiateGlobalCooldown(float coolDownToUse) {
+            OnInitiateGlobalCooldown(coolDownToUse);
+        }
+
+        public void NotifyOnBeginActionCoolDown(InstantiatedActionItem actionItem, float coolDownLength) {
+            OnBeginActionCoolDown(actionItem, coolDownLength);
         }
 
         #endregion

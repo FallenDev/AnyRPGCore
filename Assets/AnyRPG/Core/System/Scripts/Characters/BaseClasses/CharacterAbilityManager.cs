@@ -728,6 +728,7 @@ namespace AnyRPG {
         }
 
         public override void BeginAbilityCoolDown(AbilityProperties baseAbility, float coolDownLength = -1f) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCoolDown({baseAbility.ResourceName}, {coolDownLength})");
 
             base.BeginAbilityCoolDown(baseAbility, coolDownLength);
 
@@ -750,7 +751,7 @@ namespace AnyRPG {
             }
 
             AbilityCoolDownNode abilityCoolDownNode = new AbilityCoolDownNode();
-            abilityCoolDownNode.AbilityName = baseAbility.DisplayName;
+            abilityCoolDownNode.AbilityName = baseAbility.ResourceName;
 
             // need to account for auto-attack
             if (systemConfigurationManager.AllowAutoAttack == false && baseAbility.IsAutoAttack == true) {
@@ -761,25 +762,25 @@ namespace AnyRPG {
 
             abilityCoolDownNode.InitialCoolDown = abilityCoolDownNode.RemainingCoolDown;
 
-            if (!abilityCoolDownDictionary.ContainsKey(baseAbility.DisplayName)) {
-                abilityCoolDownDictionary[baseAbility.DisplayName] = abilityCoolDownNode;
+            if (!abilityCoolDownDictionary.ContainsKey(baseAbility.ResourceName)) {
+                abilityCoolDownDictionary[baseAbility.ResourceName] = abilityCoolDownNode;
             }
 
             // ordering important.  don't start till after its in the dictionary or it will fail to remove itself from the dictionary, then add it self
-            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(baseAbility.DisplayName));
+            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(baseAbility.ResourceName));
             abilityCoolDownNode.Coroutine = coroutine;
 
-            unitController.UnitEventController.NotifyOnBeginAbilityCoolDown();
+            unitController.UnitEventController.NotifyOnBeginAbilityCoolDown(baseAbility, coolDownLength);
         }
 
-        public override void BeginActionCoolDown(IUseable useable, float coolDownLength = -1f) {
+        public override void BeginActionCoolDown(InstantiatedActionItem actionItem, float coolDownLength = -1f) {
 
-            base.BeginActionCoolDown(useable, coolDownLength);
+            base.BeginActionCoolDown(actionItem, coolDownLength);
 
             float coolDown = 0f;
 
             if (coolDownLength == -1f) {
-                coolDown = useable.CoolDown;
+                coolDown = actionItem.CoolDown;
             } else {
                 coolDown = coolDownLength;
             }
@@ -795,19 +796,19 @@ namespace AnyRPG {
             }
 
             AbilityCoolDownNode abilityCoolDownNode = new AbilityCoolDownNode();
-            abilityCoolDownNode.AbilityName = useable.DisplayName;
+            abilityCoolDownNode.AbilityName = actionItem.ResourceName;
             abilityCoolDownNode.RemainingCoolDown = coolDown;
             abilityCoolDownNode.InitialCoolDown = abilityCoolDownNode.RemainingCoolDown;
 
-            if (!abilityCoolDownDictionary.ContainsKey(useable.DisplayName)) {
-                abilityCoolDownDictionary[useable.DisplayName] = abilityCoolDownNode;
+            if (!abilityCoolDownDictionary.ContainsKey(actionItem.ResourceName)) {
+                abilityCoolDownDictionary[actionItem.ResourceName] = abilityCoolDownNode;
             }
 
             // ordering important.  don't start till after its in the dictionary or it will fail to remove itself from the dictionary, then add it self
-            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(useable.DisplayName));
+            Coroutine coroutine = abilityCasterMonoBehaviour.StartCoroutine(PerformAbilityCoolDown(actionItem.ResourceName));
             abilityCoolDownNode.Coroutine = coroutine;
 
-            unitController.UnitEventController.NotifyOnBeginAbilityCoolDown();
+            unitController.UnitEventController.NotifyOnBeginActionCoolDown(actionItem, coolDownLength);
         }
 
         public void HandleEquipmentChanged(InstantiatedEquipment newItem, InstantiatedEquipment oldItem, int slotIndex) {
@@ -1923,6 +1924,7 @@ namespace AnyRPG {
             if (globalCoolDownCoroutine == null) {
                 // set global cooldown length to animation length so we don't end up in situation where cast bars look fine, but we can't actually cast
                 globalCoolDownCoroutine = abilityCasterMonoBehaviour.StartCoroutine(BeginGlobalCoolDown(coolDownToUse));
+                unitController.UnitEventController.NotifyOnInitiateGlobalCooldown(coolDownToUse);
             } else {
                 Debug.Log("CharacterAbilityManager.InitiateGlobalCooldown(): INVESTIGATE: GCD COROUTINE WAS NOT NULL");
             }

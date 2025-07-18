@@ -848,7 +848,7 @@ namespace AnyRPG {
             inventoryManager.RemoveBankSlot(inventorySlot);
         }
 
-        public void HandleBeginAbilityCoolDown() {
+        public void HandleBeginAbilityCoolDown(AbilityProperties abilityProperties, float coolDownLength) {
             SystemEventManager.TriggerEvent("OnBeginAbilityCooldown", new EventParamProperties());
         }
 

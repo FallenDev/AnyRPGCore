@@ -198,7 +198,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="baseAbility"></param>
         /// <param name="coolDownLength"></param>
-        void BeginActionCoolDown(IUseable useable, float coolDownLength = -1f);
+        void BeginActionCoolDown(InstantiatedActionItem actionItem, float coolDownLength = -1f);
 
         /// <summary>
         /// Start a global cooldown to prevent all spells from being cast

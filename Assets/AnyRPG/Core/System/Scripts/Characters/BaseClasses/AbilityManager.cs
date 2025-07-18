@@ -231,7 +231,7 @@ namespace AnyRPG {
             // do nothing
         }
 
-        public virtual void BeginActionCoolDown(IUseable useable, float coolDownLength = -1f) {
+        public virtual void BeginActionCoolDown(InstantiatedActionItem actionItem, float coolDownLength = -1f) {
             // do nothing
         }
 

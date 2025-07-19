@@ -464,7 +464,7 @@ namespace AnyRPG {
         }
 
         public void UpdateChargeCount() {
-            uIManager.UpdateStackSize(this, Useable.GetChargeCount(), true);
+            uIManager.UpdateStackSize(this, Useable.GetChargeCount(), useable is InstantiatedItem);
         }
 
         public void EnableFullCoolDownIcon() {

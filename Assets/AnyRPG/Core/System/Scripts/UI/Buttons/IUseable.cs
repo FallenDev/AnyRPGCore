@@ -23,6 +23,7 @@ namespace AnyRPG {
         int GetChargeCount();
         IUseable GetFactoryUseable();
         void AssignToActionButton(ActionButton actionButton);
+        void HandleRemoveFromActionButton(ActionButton actionButton);
         void UpdateTargetRange(ActionBarManager actionBarManager, ActionButton actionButton);
     }
 }

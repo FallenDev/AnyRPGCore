@@ -1415,7 +1415,7 @@ namespace AnyRPG {
             }
             HandleMovementAudio();
 
-            characterCombat.Update();
+            characterCombat.Tick();
 
             // do this after combat so regen ticks can use the proper combat state
             characterStats.Update();

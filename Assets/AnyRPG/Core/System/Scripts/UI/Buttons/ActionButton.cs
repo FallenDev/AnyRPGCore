@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -230,26 +231,17 @@ namespace AnyRPG {
         /// <summary>
         /// Sets the useable on the actionbutton
         /// </summary>
-        /// <param name="useable"></param>
-        public void SetUseable(IUseable useable, bool monitor = true) {
+        /// <param name="newUseable"></param>
+        public void SetUseable(IUseable newUseable, bool monitor = true) {
             //Debug.Log($"{gameObject.name}.ActionButton.SetUsable({(useable == null ? "null" : useable.DisplayName)}, {monitor})");
 
-            playerManager.UnitController.UnitEventController.OnAttemptPerformAbility -= OnAttemptUseableUse;
-            playerManager.UnitController.UnitEventController.OnPerformAbility -= OnUseableUse;
-            playerManager.UnitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCooldown;
+            ClearUseable();
 
-            UnsubscribeFromCombatEvents();
+            newUseable.AssignToActionButton(this);
 
-            DisableCoolDownIcon();
+            LoadUseable(newUseable);
 
-            useable.AssignToActionButton(this);
-
-            LoadUseable(useable);
-
-            playerManager.UnitController.UnitEventController.OnAttemptPerformAbility += OnAttemptUseableUse;
-            playerManager.UnitController.UnitEventController.OnPerformAbility += OnUseableUse;
-            playerManager.UnitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCooldown;
-
+            SubscribeToAbilityEvents();
             SubscribeToCombatEvents();
             SubscribeToStealthEvents();
 
@@ -261,13 +253,37 @@ namespace AnyRPG {
             // there was the assumption that these were only being called when a player clicked to add an ability
             if (UIManager.MouseInRect(Icon.rectTransform)) {
                 //uIManager.ShowToolTip(transform.position, useable as IDescribable);
-                uIManager.ShowGamepadTooltip(tooltipTransform, transform, useable as IDescribable, "");
+                uIManager.ShowGamepadTooltip(tooltipTransform, transform, newUseable as IDescribable, "");
 
             }
 
-            //if (gamepadButton == true) {
-            //rangeIndicator.color = Color.white;
-            //}
+        }
+
+        public void SubscribeToAbilityEvents() {
+            playerManager.UnitController.UnitEventController.OnAttemptPerformAbility += HandleAttemptPerformAbility;
+            playerManager.UnitController.UnitEventController.OnPerformAbility += HandlePerformAbility;
+            playerManager.UnitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCooldown;
+        }
+
+        public void SubscribeToAutoAttackEvents() {
+            Debug.Log($"{gameObject.name}.ActionButton.SubscribeToAutoAttackEvents()");
+
+            playerManager.UnitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttack;
+        }
+
+
+        public void UnsubscribeFromAutoAttackEvents() {
+            Debug.Log($"{gameObject.name}.ActionButton.UnsubscribeFromAutoAttackEvents()");
+
+            playerManager.UnitController.UnitEventController.OnActivateAutoAttack -= HandleActivateAutoAttack;
+        }
+
+        private void HandleActivateAutoAttack() {
+            Debug.Log($"{gameObject.name}.ActionButton.HandleActivateAutoAttack()");
+
+            if (monitorCoroutine == null && gameObject.activeInHierarchy == true) {
+                monitorCoroutine = StartCoroutine(MonitorAutoAttack());
+            }
         }
 
         public void SubscribeToCombatEvents() {
@@ -284,7 +300,7 @@ namespace AnyRPG {
             }
         }
 
-        public void OnAttemptUseableUse(AbilityProperties ability) {
+        public void HandleAttemptPerformAbility(AbilityProperties ability) {
             //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + ")");
             ChooseMonitorCoroutine();
         }
@@ -313,12 +329,12 @@ namespace AnyRPG {
             }
         }
 
-        public void OnUseableUse(AbilityProperties ability) {
+        public void HandlePerformAbility(AbilityProperties ability) {
             //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + ")");
             ChooseMonitorCoroutine();
         }
 
-        public IEnumerator MonitorAutoAttack(AbilityProperties ability) {
+        public IEnumerator MonitorAutoAttack() {
             //Debug.Log("ActionButton.MonitorautoAttack(" + ability.DisplayName + ")");
             yield return null;
 
@@ -520,19 +536,24 @@ namespace AnyRPG {
         public void ClearUseable() {
             //Debug.Log($"{gameObject.name}.ActionButton.ClearUseable()");
 
-            UnsubscribeFromCombatEvents();
-            if (Useable != null) {
+            if (useable != null) {
                 //Debug.Log($"{gameObject.name}.ActionButton.ClearUseable() useable: {Useable.ResourceName}");
+                UnsubscribeFromAbilityEvents();
+                UnsubscribeFromCombatEvents();
+                UnsubscribeFromStealthEvents();
+                useable.HandleRemoveFromActionButton(this);
+
                 savedUseable = Useable;
+                useable = null;
+
+                UpdateVisual();
             }
-            useable = null;
+        }
 
-            // disablecooldownIcon is done in updatevisual
-            //DisableCoolDownIcon();
-            UpdateVisual();
-
-            // hiderangeindicator is done in updatevisual
-            //HideRangeIndicator();
+        public void UnsubscribeFromAbilityEvents() {
+            playerManager.UnitController.UnitEventController.OnAttemptPerformAbility -= HandleAttemptPerformAbility;
+            playerManager.UnitController.UnitEventController.OnPerformAbility -= HandlePerformAbility;
+            playerManager.UnitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCooldown;
         }
 
         public override void Select() {

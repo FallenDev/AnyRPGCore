@@ -649,7 +649,7 @@ namespace AnyRPG {
             // we can now continue because everything beyond this point is single target oriented and it's ok if we cancel attacking due to lack of alive/unfriendly target
             // check for friendly target in case it somehow turned friendly mid swing
             if (target == null || deactivateAutoAttack == true) {
-                unitController.CharacterCombat.DeActivateAutoAttack();
+                unitController.CharacterCombat.DeactivateAutoAttack();
                 return false;
             }
 

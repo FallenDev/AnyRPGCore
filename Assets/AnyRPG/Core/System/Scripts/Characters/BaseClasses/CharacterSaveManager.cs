@@ -906,7 +906,7 @@ namespace AnyRPG {
             ActionBarSaveData actionBarSaveData = new ActionBarSaveData();
             actionBarSaveData.DisplayName = (actionButton.Useable == null ? string.Empty : (actionButton.Useable as IDescribable).DisplayName);
             actionBarSaveData.savedName = (actionButton.SavedUseable == null ? string.Empty : (actionButton.SavedUseable as IDescribable).DisplayName);
-            actionBarSaveData.isItem = (actionButton.Useable == null ? false : (actionButton.Useable is Item ? true : false));
+            actionBarSaveData.isItem = (actionButton.Useable == null ? false : (actionButton.Useable is InstantiatedItem ? true : false));
             actionBarSaveDataList.Add(actionBarSaveData);
         }
         */
@@ -915,7 +915,7 @@ namespace AnyRPG {
             ActionBarSaveData actionBarSaveData = new ActionBarSaveData();
             actionBarSaveData.DisplayName = (actionButtonNode.Useable == null ? string.Empty : (actionButtonNode.Useable as IDescribable).ResourceName);
             actionBarSaveData.savedName = (actionButtonNode.SavedUseable == null ? string.Empty : (actionButtonNode.SavedUseable as IDescribable).ResourceName);
-            actionBarSaveData.isItem = (actionButtonNode.Useable == null ? false : (actionButtonNode.Useable is Item ? true : false));
+            actionBarSaveData.isItem = (actionButtonNode.Useable == null ? false : (actionButtonNode.Useable is InstantiatedItem ? true : false));
             actionBarSaveDataList.Add(actionBarSaveData);
         }
 

@@ -497,6 +497,16 @@ namespace AnyRPG {
 
         public void AssignToActionButton(ActionButton actionButton) {
             actionButton.BackgroundImage.color = new Color32(0, 0, 0, 255);
+            if (isAutoAttack && systemConfigurationManager.AllowAutoAttack == true) {
+                actionButton.SubscribeToAutoAttackEvents();
+            }
+        }
+
+        public void HandleRemoveFromActionButton(ActionButton actionButton) {
+            //Debug.Log(DisplayName + ".BaseAbility.HandleRemoveFromActionButton()");
+            if (isAutoAttack && systemConfigurationManager.AllowAutoAttack == true) {
+                actionButton.UnsubscribeFromAutoAttackEvents();
+            }
         }
 
         public void AssignToHandScript(Image backgroundImage) {
@@ -688,7 +698,7 @@ namespace AnyRPG {
                 //Debug.Log("ActionButton.OnUseableUse(" + ability.DisplayName + "): WAS ANIMATED AUTO ATTACK");
                 //if (autoAttackCoRoutine == null) {
                 //if (monitorCoroutine == null) {
-                return systemAbilityController.StartCoroutine(actionButton.MonitorAutoAttack(this));
+                return systemAbilityController.StartCoroutine(actionButton.MonitorAutoAttack());
                 //}
             }
             // actionbuttons can be disabled, but the systemability manager will not.  That's why the ability is monitored here

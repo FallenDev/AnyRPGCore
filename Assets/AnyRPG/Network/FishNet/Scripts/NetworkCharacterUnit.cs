@@ -253,6 +253,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCoolDownServer;
             unitController.UnitEventController.OnBeginActionCoolDown += HandleBeginActionCoolDownServer;
             unitController.UnitEventController.OnInitiateGlobalCooldown += HandleInitiateGlobalCooldownServer;
+            unitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttackServer;
+            unitController.UnitEventController.OnDeactivateAutoAttack += HandleDeactivateAutoAttackServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -336,6 +338,34 @@ namespace AnyRPG {
             unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDownServer;
             unitController.UnitEventController.OnBeginActionCoolDown -= HandleBeginActionCoolDownServer;
             unitController.UnitEventController.OnInitiateGlobalCooldown -= HandleInitiateGlobalCooldownServer;
+            unitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttackServer;
+            unitController.UnitEventController.OnDeactivateAutoAttack += HandleDeactivateAutoAttackServer;
+        }
+
+        private void HandleDeactivateAutoAttackServer() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDeactivateAutoAttackServer()");
+
+            HandleDeactivateAutoAttackClient();
+        }
+
+        [ObserversRpc]
+        private void HandleDeactivateAutoAttackClient() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackClient()");
+
+            unitController.CharacterCombat.DeactivateAutoAttack();
+        }
+
+        private void HandleActivateAutoAttackServer() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackServer()");
+
+            HandleActivateAutoAttackClient();
+        }
+
+        [ObserversRpc]
+        private void HandleActivateAutoAttackClient() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackClient()");
+
+            unitController.CharacterCombat.ActivateAutoAttack();
         }
 
         public void HandleInitiateGlobalCooldownServer(float coolDownLength) {
@@ -448,7 +478,7 @@ namespace AnyRPG {
         }
 
         public void HandleRequestAssignMouseUseable(IUseable useable, int buttonIndex) {
-            RequestAssignMouseUseableServer(useable.ResourceName, useable is Item, buttonIndex);
+            RequestAssignMouseUseableServer(useable.ResourceName, useable is InstantiatedItem, buttonIndex);
         }
 
         [ServerRpc]
@@ -485,7 +515,7 @@ namespace AnyRPG {
         }
 
         public void HandleRequestAssignGamepadUseable(IUseable useable, int buttonIndex) {
-            RequestAssignGamepadUseableServer(useable.ResourceName, useable is Item, buttonIndex);
+            RequestAssignGamepadUseableServer(useable.ResourceName, useable is InstantiatedItem, buttonIndex);
         }
 
         [ServerRpc]
@@ -532,7 +562,7 @@ namespace AnyRPG {
         }
 
         public void HandleSetMouseActionButton(IUseable useable, int buttonIndex) {
-            SetMouseActionButtonClient(useable.ResourceName, useable is Item, buttonIndex);
+            SetMouseActionButtonClient(useable.ResourceName, useable is InstantiatedItem, buttonIndex);
         }
 
         [ObserversRpc]
@@ -541,7 +571,7 @@ namespace AnyRPG {
             if (isItem) {
                 useable = unitController.CharacterInventoryManager.GetNewInstantiatedItem(useableName);
             } else {
-                useable = systemDataFactory.GetResource<Ability>(useableName).AbilityProperties;
+                useable = systemDataFactory.GetResource<Ability>(useableName)?.AbilityProperties;
             }
             if (useable == null) {
                 return;
@@ -550,7 +580,7 @@ namespace AnyRPG {
         }
 
         public void HandleSetGamepadActionButton(IUseable useable, int buttonIndex) {
-            SetGamepadActionButtonClient(useable.ResourceName, useable is Item, buttonIndex);
+            SetGamepadActionButtonClient(useable.ResourceName, useable is InstantiatedItem, buttonIndex);
         }
 
         [ObserversRpc]

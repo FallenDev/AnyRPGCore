@@ -173,6 +173,8 @@ namespace AnyRPG {
         public event System.Action<int> OnRequestClearMouseUseable = delegate { };
         public event System.Action OnCharacterConfigured = delegate { };
         public event System.Action<float> OnInitiateGlobalCooldown = delegate { };
+        public event System.Action OnActivateAutoAttack = delegate { };
+        public event System.Action OnDeactivateAutoAttack = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -923,6 +925,14 @@ namespace AnyRPG {
 
         public void NotifyOnBeginActionCoolDown(InstantiatedActionItem actionItem, float coolDownLength) {
             OnBeginActionCoolDown(actionItem, coolDownLength);
+        }
+
+        public void NotifyOnActivateAutoAttack() {
+            OnActivateAutoAttack();
+        }
+
+        public void NotifyOnDeactivateAutoAttack() {
+            OnDeactivateAutoAttack();
         }
 
         #endregion

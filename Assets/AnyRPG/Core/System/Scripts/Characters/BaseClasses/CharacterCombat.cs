@@ -54,6 +54,7 @@ namespace AnyRPG {
         protected PlayerManager playerManager = null;
         protected UIManager uIManager = null;
         protected SystemEventManager systemEventManager = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public AggroTable AggroTable {
             get {
@@ -80,6 +81,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             uIManager = systemGameManager.UIManager;
             systemEventManager = systemGameManager.SystemEventManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void HandleAutoAttack() {
@@ -92,7 +94,7 @@ namespace AnyRPG {
 
             if (unitController.Target == null && AutoAttackActive == true) {
                 //Debug.Log($"{unitController.gameObject.name}.PlayerCombat.HandleAutoAttack(): target is null.  deactivate autoattack");
-                DeActivateAutoAttack();
+                DeactivateAutoAttack();
                 return;
             }
             if (unitController.CharacterAbilityManager.PerformingAnyAbility() == true) {
@@ -120,7 +122,7 @@ namespace AnyRPG {
                 // autoattack is active, but we were unable to attack the target because they were dead, or not a lootable character, or didn't have an interactable.
                 // There is no reason for autoattack to remain active under these circumstances
                 //Debug.Log($"{unitController.gameObject.name}: target is not attackable.  deactivate autoattack");
-                DeActivateAutoAttack();
+                DeactivateAutoAttack();
             }
         }
 
@@ -135,7 +137,13 @@ namespace AnyRPG {
             }
         }
 
-        public void Update() {
+        public void Tick() {
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                // only authoritative clients should perform these updates
+                return;
+            }
+
             if (inCombat == false
                 || unitController == null
                 || unitController.CharacterStats.IsAlive == false) {
@@ -312,7 +320,7 @@ namespace AnyRPG {
                         waitForCastsCoroutine = unitController.StartCoroutine(WaitForCastsToFinish());
                     }
                 }
-                DeActivateAutoAttack();
+                DeactivateAutoAttack();
                 //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DropCombat(): dropped combat.");
                 //baseCharacter.UnitController?.UnitModelController?.SheathWeapons();
                 unitController.UnitEventController.NotifyOnDropCombat();
@@ -361,12 +369,14 @@ namespace AnyRPG {
             if (systemConfigurationManager.AllowAutoAttack == true) {
                 autoAttackActive = true;
             }
+            unitController.UnitEventController.NotifyOnActivateAutoAttack();
         }
 
-        public void DeActivateAutoAttack() {
+        public void DeactivateAutoAttack() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.DeActivateAutoAttack()");
 
             autoAttackActive = false;
+            unitController.UnitEventController.NotifyOnDeactivateAutoAttack();
         }
 
         public bool GetInCombat() {

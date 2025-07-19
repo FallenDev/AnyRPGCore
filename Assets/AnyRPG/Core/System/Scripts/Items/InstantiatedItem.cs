@@ -219,6 +219,10 @@ namespace AnyRPG {
             uIManager.SetItemBackground(item, actionButton.BackgroundImage, new Color32(0, 0, 0, 255));
         }
 
+        public void HandleRemoveFromActionButton(ActionButton actionButton) {
+        }
+
+
         public void UpdateTargetRange(ActionBarManager actionBarManager, ActionButton actionButton) {
             // do nothing
         }

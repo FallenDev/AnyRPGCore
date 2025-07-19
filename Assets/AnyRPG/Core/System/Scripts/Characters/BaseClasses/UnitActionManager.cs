@@ -106,6 +106,15 @@ namespace AnyRPG {
             }
         }
 
+        public void SpawnActionObjectsInternal(AnimatedAction animatedAction) {
+            //Debug.Log($"{unitController.gameObject.name}.UnitActionManager.SpawnActionObjectsInternal({animatedAction.ResourceName})");
+
+            SpawnActionObjects(animatedAction.ActionProperties.HoldableObjectList);
+
+            unitController.UnitEventController.NotifyOnSpawnActionObjects(animatedAction);
+
+        }
+
         public void SpawnActionObjects(List<AbilityAttachmentNode> abilityAttachmentNodes) {
             //Debug.Log($"{unitController.gameObject.name}.UnitActionManager.SpawnActionObjects(" + abilityAttachmentNodes.Count + ")");
 
@@ -242,7 +251,7 @@ namespace AnyRPG {
 
             if (animatedActionProperties.HoldableObjectList.Count != 0) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.PerformAbilityCast(" + ability.DisplayName + "): spawning ability objects");
-                SpawnActionObjects(animatedActionProperties.HoldableObjectList);
+                SpawnActionObjectsInternal(animatedAction);
             }
             if (animatedActionProperties.CastingAudioClip != null) {
                 unitController.UnitComponentController.PlayCastSound(animatedActionProperties.CastingAudioClip);

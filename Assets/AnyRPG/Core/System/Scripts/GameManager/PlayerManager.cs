@@ -616,7 +616,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStatusEffectAdd += HandleStatusEffectAdd;
             unitController.UnitEventController.OnRecoverResource += HandleRecoverResource;
             unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChanged;
-            unitController.UnitEventController.OnCalculateRunSpeed += HandleCalculateRunSpeed;
             unitController.UnitEventController.OnEnterCombat += HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
             //unitController.UnitEventController.OnCombatUpdate += HandleCombatUpdate;
@@ -675,7 +674,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnStatusEffectAdd -= HandleStatusEffectAdd;
             unitController.UnitEventController.OnRecoverResource -= HandleRecoverResource;
             unitController.UnitEventController.OnResourceAmountChanged -= HandleResourceAmountChanged;
-            unitController.UnitEventController.OnCalculateRunSpeed -= HandleCalculateRunSpeed;
             unitController.UnitEventController.OnEnterCombat -= HandleEnterCombat;
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
             //unitController.UnitEventController.OnCombatUpdate -= HandleCombatUpdate;
@@ -939,29 +937,6 @@ namespace AnyRPG {
 
         private void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
             systemEventManager.NotifyOnRemoveEquipment(profile, equipment);
-        }
-
-
-        /// <summary>
-        /// trigger events with new speed information, mostly for third party controllers to pick up the new values
-        /// </summary>
-        /// <param name="oldRunSpeed"></param>
-        /// <param name="currentRunSpeed"></param>
-        /// <param name="oldSprintSpeed"></param>
-        /// <param name="currentSprintSpeed"></param>
-        public void HandleCalculateRunSpeed(float oldRunSpeed, float currentRunSpeed, float oldSprintSpeed, float currentSprintSpeed) {
-            if (currentRunSpeed != oldRunSpeed) {
-                EventParamProperties eventParam = new EventParamProperties();
-                eventParam.simpleParams.FloatParam = currentRunSpeed;
-                SystemEventManager.TriggerEvent("OnSetRunSpeed", eventParam);
-                eventParam.simpleParams.FloatParam = currentSprintSpeed;
-                SystemEventManager.TriggerEvent("OnSetSprintSpeed", eventParam);
-            }
-            if (currentSprintSpeed != oldSprintSpeed) {
-                EventParamProperties eventParam = new EventParamProperties();
-                eventParam.simpleParams.FloatParam = currentSprintSpeed;
-                SystemEventManager.TriggerEvent("OnSetSprintSpeed", eventParam);
-            }
         }
 
         public void HandleRecoverResource(PowerResource powerResource, int amount, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {

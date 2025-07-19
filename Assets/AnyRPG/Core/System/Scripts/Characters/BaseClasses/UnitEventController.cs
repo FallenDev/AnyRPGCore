@@ -104,6 +104,8 @@ namespace AnyRPG {
         public event System.Action OnAnimatorClearAbilityCast = delegate { };
         public event System.Action<AbilityProperties, int> OnSpawnAbilityObjects = delegate { };
         public event System.Action OnDespawnAbilityObjects = delegate { };
+        public event System.Action<AnimatedAction> OnSpawnActionObjects = delegate { };
+        public event System.Action OnDespawnActionObjects = delegate { };
         public event System.Action<Interactable, Interactable, LengthEffectProperties, AbilityEffectContext> OnSpawnAbilityEffectPrefabs = delegate { };
         public event System.Action<Interactable, Interactable, ProjectileEffectProperties, AbilityEffectContext> OnSpawnProjectileEffectPrefabs = delegate { };
         public event System.Action<Interactable, Interactable, ChanneledEffectProperties, AbilityEffectContext> OnSpawnChanneledEffectPrefabs = delegate { };
@@ -175,6 +177,8 @@ namespace AnyRPG {
         public event System.Action<float> OnInitiateGlobalCooldown = delegate { };
         public event System.Action OnActivateAutoAttack = delegate { };
         public event System.Action OnDeactivateAutoAttack = delegate { };
+        public event System.Action OnStartFlying = delegate { };
+        public event System.Action OnStopFlying = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -607,6 +611,18 @@ namespace AnyRPG {
             OnDespawnAbilityObjects();
         }
 
+        public void NotifyOnSpawnActionObjects(AnimatedAction animatedAction) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSpawnActionObjects({animatedAction.ResourceName})");
+
+            OnSpawnActionObjects(animatedAction);
+        }
+
+        public void NotifyOnDespawnActionObjects() {
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnAbilityObjects()");
+
+            OnDespawnActionObjects();
+        }
+
         public void NotifyOnSpawnAbilityEffectPrefabs(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectInput) {
             OnSpawnAbilityEffectPrefabs(target, originalTarget, lengthEffectProperties, abilityEffectInput);
         }
@@ -933,6 +949,14 @@ namespace AnyRPG {
 
         public void NotifyOnDeactivateAutoAttack() {
             OnDeactivateAutoAttack();
+        }
+
+        public void NotifyOnStartFlying() {
+            OnStartFlying();
+        }
+
+        internal void NotifyOnStopFlying() {
+            OnStopFlying();
         }
 
         #endregion

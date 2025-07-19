@@ -255,6 +255,8 @@ namespace AnyRPG {
             unitController.UnitEventController.OnInitiateGlobalCooldown += HandleInitiateGlobalCooldownServer;
             unitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttackServer;
             unitController.UnitEventController.OnDeactivateAutoAttack += HandleDeactivateAutoAttackServer;
+            unitController.UnitEventController.OnSpawnActionObjects += HandleSpawnActionObjectsServer;
+            unitController.UnitEventController.OnDespawnActionObjects += HandleDespawnActionObjectsServer;
         }
 
         public void UnsubscribeFromServerUnitEvents() {
@@ -338,9 +340,40 @@ namespace AnyRPG {
             unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDownServer;
             unitController.UnitEventController.OnBeginActionCoolDown -= HandleBeginActionCoolDownServer;
             unitController.UnitEventController.OnInitiateGlobalCooldown -= HandleInitiateGlobalCooldownServer;
-            unitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttackServer;
-            unitController.UnitEventController.OnDeactivateAutoAttack += HandleDeactivateAutoAttackServer;
+            unitController.UnitEventController.OnActivateAutoAttack -= HandleActivateAutoAttackServer;
+            unitController.UnitEventController.OnDeactivateAutoAttack -= HandleDeactivateAutoAttackServer;
+            unitController.UnitEventController.OnSpawnActionObjects -= HandleSpawnActionObjectsServer;
+            unitController.UnitEventController.OnDespawnActionObjects -= HandleDespawnActionObjectsServer;
         }
+
+        private void HandleDespawnActionObjectsServer() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnActionObjectsServer()");
+
+            HandleDespawnActionObjectsClient();
+        }
+
+        [ObserversRpc]
+        private void HandleDespawnActionObjectsClient() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnActionObjectsClient()");
+
+            unitController.UnitActionManager.DespawnActionObjects();
+        }
+
+        private void HandleSpawnActionObjectsServer(AnimatedAction animatedAction) {
+            HandleSpawnActionObjectsClient(animatedAction.ResourceName);
+        }
+
+        [ObserversRpc]
+        private void HandleSpawnActionObjectsClient(string animatedActionResourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnActionObjectsClient({animatedActionResourceName})");
+
+            AnimatedAction animatedAction = systemDataFactory.GetResource<AnimatedAction>(animatedActionResourceName);
+            if (animatedAction == null) {
+                return;
+            }
+            unitController.UnitActionManager.SpawnActionObjectsInternal(animatedAction);
+        }
+
 
         private void HandleDeactivateAutoAttackServer() {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDeactivateAutoAttackServer()");

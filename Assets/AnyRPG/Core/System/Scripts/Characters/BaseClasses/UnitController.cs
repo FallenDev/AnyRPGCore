@@ -777,7 +777,7 @@ namespace AnyRPG {
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultPlayerUnitLayer);
             DisableAggro();
 
-            if (networkManagerServer.ServerModeActive == true) {
+            if (networkManagerServer.ServerModeActive == true || (systemGameManager.GameMode == GameMode.Network && isOwner == false)) {
                 // movement is client authoritative, so gravity should not be applied on the server
                 rigidBody.useGravity = false;
             } else {
@@ -793,20 +793,6 @@ namespace AnyRPG {
             unitComponentController.InteractableRange.gameObject.SetActive(false);
             useAgent = false;
             DisableAgent();
-
-            // this code is a quick way to set speed on third party controllers when the player spawns
-            if (characterStats != null) {
-                EventParamProperties eventParam = new EventParamProperties();
-                eventParam.simpleParams.FloatParam = characterStats.RunSpeed;
-                SystemEventManager.TriggerEvent("OnSetRunSpeed", eventParam);
-
-                eventParam.simpleParams.FloatParam = characterStats.SprintSpeed;
-                SystemEventManager.TriggerEvent("OnSetSprintSpeed", eventParam);
-
-            }
-            if (systemConfigurationManager.UseThirdPartyMovementControl) {
-                keyBindManager.SendKeyBindEvents();
-            }
         }
 
         /// <summary>
@@ -2290,7 +2276,7 @@ namespace AnyRPG {
             flying = true;
             StopMovementSound();
             //RigidBody.useGravity = false;
-
+            unitEventController.NotifyOnStartFlying();
         }
 
         public void StopFlying() {
@@ -2299,6 +2285,7 @@ namespace AnyRPG {
             RigidBody.useGravity = true;
             RigidBody.constraints = RigidbodyConstraints.FreezeRotation;
             */
+            unitEventController.NotifyOnStopFlying();
         }
 
         public void ExitWater(WaterBody water) {

@@ -62,12 +62,19 @@ namespace AnyRPG {
         [ResourceSelector(resourceType = typeof(StatusEffect))]
         private string statusEffect = string.Empty;
 
-        private AbilityProperties ability = null;
+        private Ability ability = null;
 
         public override AbilityProperties Ability {
             get {
-                return ability;
+                return ability.AbilityProperties;
             }
+        }
+
+        public override InstantiatedItem GetNewInstantiatedItem(SystemGameManager systemGameManager, int itemId, Item item, ItemQuality usedItemQuality) {
+            if ((item is Food) == false) {
+                return null;
+            }
+            return new InstantiatedFood(systemGameManager, itemId, item as Food, usedItemQuality);
         }
 
         /*
@@ -83,8 +90,13 @@ namespace AnyRPG {
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);
 
-            DescribableProperties describable = new DescribableProperties(this);
-            describable.DisplayName = consumptionVerb + " " + DisplayName;
+            ability = ScriptableObject.CreateInstance("Ability") as Ability;
+            ability.ResourceName = $"Food.{ResourceName}";
+            ability.DisplayName = $"{consumptionVerb} {DisplayName}";
+            ability.Icon = Icon;
+            if (ItemQuality != null) {
+                ability.IconBackgroundImage = ItemQuality.IconBackgroundImage;
+            }
 
             // set up the tick effect
             HealEffectProperties healEffect = new HealEffectProperties();
@@ -106,11 +118,9 @@ namespace AnyRPG {
                 resourceAmountNode.MaxAmount = powerResourceAmountNode.MaxAmount;
                 healEffect.ResourceAmounts.Add(resourceAmountNode);
             }
-            healEffect.SetupScriptableObjects(systemGameManager, describable);
+            healEffect.SetupScriptableObjects(systemGameManager, ability);
 
 
-            // set up the ability
-            ability = new AbilityProperties();
             // target options
             AbilityTargetProps abilityTargetProps = new AbilityTargetProps();
             abilityTargetProps.AutoSelfCast = true;
@@ -118,26 +128,28 @@ namespace AnyRPG {
             abilityTargetProps.CanCastOnSelf = true;
             abilityTargetProps.RequireLiveTarget = true;
             abilityTargetProps.RequireTarget = true;
-            ability.TargetOptions = abilityTargetProps;
+            ability.AbilityProperties.TargetOptions = abilityTargetProps;
 
-            ability.AbilityPrefabSource = AbilityPrefabSource.Ability;
-            ability.HoldableObjectList = holdableObjectList;
-            ability.AnimationProfileName = animationProfileName;
+            ability.AbilityProperties.AbilityPrefabSource = AbilityPrefabSource.Ability;
+            ability.AbilityProperties.HoldableObjectList = holdableObjectList;
+            ability.AbilityProperties.AnimationProfileName = animationProfileName;
             //ability.CastingAnimationClip = animationClip;
-            ability.UseAnimationCastTime = true;
-            ability.CastingAudioClip = castingAudioClip;
-            ability.CastingAudioProfileName = castingAudioProfileName;
-            ability.LoopAudio = loopAudio;
-            ability.UseableWithoutLearning = true;
-            ability.UseSpeedMultipliers = false;
-            ability.TickRate = tickRate;
+            ability.AbilityProperties.UseAnimationCastTime = true;
+            ability.AbilityProperties.CastingAudioClip = castingAudioClip;
+            ability.AbilityProperties.CastingAudioProfileName = castingAudioProfileName;
+            ability.AbilityProperties.LoopAudio = loopAudio;
+            ability.AbilityProperties.UseableWithoutLearning = true;
+            ability.AbilityProperties.UseSpeedMultipliers = false;
+            ability.AbilityProperties.TickRate = tickRate;
             if (statusEffect != string.Empty) {
-                ability.AbilityEffectNames = new List<string>() { statusEffect };
+                ability.AbilityProperties.AbilityEffectNames = new List<string>() { statusEffect };
             }
             //channeledAbility.AbilityEffectNames.Add(statusEffect);
-            ability.ChanneledAbilityEffects.Add(healEffect);
+            ability.AbilityProperties.ChanneledAbilityEffects.Add(healEffect);
 
-            ability.SetupScriptableObjects(systemGameManager, describable);
+            ability.SetupScriptableObjects(systemGameManager);
+            
+            systemDataFactory.AddResource<Ability>(ability);
         }
 
     }

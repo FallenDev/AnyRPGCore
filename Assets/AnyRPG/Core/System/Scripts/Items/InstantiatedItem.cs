@@ -137,7 +137,8 @@ namespace AnyRPG {
 
 
         public virtual bool Use(UnitController sourceUnitController) {
-            //Debug.Log("Base item class: using " + itemName);
+            Debug.Log($"{ResourceName}.InstantiatedItem.Use({sourceUnitController.gameObject.name})");
+
             if (!item.CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
                 messageFeedManager.WriteMessage(sourceUnitController, "You are not the right character class to use " + DisplayName);
                 return false;

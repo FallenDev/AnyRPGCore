@@ -858,6 +858,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleCastTimeChangedClient(string abilityName, float castPercent) {
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCastTimeChangedClient({abilityName}, {castPercent})");
+
             Ability ability = systemDataFactory.GetResource<Ability>(abilityName);
             unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability.AbilityProperties, castPercent);
         }

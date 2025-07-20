@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AnyRPG {
 
@@ -94,6 +95,16 @@ namespace AnyRPG {
             FactoryDataAccess factoryDataAccess = new FactoryDataAccess();
             factoryDataAccess.Setup<TDataType>(systemGameManager);
             dataDictionary.Add(typeof(TDataType), factoryDataAccess);
+        }
+
+        public void AddResource<TDataType>(TDataType resourceProfile) where TDataType : ResourceProfile {
+            //Debug.Log($"SystemDataFactory.AddResource({resourceProfile.ResourceName}) : {typeof(TDataType).Name}");
+
+            if (resourceProfile != null) {
+                if (dataDictionary.ContainsKey(typeof(TDataType))) {
+                    dataDictionary[typeof(TDataType)].AddResource(resourceProfile);
+                }
+            }
         }
 
         /// <summary>

@@ -98,7 +98,7 @@ namespace AnyRPG {
                 if (tmpItem != null) {
                     item = tmpItem;
                 } else {
-                    Debug.LogError("SystemSkillManager.SetupScriptableObjects(): Could not find item : " + itemName + " while inititalizing a vendor item for " + describable.DisplayName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"VendorItem.SetupScriptableObjects(): Could not find item : {itemName} while inititalizing a vendor item for {describable.ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -107,7 +107,7 @@ namespace AnyRPG {
                 if (tmpItemQuality != null) {
                     itemQuality = tmpItemQuality;
                 } else {
-                    Debug.LogError("SystemSkillManager.SetupScriptableObjects(): Could not find item quality : " + itemQualityName + " while inititalizing a vendor item for " + describable.DisplayName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"VendorItem.SetupScriptableObjects(): Could not find item quality : {itemQualityName} while inititalizing a vendor item for {describable.ResourceName}.  CHECK INSPECTOR");
                 }
             }
         }

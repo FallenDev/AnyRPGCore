@@ -166,7 +166,7 @@ namespace AnyRPG {
         }
 
         public void DespawnActionObjects() {
-            //Debug.Log($"{gameObject.name}.CharacterAbilityManager.DespawnAbilityObjects()");
+            Debug.Log($"{unitController.gameObject.name}.UnitActionManager.DespawnActionObjects()");
 
             if (actionObjects == null || actionObjects.Count == 0) {
                 return;
@@ -182,6 +182,8 @@ namespace AnyRPG {
                 }
             }
             actionObjects.Clear();
+
+            unitController.UnitEventController.NotifyOnDespawnActionObjects();
         }
 
         public AnimationProps GetUnitAnimationProps() {
@@ -206,7 +208,7 @@ namespace AnyRPG {
         */
 
         public void PerformActionAnimation(AnimatedAction animatedAction) {
-            Debug.Log($"{unitController.gameObject.name}.PerformActionAnimation(${animatedAction.ResourceName})");
+            Debug.Log($"{unitController.gameObject.name}.PerformActionAnimation({animatedAction.ResourceName})");
 
             if (animatedAction.ActionProperties.AnimationClip == null) {
                 return;

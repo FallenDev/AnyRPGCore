@@ -688,9 +688,7 @@ namespace AnyRPG {
             if (animator == null) {
                 return;
             }
-            if (varValue == true) {
-                unitController.UnitEventController.NotifyOnAnimatorStartCasting(swapAnimator);
-            }
+
             SetAnimationSpeed(castingSpeed);
 
             if (ParameterExists("Casting")) {
@@ -702,7 +700,6 @@ namespace AnyRPG {
             }
             if (varValue == false) {
                 unitController.SetUseRootMotion(false);
-                unitController.UnitEventController.NotifyOnAnimatorEndCasting(swapAnimator);
             }
 
         }
@@ -713,9 +710,7 @@ namespace AnyRPG {
             if (animator == null) {
                 return;
             }
-            if (varValue == true) {
-                unitController.UnitEventController.NotifyOnAnimatorStartActing(swapAnimator);
-            }
+
             SetAnimationSpeed(animationSpeed);
 
             if (ParameterExists("Acting")) {
@@ -724,9 +719,6 @@ namespace AnyRPG {
 
             if (varValue == true) {
                 SetTrigger("ActionTrigger");
-            }
-            if (varValue == false) {
-                unitController.UnitEventController.NotifyOnAnimatorEndActing(swapAnimator);
             }
 
         }
@@ -745,10 +737,6 @@ namespace AnyRPG {
 
             if (varValue == true) {
                 SetTrigger("AttackTrigger");
-            }
-
-            if (varValue == false) {
-                unitController.UnitEventController.NotifyOnAnimatorEndAttacking(swapAnimator);
             }
         }
 

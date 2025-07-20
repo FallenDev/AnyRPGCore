@@ -25,7 +25,7 @@ namespace AnyRPG {
         /// <param name="source"></param>
         /// <param name="target"></param>
         public override void PerformAbilityHit(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectInput) {
-            //Debug.Log(DisplayName + ".HealEffect.PerformAbilityHit(" + source.AbilityManager.UnitGameObject.name + ", " + (target == null ? "null" : target.gameObject.name) + ")");
+            Debug.Log($"{ResourceName}.HealEffectProperties.PerformAbilityHit({source.AbilityManager.UnitGameObject.name}, {(target == null ? "null" : target.gameObject.name)}");
 
             base.PerformAbilityHit(source, target, abilityEffectInput);
         }

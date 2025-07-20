@@ -1403,7 +1403,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleFactionChangeClient(string newFactionName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleFactionChangeClient({newFactionName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleFactionChangeClient({newFactionName})");
 
             Faction newFaction = systemDataFactory.GetResource<Faction>(newFactionName);
             if (newFaction == null) {

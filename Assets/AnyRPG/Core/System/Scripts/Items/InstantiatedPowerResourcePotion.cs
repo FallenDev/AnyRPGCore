@@ -13,7 +13,8 @@ namespace AnyRPG {
         }
 
         public override bool Use(UnitController sourceUnitController) {
-            //Debug.Log(DisplayName + ".PowerResourcePotion.Use()");
+            Debug.Log($"{ResourceName}.InstantiatedPowerResourcePotion.Use({sourceUnitController.gameObject.name})");
+
             int fullcount = 0;
             foreach (ResourceAmountNode resourceAmountNode in powerResourcePotion.HealEffect.ResourceAmounts) {
                 if (sourceUnitController.CharacterStats.GetPowerResourceAmount(resourceAmountNode.PowerResource) >= sourceUnitController.CharacterStats.GetPowerResourceMaxAmount(resourceAmountNode.PowerResource)) {

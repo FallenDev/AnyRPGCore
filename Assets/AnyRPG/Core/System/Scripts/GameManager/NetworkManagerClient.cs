@@ -266,7 +266,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAccountJoinLobbyGame(int gameId, int accountId, string userName) {
-            Debug.Log($"NetworkManagerClient.AdvertiseAccountJoinLobbyGame({gameId}, {accountId}, {userName})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseAccountJoinLobbyGame({gameId}, {accountId}, {userName})");
 
             lobbyGames[gameId].AddPlayer(accountId, userName);
             OnJoinLobbyGame(gameId, accountId, userName);

@@ -84,11 +84,6 @@ namespace AnyRPG {
         public event System.Action OnInitializeAnimator = delegate { };
         public event System.Action<string> OnAnimatorSetTrigger = delegate { };
         public event System.Action OnAnimatorReviveComplete = delegate { };
-        public event System.Action<bool> OnAnimatorStartCasting = delegate { };
-        public event System.Action<bool> OnAnimatorEndCasting = delegate { };
-        public event System.Action<bool> OnAnimatorStartActing = delegate { };
-        public event System.Action<bool> OnAnimatorEndActing = delegate { };
-        public event System.Action<bool> OnAnimatorEndAttacking = delegate { };
         public event System.Action OnAnimatorStartLevitated = delegate { };
         public event System.Action<bool> OnAnimatorEndLevitated = delegate { };
         public event System.Action OnAnimatorStartStunned = delegate { };
@@ -519,26 +514,6 @@ namespace AnyRPG {
             OnAnimatorReviveComplete();
         }
 
-        public void NotifyOnAnimatorStartCasting(bool swapAnimator){
-            OnAnimatorStartCasting(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorEndCasting(bool swapAnimator) {
-            OnAnimatorEndCasting(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorStartActing(bool swapAnimator) {
-            OnAnimatorStartActing(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorEndActing(bool swapAnimator) {
-            OnAnimatorEndActing(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorEndAttacking(bool swapAnimator) {
-            OnAnimatorEndAttacking(swapAnimator);
-        }
-
         public void NotifyOnAnimatorStartLevitated() {
             OnAnimatorStartLevitated();
         }
@@ -618,7 +593,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnDespawnActionObjects() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnAbilityObjects()");
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnActionObjects()");
 
             OnDespawnActionObjects();
         }

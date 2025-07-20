@@ -152,6 +152,8 @@ namespace AnyRPG {
         }
 
         public bool ActionButtonUse(UnitController sourceUnitController) {
+            Debug.Log($"{ResourceName}.InstantiatedItem.ActionButtonUse({sourceUnitController.gameObject.name})");
+
             List<InstantiatedItem> itemList = sourceUnitController.CharacterInventoryManager?.GetItems(ResourceName, 1);
             if (itemList == null || itemList.Count == 0) {
                 return false;
@@ -160,7 +162,14 @@ namespace AnyRPG {
             if (newInstantiatedItem == null) {
                 return false;
             }
-            return newInstantiatedItem.Use(sourceUnitController);
+            //return newInstantiatedItem.Use(sourceUnitController);
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                newInstantiatedItem.Use(sourceUnitController);
+            } else {
+                sourceUnitController.UnitEventController.NotifyOnRequestUseItem(newInstantiatedItem.Slot.GetCurrentInventorySlotIndex(sourceUnitController));
+            }
+            return true;
         }
 
         public virtual Coroutine ChooseMonitorCoroutine(ActionButton actionButton) {

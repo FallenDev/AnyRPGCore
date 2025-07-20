@@ -266,14 +266,14 @@ namespace AnyRPG {
         }
 
         public void SubscribeToAutoAttackEvents() {
-            Debug.Log($"{gameObject.name}.ActionButton.SubscribeToAutoAttackEvents()");
+            //Debug.Log($"{gameObject.name}.ActionButton.SubscribeToAutoAttackEvents()");
 
             playerManager.UnitController.UnitEventController.OnActivateAutoAttack += HandleActivateAutoAttack;
         }
 
 
         public void UnsubscribeFromAutoAttackEvents() {
-            Debug.Log($"{gameObject.name}.ActionButton.UnsubscribeFromAutoAttackEvents()");
+            //Debug.Log($"{gameObject.name}.ActionButton.UnsubscribeFromAutoAttackEvents()");
 
             playerManager.UnitController.UnitEventController.OnActivateAutoAttack -= HandleActivateAutoAttack;
         }

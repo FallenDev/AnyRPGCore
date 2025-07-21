@@ -168,6 +168,14 @@ namespace AnyRPG {
                 }
             }
 
+            foreach (AudioClip audioClip in onHitSoundEffects) {
+                if (audioClip != null) {
+                    systemGameManager.AudioManager.RegisterAudioClip(audioClip);
+                } else {
+                    Debug.LogError($"WeaponSkillProps.SetupScriptableObjects(): null audio clip found while inititalizing.  CHECK INSPECTOR");
+                }
+            }
+
             if (animationEventAudioProfile != null && animationEventAudioProfile != string.Empty) {
                 AudioProfile audioProfile = systemDataFactory.GetResource<AudioProfile>(animationEventAudioProfile);
                 if (audioProfile != null) {

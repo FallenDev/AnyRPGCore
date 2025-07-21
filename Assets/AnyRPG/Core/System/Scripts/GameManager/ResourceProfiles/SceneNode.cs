@@ -352,6 +352,10 @@ namespace AnyRPG {
                 }
             }
 
+            if (dayAmbientSoundsAudio != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(dayAmbientSoundsAudio);
+            }
+
             nightAmbientSoundsProfileReference = null;
             if (nightAmbientSoundsProfile != null && nightAmbientSoundsProfile != string.Empty) {
                 AudioProfile tmpAmbientMusicProfile = systemDataFactory.GetResource<AudioProfile>(nightAmbientSoundsProfile);
@@ -360,6 +364,10 @@ namespace AnyRPG {
                 } else {
                     Debug.LogError("SceneNode.SetupScriptableObjects(): Could not find audio profile : " + nightAmbientSoundsProfile + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }
+            }
+
+            if (nightAmbientSoundsAudio != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(nightAmbientSoundsAudio);
             }
 
 
@@ -371,6 +379,10 @@ namespace AnyRPG {
                 } else {
                     Debug.LogError("SceneNode.SetupScriptableObjects(): Could not find music profile : " + backgroundMusicProfile + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
                 }
+            }
+
+            if (backgroundMusicAudio != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(backgroundMusicAudio);
             }
 
             if (autoPlayCutsceneName != null && autoPlayCutsceneName != string.Empty) {

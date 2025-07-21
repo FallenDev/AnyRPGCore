@@ -107,10 +107,10 @@ namespace AnyRPG {
             Vector3 originalPosition = spawnReference.transform.localPosition;
             //Debug.Log($"{gameObject.name}.AnimatedObject.animateObject(" + newAngle + ", " + newPosition + "): original position: " + originalPosition + "; rotation: " + originalRotation);
 
-            AudioSource audioSource = spawnReference.GetComponent<AudioSource>();
-            if (audioSource != null && audioProfile != null && audioProfile.AudioClip != null) {
+            ObjectAudioController objectAudioController = spawnReference.GetComponent<ObjectAudioController>();
+            if (objectAudioController != null && audioProfile != null && audioProfile.AudioClip != null) {
                 //Debug.Log($"{gameObject.name}.AnimatedObject.animateObject(): playing audioclip: " + audioProfile.AudioClip);
-                audioSource.PlayOneShot(audioProfile.AudioClip);
+                objectAudioController.PlayOneShot(audioProfile.AudioClip);
             }
 
             // testing doing this first to allow an object to reverse before it's animation has completed

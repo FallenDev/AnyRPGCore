@@ -90,6 +90,10 @@ namespace AnyRPG {
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);
 
+            if (castingAudioClip != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(castingAudioClip);
+            }
+
             ability = ScriptableObject.CreateInstance("Ability") as Ability;
             ability.ResourceName = $"Food.{ResourceName}";
             ability.DisplayName = $"{consumptionVerb} {DisplayName}";

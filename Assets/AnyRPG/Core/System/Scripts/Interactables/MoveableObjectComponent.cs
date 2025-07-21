@@ -23,7 +23,7 @@ namespace AnyRPG {
 
         private Vector3 originalPosition = Vector3.zero;
         private Vector3 originalRotation = Vector3.zero;
-        AudioSource audioSource = null;
+        ObjectAudioController objectAudioController = null;
 
         public MoveableObjectComponent(Interactable interactable, MoveableObjectProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             interactionPanelTitle = "Interactable";
@@ -32,7 +32,7 @@ namespace AnyRPG {
                 
                 // all angles are rounded to 4 decimals and than made positive to attempt to avoid rotations greater than 180 degrees
                 originalRotation = GetTranslatedEulerAngles(Props.MoveableObject.transform.localEulerAngles);
-                audioSource = Props.MoveableObject.GetComponent<AudioSource>();
+                objectAudioController = Props.MoveableObject.GetComponent<ObjectAudioController>();
             }
         }
 
@@ -129,9 +129,9 @@ namespace AnyRPG {
 
             newAngle = GetTranslatedEulerAngles(newAngle);
 
-            if (audioSource != null && audioClip != null) {
+            if (objectAudioController != null && audioClip != null) {
                 //Debug.Log($"{gameObject.name}.AnimatedObject.animateObject(): playing audioclip: " + audioProfile.AudioClip);
-                audioSource.PlayOneShot(audioClip);
+                objectAudioController.PlayOneShot(audioClip);
             }
 
             // setting open / closed state first to allow an object to reverse before its animation has completed

@@ -1,4 +1,5 @@
 ﻿using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace AnyRPG {
         [Tooltip("A reference to the highlight circle")]
         [SerializeField]
         private HighlightController highlightController = null;
+
+        private Interactable interactable = null;
 
         private Vector3 initialNamePlatePosition = Vector3.zero;
         private bool gotInitialNamePlatePosition = false;
@@ -74,6 +77,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.PlayCast(audioClip, loop);
             }
+            interactable.InteractableEventController.NotifyOnPlayCastSound(audioClip, loop);
         }
 
         public void PlayEffectSound(AudioClip audioClip) {
@@ -89,6 +93,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.PlayEffect(audioClip, loop);
             }
+            interactable.InteractableEventController.NotifyOnPlayEffectSound(audioClip, loop);
         }
 
         public void PlayVoiceSound(AudioClip audioClip) {
@@ -98,6 +103,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.PlayVoice(audioClip);
             }
+            interactable.InteractableEventController.NotifyOnPlayVoiceSound(audioClip);
         }
 
         public void PlayMovementSound(AudioClip audioClip, bool loop) {
@@ -108,6 +114,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.PlayMovement(audioClip, loop);
             }
+            interactable.InteractableEventController.NotifyOnPlayMovementSound(audioClip, loop);
         }
 
         public void StopCastSound() {
@@ -115,6 +122,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.StopCast();
             }
+            interactable.InteractableEventController.NotifyOnStopCastSound();
         }
 
         public void StopEffectSound() {
@@ -122,6 +130,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.StopEffect();
             }
+            interactable.InteractableEventController.NotifyOnStopEffectSound();
         }
 
         public void StopVoiceSound() {
@@ -129,6 +138,7 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.StopVoice();
             }
+            interactable.InteractableEventController.NotifyOnStopVoiceSound();
         }
 
         public void StopMovementSound(bool stopLoopsOnly = true) {
@@ -136,8 +146,12 @@ namespace AnyRPG {
             if (unitAudioEmitter != null) {
                 unitAudioEmitter.StopMovement(stopLoopsOnly);
             }
+            interactable.InteractableEventController.NotifyOnStopMovementSound(stopLoopsOnly);
         }
 
+        public void SetInteractable(Interactable interactable) {
+            this.interactable = interactable;
+        }
     }
 
 }

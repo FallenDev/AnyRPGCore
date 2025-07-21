@@ -255,6 +255,7 @@ namespace AnyRPG {
             }
             if (unitComponentController != null) {
                 unitComponentController.Configure(systemGameManager);
+                unitComponentController.SetInteractable(this);
             }
         }
 

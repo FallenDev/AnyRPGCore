@@ -234,14 +234,14 @@ namespace AnyRPG {
         public virtual void PlayAudioEffects(List<AudioProfile> audioProfiles, Interactable target, AbilityEffectContext abilityEffectContext) {
             //Debug.Log(DisplayName + ".AbilityEffect.PlayAudioEffects(" + (target == null ? "null" : target.name) + ")");
             if (audioProfiles != null) {
-                AudioSource audioSource = null;
+                ObjectAudioController objectAudioController = null;
                 if (target?.UnitComponentController == null) {
 
                     if (abilityEffectContext.PrefabObjects != null
                         && abilityEffectContext.PrefabObjects.Count > 0
                         && abilityEffectContext.PrefabObjects.First().Value.Count > 0) {
                         //prefabObjects.First();
-                        audioSource = abilityEffectContext.PrefabObjects.First().Value.First().GetComponent<AudioSource>();
+                        objectAudioController = abilityEffectContext.PrefabObjects.First().Value.First().GetComponent<ObjectAudioController>();
                         /*
                         if (audioSource != null) {
                             Debug.Log("Found Audio Source on " + abilityEffectContext.PrefabObjects.First().Value.name);
@@ -249,7 +249,7 @@ namespace AnyRPG {
                         */
                     }
                 }
-                if (audioSource != null || target?.UnitComponentController != null) {
+                if (objectAudioController != null || target?.UnitComponentController != null) {
                     List<AudioProfile> usedAudioProfiles = new List<AudioProfile>();
                     if (randomAudioProfiles == true) {
                         usedAudioProfiles.Add(audioProfiles[UnityEngine.Random.Range(0, audioProfiles.Count)]);
@@ -262,7 +262,7 @@ namespace AnyRPG {
                             if (target != null && target.UnitComponentController != null) {
                                 target.UnitComponentController.PlayEffectSound(audioProfile.RandomAudioClip);
                             } else {
-                                audioSource.PlayOneShot(audioProfile.RandomAudioClip);
+                                objectAudioController.PlayOneShot(audioProfile.RandomAudioClip);
                             }
                         }
                     }

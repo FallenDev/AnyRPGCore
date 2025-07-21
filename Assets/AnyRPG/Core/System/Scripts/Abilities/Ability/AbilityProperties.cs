@@ -1344,6 +1344,10 @@ namespace AnyRPG {
                 }
             }
 
+            if (castingAudioClip != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(castingAudioClip);
+            }
+
             castingAudioProfile = null;
             if (castingAudioProfileName != null && castingAudioProfileName != string.Empty) {
                 AudioProfile audioProfile = systemDataFactory.GetResource<AudioProfile>(castingAudioProfileName);
@@ -1442,7 +1446,6 @@ namespace AnyRPG {
                     }
                 }
             }
-
 
             // add action hit effects
             if (actionHitAbilityEffectNames != null) {

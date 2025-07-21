@@ -397,6 +397,8 @@ namespace AnyRPG {
                 defaultAutoAttackAbility = systemDataFactory.GetResource<BaseAbility>(defaultAutoAttackAbilityName);
             }*/
 
+            voiceProps.Configure(systemGameManager);
+
             if (unitToughness == null && defaultToughness != null && defaultToughness != string.Empty) {
                 UnitToughness tmpToughness = systemDataFactory.GetResource<UnitToughness>(defaultToughness);
                 if (tmpToughness != null) {

@@ -154,6 +154,12 @@ namespace AnyRPG {
                     Debug.LogError("Dialog.SetupScriptableObjects(): Could not find audioProfile " + audioProfileName + " while initializing " + ResourceName);
                 }
             }
+
+            foreach (DialogNode dialogNode in dialogNodes) {
+                if (dialogNode != null && dialogNode.AudioClip != null) {
+                    systemGameManager.AudioManager.RegisterAudioClip(dialogNode.AudioClip);
+                }
+            }
         }
 
         public override void CleanupScriptableObjects() {

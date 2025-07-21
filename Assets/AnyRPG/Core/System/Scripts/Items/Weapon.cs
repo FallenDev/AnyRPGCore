@@ -323,6 +323,12 @@ namespace AnyRPG {
                 }
             }
 
+            foreach (AudioClip audioClip in defaultHitSoundEffects) {
+                if (audioClip != null) {
+                    systemGameManager.AudioManager.RegisterAudioClip(audioClip);
+                }
+            }
+
             if (defaultHitAudioProfile != null && defaultHitAudioProfile != string.Empty) {
                 AudioProfile audioProfile = systemDataFactory.GetResource<AudioProfile>(defaultHitAudioProfile);
                 if (audioProfile != null) {

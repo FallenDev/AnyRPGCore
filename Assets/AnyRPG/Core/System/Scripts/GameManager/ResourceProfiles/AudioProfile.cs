@@ -41,6 +41,17 @@ namespace AnyRPG {
                 audioClip.LoadAudioData();
             }
         }
+
+        public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
+            base.SetupScriptableObjects(systemGameManager);
+            if (audioClips != null) {
+                foreach (AudioClip audioClip in audioClips) {
+                    if (audioClip != null) {
+                        systemGameManager.AudioManager.RegisterAudioClip(audioClip);
+                    }
+                }
+            }
+        }
     }
 
 }

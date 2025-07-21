@@ -114,6 +114,15 @@ namespace AnyRPG {
             interactable.OnInteractableDisable += HandleInteractableDisableServer;
             interactable.InteractableEventController.OnDropLoot += HandleDropLoot;
             interactable.InteractableEventController.OnRemoveDroppedItem += HandleRemoveDroppedItem;
+            interactable.InteractableEventController.OnStopMovementSound += HandleStopMovementSound;
+            interactable.InteractableEventController.OnPlayMovementSound += HandlePlayMovementSound;
+            interactable.InteractableEventController.OnStopCastSound += HandleStopCastSound;
+            interactable.InteractableEventController.OnPlayCastSound += HandlePlayCastSound;
+            interactable.InteractableEventController.OnStopEffectSound += HandleStopEffectSound;
+            interactable.InteractableEventController.OnPlayEffectSound += HandlePlayEffectSound;
+            interactable.InteractableEventController.OnStopVoiceSound += HandleStopVoiceSound;
+            interactable.InteractableEventController.OnPlayVoiceSound += HandlePlayVoiceSound;
+
 
             eventRegistrationComplete = true;
         }
@@ -136,8 +145,100 @@ namespace AnyRPG {
             interactable.OnInteractableDisable -= HandleInteractableDisableServer;
             interactable.InteractableEventController.OnDropLoot -= HandleDropLoot;
             interactable.InteractableEventController.OnRemoveDroppedItem -= HandleRemoveDroppedItem;
+            interactable.InteractableEventController.OnStopMovementSound -= HandleStopMovementSound;
+            interactable.InteractableEventController.OnPlayMovementSound -= HandlePlayMovementSound;
+            interactable.InteractableEventController.OnStopCastSound -= HandleStopCastSound;
+            interactable.InteractableEventController.OnPlayCastSound -= HandlePlayCastSound;
+            interactable.InteractableEventController.OnStopEffectSound -= HandleStopEffectSound;
+            interactable.InteractableEventController.OnPlayEffectSound -= HandlePlayEffectSound;
+            interactable.InteractableEventController.OnStopVoiceSound -= HandleStopVoiceSound;
+            interactable.InteractableEventController.OnPlayVoiceSound -= HandlePlayVoiceSound;
 
             eventRegistrationComplete = false;
+        }
+
+        private void HandlePlayVoiceSound(AudioClip clip) {
+            HandlePlayVoiceSoundClient(clip.name);
+        }
+
+        [ObserversRpc]
+        public void HandlePlayVoiceSoundClient(string clipName) {
+            AudioClip clip = systemGameManager.AudioManager.GetAudioClip(clipName);
+            if (clip != null) {
+                interactable.UnitComponentController.PlayVoiceSound(clip);
+            }
+        }
+
+        private void HandleStopVoiceSound() {
+            HandleStopVoiceSoundClient();
+        }
+
+        [ObserversRpc]
+        public void HandleStopVoiceSoundClient() {
+            interactable.UnitComponentController.StopVoiceSound();
+        }
+
+        private void HandlePlayEffectSound(AudioClip clip, bool loop) {
+            HandlePlayEffectSoundClient(clip.name, loop);
+        }
+
+        [ObserversRpc]
+        public void HandlePlayEffectSoundClient(string clipName, bool loop) {
+            AudioClip clip = systemGameManager.AudioManager.GetAudioClip(clipName);
+            if (clip != null) {
+                interactable.UnitComponentController.PlayEffectSound(clip, loop);
+            }
+        }
+
+        private void HandleStopEffectSound() {
+            HandleStopEffectSoundClient();
+        }
+
+        [ObserversRpc]
+        public void HandleStopEffectSoundClient() {
+            interactable.UnitComponentController.StopEffectSound();
+        }
+
+        private void HandlePlayCastSound(AudioClip clip, bool loop) {
+            HandlePlayCastSoundClient(clip.name, loop);
+        }
+
+        [ObserversRpc]
+        public void HandlePlayCastSoundClient(string clipName, bool loop) {
+            AudioClip clip = systemGameManager.AudioManager.GetAudioClip(clipName);
+            if (clip != null) {
+                interactable.UnitComponentController.PlayCastSound(clip, loop);
+            }
+        }
+
+        private void HandleStopCastSound() {
+            HandleStopCastSoundClient();
+        }
+
+        [ObserversRpc]
+        public void HandleStopCastSoundClient() {
+            interactable.UnitComponentController.StopCastSound();
+        }
+
+        private void HandlePlayMovementSound(AudioClip clip, bool loop) {
+            HandlePlayMovementSoundClient(clip.name, loop);
+        }
+
+        [ObserversRpc]
+        public void HandlePlayMovementSoundClient(string clipName, bool loop) {
+            AudioClip clip = systemGameManager.AudioManager.GetAudioClip(clipName);
+            if (clip != null) {
+                interactable.UnitComponentController.PlayMovementSound(clip, loop);
+            }
+        }
+
+        private void HandleStopMovementSound(bool stopLoops) {
+            HandleStopMovementSoundClient(stopLoops);
+        }
+
+        [ObserversRpc]
+        public void HandleStopMovementSoundClient(bool stopLoops) {
+            interactable.UnitComponentController.StopMovementSound(stopLoops);
         }
 
         public void SubscribeToClientInteractableEvents() {

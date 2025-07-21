@@ -804,6 +804,14 @@ namespace AnyRPG {
         // verify that system abilities are available through the factory
         public void SetupScriptableObjects() {
 
+            if (weaponMissAudioClip != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(weaponMissAudioClip);
+            }
+
+            if (vendorAudioClip != null) {
+                systemGameManager.AudioManager.RegisterAudioClip(vendorAudioClip);
+            }
+
             if (systemAnimationProfileName != null && systemAnimationProfileName != string.Empty) {
                 AnimationProfile animationProfile = systemDataFactory.GetResource<AnimationProfile>(systemAnimationProfileName);
                 if (animationProfile == null) {

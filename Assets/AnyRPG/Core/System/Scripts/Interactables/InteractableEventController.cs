@@ -14,6 +14,14 @@ namespace AnyRPG {
         public event System.Action<VendorItem> OnSellItemToPlayer = delegate { };
         public event System.Action<Dictionary<int, List<int>>> OnDropLoot = delegate { };
         public event System.Action<int, int> OnRemoveDroppedItem = delegate { };
+        public event System.Action<bool> OnStopMovementSound = delegate { };
+        public event System.Action OnStopVoiceSound = delegate { };
+        public event System.Action OnStopEffectSound = delegate { };
+        public event System.Action OnStopCastSound = delegate { };
+        public event System.Action<AudioClip, bool> OnPlayMovementSound = delegate { };
+        public event System.Action<AudioClip> OnPlayVoiceSound = delegate { };
+        public event System.Action<AudioClip, bool> OnPlayEffectSound = delegate { };
+        public event System.Action<AudioClip, bool> OnPlayCastSound = delegate { };
 
         // interactable this controller is attached to
         private Interactable interactable;
@@ -57,6 +65,38 @@ namespace AnyRPG {
 
         public void NotifyOnRemoveDroppedItemClient(int lootDropId, int accountId) {
             OnRemoveDroppedItem(lootDropId, accountId);
+        }
+
+        public void NotifyOnStopMovementSound(bool stopLoopsOnly) {
+            OnStopMovementSound(stopLoopsOnly);
+        }
+
+        public void NotifyOnStopVoiceSound() {
+            OnStopVoiceSound();
+        }
+
+        public void NotifyOnStopEffectSound() {
+            OnStopEffectSound();
+        }
+
+        public void NotifyOnStopCastSound() {
+            OnStopCastSound();
+        }
+
+        public void NotifyOnPlayMovementSound(AudioClip audioClip, bool loop) {
+            OnPlayMovementSound(audioClip, loop);
+        }
+
+        public void NotifyOnPlayVoiceSound(AudioClip audioClip) {
+            OnPlayVoiceSound(audioClip);
+        }
+
+        public void NotifyOnPlayEffectSound(AudioClip audioClip, bool loop) {
+            OnPlayEffectSound(audioClip, loop);
+        }
+
+        public void NotifyOnPlayCastSound(AudioClip audioClip, bool loop) {
+            OnPlayCastSound(audioClip, loop);
         }
 
         // temporarily disabled because this object is not created early enough in the process when its a unitcontroller

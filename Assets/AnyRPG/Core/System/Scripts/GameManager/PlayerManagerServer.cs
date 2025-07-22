@@ -321,6 +321,15 @@ namespace AnyRPG {
             }
             AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
 
+            // if the scene is already loaded, then just respawn the player
+            if (unitController.gameObject.scene.name == teleportEffectProperties.levelName) {
+                Debug.Log($"PlayerManagerServer.TeleportInternal({unitController.gameObject.name}, {teleportEffectProperties.levelName}) - already in scene, respawning");
+
+                RespawnPlayerUnit(activePlayerLookup[unitController]);
+                return;
+            }
+
+
             if (networkManagerServer.ServerModeActive == true) {
                 networkManagerServer.AdvertiseTeleport(activePlayerLookup[unitController], teleportEffectProperties);
                 return;

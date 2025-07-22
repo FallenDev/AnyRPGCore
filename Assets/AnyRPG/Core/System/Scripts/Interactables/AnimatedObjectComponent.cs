@@ -46,20 +46,16 @@ namespace AnyRPG {
                 if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
                     Props.AnimationComponent.Play(Props.CloseAnimationClip.name);
                 }
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
-                    if (Props.OpenAudioClip != null) {
-                        interactable.UnitComponentController.PlayEffectSound(Props.CloseAudioClip);
-                    }
+                if (Props.OpenAudioClip != null) {
+                    interactable.UnitComponentController.PlayEffectSound(Props.CloseAudioClip);
                 }
                 objectOpen = false;
             } else {
                 if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
                     Props.AnimationComponent.Play(Props.OpenAnimationClip.name);
                 }
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
-                    if (Props.CloseAudioClip != null) {
-                        interactable.UnitComponentController.PlayEffectSound(Props.OpenAudioClip);
-                    }
+                if (Props.CloseAudioClip != null) {
+                    interactable.UnitComponentController.PlayEffectSound(Props.OpenAudioClip);
                 }
                 objectOpen = true;
             }

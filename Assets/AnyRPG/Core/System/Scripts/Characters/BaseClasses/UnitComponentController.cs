@@ -31,6 +31,9 @@ namespace AnyRPG {
         private Vector3 initialNamePlatePosition = Vector3.zero;
         private bool gotInitialNamePlatePosition = false;
 
+        // game manager references
+        protected NetworkManagerServer networkManagerServer = null;
+
         public Transform NamePlateTransform { get => namePlateTransform; set => namePlateTransform = value; }
         public AggroRange AggroRangeController { get => aggroRangeController; set => aggroRangeController = value; }
         public InteractableRange InteractableRange { get => interactableRange; set => interactableRange = value; }
@@ -57,6 +60,11 @@ namespace AnyRPG {
             }
         }
 
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            networkManagerServer = systemGameManager.NetworkManagerServer;
+        }
+
         public bool MovementSoundIsPlaying(bool ignoreOneShots = true) {
             if (unitAudioEmitter == null) {
                 return false;
@@ -74,7 +82,7 @@ namespace AnyRPG {
                 return;
             }
 
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.PlayCast(audioClip, loop);
             }
             interactable.InteractableEventController.NotifyOnPlayCastSound(audioClip, loop);
@@ -90,7 +98,7 @@ namespace AnyRPG {
                 return;
             }
 
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.PlayEffect(audioClip, loop);
             }
             interactable.InteractableEventController.NotifyOnPlayEffectSound(audioClip, loop);
@@ -100,7 +108,7 @@ namespace AnyRPG {
             if (audioClip == null) {
                 return;
             }
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.PlayVoice(audioClip);
             }
             interactable.InteractableEventController.NotifyOnPlayVoiceSound(audioClip);
@@ -111,7 +119,7 @@ namespace AnyRPG {
             if (audioClip == null) {
                 return;
             }
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.PlayMovement(audioClip, loop);
             }
             interactable.InteractableEventController.NotifyOnPlayMovementSound(audioClip, loop);
@@ -119,7 +127,7 @@ namespace AnyRPG {
 
         public void StopCastSound() {
             //Debug.Log($"{gameObject.name}UnitAudio.StopCast()");
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.StopCast();
             }
             interactable.InteractableEventController.NotifyOnStopCastSound();
@@ -127,7 +135,7 @@ namespace AnyRPG {
 
         public void StopEffectSound() {
             //Debug.Log($"{gameObject.name}UnitAudio.StopEffect()");
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.StopEffect();
             }
             interactable.InteractableEventController.NotifyOnStopEffectSound();
@@ -135,7 +143,7 @@ namespace AnyRPG {
 
         public void StopVoiceSound() {
             //Debug.Log($"{gameObject.name}UnitAudio.StopVoice()");
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.StopVoice();
             }
             interactable.InteractableEventController.NotifyOnStopVoiceSound();
@@ -143,7 +151,7 @@ namespace AnyRPG {
 
         public void StopMovementSound(bool stopLoopsOnly = true) {
             //Debug.Log($"{gameObject.name}.UnitComponentController.StopMovementSound()");
-            if (unitAudioEmitter != null) {
+            if (unitAudioEmitter != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false)) {
                 unitAudioEmitter.StopMovement(stopLoopsOnly);
             }
             interactable.InteractableEventController.NotifyOnStopMovementSound(stopLoopsOnly);

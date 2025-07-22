@@ -27,6 +27,8 @@ namespace AnyRPG {
         }
 
         protected virtual void Configure() {
+            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.Configure()");
+
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             networkManagerServer = systemGameManager.NetworkManagerServer;
             audioManager = systemGameManager.AudioManager;
@@ -39,7 +41,6 @@ namespace AnyRPG {
             }
         }
 
-        /*
         public override void OnStartClient() {
             //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.OnStartClient()");
 
@@ -53,7 +54,7 @@ namespace AnyRPG {
             // network objects will not be active on clients when the autoconfigure runs, so they must configure themselves
             //objectAudioController.AutoConfigure(systemGameManager);
 
-            SubscribeToClientInteractableEvents();
+            //SubscribeToClientInteractableEvents();
         }
 
         public override void OnStopClient() {
@@ -64,10 +65,9 @@ namespace AnyRPG {
                 return;
             }
 
-            UnsubscribeFromClientInteractableEvents();
+            //UnsubscribeFromClientInteractableEvents();
             //systemGameManager.NetworkManagerClient.ProcessStopClient(unitController);
         }
-        */
 
         public override void OnStartServer() {
             //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.OnStartServer()");

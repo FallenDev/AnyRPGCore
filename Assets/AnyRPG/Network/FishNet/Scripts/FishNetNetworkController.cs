@@ -185,7 +185,16 @@ namespace AnyRPG {
             return connectionResult;
         }
 
-        public override void Logout() {
+        public override void RequestLogout() {
+            if (clientState == LocalConnectionState.Stopped) {
+                Debug.Log("FishNetNetworkController.Login() Already disconnected from the server!");
+                return;
+            }
+
+            clientConnector.RequestLogout();
+        }
+
+        public override void Disconnect() {
             if (clientState == LocalConnectionState.Stopped) {
                 Debug.Log("FishNetNetworkController.Login() Already disconnected from the server!");
                 return;
@@ -194,7 +203,7 @@ namespace AnyRPG {
             bool connectionResult = fishNetNetworkManager.ClientManager.StopConnection();
             Debug.Log($"FishNetNetworkController.Login() Result of disconnection attempt: {connectionResult}");
         }
-       
+
 
         private void HandleRemoteConnectionState(NetworkConnection networkConnection, RemoteConnectionStateArgs args) {
             //Debug.Log($"FishNetNetworkController.HandleRemoteConnectionState({args.ConnectionState.ToString()})");
@@ -696,6 +705,8 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            Debug.Log($"FishNetNetworkController.AdvertiseAddSpawnRequest({accountId})");
+
             clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
         }
 

@@ -1854,7 +1854,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void GetClientSaveData(NetworkConnection networkConnection = null) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
 
             PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
         }

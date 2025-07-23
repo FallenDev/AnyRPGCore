@@ -73,7 +73,7 @@ namespace AnyRPG {
 
 
         public void Logout() {
-            networkManagerClient.Logout();
+            networkManagerClient.RequestLogout();
             uIManager.clientLobbyWindow.CloseWindow();
         }
 
@@ -178,7 +178,7 @@ namespace AnyRPG {
 
 
         public void RequestLobbyGameList() {
-            //Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
+            Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
 
             networkManagerClient.RequestLobbyGameList();
         }
@@ -198,9 +198,11 @@ namespace AnyRPG {
                     //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - rejoining game {lobbyGame.gameId}");
                     if (lobbyGame.PlayerList[networkManagerClient.AccountId].ready) {
                         //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - account {networkManagerClient.AccountId} is ready in game {lobbyGame.gameId}");
+                        networkManagerClient.SetLobbyGame(lobbyGame);
                         networkManagerClient.RequestJoinLobbyGameInProgress(lobbyGame.gameId);
                     } else {
                         //Debug.Log($"ClientLobbyPanelController.HandleSetLobbyGameList() - account {networkManagerClient.AccountId} is not ready in game {lobbyGame.gameId}");
+                        networkManagerClient.SetLobbyGame(lobbyGame);
                         uIManager.clientLobbyGameWindow.OpenWindow();
                     }
                 } else {

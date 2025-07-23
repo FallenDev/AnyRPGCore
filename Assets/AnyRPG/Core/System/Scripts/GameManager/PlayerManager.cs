@@ -541,14 +541,13 @@ namespace AnyRPG {
         }
 
         public void SpawnPlayerConnection() {
-            //Debug.Log("PlayerManager.SpawnPlayerConnection()");
+            Debug.Log("PlayerManager.SpawnPlayerConnection()");
 
             SpawnPlayerConnectionObject();
-
         }
 
         public void SpawnPlayerConnectionObject() {
-            //Debug.Log("PlayerManager.SpawnPlayerConnection()");
+            Debug.Log("PlayerManager.SpawnPlayerConnection()");
 
             if (playerConnectionObject != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerConnection(): The Player Connection is not null.  exiting.");

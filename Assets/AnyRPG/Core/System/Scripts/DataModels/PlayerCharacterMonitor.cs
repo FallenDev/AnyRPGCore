@@ -31,8 +31,9 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
-        public void ProcessDespawn() {
+        public void ProcessBeforeDespawn() {
             //Debug.Log("PlayerCharacterMonitor.Despawn() " + playerCharacterSaveData.PlayerCharacterId);
+            StopMonitoring();
             unitController.CharacterSaveManager.SaveGameData();
             unitController = null;
         }

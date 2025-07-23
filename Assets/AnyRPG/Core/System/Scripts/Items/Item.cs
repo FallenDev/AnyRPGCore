@@ -252,7 +252,7 @@ namespace AnyRPG {
         }
 
         public virtual void InitializeNewItem(InstantiatedItem instantiatedItem, ItemQuality usedItemQuality) {
-            Debug.Log($"Item.InitializeNewItem({instantiatedItem.ResourceName}, {(usedItemQuality == null ? "null" : usedItemQuality.ResourceName)})");
+            //Debug.Log($"Item.InitializeNewItem({instantiatedItem.ResourceName}, {(usedItemQuality == null ? "null" : usedItemQuality.ResourceName)})");
 
             // for now items that have item quality set by non random means (vendor overrides) will not change their display name
             if (usedItemQuality != null) {

@@ -15,7 +15,8 @@ namespace AnyRPG {
         public virtual bool Login(string username, string password, string server) {
             return false;
         }
-        public abstract void Logout();
+        public abstract void RequestLogout();
+        public abstract void Disconnect();
         public abstract void RequestSpawnPlayerUnit(string sceneName);
         public abstract void RequestRespawnPlayerUnit();
         public abstract GameObject RequestSpawnModelPrefab(/*int spawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);

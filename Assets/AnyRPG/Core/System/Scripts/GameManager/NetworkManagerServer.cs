@@ -143,6 +143,7 @@ namespace AnyRPG {
 
             if (loginRequests.ContainsKey(clientId)) {
                 if (loggedInAccounts.ContainsKey(accountId)) {
+                    Debug.Log($"NetworkManagerServer.AddLoggedInAccount({clientId}, {accountId}, {token}) : updating existing object");
                     int oldClientId = loggedInAccounts[accountId].clientId;
                     loggedInAccounts[accountId].clientId = clientId;
                     loggedInAccounts[accountId].token = token;
@@ -233,18 +234,20 @@ namespace AnyRPG {
         public void ProcessLoginResponse(int clientId, int accountId, bool correctPassword, string token) {
             Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {accountId}, {correctPassword}, {token})");
 
+            SpawnPlayerRequest spawnPlayerRequest = null;
             if (correctPassword == true) {
                 if (loggedInAccounts.ContainsKey(accountId)) {
                     if (playerManagerServer.ActivePlayers.ContainsKey(accountId)) {
                         // if the player is already logged in, we need to add a spawn request to match the current position and direction of the player
-                        playerManagerServer.AddSpawnRequest(accountId, new SpawnPlayerRequest() {
+                        spawnPlayerRequest = new SpawnPlayerRequest() {
                             overrideSpawnDirection = true,
                             spawnForwardDirection = playerManagerServer.ActivePlayers[accountId].transform.forward,
                             overrideSpawnLocation = true,
                             spawnLocation = playerManagerServer.ActivePlayers[accountId].transform.position
-                        });
+                        };
                     }
                     // if the account is already logged in, kick the old client
+                    playerManagerServer.DespawnPlayerUnit(accountId);
                     KickPlayer(accountId);
                 }
                 AddLoggedInAccount(clientId, accountId, token);
@@ -254,6 +257,9 @@ namespace AnyRPG {
             
             if (correctPassword == false) {
                 return;
+            }
+            if (spawnPlayerRequest != null) {
+                playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
             }
 
             OnLobbyLogin(accountId);
@@ -296,9 +302,9 @@ namespace AnyRPG {
             }
 
             characterManager.ProcessStopNetworkUnit(unitController);
-            if (unitController.UnitControllerMode == UnitControllerMode.Player) {
-                playerManagerServer.StopMonitoringPlayerUnit(unitController);
-            }
+            //if (unitController.UnitControllerMode == UnitControllerMode.Player) {
+                //playerManagerServer.StopMonitoringPlayerUnit(unitController);
+            //}
         }
 
         public void ProcessDeletePlayerCharacterResponse(int accountId) {
@@ -366,18 +372,30 @@ namespace AnyRPG {
                 return;
             }
             int accountId = loggedInAccountsByClient[clientId].accountId;
+            playerManagerServer.PauseMonitoringPlayerUnit(accountId);
+        }
+
+        public void ProcessClientLogout(int accountId) {
+            Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({accountId})");
+
+            if (loggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
+            int clientId = loggedInAccounts[accountId].clientId;
             loggedInAccounts.Remove(accountId);
             loggedInAccountsByClient.Remove(clientId);
 
             OnLobbyLogout(accountId);
             foreach (LobbyGame lobbyGame in lobbyGames.Values) {
-                if (lobbyGame.leaderAccountId == accountId) {
+                if (lobbyGame.leaderAccountId == accountId && lobbyGame.inProgress == false) {
                     CancelLobbyGame(accountId, lobbyGame.gameId);
                     break;
                 }
             }
             networkController?.AdvertiseLobbyLogout(accountId);
         }
+
+
 
         public void ActivateServerMode() {
             //Debug.Log($"NetworkManagerServer.ActivateServerMode()");
@@ -926,7 +944,15 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
+            Debug.Log($"NetworkManagerServer.AdvertiseAddSpawnRequest({accountId})");
+
             networkController.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
+        }
+
+        public void Logout(int accountId) {
+            playerManagerServer.StopMonitoringPlayerUnit(accountId);
+            KickPlayer(accountId);
+            ProcessClientLogout(accountId);
         }
     }
 

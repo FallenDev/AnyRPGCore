@@ -40,7 +40,7 @@ namespace AnyRPG {
         public void ConfirmAction() {
             //Debug.Log("NewGameMenuController.ConfirmAction()");
             uIManager.confirmLogoutWindow.CloseWindow();
-            networkManagerClient.Logout();
+            networkManagerClient.RequestLogout();
         }
 
     }

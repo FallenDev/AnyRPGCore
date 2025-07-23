@@ -76,7 +76,7 @@ namespace AnyRPG {
         }
 
         public void RegisterAudioClip(AudioClip audioClip) {
-            Debug.Log($"AudioManager.RegisterAudioClip({(audioClip == null ? "null" : audioClip.name)})");
+            //Debug.Log($"AudioManager.RegisterAudioClip({(audioClip == null ? "null" : audioClip.name)})");
 
             if (audioClips.ContainsKey(audioClip.name) == false) {
                 audioClips.Add(audioClip.name, audioClip);
@@ -84,7 +84,7 @@ namespace AnyRPG {
         }
 
         public AudioClip GetAudioClip(string audioClipName) {
-            Debug.Log($"AudioManager.GetAudioClip({audioClipName})");
+            //Debug.Log($"AudioManager.GetAudioClip({audioClipName})");
 
             if (audioClips.ContainsKey(audioClipName)) {
                 return audioClips[audioClipName];

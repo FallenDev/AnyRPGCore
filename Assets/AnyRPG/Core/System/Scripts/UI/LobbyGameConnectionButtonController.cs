@@ -37,7 +37,7 @@ namespace AnyRPG {
         }
 
         public void KickPlayer() {
-            networkManagerServer.KickPlayer(accountId);
+            networkManagerServer.Logout(accountId);
         }
 
 

@@ -27,7 +27,7 @@ namespace AnyRPG {
         }
 
         protected virtual void Configure() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.Configure()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.Configure()");
 
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             networkManagerServer = systemGameManager.NetworkManagerServer;

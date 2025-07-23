@@ -122,7 +122,7 @@ namespace AnyRPG {
         }
 
         public void CompleteNetworkCharacterRequest(UnitController unitController) {
-            Debug.Log($"CharacterManager.CompleteNetworkCharacterRequest({unitController.gameObject.name})");
+            //Debug.Log($"CharacterManager.CompleteNetworkCharacterRequest({unitController.gameObject.name})");
 
             SetUnitControllerConfiguration(unitController);
         }

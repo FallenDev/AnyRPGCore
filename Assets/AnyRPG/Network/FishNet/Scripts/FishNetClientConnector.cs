@@ -109,14 +109,16 @@ namespace AnyRPG {
 
 
         public void AdvertiseAddSpawnRequestServer(int accountId, SpawnPlayerRequest loadSceneRequest) {
-            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+            //Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId})");
 
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
+            Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId}) networkConnection.ClientId = {networkConnection.ClientId}");
             AdvertiseAddSpawnRequestClient(networkConnection, loadSceneRequest);
         }
 
         [TargetRpc]
         public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, SpawnPlayerRequest spawnPlayerRequest) {
-            Debug.Log($"FishNetNetworkConnector.AdvertiseSpawnPlayerRequest()");
+            Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestClient()");
 
             networkManagerClient.AdvertiseSpawnPlayerRequest(spawnPlayerRequest);
         }
@@ -492,6 +494,8 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseLobbyLogin(int accountId, string userName) {
+            Debug.Log($"FishNetNetworkConnector.AdvertiseLobbyLogin({accountId}, {userName})");
+
             networkManagerClient.AdvertiseLobbyLogin(accountId, userName);
         }
 
@@ -1151,6 +1155,16 @@ namespace AnyRPG {
                 return;
             }
             networkManagerServer.RequestDespawnPet(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfile);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestLogout(NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestLogout()");
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetNetworkConnector.RequestLogout() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+            networkManagerServer.Logout(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
         /*

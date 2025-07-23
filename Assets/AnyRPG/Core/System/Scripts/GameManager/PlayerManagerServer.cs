@@ -329,7 +329,6 @@ namespace AnyRPG {
                 return;
             }
 
-
             if (networkManagerServer.ServerModeActive == true) {
                 networkManagerServer.AdvertiseTeleport(activePlayerLookup[unitController], teleportEffectProperties);
                 return;
@@ -347,7 +346,7 @@ namespace AnyRPG {
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerCharacterMonitors[accountId].ProcessDespawn();
+            playerCharacterMonitors[accountId].ProcessBeforeDespawn();
 
             activePlayers[accountId].Despawn(0, false, true);
             RemoveActivePlayer(accountId);
@@ -590,6 +589,17 @@ namespace AnyRPG {
             Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({accountId})");
 
             if (playerCharacterMonitors.ContainsKey(accountId)) {
+                PauseMonitoringPlayerUnit(accountId);
+
+                //activePlayerCharactersByAccount.Remove(activePlayerCharacters[playerCharacterId].accountId);
+                playerCharacterMonitors.Remove(accountId);
+            }
+        }
+
+        public void PauseMonitoringPlayerUnit(int accountId) {
+            Debug.Log($"PlayerManagerServer.PauseMonitoringPlayerUnit({accountId})");
+
+            if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
                 RemoveActivePlayer(accountId);
 
                 playerCharacterMonitors[accountId].StopMonitoring();
@@ -598,13 +608,10 @@ namespace AnyRPG {
                 if (systemGameManager.GameMode == GameMode.Network) {
                     SavePlayerCharacter(playerCharacterMonitors[accountId]);
                 }
-
-                //activePlayerCharactersByAccount.Remove(activePlayerCharacters[playerCharacterId].accountId);
-                playerCharacterMonitors.Remove(accountId);
             }
         }
 
-        
+
         public void RespawnPlayerUnit(int accountId) {
             
             // get lobby game id, unitprofile, and scene name from the player character save data
@@ -639,7 +646,7 @@ namespace AnyRPG {
         }
 
         public void PostInit(UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
+            //Debug.Log($"PlayerManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
 
             // load player data from the active player characters dictionary
             if (!playerCharacterMonitors.ContainsKey(unitController.CharacterRequestData.accountId)) {

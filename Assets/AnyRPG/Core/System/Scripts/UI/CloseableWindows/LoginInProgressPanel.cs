@@ -31,7 +31,7 @@ namespace AnyRPG {
 
         public void CancelAction() {
             //Debug.Log("DisconnectedPanelController.ConfirmAction()");
-            networkManagerClient.Logout();
+            networkManagerClient.RequestDisconnect();
             uIManager.loginInProgressWindow.CloseWindow();
         }
 

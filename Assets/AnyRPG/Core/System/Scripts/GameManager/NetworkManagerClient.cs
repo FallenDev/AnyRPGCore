@@ -93,9 +93,14 @@ namespace AnyRPG {
             return networkController.Login(username, password, server);
         }
 
-        public void Logout() {
+        public void RequestLogout() {
             isLoggingInOrOut = true;
-            networkController.Logout();
+            networkController.RequestLogout();
+        }
+
+        public void RequestDisconnect() {
+            isLoggingInOrOut = true;
+            networkController.Disconnect();
         }
 
         public void LoadScene(string sceneName) {
@@ -213,6 +218,8 @@ namespace AnyRPG {
         }
 
         public void RequestLobbyGameList() {
+            Debug.Log($"NetworkManagerClient.RequestLobbyGameList()");
+
             networkController.RequestLobbyGameList();
         }
 
@@ -353,7 +360,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseJoinLobbyGameInProgress(int gameId) {
-            //Debug.Log($"NetworkManagerClient.AdvertiseJoinLobbyGameInProgress({gameId})");
+            Debug.Log($"NetworkManagerClient.AdvertiseJoinLobbyGameInProgress({gameId})");
+
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // lobby game does not exist
                 return;
@@ -374,6 +382,8 @@ namespace AnyRPG {
         }
 
         public void LaunchLobbyGame(int gameId) {
+            Debug.Log($"NetworkManagerClient.LaunchLobbyGame({gameId})");
+
             if (lobbyGame == null || lobbyGame.gameId != gameId) {
                 // have not joined lobby game, or joined different lobby game
                 return;

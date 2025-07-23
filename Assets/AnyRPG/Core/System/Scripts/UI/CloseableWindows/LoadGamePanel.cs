@@ -292,7 +292,7 @@ namespace AnyRPG {
         }
 
         public void Logout() {
-            networkManager.Logout();
+            networkManager.RequestLogout();
             Close();
         }
 

@@ -684,7 +684,13 @@ namespace AnyRPG {
             unitController.CharacterPetManager.DespawnPet(unitProfile);
         }
 
+        public void RequestSpawnRequest(int accountId) {
+            Debug.Log($"PlayerManagerServer.RequestSpawnRequest({accountId})");
 
+            if (spawnRequests.ContainsKey(accountId)) {
+                networkManagerServer.AdvertiseAddSpawnRequest(accountId, spawnRequests[accountId]);
+            }
+        }
     }
 
 }

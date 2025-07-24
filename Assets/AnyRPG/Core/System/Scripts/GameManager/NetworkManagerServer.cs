@@ -245,6 +245,10 @@ namespace AnyRPG {
                             overrideSpawnLocation = true,
                             spawnLocation = playerManagerServer.ActivePlayers[accountId].transform.position
                         };
+                        // the request generated here will be sent to the old client, but there's nothing we can do about that
+                        // since even by the end of this function, the new client is not an observer of the networkController
+                        // so no messages can be sent to it.  It will request the spawn request when the client starts up.
+                        playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
                     }
                     // if the account is already logged in, kick the old client
                     playerManagerServer.DespawnPlayerUnit(accountId);
@@ -258,9 +262,8 @@ namespace AnyRPG {
             if (correctPassword == false) {
                 return;
             }
-            if (spawnPlayerRequest != null) {
-                playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
-            }
+            //if (spawnPlayerRequest != null) {
+            //}
 
             OnLobbyLogin(accountId);
             networkController.AdvertiseLobbyLogin(accountId, loggedInAccounts[accountId].username);
@@ -949,10 +952,16 @@ namespace AnyRPG {
             networkController.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
         }
 
+
+
         public void Logout(int accountId) {
             playerManagerServer.StopMonitoringPlayerUnit(accountId);
             KickPlayer(accountId);
             ProcessClientLogout(accountId);
+        }
+
+        public void RequestSpawnRequest(int accountId) {
+            playerManagerServer.RequestSpawnRequest(accountId);
         }
     }
 

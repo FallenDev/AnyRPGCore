@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 namespace AnyRPG {
     public class FishNetClientConnector : ConfiguredNetworkBehaviour {
@@ -46,7 +45,20 @@ namespace AnyRPG {
             base.OnStartClient();
             //Debug.Log($"FishNetNetworkConnector.OnStartClient() ClientId: {networkManager.ClientManager.Connection.ClientId}");
 
+            RequestSpawnRequest();
             systemGameManager.UIManager.ProcessLoginSuccess();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void RequestSpawnRequest(NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetNetworkConnector.RequestSpawnRequest()");
+
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            //int accountId = networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId;
+
+            networkManagerServer.RequestSpawnRequest(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
 

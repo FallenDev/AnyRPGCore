@@ -245,14 +245,22 @@ namespace AnyRPG {
                             overrideSpawnLocation = true,
                             spawnLocation = playerManagerServer.ActivePlayers[accountId].transform.position
                         };
-                        // the request generated here will be sent to the old client, but there's nothing we can do about that
-                        // since even by the end of this function, the new client is not an observer of the networkController
-                        // so no messages can be sent to it.  It will request the spawn request when the client starts up.
-                        playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
                     }
                     // if the account is already logged in, kick the old client
                     playerManagerServer.DespawnPlayerUnit(accountId);
                     KickPlayer(accountId);
+                } else if (playerManagerServer.PlayerCharacterMonitors.ContainsKey(accountId)) {
+                    // if the account is disconnected but was already logged in, add a spawn request to match the saved position and direction of the player
+                    AnyRPGSaveData saveData = playerManagerServer.PlayerCharacterMonitors[accountId].playerCharacterSaveData.SaveData;
+                    spawnPlayerRequest = new SpawnPlayerRequest() {
+                        overrideSpawnDirection = true,
+                        spawnForwardDirection = new Vector3(saveData.PlayerRotationX, saveData.PlayerRotationY, saveData.PlayerRotationZ),
+                        overrideSpawnLocation = true,
+                        spawnLocation = new Vector3(saveData.PlayerLocationX, saveData.PlayerLocationY, saveData.PlayerLocationZ)
+                    };
+                }
+                if (spawnPlayerRequest != null) {
+                    playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest, false);
                 }
                 AddLoggedInAccount(clientId, accountId, token);
             }
@@ -375,7 +383,8 @@ namespace AnyRPG {
                 return;
             }
             int accountId = loggedInAccountsByClient[clientId].accountId;
-            playerManagerServer.PauseMonitoringPlayerUnit(accountId);
+            ProcessClientLogout(accountId);
+            playerManagerServer.ProcessDisconnect(accountId);
         }
 
         public void ProcessClientLogout(int accountId) {

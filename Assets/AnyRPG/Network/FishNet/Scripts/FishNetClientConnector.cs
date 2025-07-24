@@ -122,7 +122,9 @@ namespace AnyRPG {
 
         public void AdvertiseAddSpawnRequestServer(int accountId, SpawnPlayerRequest loadSceneRequest) {
             //Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId})");
-
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                return;
+            }
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
             Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId}) networkConnection.ClientId = {networkConnection.ClientId}");
             AdvertiseAddSpawnRequestClient(networkConnection, loadSceneRequest);

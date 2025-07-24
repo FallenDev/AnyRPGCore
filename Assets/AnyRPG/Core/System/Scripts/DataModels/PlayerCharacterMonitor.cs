@@ -10,6 +10,7 @@ namespace AnyRPG {
         public PlayerCharacterSaveData playerCharacterSaveData;
         public UnitController unitController;
         public bool saveDataDirty;
+        public bool disconnected = false;
 
         // game manager references
         private SaveManager saveManager = null;
@@ -32,8 +33,9 @@ namespace AnyRPG {
         }
 
         public void ProcessBeforeDespawn() {
-            //Debug.Log("PlayerCharacterMonitor.Despawn() " + playerCharacterSaveData.PlayerCharacterId);
-            StopMonitoring();
+            Debug.Log($"PlayerCharacterMonitor.ProcessBeforeDespawn() for account {accountId}");
+
+            //StopMonitoring();
             unitController.CharacterSaveManager.SaveGameData();
             unitController = null;
         }
@@ -53,10 +55,12 @@ namespace AnyRPG {
             }
         }
 
+        /*
         public void HandleCameraTargetReady() {
             unitController.OnCameraTargetReady -= HandleCameraTargetReady;
             SubscribeToUnitEvents();
         }
+        */
 
         /*
         public void HandleDespawn(UnitController unitController) {
@@ -64,19 +68,30 @@ namespace AnyRPG {
         }
         */
 
-        
+        /*
         private void SubscribeToUnitEvents() {
             //unitController.UnitEventController.OnDespawn += HandleDespawn;
         }
-        
+        */
 
+        /*
         public void StopMonitoring() {
             unitController.OnCameraTargetReady -= HandleCameraTargetReady;
         }
+        */
 
         public void SetUnitController(UnitController unitController) {
             Debug.Log($"PlayerCharacterMonitor.SetUnitController({unitController.gameObject.name})");
+
             this.unitController = unitController;
+            disconnected = false;
+        }
+
+        public void SetDisconnected() {
+            Debug.Log($"PlayerCharacterMonitor.SetDisconnected() for account {accountId}");
+
+            ProcessBeforeDespawn();
+            this.disconnected = true;
         }
     }
 }

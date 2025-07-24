@@ -424,12 +424,18 @@ namespace AnyRPG {
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
             Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId})");
 
+            AddSpawnRequest(accountId, loadSceneRequest, true);
+        }
+
+        public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
+            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+
             if (spawnRequests.ContainsKey(accountId)) {
                 spawnRequests[accountId] = loadSceneRequest;
             } else {
                 spawnRequests.Add(accountId, loadSceneRequest);
             }
-            if (networkManagerServer.ServerModeActive == true) {
+            if (networkManagerServer.ServerModeActive == true && advertise == true) {
                 networkManagerServer.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
             } else {
                 //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}) not in server mode, not advertising");
@@ -577,6 +583,7 @@ namespace AnyRPG {
             AddActivePlayer(accountId, unitController);
         }
 
+        /*
         public void StopMonitoringPlayerUnit(UnitController unitController) {
             Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({unitController.gameObject.name})");
 
@@ -584,6 +591,7 @@ namespace AnyRPG {
                 StopMonitoringPlayerUnit(activePlayerLookup[unitController]);
             }
         }
+        */
 
         public void StopMonitoringPlayerUnit(int accountId) {
             Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({accountId})");
@@ -596,19 +604,28 @@ namespace AnyRPG {
             }
         }
 
+        public void ProcessDisconnect(int accountId) {
+            Debug.Log($"PlayerManagerServer.ProcessDisconnect({accountId})");
+
+            if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
+                playerCharacterMonitors[accountId].SetDisconnected();
+            }
+            PauseMonitoringPlayerUnit(accountId);
+        }
+
         public void PauseMonitoringPlayerUnit(int accountId) {
             Debug.Log($"PlayerManagerServer.PauseMonitoringPlayerUnit({accountId})");
 
-            if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
+            //if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
                 RemoveActivePlayer(accountId);
 
-                playerCharacterMonitors[accountId].StopMonitoring();
+                //playerCharacterMonitors[accountId].StopMonitoring();
 
                 // flush data to database before stop monitoring
                 if (systemGameManager.GameMode == GameMode.Network) {
                     SavePlayerCharacter(playerCharacterMonitors[accountId]);
                 }
-            }
+            //}
         }
 
 

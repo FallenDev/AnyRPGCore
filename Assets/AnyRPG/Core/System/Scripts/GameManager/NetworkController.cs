@@ -19,6 +19,7 @@ namespace AnyRPG {
         public abstract void Disconnect();
         public abstract void RequestSpawnPlayerUnit(string sceneName);
         public abstract void RequestRespawnPlayerUnit();
+        public abstract void RequestRevivePlayerUnit();
         public abstract GameObject RequestSpawnModelPrefab(/*int spawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
         public abstract bool CanSpawnCharacterOverNetwork();

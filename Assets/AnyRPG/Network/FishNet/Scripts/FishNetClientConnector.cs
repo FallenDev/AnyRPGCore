@@ -88,6 +88,15 @@ namespace AnyRPG {
             networkManagerServer.RequestRespawnPlayerUnit(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestRevivePlayerUnit(NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestRevivePlayerUnit()");
+
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            networkManagerServer.RequestRevivePlayerUnit(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
 
         public void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
             Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({accountId}, {characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {sceneName})");

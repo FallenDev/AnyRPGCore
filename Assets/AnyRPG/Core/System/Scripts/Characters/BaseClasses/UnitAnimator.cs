@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -88,8 +89,6 @@ namespace AnyRPG {
         private float baseCombatJogStrafeBackLeftAnimationSpeed = 2.67f;
         private float baseCombatWalkStrafeForwardLeftAnimationSpeed = 1f;
         private float baseCombatJogStrafeForwardLeftAnimationSpeed = 2.67f;
-
-        private Coroutine resurrectionCoroutine = null;
 
         private Dictionary<AnimatorOverrideController, List<string>> animatorParameters = new Dictionary<AnimatorOverrideController, List<string>>();
 
@@ -622,31 +621,23 @@ namespace AnyRPG {
             SetTrigger("DeathTrigger");
         }
 
-        public IEnumerator WaitForResurrectionAnimation(float animationLength) {
-            //Debug.Log($"{gameObject.name}.WaitForAttackAnimation(" + attackLength + ")");
-            float remainingTime = animationLength;
-            while (remainingTime > 0f) {
-                yield return null;
-                remainingTime -= Time.deltaTime;
-            }
-            //Debug.Log($"{gameObject.name}Setting waitingforhits to false after countdown down");
-            SetBool("IsDead", false);
-            if (unitController != null && unitController.BaseCharacter != null && unitController.CharacterStats != null) {
-                unitController.CharacterStats.ReviveComplete();
-            }
-            unitController.UnitEventController.NotifyOnAnimatorReviveComplete();
-            SetCorrectOverrideController();
-            resurrectionCoroutine = null;
+        public void HandleReviveBegin() {
+            SetTrigger("ReviveTrigger");
         }
 
-        public void HandleReviveBegin() {
-            unitController.UnitEventController.NotifyOnAnimatorStartRevive();
-            SetTrigger("ReviveTrigger");
-            // add 1 to account for the transition
-            if (systemConfigurationManager != null) {
-                float animationLength = overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name].length + 2;
-                resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrectionAnimation(animationLength));
+        public void HandleReviveComplete() {
+            SetBool("IsDead", false);
+        }
+
+        public float GetReviveAnimationLength() {
+            //Debug.Log($"{gameObject.name}.CharacterAnimator.GetReviveAnimationLength()");
+            if (systemAnimationProfile == null) {
+                return 0f;
             }
+            if (overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name] != null) {
+                return overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name].length + 2;
+            }
+            return 0f;
         }
 
         public void HandleTakeDamage() {

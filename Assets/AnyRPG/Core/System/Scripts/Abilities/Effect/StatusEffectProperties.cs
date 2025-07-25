@@ -1,9 +1,7 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AnyRPG {
 
@@ -194,6 +192,16 @@ namespace AnyRPG {
 
         protected List<AbilityEffectProperties> weaponHitAbilityEffectList = new List<AbilityEffectProperties>();
 
+        [Header("Death Options")]
+
+        [Tooltip("If true, the status effect will persist through death")]
+        [SerializeField]
+        protected bool keepOnDeath = false;
+
+        [Tooltip("If true, the wearer can revive themselves when dead")]
+        [SerializeField]
+        protected bool allowRevive = false;
+
         [Header("Save Options")]
 
         [Tooltip("If true, the status effect will be saved with the character is saved")]
@@ -247,6 +255,8 @@ namespace AnyRPG {
         public bool SaveEffect { get => saveEffect; set => saveEffect = value; }
         public bool RequireOutOfCombat { get => requireOutOfCombat; set => requireOutOfCombat = value; }
         public List<AbilityAttachmentNode> StatusEffectObjectList { get => statusEffectObjectList; set => statusEffectObjectList = value; }
+        public bool KeepOnDeath { get => keepOnDeath; set => keepOnDeath = value; }
+        public bool AllowRevive { get => allowRevive; set => allowRevive = value; }
 
         /*
         public void GetStatusEffectProperties(StatusEffect effect) {

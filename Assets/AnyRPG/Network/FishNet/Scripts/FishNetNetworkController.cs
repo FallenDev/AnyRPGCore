@@ -311,14 +311,18 @@ namespace AnyRPG {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             clientConnector.RequestSpawnPlayerUnit(sceneName);
-            //return null;
         }
 
         public override void RequestRespawnPlayerUnit() {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             clientConnector.RequestRespawnPlayerUnit();
-            //return null;
+        }
+
+        public override void RequestRevivePlayerUnit() {
+            Debug.Log($"FishNetNetworkController.RequestRevivePlayerUnit()");
+
+            clientConnector.RequestRevivePlayerUnit();
         }
 
 

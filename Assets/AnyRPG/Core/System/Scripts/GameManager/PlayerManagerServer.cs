@@ -628,6 +628,15 @@ namespace AnyRPG {
             //}
         }
 
+        public void RevivePlayerUnit(int accountId) {
+
+            // get lobby game id, unitprofile, and scene name from the player character save data
+            if (activePlayers.ContainsKey(accountId) == false) {
+                //Debug.LogError($"PlayerManagerServer.RequestRespawnPlayerUnit: activePlayerCharacters does not contain accountId {accountId}");
+                return;
+            }
+            activePlayers[accountId].CharacterStats.StatusEffectRevive();
+        }
 
         public void RespawnPlayerUnit(int accountId) {
             

@@ -185,6 +185,8 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnAnimatorDeath += HandleAnimatorDeathClient;
             unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChangedServer;
             unitController.UnitEventController.OnBeforeDie += HandleBeforeDieServer;
+            unitController.UnitEventController.OnReviveBegin += HandleReviveBeginServer;
+            unitController.UnitEventController.OnReviveComplete += HandleReviveCompleteServer;
             unitController.UnitEventController.OnEnterCombat += HandleEnterCombatServer;
             unitController.UnitEventController.OnDropCombat += HandleDropCombat;
             unitController.UnitEventController.OnSpawnAbilityObjects += HandleSpawnAbilityObjectsServer;
@@ -273,6 +275,8 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnAnimatorDeath -= HandleAnimatorDeathClient;
             unitController.UnitEventController.OnResourceAmountChanged -= HandleResourceAmountChangedServer;
             unitController.UnitEventController.OnBeforeDie -= HandleBeforeDieServer;
+            unitController.UnitEventController.OnReviveBegin -= HandleReviveBeginServer;
+            unitController.UnitEventController.OnReviveComplete -= HandleReviveCompleteServer;
             unitController.UnitEventController.OnEnterCombat -= HandleEnterCombatServer;
             unitController.UnitEventController.OnDropCombat -= HandleDropCombat;
             unitController.UnitEventController.OnSpawnAbilityObjects -= HandleSpawnAbilityObjectsServer;
@@ -1649,6 +1653,33 @@ namespace AnyRPG {
 
             unitController.CharacterStats.Die();
         }
+
+        private void HandleReviveBeginServer() {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleReviveBeginServer()");
+
+            HandleReviveBeginClient();
+        }
+
+        [ObserversRpc]
+        public void HandleReviveBeginClient() {
+            //Debug.Log($"{gameObject.name}.HandleBeforeDieClient()");
+
+            unitController.CharacterStats.Revive();
+        }
+
+        private void HandleReviveCompleteServer(UnitController targetUnitController) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleReviveCompleteServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
+
+            HandleReviveCompleteClient();
+        }
+
+        [ObserversRpc]
+        public void HandleReviveCompleteClient() {
+            //Debug.Log($"{gameObject.name}.HandleReviveCompleteClient()");
+
+            unitController.CharacterStats.ReviveComplete();
+        }
+
 
         private void HandleClearTargetClient(Interactable oldTarget) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");

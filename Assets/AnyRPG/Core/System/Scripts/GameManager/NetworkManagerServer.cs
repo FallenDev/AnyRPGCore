@@ -933,6 +933,12 @@ namespace AnyRPG {
             playerManagerServer.RespawnPlayerUnit(accountId);
         }
 
+        public void RequestRevivePlayerUnit(int accountId) {
+            Debug.Log($"NetworkManagerServer.RequestRevivePlayerUnit({accountId})");
+
+            playerManagerServer.RevivePlayerUnit(accountId);
+        }
+
         public void MonitorPlayerUnit(int accountId, UnitController unitController) {
             playerManagerServer.MonitorPlayerUnit(accountId, unitController);
         }

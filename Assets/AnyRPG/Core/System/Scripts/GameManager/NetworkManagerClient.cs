@@ -119,6 +119,10 @@ namespace AnyRPG {
             networkController.RequestRespawnPlayerUnit();
         }
 
+        public void RequestRevivePlayerUnit() {
+            networkController.RequestRevivePlayerUnit();
+        }
+
         public GameObject RequestSpawnModelPrefab(GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
             return networkController.RequestSpawnModelPrefab(prefab, parentTransform, position, forward);
         }

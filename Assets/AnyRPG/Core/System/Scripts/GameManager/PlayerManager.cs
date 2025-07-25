@@ -345,9 +345,16 @@ namespace AnyRPG {
             playerManagerServer.RespawnPlayerUnit(0);
         }
 
-        public void RevivePlayerUnit() {
-            //Debug.Log("PlayerManager.RevivePlayerUnit()");
-            unitController.CharacterStats.Revive();
+        public void RequestRevivePlayer() {
+            Debug.Log("PlayerManager.RequestRevivePlayer()");
+
+            if (systemGameManager.GameMode == GameMode.Network) {
+                //Debug.Log("PlayerManager.RequestRespawnPlayer(): Lobby Game Mode, requesting server to respawn player unit");
+                networkManagerClient.RequestRevivePlayerUnit();
+                return;
+            }
+
+            playerManagerServer.RevivePlayerUnit(0);
         }
 
         public void SubscribeToTargetReady() {

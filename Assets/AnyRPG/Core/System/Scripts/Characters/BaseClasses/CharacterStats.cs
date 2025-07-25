@@ -53,6 +53,8 @@ namespace AnyRPG {
 
         protected bool eventSubscriptionsInitialized = false;
 
+        private Coroutine resurrectionCoroutine = null;
+
         // game manager references
         protected LevelManager levelManager = null;
         protected PlayerManager playerManager = null;
@@ -1378,6 +1380,25 @@ namespace AnyRPG {
             }
         }
 
+        public void StatusEffectRevive() {
+            bool canRevive = false;
+            List<StatusEffectNode> cancelNodes = new List<StatusEffectNode>();
+            foreach (StatusEffectNode statusEffectNode in statusEffects.Values) {
+                // find the first matching status effect that allows revive and cancel it before reviving
+                if (statusEffectNode.StatusEffect.AllowRevive == true) {
+                    statusEffectNode.CancelStatusEffect();
+                    canRevive = true;
+                    break;
+                }
+            }
+            if (canRevive == false) {
+                //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.StatusEffectRevive(): no status effects allow revive");
+                return;
+            }
+            Revive();
+
+        }
+
         public void Revive() {
             //Debug.Log(BaseCharacter.MyCharacterName + "Triggering Revive Animation");
             if (isReviving) {
@@ -1386,24 +1407,63 @@ namespace AnyRPG {
             }
             unitController.UnitAnimator.EnableAnimator();
             isReviving = true;
-            unitController.CancelDespawnDelay();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                // should only be done on server
+                unitController.CancelDespawnDelay();
+            }
             unitController.UnitEventController.NotifyOnReviveBegin();
-            unitController.UnitAnimator.HandleReviveBegin();
-
+            if (systemGameManager.GameMode == GameMode.Local
+                || unitController.IsOwner
+                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                unitController.UnitAnimator.HandleReviveBegin();
+            }
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrection(unitController.UnitAnimator.GetReviveAnimationLength()));
+            }
         }
+
+        public IEnumerator WaitForResurrection(float animationLength) {
+            //Debug.Log($"{gameObject.name}.WaitForAttackAnimation(" + attackLength + ")");
+            float remainingTime = animationLength;
+            while (remainingTime > 0f) {
+                yield return null;
+                remainingTime -= Time.deltaTime;
+            }
+            //Debug.Log($"{gameObject.name}Setting waitingforhits to false after countdown down");
+            unitController.CharacterStats.ReviveComplete();
+            resurrectionCoroutine = null;
+        }
+
 
         public void ReviveComplete() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.ReviveComplete() Recieved Revive Complete Signal. Resetting Character Stats.");
-            ReviveRaw();
+            if (systemGameManager.GameMode == GameMode.Local
+                || unitController.IsOwner
+                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                // should only be done on server or authoritative client
+                unitController.UnitAnimator.HandleReviveComplete();
+            }
+            isReviving = false;
+            isAlive = true;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                // should only be done on server
+                ReviveRaw();
+            }
+            unitController.FreezeRotation();
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                // should be done on client
+                unitController.InitializeNamePlate();
+                // minimap updates
+                unitController.CharacterUnit.HandleReviveComplete();
+                unitController.UnitComponentController.HighlightController.UpdateColors();
+            }
             unitController.UnitEventController.NotifyOnReviveComplete();
         }
 
         public void ReviveRaw() {
             //Debug.Log(BaseCharacter.gameObject.name + ".CharacterStats.ReviveRaw()");
-            isReviving = false;
             unitController.DisableCollider();
             unitController.EnableCollider();
-            isAlive = true;
             ClearInvalidStatusEffects();
 
             SetResourceAmountsToMaximum();
@@ -1427,7 +1487,7 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.CharacterStatus.ClearStatusEffects()");
             List<StatusEffectNode> statusEffectNodes = new List<StatusEffectNode>();
             foreach (StatusEffectNode statusEffectNode in statusEffects.Values) {
-                if (clearAll == true || statusEffectNode.StatusEffect.ClassTrait == false) {
+                if (clearAll == true || (statusEffectNode.StatusEffect.ClassTrait == false && statusEffectNode.StatusEffect.KeepOnDeath == false)) {
                     statusEffectNodes.Add(statusEffectNode);
                 }
             }
@@ -1638,6 +1698,16 @@ namespace AnyRPG {
             } else {
                 unitController.UnitEventController.NotifyOnRequestCancelStatusEffect(statusEffectNode.StatusEffect);
             }
+        }
+
+        public bool CanRevive() {
+            // check status effects for revive property
+            foreach (StatusEffectNode statusEffectNode in statusEffects.Values) {
+                if (statusEffectNode.StatusEffect.AllowRevive == true) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

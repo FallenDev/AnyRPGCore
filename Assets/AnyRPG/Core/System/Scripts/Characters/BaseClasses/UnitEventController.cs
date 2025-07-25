@@ -83,12 +83,10 @@ namespace AnyRPG {
         public event System.Action<string> OnBeginChatMessage = delegate { };
         public event System.Action OnInitializeAnimator = delegate { };
         public event System.Action<string> OnAnimatorSetTrigger = delegate { };
-        public event System.Action OnAnimatorReviveComplete = delegate { };
         public event System.Action OnAnimatorStartLevitated = delegate { };
         public event System.Action<bool> OnAnimatorEndLevitated = delegate { };
         public event System.Action OnAnimatorStartStunned = delegate { };
         public event System.Action<bool> OnAnimatorEndStunned = delegate { };
-        public event System.Action OnAnimatorStartRevive = delegate { };
         public event System.Action OnAnimatorDeath = delegate { };
         public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
         public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
@@ -429,10 +427,6 @@ namespace AnyRPG {
         }
 
         public void NotifyOnReviveComplete() {
-            unitController.FreezeRotation();
-            unitController.InitializeNamePlate();
-            unitController.CharacterUnit.HandleReviveComplete();
-            unitController.UnitComponentController.HighlightController.UpdateColors();
             OnReviveComplete(unitController);
         }
 
@@ -510,10 +504,6 @@ namespace AnyRPG {
             OnAnimatorSetTrigger(triggerName);
         }
 
-        public void NotifyOnAnimatorReviveComplete(){
-            OnAnimatorReviveComplete();
-        }
-
         public void NotifyOnAnimatorStartLevitated() {
             OnAnimatorStartLevitated();
         }
@@ -528,10 +518,6 @@ namespace AnyRPG {
 
         public void NotifyOnAnimatorEndStunned(bool swapAnimator) {
             OnAnimatorEndStunned(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorStartRevive() {
-            OnAnimatorStartRevive();
         }
 
         public void NotifyOnAnimatorDeath() {

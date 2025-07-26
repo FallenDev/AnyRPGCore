@@ -40,6 +40,7 @@ namespace AnyRPG {
         public event System.Action<int> OnUnsetMouseActionButton = delegate { };
         public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
         public event System.Action<int> OnTakeLoot = delegate { };
+        public event System.Action OnPlayerDeath = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -224,6 +225,10 @@ namespace AnyRPG {
 
         public void NotifyOnTakeLoot(int accountId) {
             OnTakeLoot(accountId);
+        }
+
+        public void NotifyOnPlayerDeath() {
+            OnPlayerDeath();
         }
     }
 

@@ -1618,7 +1618,8 @@ namespace AnyRPG {
         public void HandleDropCombat() {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDropCombat()");
 
-            unitController.CharacterCombat.TryToDropCombat();
+            //unitController.CharacterCombat.TryToDropCombat();
+            unitController.CharacterCombat.DropCombat(true);
         }
 
         private void HandleEnterCombatServer(Interactable targetInteractable) {

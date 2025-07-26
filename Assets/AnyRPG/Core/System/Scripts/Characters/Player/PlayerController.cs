@@ -404,11 +404,12 @@ namespace AnyRPG {
             }
 
             Ray ray = cameraManager.ActiveMainCamera.ScreenPointToRay(Input.mousePosition);
-            int playerMask = 1 << LayerMask.NameToLayer("Player");
+            //int playerMask = 1 << LayerMask.NameToLayer("Player");
             int ignoreMask = 1 << LayerMask.NameToLayer("Ignore Raycast");
             int spellMask = 1 << LayerMask.NameToLayer("SpellEffects");
             int waterMask = 1 << LayerMask.NameToLayer("Water");
-            int layerMask = ~(playerMask | ignoreMask | spellMask | waterMask);
+            //int layerMask = ~(playerMask | ignoreMask | spellMask | waterMask);
+            int layerMask = ~( ignoreMask | spellMask | waterMask);
 
             bool disableMouseOver = false;
             bool mouseOverNamePlate = false;
@@ -417,7 +418,8 @@ namespace AnyRPG {
             if (!EventSystem.current.IsPointerOverGameObject() && !mouseOverNamePlate) {
                 if (Physics.Raycast(ray, out mouseOverhit, 100, layerMask)) {
                     // prevent clicking on mount
-                    if (mouseOverhit.collider.gameObject != playerManager.ActiveUnitController.gameObject) {
+                    if (mouseOverhit.collider.gameObject != playerManager.ActiveUnitController.gameObject
+                        && mouseOverhit.collider.gameObject != playerManager.UnitController.gameObject) {
                         Interactable newInteractable = mouseOverhit.collider.GetComponent<Interactable>();
                         if (newInteractable == null) {
                             newInteractable = mouseOverhit.collider.GetComponentInParent<Interactable>();
@@ -1166,9 +1168,11 @@ namespace AnyRPG {
 
             cameraManager.SwitchToMainCamera();
             cameraManager.MainCameraController.InitializeCamera(playerManager.ActiveUnitController.transform);
+            /*
             if (systemConfigurationManager.UseThirdPartyMovementControl == true) {
                 playerManager.EnableMovementControllers();
             }
+            */
 
             EventParamProperties eventParam = new EventParamProperties();
             SystemEventManager.TriggerEvent("OnStartRiding", eventParam);
@@ -1176,9 +1180,11 @@ namespace AnyRPG {
 
         public void HandleDeActivateMountedState() {
 
+            /*
             if (systemConfigurationManager.UseThirdPartyMovementControl == true) {
                 playerManager.DisableMovementControllers();
             }
+            */
             playerManager.SetActiveUnitController(playerManager.UnitController);
             if (playerManager.UnitController != null) {
                 playerManager.UnitController.UnitAnimator.SetCorrectOverrideController();

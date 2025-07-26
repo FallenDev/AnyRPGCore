@@ -24,8 +24,8 @@ namespace AnyRPG {
         private RuntimeAnimatorController animatorController = null;
         private AnimatorOverrideController overrideController = null;
 
-        private RuntimeAnimatorController thirdPartyAnimatorController = null;
-        private AnimatorOverrideController thirdPartyOverrideController = null;
+        //private RuntimeAnimatorController thirdPartyAnimatorController = null;
+        //private AnimatorOverrideController thirdPartyOverrideController = null;
 
         // have to keep track of current override controller separately
         private AnimatorOverrideController currentOverrideController = null;
@@ -256,6 +256,7 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.UnitAnimator.InitializeAnimator(): Could not find animator in children");
                 return;
             }
+            /*
             if (systemConfigurationManager.UseThirdPartyMovementControl == true) {
                 if (thirdPartyAnimatorController == null) {
                     thirdPartyAnimatorController = animator.runtimeAnimatorController;
@@ -264,6 +265,7 @@ namespace AnyRPG {
                     thirdPartyOverrideController = new AnimatorOverrideController(thirdPartyAnimatorController);
                 }
             }
+            */
 
             if (overrideController == null) {
                 //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.InitializeAnimator() override controller was null");
@@ -287,14 +289,21 @@ namespace AnyRPG {
             initialized = true;
 
             unitController.UnitEventController.NotifyOnInitializeAnimator();
+
+            // now that the network animator has been set due to the above notification, check for spawn dead
+            if (unitController.CharacterStats.IsAlive == false) {
+                HandleDie();
+            }
         }
 
         public void SetCorrectOverrideController(bool runUpdate = true) {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetCorrectOverrideController()");
+            /*
             if (unitController.UnitControllerMode == UnitControllerMode.Player && systemConfigurationManager.UseThirdPartyMovementControl == true) {
                 SetOverrideController(thirdPartyOverrideController, runUpdate);
                 return;
             }
+            */
 
             // AI or no third party movement control case
             SetOverrideController(overrideController, runUpdate);
@@ -617,8 +626,18 @@ namespace AnyRPG {
 
             SetJumping(0);
 
+            ResetTrigger("TakeDamageTrigger");
             SetBool("IsDead", true);
             SetTrigger("DeathTrigger");
+        }
+
+        public void ResetTrigger(string triggerName) {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetTrigger({triggerName})");
+
+            if (animator != null && ParameterExists(triggerName)) {
+                animator.ResetTrigger(triggerName);
+                unitController.UnitEventController.NotifyOnAnimatorResetTrigger(triggerName);
+            }
         }
 
         public void HandleReviveBegin() {
@@ -1021,7 +1040,7 @@ namespace AnyRPG {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetTrigger({varName})");
 
             if (animator != null && ParameterExists(varName)) {
-                animator.ResetTrigger(varName);
+                ResetTrigger(varName);
                 animator.SetTrigger(varName);
                 unitController.UnitEventController.NotifyOnAnimatorSetTrigger(varName);
             }
@@ -1079,11 +1098,13 @@ namespace AnyRPG {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetSettings()");
 
             // return settings to how they were when the unit was initialized in case a third party animator is used and this unit was in preview mode
+            /*
             if (systemConfigurationManager.UseThirdPartyMovementControl == true) {
                 if (thirdPartyAnimatorController != null) {
                     animator.runtimeAnimatorController = thirdPartyAnimatorController;
                 }
             }
+            */
         }
 
     }

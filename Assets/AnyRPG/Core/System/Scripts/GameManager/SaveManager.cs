@@ -480,6 +480,7 @@ namespace AnyRPG {
             AnyRPGSaveData newSaveData = new AnyRPGSaveData();
             newSaveData.playerName = systemConfigurationManager.DefaultPlayerName;
             newSaveData.PlayerLevel = 1;
+            newSaveData.initializeResourceAmounts = true;
             newSaveData.CurrentScene = systemConfigurationManager.DefaultStartingZone;
             newSaveData.unitProfileName = systemConfigurationManager.DefaultUnitProfileName;
 
@@ -502,8 +503,8 @@ namespace AnyRPG {
             //newSaveData = InitializeSaveDataProperties(newSaveData);
 
             return new PlayerCharacterSaveData() {
-            PlayerCharacterId = 0,
-            SaveData = newSaveData
+                PlayerCharacterId = 0,
+                SaveData = newSaveData
             };
         }
 

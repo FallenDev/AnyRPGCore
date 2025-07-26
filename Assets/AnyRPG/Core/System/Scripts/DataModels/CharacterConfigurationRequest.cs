@@ -16,6 +16,7 @@ namespace AnyRPG {
         public UnitToughness unitToughness = null;
         public int unitLevel = 1;
         public int currentExperience = 0;
+        public bool isDead = false;
         public UnitControllerMode unitControllerMode;
         public CharacterAppearanceData characterAppearanceData = null;
 
@@ -40,6 +41,7 @@ namespace AnyRPG {
             faction = systemDataFactory.GetResource<Faction>(saveData.playerFaction);
             unitLevel = saveData.PlayerLevel;
             currentExperience = saveData.currentExperience;
+            isDead = saveData.isDead;
             characterAppearanceData = new CharacterAppearanceData(saveData);
         }
 
@@ -57,6 +59,7 @@ namespace AnyRPG {
             classSpecialization = unitProfile.ClassSpecialization;
             faction = unitProfile.Faction;
             unitToughness = unitProfile.DefaultToughness;
+            isDead = unitProfile.SpawnDead;
         }
 
 

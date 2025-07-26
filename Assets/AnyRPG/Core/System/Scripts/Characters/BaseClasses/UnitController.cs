@@ -805,7 +805,7 @@ namespace AnyRPG {
             EnableAICommon();
 
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
-                if (baseCharacter.SpawnDead == true) {
+                if (characterStats.IsAlive == false) {
                     ChangeState(new DeathState());
                 } else {
                     ChangeState(new IdleState());
@@ -1166,6 +1166,9 @@ namespace AnyRPG {
             }
             characterStats.CurrentXP = characterConfigurationRequest.currentExperience;
             baseCharacter.SpawnDead = unitProfile.SpawnDead;
+            if (characterConfigurationRequest.isDead) {
+                characterStats.SetSpawnDead();
+            }
 
             // get a snapshot of the new state
             //CapabilityConsumerSnapshot newSnapshot = new CapabilityConsumerSnapshot(baseCharacter, systemGameManager);
@@ -1178,9 +1181,17 @@ namespace AnyRPG {
 
             if (characterRequestData.saveData != null) {
                 characterSaveManager.LoadSaveDataToCharacter();
+                characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
+                if (characterRequestData.saveData.initializeResourceAmounts == true) {
+                    characterStats.SetResourceAmountsToMaximum();
+                    characterRequestData.saveData.initializeResourceAmounts = false;
+                }
+            } else {
+                characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
+                if (characterStats.IsAlive == true) {
+                    characterStats.SetResourceAmountsToMaximum();
+                }
             }
-
-            characterStats.SetLevelInternal(characterConfigurationRequest.unitLevel);
 
             // this must be called after setting the level in case the character has gear that is higher than level 1
             characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
@@ -1211,7 +1222,7 @@ namespace AnyRPG {
             characterCombat.AddUnitProfileHitEffects();
 
             // Trying to spawn dead relies on reading properties set in the previous method
-            characterStats.TrySpawnDead();
+            //characterStats.TrySpawnDead();
 
             SetUnitControllerMode(characterConfigurationRequest.unitControllerMode);
 

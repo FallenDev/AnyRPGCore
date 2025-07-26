@@ -162,7 +162,7 @@ namespace AnyRPG {
             SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
             SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
             systemEventManager.OnLevelChanged += PlayLevelUpEffects;
-            SystemEventManager.StartListening("OnPlayerDeath", HandlePlayerDeath);
+            systemEventManager.OnPlayerDeath += HandlePlayerDeath;
             eventSubscriptionsInitialized = true;
         }
 
@@ -174,7 +174,7 @@ namespace AnyRPG {
             SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
             SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
             systemEventManager.OnLevelChanged -= PlayLevelUpEffects;
-            SystemEventManager.StopListening("OnPlayerDeath", HandlePlayerDeath);
+            systemEventManager.OnPlayerDeath -= HandlePlayerDeath;
             eventSubscriptionsInitialized = false;
         }
 
@@ -329,7 +329,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandlePlayerDeath(string eventName, EventParamProperties eventParam) {
+        public void HandlePlayerDeath() {
             //Debug.Log("PlayerManager.KillPlayer()");
             PlayDeathEffect();
         }
@@ -504,10 +504,15 @@ namespace AnyRPG {
 
             playerController.SubscribeToUnitEvents();
 
-            if (systemConfigurationManager.UseThirdPartyMovementControl == false) {
+            //if (systemConfigurationManager.UseThirdPartyMovementControl == false) {
                 playerUnitMovementController.Init();
-            } else {
-                DisableMovementControllers();
+            //} else {
+            //    DisableMovementControllers();
+            //}
+            
+            if (unitController.CharacterStats.IsAlive == false) {
+                // when a dead player spawns, we need to lock controller and allow popup to respawn
+                DeathActions();
             }
         }
 
@@ -1001,9 +1006,13 @@ namespace AnyRPG {
         }
 
         public void HandleBeforeDie(UnitController deadUnitController) {
+            DeathActions();
+            systemEventManager.NotifyOnPlayerDeath();
+        }
+
+        private void DeathActions() {
             playerController.HandleDie();
-            uIManager.PlayerDeathHandler(deadUnitController);
-            SystemEventManager.TriggerEvent("OnPlayerDeath", new EventParamProperties());
+            uIManager.PlayerDeathHandler(unitController);
         }
 
         public void HandleAfterDie(CharacterStats deadCharacterStats) {

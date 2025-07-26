@@ -30,6 +30,7 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager(): IsOwner: {base.IsOwner}, OwnerId: {base.OwnerId}, ServerModeActive: {systemGameManager.NetworkManagerServer.ServerModeActive}");
             if (base.IsOwner || (systemGameManager.NetworkManagerServer.ServerModeActive == true && base.OwnerId == -1)) {
                 unitController.UnitEventController.OnAnimatorSetTrigger += HandleSetTrigger;
+                unitController.UnitEventController.OnAnimatorResetTrigger += HandleResetTrigger;
             }
         }
 
@@ -37,6 +38,12 @@ namespace AnyRPG {
             Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleSetTrigger({triggerName})");
 
             networkAnimator.SetTrigger(triggerName);
+        }
+
+        private void HandleResetTrigger(string triggerName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleResetTrigger({triggerName})");
+
+            networkAnimator.ResetTrigger(triggerName);
         }
 
         private void HandleInitializeAnimator() {

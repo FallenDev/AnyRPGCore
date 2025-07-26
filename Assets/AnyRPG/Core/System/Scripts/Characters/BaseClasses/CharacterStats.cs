@@ -220,6 +220,10 @@ namespace AnyRPG {
         }
         */
 
+        public void SetSpawnDead() {
+            isAlive = false;
+        }
+
         public void UpdatePowerResourceList() {
 
             // since this is just a list and contains no values, it is safe to overwrite
@@ -1076,6 +1080,7 @@ namespace AnyRPG {
             // make gain level sound and graphic
             SetLevelInternal(currentLevel + 1);
             unitController.UnitEventController.NotifyOnLevelChanged(currentLevel);
+            SetResourceAmountsToMaximum();
         }
 
         public void SetLevel(int newLevel) {
@@ -1135,8 +1140,6 @@ namespace AnyRPG {
 
             // calculate current values that include modifiers
             CalculatePrimaryStats();
-
-            SetResourceAmountsToMaximum();
         }
 
         public void CalculateEquipmentStats() {
@@ -1219,6 +1222,17 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.CharacterStats.SetResourceAmount(" + resourceName + ", " + newAmount + "): current " + CurrentPrimaryResource);
             }
         }
+
+        public void LoadResourceAmount(string resourceName, float newAmount) {
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.SetResourceAmount(" + resourceName + ", " + newAmount + "): current " + CurrentPrimaryResource);
+            newAmount = Mathf.Clamp(newAmount, 0, int.MaxValue);
+            PowerResource tmpPowerResource = systemDataFactory.GetResource<PowerResource>(resourceName);
+
+            if (tmpPowerResource != null && powerResourceDictionary.ContainsKey(tmpPowerResource)) {
+                powerResourceDictionary[tmpPowerResource].currentValue = newAmount;
+            }
+        }
+
 
         /// <summary>
         /// return true if resource could be added, false if not
@@ -1306,7 +1320,7 @@ namespace AnyRPG {
         /// Set resources to maximum
         /// </summary>
         public void SetResourceAmountsToMaximum() {
-            //Debug.Log($"{gameObject.name}.CharacterStats.ResetResourceAmounts()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum()");
 
             if (PowerResourceList == null) {
                 return;
@@ -1317,6 +1331,7 @@ namespace AnyRPG {
                 if (_powerResource != null && powerResourceDictionary.ContainsKey(_powerResource)) {
                     if (_powerResource.FillOnReset == true) {
                         powerResourceDictionary[_powerResource].currentValue = GetPowerResourceMaxAmount(_powerResource);
+                        Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum(): Setting {_powerResource.ResourceName} to {GetPowerResourceMaxAmount(_powerResource)}");
                     }
                 }
                 NotifyOnResourceAmountChanged(_powerResource, (int)GetPowerResourceMaxAmount(_powerResource), (int)PowerResourceDictionary[_powerResource].currentValue);
@@ -1325,6 +1340,7 @@ namespace AnyRPG {
 
         }
 
+        /*
         public void TrySpawnDead() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.TrySpawnDead()");
             if (unitController.BaseCharacter.SpawnDead == true) {
@@ -1337,6 +1353,7 @@ namespace AnyRPG {
                 NotifyOnResourceAmountChanged(PrimaryResource, MaxPrimaryResource, CurrentPrimaryResource);
             }
         }
+        */
 
         public void Die() {
             Debug.Log($"{unitController.gameObject.name}.CharacterStats.Die()");

@@ -135,20 +135,22 @@ namespace AnyRPG {
         //private bool addFirstSceneToBuild = true;
         //private string umaRoot = "Assets/UMA/";
 
+        /*
         [Header("Third Party Controller")]
         public bool useThirdPartyController = false;
 
         [Tooltip("This should be a unit in the scene")]
         public GameObject thirdPartyCharacterUnit = null;
+        */
 
         // the version that is saved on disk
-        private GameObject thirdPartyCharacterPrefab = null;
-        private GameObject thirdPartyCameraPrefab = null;
+        //private GameObject thirdPartyCharacterPrefab = null;
+        //private GameObject thirdPartyCameraPrefab = null;
 
         public abstract string PathToPlayerUnitsTemplate { get; }
 
         protected void OnEnable() {
-            thirdPartyCharacterUnit = Selection.activeGameObject;
+            //thirdPartyCharacterUnit = Selection.activeGameObject;
 
             SetNewGameTitle();
             firstSceneName = NewSceneWizard.GetNewSceneTitle(firstSceneName);
@@ -271,9 +273,11 @@ namespace AnyRPG {
             string prefabPath = FileUtil.GetProjectRelativePath(fileSystemPrefabFolder);
             WizardUtilities.CreateFolderIfNotExists(fileSystemPrefabFolder + "/GameManager");
 
+            /*
             if (useThirdPartyController == true) {
                 ConfigureThirdPartyController(fileSystemGameName, fileSystemResourcesFolder, fileSystemPrefabFolder);
             }
+            */
 
             // Create a variant of the GameManager
             EditorUtility.DisplayProgressBar("New Game Wizard", "Making prefab variants...", 0.7f);
@@ -519,6 +523,7 @@ namespace AnyRPG {
 
         }
 
+        /*
         protected void ConfigureThirdPartyController(string fileSystemGameName, string resourcesFolder, string prefabFolder) {
             EditorUtility.DisplayProgressBar("New Game Wizard", "Creating Third Party Prefabs and Resources...", 0.65f);
 
@@ -528,6 +533,7 @@ namespace AnyRPG {
             //AssetDatabase.RenameAsset(resourcesFolder + "/UnitProfile/InvectorUMAPlayerUnitTemplate.asset", "InvectorUMAPlayerUnit.asset");
 
             // make prefab on disk
+
             if (thirdPartyCharacterUnit != null) {
                 string thirdpartyCharacterPrefabPath = FileUtil.GetProjectRelativePath(prefabFolder) + "/" + thirdPartyCharacterUnit.name + ".prefab";
                 thirdPartyCharacterPrefab = PrefabUtility.SaveAsPrefabAsset(thirdPartyCharacterUnit, thirdpartyCharacterPrefabPath);
@@ -555,6 +561,7 @@ namespace AnyRPG {
                 thirdPartyCameraPrefab = PrefabUtility.SaveAsPrefabAsset(thirdPartyCameraGameObject, thirdpartyCameraPrefabPath);
             }
         }
+        */
 
         protected GameObject MakeGameManagerPrefabVariant(string fileSystemGameName, GameObject goToMakeVariantOf, string newPath) {
             Debug.Log("NewGameWizard.MakeGameManagerPrefabVariant(" + goToMakeVariantOf.name + ", " + newPath + ")");
@@ -604,6 +611,7 @@ namespace AnyRPG {
                 systemConfigurationManager.NewGameAudio = "New Game";
             }
 
+            /*
             if (useThirdPartyController == true) {
                 systemConfigurationManager.UseThirdPartyMovementControl = true;
                 systemConfigurationManager.AllowAutoAttack = false;
@@ -614,6 +622,7 @@ namespace AnyRPG {
                 }
                 //systemConfigurationManager.CharacterCreatorProfileNames = new List<string>() { "Invector UMA Player" };
             }
+            */
 
             EditorUtility.DisplayProgressBar("New Game Wizard", "Copying resources...", 0.92f);
             // Create a Resources folder and point the game manager to it

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace AnyRPG {
     
@@ -17,11 +16,13 @@ namespace AnyRPG {
         public string characterClass = string.Empty;
         public string classSpecialization = string.Empty;
         public string playerFaction = string.Empty;
-        public bool OverrideLocation;
+        public bool isDead = false;
+        public bool initializeResourceAmounts = false;
+        public bool OverrideLocation = false;
         public float PlayerLocationX;
         public float PlayerLocationY;
         public float PlayerLocationZ;
-        public bool OverrideRotation;
+        public bool OverrideRotation = false;
         public float PlayerRotationX;
         public float PlayerRotationY;
         public float PlayerRotationZ;

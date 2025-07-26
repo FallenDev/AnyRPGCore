@@ -300,7 +300,7 @@ namespace AnyRPG {
             }
         }
 
-        protected virtual void DropCombat(bool immediate = false) {
+        public virtual void DropCombat(bool immediate = false) {
             //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.DropCombat()");
             if (inCombat) {
                 inCombat = false;
@@ -357,7 +357,8 @@ namespace AnyRPG {
         }
 
         private void ProcessDropCombat() {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.ProcessDropCombat()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.ProcessDropCombat()");
+
             unitController.UnitAnimator.SetBool("InCombat", false);
 
             unitController.UnitModelController.SheathWeapons();

@@ -648,6 +648,8 @@ namespace AnyRPG {
             string sceneName = playerCharacterMonitors[accountId].unitController.gameObject.scene.name;
 
             DespawnPlayerUnit(accountId);
+            playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.isDead = false;
+            playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.initializeResourceAmounts = true;
             RequestSpawnPlayerUnit(accountId, sceneName);
         }
 

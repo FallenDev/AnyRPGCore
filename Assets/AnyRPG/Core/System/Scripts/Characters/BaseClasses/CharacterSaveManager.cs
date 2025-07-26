@@ -61,6 +61,8 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnLearnSkill += HandleLearnSkill;
                 unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkill;
                 unitController.UnitEventController.OnResourceAmountChanged += HandleResourceAmountChanged;
+                unitController.UnitEventController.OnBeforeDie += HandleBeforeDie;
+                unitController.UnitEventController.OnReviveComplete += HandleReviveComplete;
                 unitController.UnitEventController.OnRebuildModelAppearance += HandleRebuildModelAppearance;
                 unitController.UnitEventController.OnAbandonQuest += HandleAbandonQuest;
                 unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
@@ -96,6 +98,7 @@ namespace AnyRPG {
             saveData.playerName = unitController.BaseCharacter.CharacterName;
             saveData.PlayerLevel = unitController.CharacterStats.Level;
             saveData.currentExperience = unitController.CharacterStats.CurrentXP;
+            saveData.isDead = !unitController.CharacterStats.IsAlive;
             if (unitController.BaseCharacter.Faction != null) {
                 saveData.playerFaction = unitController.BaseCharacter.Faction.ResourceName;
             } else {
@@ -142,6 +145,14 @@ namespace AnyRPG {
             SaveSceneNodeData();
             SaveStatusEffectData();
             SavePetData();
+        }
+
+        private void HandleReviveComplete(UnitController controller) {
+            saveData.isDead = false;
+        }
+
+        private void HandleBeforeDie(UnitController controller) {
+            saveData.isDead = true;
         }
 
         private void HandleSetReputationAmount(Faction faction, float amount) {
@@ -327,6 +338,7 @@ namespace AnyRPG {
             characterRequestData.characterConfigurationRequest.characterAppearanceData = new CharacterAppearanceData(saveData);
             characterRequestData.characterConfigurationRequest.unitLevel = saveData.PlayerLevel;
             characterRequestData.characterConfigurationRequest.currentExperience = saveData.currentExperience;
+            characterRequestData.characterConfigurationRequest.isDead = saveData.isDead;
             if (saveData.characterClass != string.Empty) {
                 characterRequestData.characterConfigurationRequest.characterClass = systemDataFactory.GetResource<CharacterClass>(saveData.characterClass);
             } else {
@@ -549,7 +561,8 @@ namespace AnyRPG {
 
             foreach (ResourcePowerSaveData resourcePowerSaveData in anyRPGSaveData.resourcePowerSaveData) {
                 //Debug.Log("Savemanager.LoadResourcePowerData(): loading questsavedata");
-                unitController.CharacterStats.SetResourceAmount(resourcePowerSaveData.ResourceName, resourcePowerSaveData.amount);
+                //unitController.CharacterStats.SetResourceAmount(resourcePowerSaveData.ResourceName, resourcePowerSaveData.amount);
+                unitController.CharacterStats.LoadResourceAmount(resourcePowerSaveData.ResourceName, resourcePowerSaveData.amount);
             }
 
         }

@@ -121,7 +121,7 @@ namespace AnyRPG {
             }
 
             SavePlayerLocation();
-            saveData.CurrentScene = levelManager.ActiveSceneName;
+            saveData.CurrentScene = unitController.gameObject.scene.name;
 
             SaveResourcePowerData();
             SaveAppearanceData();

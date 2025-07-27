@@ -612,8 +612,8 @@ namespace AnyRPG {
             clientConnector.StartLobbyGame(gameId);
         }
 
-        public override void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId) {
-            clientConnector.JoinLobbyGameInProgress(gameId, accountId);
+        public override void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId, string sceneResourceName) {
+            clientConnector.JoinLobbyGameInProgress(gameId, accountId, sceneResourceName);
         }
 
         public override void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready) {

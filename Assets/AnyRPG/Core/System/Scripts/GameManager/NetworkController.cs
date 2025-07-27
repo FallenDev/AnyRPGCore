@@ -78,7 +78,7 @@ namespace AnyRPG {
         public abstract void SetLobbyPlayerList(int accountId, Dictionary<int, string> lobbyPlayers);
         public abstract void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName);
         public abstract void StartLobbyGame(int gameId);
-        public abstract void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId);
+        public abstract void AdvertiseJoinLobbyGameInProgress(int gameId, int accountId, string sceneResourceName);
         public abstract void AdvertiseSetLobbyGameReadyStatus(int gameId, int accountId, bool ready);
         public abstract int GetServerPort();
         public abstract void AdvertiseLoadScene(string sceneResourceName, int accountId);

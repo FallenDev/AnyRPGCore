@@ -49,7 +49,9 @@ namespace AnyRPG {
             if (systemGameManager == null) {
                 return;
             }
-            if (unitControllerMode.Value == UnitControllerMode.Player || unitControllerMode.Value == UnitControllerMode.Pet) {
+            if (unitControllerMode.Value == UnitControllerMode.Player
+                || unitControllerMode.Value == UnitControllerMode.Pet
+                || unitControllerMode.Value == UnitControllerMode.AI) {
                 BeginCharacterRequest();
                 GetClientSaveData();
             }else {

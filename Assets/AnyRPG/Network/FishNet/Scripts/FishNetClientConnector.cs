@@ -554,7 +554,7 @@ namespace AnyRPG {
             networkManagerClient.SetLobbyPlayerList(lobbyPlayers);
         }
 
-        public void JoinLobbyGameInProgress(int gameId, int accountId) {
+        public void JoinLobbyGameInProgress(int gameId, int accountId, string sceneResourceName) {
             Debug.Log($"FishNetNetworkConnector.JoinLobbyGameInProgress({gameId}, {accountId})");
 
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
@@ -567,9 +567,13 @@ namespace AnyRPG {
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[clientId];
             LobbyGame lobbyGame = networkManagerServer.LobbyGames[gameId];
 
-            SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(lobbyGame.sceneResourceName);
+            // first try the scene resource name provided, then fallback to the lobby game default scene resource name
+            SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(sceneResourceName);
             if (loadingSceneNode == null) {
-                return;
+                loadingSceneNode = systemDataFactory.GetResource<SceneNode>(lobbyGame.sceneResourceName);
+                if (loadingSceneNode == null) {
+                    return;
+                }
             }
 
             AdvertiseJoinLobbyGameInProgress(networkConnection, gameId);

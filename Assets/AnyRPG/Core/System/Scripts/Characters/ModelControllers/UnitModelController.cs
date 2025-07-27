@@ -294,7 +294,8 @@ namespace AnyRPG {
                         objectPooler.ReturnObjectToPool(unitModel);
                     } else {
                         // this unit was requested in a network game, deactivate it and let it wait for the network pooler to claim it
-                        unitModel.SetActive(false);
+                        // if client crashes during spawn process, this could be null so must check for that
+                        unitModel?.SetActive(false);
                     }
                 }
             }

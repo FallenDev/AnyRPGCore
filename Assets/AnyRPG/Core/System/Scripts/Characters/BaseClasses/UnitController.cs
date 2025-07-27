@@ -1200,10 +1200,10 @@ namespace AnyRPG {
             // this is also necessary in order to transfer settings like toughness and faction to network clients for pets
             characterSaveManager.SaveGameData();
 
-            if (characterRequestData.saveData != null) {
+            //if (characterRequestData.saveData != null) {
                 // now that the save data has been loaded, we can create event subscriptions to monitor changes to the character
                 characterSaveManager.CreateEventSubscriptions();
-            }
+            //}
 
             footstepType = unitProfile.FootstepType;
 

@@ -106,6 +106,7 @@ namespace AnyRPG {
         private LootManager lootManager = null;
         private CraftingManager craftingManager = null;
         private UnitSpawnManager unitSpawnManager = null;
+        private LevelManager levelManager = null;
 
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
@@ -136,6 +137,7 @@ namespace AnyRPG {
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
             unitSpawnManager = systemGameManager.UnitSpawnManager;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public void AddLoggedInAccount(int clientId, int accountId, string token) {
@@ -554,7 +556,10 @@ namespace AnyRPG {
         public void JoinLobbyGameInProgress(int gameId, int accountId) {
             Debug.Log($"NetworkManagerServer.JoinLobbyGameInProgress({gameId}, {accountId})");
 
+            string sceneName = string.Empty;
             if (playerManagerServer.SpawnRequests.ContainsKey(accountId) == false) {
+                Debug.Log($"NetworkManagerServer.JoinLobbyGameInProgress({gameId}, {accountId}) - creating new spawn request");
+                sceneName = lobbyGames[gameId].sceneResourceName;
                 PlayerCharacterSaveData playerCharacterSaveData = GetNewLobbyGamePlayerCharacterSaveData(gameId, accountId, lobbyGames[gameId].PlayerList[accountId].unitProfileName);
                 playerCharacterSaveData.SaveData.appearanceString = lobbyGames[gameId].PlayerList[accountId].appearanceString;
                 playerCharacterSaveData.SaveData.swappableMeshSaveData = lobbyGames[gameId].PlayerList[accountId].swappableMeshSaveData;
@@ -562,8 +567,13 @@ namespace AnyRPG {
                 playerManagerServer.AddPlayerMonitor(accountId, playerCharacterSaveData);
             } else {
                 // player already has a spawn request, so this is a rejoin.  Leave it alone because it contains the last correct position and direction
+                Debug.Log($"NetworkManagerServer.JoinLobbyGameInProgress({gameId}, {accountId}) - reusing existing spawn request");
+                sceneName = playerManagerServer.PlayerCharacterMonitors[accountId].playerCharacterSaveData.SaveData.CurrentScene;
+                if (levelManager.SceneDictionary.ContainsKey(sceneName)) {
+                    sceneName = levelManager.SceneDictionary[sceneName].ResourceName;
+                }
             }
-            networkController.AdvertiseJoinLobbyGameInProgress(gameId, accountId);
+            networkController.AdvertiseJoinLobbyGameInProgress(gameId, accountId, sceneName);
         }
 
         public void StartLobbyGame(int gameId) {

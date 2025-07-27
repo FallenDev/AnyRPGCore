@@ -846,9 +846,13 @@ namespace AnyRPG {
                 return null;
             }
 
-            if (IsAlive == false && statusEffect.GetTargetOptions(sourceCharacter).RequireLiveTarget == true && statusEffect.GetTargetOptions(sourceCharacter).RequireDeadTarget == false) {
-                //Debug.Log("Cannot apply status effect to dead character. return null.");
-                return null;
+            if (IsAlive == false
+                && statusEffect.GetTargetOptions(sourceCharacter).RequireLiveTarget == true
+                && statusEffect.GetTargetOptions(sourceCharacter).RequireDeadTarget == false
+                && statusEffect.KeepOnDeath == false
+                && abilityEffectContext.savedEffect == false) {
+                    //Debug.Log("Cannot apply status effect to dead character. return null.");
+                    return null;
             }
             if (IsAlive == true && statusEffect.GetTargetOptions(sourceCharacter).RequireDeadTarget == true && statusEffect.GetTargetOptions(sourceCharacter).RequireLiveTarget == false) {
                 //Debug.Log("Cannot apply status effect to dead character. return null.");

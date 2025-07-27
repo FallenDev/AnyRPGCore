@@ -2308,17 +2308,7 @@ namespace AnyRPG {
             }
         }
 
-        public void EnableCollider() {
-            if (myCollider != null) {
-                myCollider.enabled = true;
-            }
-        }
-
-        public void DisableCollider() {
-            if (myCollider != null) {
-                myCollider.enabled = false;
-            }
-        }
+        
 
 
         public override void OnSendObjectToPool() {

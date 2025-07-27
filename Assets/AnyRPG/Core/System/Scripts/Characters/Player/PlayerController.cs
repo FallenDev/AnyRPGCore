@@ -1050,7 +1050,12 @@ namespace AnyRPG {
         }
 
         public void HandleReviveBegin() {
-            Lock(true, true, true, 0f, 8.0f);
+            HandleReviveBegin(8.0f);
+        }
+
+        public void HandleReviveBegin(float reviveTime) {
+            // add 0.1f to the revive time to prevent the player from being able to move immediately after reviving
+            Lock(true, true, true, 0f, reviveTime+0.1f);
         }
 
         //Keep character from moving.

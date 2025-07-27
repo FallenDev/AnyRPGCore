@@ -416,14 +416,26 @@ namespace AnyRPG {
         // meant to be overwritten on characters
         public virtual void EnableInteraction() {
             //Debug.Log($"{gameObject.name}.Interactable.EnableInteraction()");
-            if (myCollider != null) {
-                myCollider.enabled = true;
-            }
+            EnableCollider();
         }
 
         // meant to be overwritten on characters
         public virtual void DisableInteraction() {
             //Debug.Log($"{gameObject.name}.Interactable.DisableInteraction()");
+            DisableCollider();
+        }
+
+        public void EnableCollider() {
+            Debug.Log($"{gameObject.name}.UnitController.EnableCollider()");
+
+            if (myCollider != null) {
+                myCollider.enabled = true;
+            }
+        }
+
+        public void DisableCollider() {
+            Debug.Log($"{gameObject.name}.UnitController.DisableCollider()");
+
             if (myCollider != null) {
                 myCollider.enabled = false;
             }

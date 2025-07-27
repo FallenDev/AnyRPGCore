@@ -1651,7 +1651,7 @@ namespace AnyRPG {
             }
 
             // default is true, nothing has stopped us so far
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): returning true");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.CanCastAbility({ability.DisplayName}): returning true");
             return base.CanCastAbility(ability);
         }
 

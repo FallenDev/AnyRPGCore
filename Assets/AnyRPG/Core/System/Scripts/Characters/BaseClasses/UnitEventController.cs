@@ -55,7 +55,7 @@ namespace AnyRPG {
         public event System.Action OnEnterStealth = delegate { };
         public event System.Action OnLeaveStealth = delegate { };
         public event System.Action OnStatChanged = delegate { };
-        public event System.Action OnReviveBegin = delegate { };
+        public event System.Action<float> OnReviveBegin = delegate { };
         //public event System.Action OnCombatUpdate = delegate { };
         public event System.Action<Interactable> OnEnterCombat = delegate { };
         public event System.Action<UnitController, Interactable> OnHitEvent = delegate { };
@@ -287,8 +287,8 @@ namespace AnyRPG {
         }
         */
 
-        public void NotifyOnReviveBegin() {
-            OnReviveBegin();
+        public void NotifyOnReviveBegin(float reviveTime) {
+            OnReviveBegin(reviveTime);
         }
 
         public void NotifyOnStatChanged() {

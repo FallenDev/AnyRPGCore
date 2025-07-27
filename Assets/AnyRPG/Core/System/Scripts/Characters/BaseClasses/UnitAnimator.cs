@@ -13,7 +13,7 @@ namespace AnyRPG {
         private Animator animator = null;
 
         // reference to the system animation profile
-        private AnimationProfile systemAnimationProfile = null;
+        //private AnimationProfile systemAnimationProfile = null;
 
         // reference to default animation profile
         private AnimationProps defaultAnimationProps = null;
@@ -112,7 +112,7 @@ namespace AnyRPG {
         public UnitAnimator(UnitController unitController, SystemGameManager systemGameManager) {
             this.unitController = unitController;
             Configure(systemGameManager);
-            systemAnimations = systemConfigurationManager.SystemAnimationProfile.AnimationProps;
+            systemAnimations = systemConfigurationManager.SystemAnimationProfile?.AnimationProps;
             currentAnimationProps = new AnimationProps();
             currentAnimationProps.Configure();
 
@@ -649,18 +649,22 @@ namespace AnyRPG {
         }
 
         public float GetReviveAnimationLength() {
-            //Debug.Log($"{gameObject.name}.CharacterAnimator.GetReviveAnimationLength()");
-            if (systemAnimationProfile == null) {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength()");
+
+            if (systemAnimations == null) {
+                Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): systemAnimationProfile is null");
                 return 0f;
             }
-            if (overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name] != null) {
-                return overrideController[systemAnimationProfile.AnimationProps.ReviveClip.name].length + 2;
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): revive clip name: {systemAnimations.ReviveClip.name}");
+            if (overrideController[systemAnimations.ReviveClip.name] != null) {
+                return overrideController[systemAnimations.ReviveClip.name].length + 2;
             }
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): no revive clip found in override controller, returning 0");
             return 0f;
         }
 
         public void HandleTakeDamage() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimation.HandleTakeDamage()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimatior.HandleTakeDamage()");
 
             if (WaitingForCastOrAttackAnimation() == true) {
                 // only activate the take damage animation if not in the middle of a swing / cast

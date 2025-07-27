@@ -1005,8 +1005,8 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleReviveBegin() {
-            playerController.HandleReviveBegin();
+        public void HandleReviveBegin(float reviveTime) {
+            playerController.HandleReviveBegin(reviveTime);
         }
 
         public void HandleBeforeDie(UnitController deadUnitController) {

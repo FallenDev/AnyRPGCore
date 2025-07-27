@@ -1421,7 +1421,8 @@ namespace AnyRPG {
         }
 
         public void Revive() {
-            //Debug.Log(BaseCharacter.MyCharacterName + "Triggering Revive Animation");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.Revive()");
+
             if (isReviving) {
                 //Debug.Log(BaseCharacter.MyCharacterName + " is already reviving.  Doing nothing");
                 return;
@@ -1432,19 +1433,21 @@ namespace AnyRPG {
                 // should only be done on server
                 unitController.CancelDespawnDelay();
             }
-            unitController.UnitEventController.NotifyOnReviveBegin();
+            float reviveTime = unitController.UnitAnimator.GetReviveAnimationLength();
+            unitController.UnitEventController.NotifyOnReviveBegin(reviveTime);
             if (systemGameManager.GameMode == GameMode.Local
                 || unitController.IsOwner
                 || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
                 unitController.UnitAnimator.HandleReviveBegin();
             }
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
-                resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrection(unitController.UnitAnimator.GetReviveAnimationLength()));
+                resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrection(reviveTime));
             }
         }
 
         public IEnumerator WaitForResurrection(float animationLength) {
-            //Debug.Log($"{gameObject.name}.WaitForAttackAnimation(" + attackLength + ")");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.WaitForResurrection({animationLength})");
+
             float remainingTime = animationLength;
             while (remainingTime > 0f) {
                 yield return null;
@@ -1457,7 +1460,8 @@ namespace AnyRPG {
 
 
         public void ReviveComplete() {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.ReviveComplete() Recieved Revive Complete Signal. Resetting Character Stats.");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveComplete()");
+
             if (systemGameManager.GameMode == GameMode.Local
                 || unitController.IsOwner
                 || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
@@ -1482,7 +1486,8 @@ namespace AnyRPG {
         }
 
         public void ReviveRaw() {
-            //Debug.Log(BaseCharacter.gameObject.name + ".CharacterStats.ReviveRaw()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveRaw()");
+
             unitController.DisableCollider();
             unitController.EnableCollider();
             ClearInvalidStatusEffects();

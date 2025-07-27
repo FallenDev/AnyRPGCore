@@ -1657,9 +1657,10 @@ namespace AnyRPG {
             unitController.CharacterStats.Die();
         }
 
-        private void HandleReviveBeginServer() {
+        private void HandleReviveBeginServer(float reviveTime) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleReviveBeginServer()");
 
+            // we don't need to pass the time to the client, since it will be calculated there anyway
             HandleReviveBeginClient();
         }
 

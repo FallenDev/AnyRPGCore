@@ -100,8 +100,8 @@ namespace AnyRPG {
                 return;
             }
             /*
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
-            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
+            systemEventManager.OnLevelLoad -= HandleLevelLoad;
             systemEventManager.OnLevelChanged -= PlayLevelUpEffects;
             SystemEventManager.StopListening("OnPlayerDeath", HandlePlayerDeath);
             */

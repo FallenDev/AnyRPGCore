@@ -48,6 +48,7 @@ namespace AnyRPG {
         protected ObjectPooler objectPooler = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -61,6 +62,7 @@ namespace AnyRPG {
             objectPooler = systemGameManager.ObjectPooler;
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
 
@@ -204,8 +206,8 @@ namespace AnyRPG {
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
             PopulatePlayerList();
-            networkManagerServer.OnStartServer += HandleStartServer;
-            networkManagerServer.OnStopServer += HandleStopServer;
+            systemEventManager.OnStartServer += HandleStartServer;
+            systemEventManager.OnStopServer += HandleStopServer;
             networkManagerServer.OnLobbyLogin += HandleLobbyLogin;
             networkManagerServer.OnLobbyLogout += HandleLobbyLogout;
             networkManagerServer.OnCreateLobbyGame += HandleCreateLobbyGame;
@@ -217,8 +219,8 @@ namespace AnyRPG {
 
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
-            networkManagerServer.OnStartServer -= HandleStartServer;
-            networkManagerServer.OnStopServer -= HandleStopServer;
+            systemEventManager.OnStartServer -= HandleStartServer;
+            systemEventManager.OnStopServer -= HandleStopServer;
             networkManagerServer.OnLobbyLogin -= HandleLobbyLogin;
             networkManagerServer.OnLobbyLogout -= HandleLobbyLogout;
             networkManagerServer.OnCreateLobbyGame -= HandleCreateLobbyGame;

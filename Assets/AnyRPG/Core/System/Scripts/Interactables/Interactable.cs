@@ -933,7 +933,7 @@ namespace AnyRPG {
             // only needed in namePlateUnit and above
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             ProcessLevelUnload();
         }
 
@@ -995,7 +995,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCreateEventSubscriptions() {
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             }
@@ -1015,7 +1015,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupEventSubscriptions() {
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             }

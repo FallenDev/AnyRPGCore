@@ -186,6 +186,7 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
             characterManager = systemGameManager.CharacterManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         private void CreateEventSubscriptions() {
@@ -198,7 +199,7 @@ namespace AnyRPG {
                 return;
             }
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
             if (playerManager.PlayerUnitSpawned == true) {
                 //Debug.Log($"{gameObject.name}.UnitSpawnNode.CreateEventSubscriptions(): player unit already spawned.  Handling player unit spawn");
                 ProcessPlayerUnitSpawn(playerManager.UnitController);
@@ -213,7 +214,7 @@ namespace AnyRPG {
             }
 
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
 
             eventSubscriptionsInitialized = false;
         }
@@ -227,7 +228,7 @@ namespace AnyRPG {
                 Debug.LogError(gameObject.name + ".UnitSpawnNode.CreateEventSubscriptions(): systemGameManager not found.  Is the GameManager in the scene?");
                 return;
             }
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
             serverEventSubscriptionsInitialized = true;
         }
 
@@ -237,7 +238,7 @@ namespace AnyRPG {
                 return;
             }
 
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
 
             serverEventSubscriptionsInitialized = false;
         }
@@ -248,7 +249,7 @@ namespace AnyRPG {
             ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandleLevelUnload()");
             Cleanup();
         }

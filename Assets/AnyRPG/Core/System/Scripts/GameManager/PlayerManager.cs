@@ -159,8 +159,8 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+            systemEventManager.OnLevelLoad += HandleLevelLoad;
             systemEventManager.OnLevelChanged += PlayLevelUpEffects;
             systemEventManager.OnPlayerDeath += HandlePlayerDeath;
             eventSubscriptionsInitialized = true;
@@ -171,8 +171,8 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
-            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
+            systemEventManager.OnLevelLoad -= HandleLevelLoad;
             systemEventManager.OnLevelChanged -= PlayLevelUpEffects;
             systemEventManager.OnPlayerDeath -= HandlePlayerDeath;
             eventSubscriptionsInitialized = false;
@@ -254,7 +254,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelLoad() {
             //Debug.Log("PlayerManager.HandleLevelLoad()");
 
             SceneNode activeSceneNode = levelManager.GetActiveSceneNode();
@@ -326,7 +326,7 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             //DespawnPlayerUnit();
             if (playerController != null) {
                 playerController.ProcessLevelUnload();

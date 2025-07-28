@@ -505,13 +505,13 @@ namespace AnyRPG {
         public override void ProcessCreateEventSubscriptions() {
             base.ProcessCreateEventSubscriptions();
             SystemEventManager.StartListening("OnReputationChange", HandleReputationChange);
-            //SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            //systemEventManager.OnLevelLoad += HandleLevelLoad;
         }
 
         public override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
             SystemEventManager.StopListening("OnReputationChange", HandleReputationChange);
-            //SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            //systemEventManager.OnLevelLoad -= HandleLevelLoad;
         }
 
         public override void ProcessInit() {

@@ -18,20 +18,28 @@ namespace AnyRPG {
         [SerializeField]
         private List<PooledObjectConfig> pooledObjectConfigs = new List<PooledObjectConfig>();
 
+        // game manager references
+        private SystemEventManager systemEventManager = null;
+
         private Dictionary<GameObject, List<GameObject>> freeObjects = new Dictionary<GameObject, List<GameObject>>();
         private Dictionary<GameObject, List<GameObject>> usedObjects = new Dictionary<GameObject, List<GameObject>>();
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         private void Start() {
             PopulateObjectPool();
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             //Debug.Log("ObjectPooler.HandleLevelUnload()");
             // if object should persist through scene changes globally, do nothing
             if (persistSceneChange == true) {

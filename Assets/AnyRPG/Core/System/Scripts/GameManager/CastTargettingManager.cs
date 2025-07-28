@@ -20,6 +20,7 @@ namespace AnyRPG {
 
         // game manager references
         private PlayerManager playerManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public Color CircleColor { get => circleColor; set => circleColor = value; }
         public CastTargetController CastTargetController { get => castTargetController; }
@@ -37,6 +38,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         private void CreateEventSubscriptions() {
@@ -44,7 +46,7 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
             eventSubscriptionsInitialized = true;
         }
 
@@ -53,7 +55,7 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
             eventSubscriptionsInitialized = false;
         }
 
@@ -65,7 +67,7 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             ProcessLevelUnload();
         }
 

@@ -36,8 +36,9 @@ namespace AnyRPG {
         // game manager references
         protected LevelManager levelManager = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected SystemEventManager systemEventManager = null;
 
-        public bool MoveOnStart { get => moveOnStart; set => moveOnStart = value; }
+		public bool MoveOnStart { get => moveOnStart; set => moveOnStart = value; }
         public bool PersistObjectPosition { get => persistObjectPosition; set => persistObjectPosition = value; }
         public bool SaveOnLevelUnload { get => saveOnLevelUnload; set => saveOnLevelUnload = value; }
         public bool SaveOnGameSave { get => saveOnGameSave; set => saveOnGameSave = value; }
@@ -49,7 +50,8 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             levelManager = systemGameManager.LevelManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
-        }
+            systemEventManager = systemGameManager.SystemEventManager;
+		}
 
         public void Setup(IPersistentObjectOwner persistentObjectOwner, SystemGameManager systemGameManager) {
             //Debug.Log($"{(persistentObjectOwner as MonoBehaviour).gameObject.name}.Setup() setting UUID {persistentObjectOwner.UUID.ID}");
@@ -119,7 +121,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCreateEventSubscriptions() {
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
             SystemEventManager.StartListening("OnSaveGame", HandleSaveGame);
         }
 
@@ -132,11 +134,11 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupEventSubscriptions() {
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
             SystemEventManager.StopListening("OnSaveGame", HandleSaveGame);
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             if (persistObjectPosition == false) {
                 return;
             }

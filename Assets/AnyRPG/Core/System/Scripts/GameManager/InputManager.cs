@@ -36,21 +36,22 @@ namespace AnyRPG {
         private KeyBindManager keyBindManager = null;
         private UIManager uIManager = null;
         private NamePlateManager namePlateManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
+            systemEventManager.OnLevelLoad += HandleLevelLoad;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
             keyBindManager = systemGameManager.KeyBindManager;
             uIManager = systemGameManager.UIManager;
             namePlateManager = uIManager.NamePlateManager;
-
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
-        public void OnDestroy() {
-            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
-        }
-
-        public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelLoad() {
             ResetAllInput();
         }
 

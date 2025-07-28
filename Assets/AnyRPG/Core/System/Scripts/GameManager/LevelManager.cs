@@ -43,6 +43,7 @@ namespace AnyRPG {
         private MapManager mapManager = null;
         private NetworkManagerClient networkManagerClient = null;
         private NetworkManagerServer networkManagerServer = null;
+        private SystemEventManager systemEventManager = null;
 
         public bool NavMeshAvailable { get => navMeshAvailable; set => navMeshAvailable = value; }
         //public Vector3 SpawnRotationOverride { get => spawnRotationOverride; set => spawnRotationOverride = value; }
@@ -70,6 +71,7 @@ namespace AnyRPG {
             playerManagerServer = systemGameManager.PlayerManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void PerformSetupActivities() {
@@ -254,7 +256,7 @@ namespace AnyRPG {
             // send messages to subscribers
             EventParamProperties eventParamProperties = new EventParamProperties();
             eventParamProperties.simpleParams.StringParam = (activeSceneNode == null ? activeSceneName : activeSceneNode.ResourceName);
-            SystemEventManager.TriggerEvent("OnLevelLoad", eventParamProperties);
+            systemEventManager.NotifyOnLevelLoad();
         }
 
         public AudioProfile GetTerrainFootStepProfile(Vector3 transformPosition) {
@@ -383,7 +385,7 @@ namespace AnyRPG {
 
         public void ProcessBeforeLevelUnload() {
             mapManager.ProcessLevelUnload();
-            SystemEventManager.TriggerEvent("OnLevelUnload", new EventParamProperties());
+            systemEventManager.NotifyOnLevelUnload();
 
             uIManager.DeactivatePlayerUI();
             uIManager.DeactivateInGameUI();

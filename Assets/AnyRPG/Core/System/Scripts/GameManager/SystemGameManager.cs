@@ -126,7 +126,10 @@ namespace AnyRPG {
         private ChatCommandManager chatCommandManager = null;
 
         [SerializeField]
-        private TimeOfDayManager timeOfDayManager = null;
+        private TimeOfDayManagerClient timeOfDayManagerClient = null;
+
+        [SerializeField]
+        private TimeOfDayManagerServer timeOfDayManagerServer = null;
 
         [SerializeField]
         private WeatherManager weatherManager = null;
@@ -219,7 +222,8 @@ namespace AnyRPG {
         public LoadGameManager LoadGameManager { get => loadGameManager; set => loadGameManager = value; }
         public CurrencyConverter CurrencyConverter { get => currencyConverter; set => currencyConverter = value; }
         public ChatCommandManager ChatCommandManager { get => chatCommandManager; set => chatCommandManager = value; }
-        public TimeOfDayManager TimeOfDayManager { get => timeOfDayManager; set => timeOfDayManager = value; }
+        public TimeOfDayManagerClient TimeOfDayManagerClient { get => timeOfDayManagerClient; set => timeOfDayManagerClient = value; }
+        public TimeOfDayManagerServer TimeOfDayManagerServer { get => timeOfDayManagerServer; set => timeOfDayManagerServer = value; }
         public WeatherManager WeatherManager { get => weatherManager; set => weatherManager = value; }
         public DialogManager DialogManager { get => dialogManager; set => dialogManager = value; }
         public ClassChangeManager ClassChangeManager { get => classChangeManager; set => classChangeManager = value; }
@@ -308,7 +312,8 @@ namespace AnyRPG {
             uIManager.Configure(this);
             currencyConverter.Configure(this);
             chatCommandManager.Configure(this);
-            timeOfDayManager.Configure(this);
+            timeOfDayManagerServer.Configure(this);
+            timeOfDayManagerClient.Configure(this);
             weatherManager.Configure(this);
             dialogManager.Configure(this);
             classChangeManager.Configure(this);

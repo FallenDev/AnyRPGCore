@@ -13,8 +13,6 @@ namespace AnyRPG {
         public event Action<int, List<PlayerCharacterSaveData>> OnLoadCharacterList = delegate { };
         public event Action<int> OnDeletePlayerCharacter = delegate { };
         public event Action<int> OnCreatePlayerCharacter = delegate { };
-        public event Action OnStartServer = delegate { };
-        public event Action OnStopServer = delegate { };
         public event Action<int> OnLobbyLogin = delegate { };
         public event Action<int> OnLobbyLogout = delegate { };
         public event Action<LobbyGame> OnCreateLobbyGame = delegate { };
@@ -107,6 +105,8 @@ namespace AnyRPG {
         private CraftingManager craftingManager = null;
         private UnitSpawnManager unitSpawnManager = null;
         private LevelManager levelManager = null;
+        private TimeOfDayManagerServer timeOfDayManagerServer = null;
+        private SystemEventManager systemEventManager = null;
 
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
@@ -138,6 +138,8 @@ namespace AnyRPG {
             craftingManager = systemGameManager.CraftingManager;
             unitSpawnManager = systemGameManager.UnitSpawnManager;
             levelManager = systemGameManager.LevelManager;
+            timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void AddLoggedInAccount(int clientId, int accountId, string token) {
@@ -415,7 +417,7 @@ namespace AnyRPG {
             //Debug.Log($"NetworkManagerServer.ActivateServerMode()");
 
             serverModeActive = true;
-            OnStartServer();
+            systemEventManager.NotifyOnStartServer();
         }
 
         public void DeactivateServerMode() {
@@ -427,7 +429,7 @@ namespace AnyRPG {
             lobbyGames.Clear();
             lobbyGameChatText.Clear();
 
-            OnStopServer();
+            systemEventManager.NotifyOnStopServer();
         }
 
 
@@ -987,6 +989,10 @@ namespace AnyRPG {
 
         public void RequestSpawnRequest(int accountId) {
             playerManagerServer.RequestSpawnRequest(accountId);
+        }
+
+        public DateTime GetServerStartTime() {
+            return timeOfDayManagerServer.StartTime;
         }
     }
 

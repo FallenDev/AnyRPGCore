@@ -5,16 +5,8 @@ using UnityEngine;
 
 namespace AnyRPG {
 
-    public class TimeOfDayManager : ConfiguredMonoBehaviour {
+    public class TimeOfDayManagerClient : ConfiguredMonoBehaviour {
 
-        // calculate in-game time every x seconds
-        //private const float tickLength = 1f;
-
-        // track the passage of in-game time
-        //protected int secondsSinceMidnight = 0;
-        private DateTime startTime;
-        private DateTime realCurrentTime;
-        private DateTime inGameTime;
         private bool nightTime = true;
 
         protected Light sunLight = null;
@@ -50,16 +42,26 @@ namespace AnyRPG {
         protected AudioManager audioManager = null;
         protected WeatherManager weatherManager = null;
         protected NetworkManagerServer networkManagerServer = null;
-
-        public DateTime InGameTime { get => inGameTime; }
+        protected TimeOfDayManagerServer timeOfDayManagerServer = null;
+        protected SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
-            GetStartTime();
-            CalculateRelativeTime();
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+            systemEventManager.OnLevelLoad += HandleLevelLoad;
+
+            systemEventManager.OnStartServer += HandleStartServer;
+            systemEventManager.OnStopServer += HandleStopServer;
+            systemEventManager.OnCalculateRelativeTime += HandleCalculateRelativeTime;
+        }
+
+        public void HandleStopServer() {
+            systemEventManager.OnCalculateRelativeTime += HandleCalculateRelativeTime;
+        }
+
+        public void HandleStartServer() {
+            systemEventManager.OnCalculateRelativeTime -= HandleCalculateRelativeTime;
         }
 
         public override void SetGameManagerReferences() {
@@ -70,15 +72,12 @@ namespace AnyRPG {
             audioManager = systemGameManager.AudioManager;
             weatherManager = systemGameManager.WeatherManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
-        private void Update() {
-            CalculateRelativeTime();
+        private void HandleCalculateRelativeTime() {
             PerformTimeOfDayOperations();
-        }
-
-        private void GetStartTime() {
-            startTime = DateTime.Now;
         }
 
         public void SuppressAmbientSounds() {
@@ -94,7 +93,7 @@ namespace AnyRPG {
             //PlayAmbientSounds(3f);
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             //Debug.Log("TimeOfDayManager.HandleLevelUnload()");
 
             rotateSunDirection = false;
@@ -114,7 +113,7 @@ namespace AnyRPG {
             audioManager.StopAmbient();
         }
 
-        public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelLoad() {
             //Debug.Log("TimeOfDayManager.HandleLevelLoad()");
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == true) {
@@ -181,32 +180,8 @@ namespace AnyRPG {
             }
         }
 
-        /// <summary>
-        /// calculate in-game time relative to real world time
-        /// </summary>
-        private void CalculateRelativeTime() {
-            /*
-            realCurrentTime = DateTime.Now;
-            inGameTime = DateTime.Now;
-            inGameTime = realCurrentTime.AddSeconds((realCurrentTime.TimeOfDay.TotalSeconds * systemConfigurationManager.TimeOfDaySpeed) - realCurrentTime.TimeOfDay.TotalSeconds);
-            */
-            // new calculation to always have start time set to actual current time
-            inGameTime = startTime.AddSeconds((DateTime.Now - startTime).TotalSeconds * systemConfigurationManager.TimeOfDaySpeed);
-            //Debug.Log("Time is " + inGameTime.ToShortTimeString());
-
-            if (nightTime == true && IsDayTime()) {
-                nightTime = false;
-                ActivateDay();
-                PlayAmbientSounds();
-            } else if (nightTime == false && IsNightTime()) {
-                nightTime = true;
-                ActivateNight(false);
-                PlayAmbientSounds();
-            }
-        }
-
         private bool IsDayTime() {
-            if (inGameTime.TimeOfDay.TotalSeconds >= 10800 && inGameTime.TimeOfDay.TotalSeconds < 61800) {
+            if (timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds >= 10800 && timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds < 61800) {
                 return true;
             }
 
@@ -214,7 +189,7 @@ namespace AnyRPG {
         }
 
         private bool IsNightTime() {
-            if (inGameTime.TimeOfDay.TotalSeconds < 10800 || inGameTime.TimeOfDay.TotalSeconds >= 61800) {
+            if (timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds < 10800 || timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds >= 61800) {
                 return true;
             }
 
@@ -239,6 +214,17 @@ namespace AnyRPG {
         }
 
         private void PerformTimeOfDayOperations() {
+
+            if (nightTime == true && IsDayTime()) {
+                nightTime = false;
+                ActivateDay();
+                PlayAmbientSounds();
+            } else if (nightTime == false && IsNightTime()) {
+                nightTime = true;
+                ActivateNight(false);
+                PlayAmbientSounds();
+            }
+
             if (rotateSunDirection == true) {
                 RotateSunDirection();
             }
@@ -266,11 +252,11 @@ namespace AnyRPG {
 
             sunObject.transform.localRotation = Quaternion.Euler(sunAngle, 0f, 0f);
 
-            sunObject.transform.localRotation *= Quaternion.AngleAxis(Mathf.Clamp((((float)inGameTime.TimeOfDay.TotalSeconds / 86400f) * 360f) -180f, -91f, 91f), Vector3.up);
+            sunObject.transform.localRotation *= Quaternion.AngleAxis(Mathf.Clamp((((float)timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds / 86400f) * 360f) -180f, -91f, 91f), Vector3.up);
         }
 
         private void RotateSunColor() {
-            sunLight.color = sunGradient.Evaluate((float)inGameTime.TimeOfDay.TotalSeconds / 86400f);
+            sunLight.color = sunGradient.Evaluate((float)timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds / 86400f);
             sunLight.intensity = defaultSunIntensity * sunLight.color.a;
         }
 
@@ -279,7 +265,7 @@ namespace AnyRPG {
         }
 
         private void RotateSkybox() {
-            currentSkyboxRotation = ((((float)inGameTime.TimeOfDay.TotalSeconds / 86400f) * 360f) * skyboxRotationDirection) + skyboxRotationOffset;
+            currentSkyboxRotation = ((((float)timeOfDayManagerServer.InGameTime.TimeOfDay.TotalSeconds / 86400f) * 360f) * skyboxRotationDirection) + skyboxRotationOffset;
             if (currentSkyboxRotation > 360f) {
                 currentSkyboxRotation -= 360f;
             } else if (currentSkyboxRotation < 0f) {

@@ -6619,6 +6619,7 @@ GameObject:
   - component: {fileID: 6522840028641832261}
   - component: {fileID: 4938176035281589816}
   - component: {fileID: 4755277341132930208}
+  - component: {fileID: 7422654420152684263}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6706,7 +6707,6 @@ MonoBehaviour:
   useFallDamage: 0
   fallDamagePerMeter: 2
   fallDamageMinDistance: 10
-  useThirdPartyMovementControl: 0
   allowAutoAttack: 1
   useThirdPartyCameraControl: 0
   thirdPartyCamera: {fileID: 0}
@@ -6987,7 +6987,8 @@ MonoBehaviour:
   uIManager: {fileID: 6765758701573424388}
   currencyConverter: {fileID: 6757116812437241114}
   chatCommandManager: {fileID: 3319926267122627146}
-  timeOfDayManager: {fileID: 327801564803084641}
+  timeOfDayManagerClient: {fileID: 327801564803084641}
+  timeOfDayManagerServer: {fileID: 7422654420152684263}
   weatherManager: {fileID: 2170718474153991019}
   dialogManager: {fileID: 4985764694926039326}
   classChangeManager: {fileID: 2572069944954128607}
@@ -7552,6 +7553,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f0ec3ed6bee9bb4096ddbb47f03b90a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7422654420152684263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5684895214070870814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3530219796919e64fad870bdb2e38a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5742173228335772782

@@ -33,7 +33,8 @@ namespace AnyRPG {
         protected ObjectPooler objectPooler = null;
         protected PlayerManager playerManager = null;
         protected CameraManager cameraManager = null;
-        protected TimeOfDayManager timeOfDayManager = null;
+        protected TimeOfDayManagerServer timeOfDayManagerServer = null;
+        protected TimeOfDayManagerClient timeOfDayManagerClient = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected SystemEventManager systemEventManager = null;
 
@@ -42,8 +43,8 @@ namespace AnyRPG {
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+            systemEventManager.OnLevelLoad += HandleLevelLoad;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
         }
 
@@ -56,12 +57,13 @@ namespace AnyRPG {
             objectPooler = systemGameManager.ObjectPooler;
             playerManager = systemGameManager.PlayerManager;
             cameraManager = systemGameManager.CameraManager;
-            timeOfDayManager = systemGameManager.TimeOfDayManager;
+            timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
+            timeOfDayManagerClient = systemGameManager.TimeOfDayManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             //Debug.Log("WeatherManager.HandleLevelUnload()");
 
             EndWeather(currentWeather, true);
@@ -73,10 +75,10 @@ namespace AnyRPG {
             fogList.Clear();
         }
 
-        public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelLoad() {
             //Debug.Log("WeatherManager.HandleLevelLoad()");
 
-            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == true) {
+            if (networkManagerServer.ServerModeActive == true) {
                 return;
             }
 
@@ -310,7 +312,7 @@ namespace AnyRPG {
                 }
 
                 if (currentWeather.SuppressAmbientSounds == true) {
-                    timeOfDayManager.SuppressAmbientSounds();
+                    timeOfDayManagerClient.SuppressAmbientSounds();
                 }
 
                 ActivateWeatherFogSettings(currentWeather.FogSettings);
@@ -327,7 +329,7 @@ namespace AnyRPG {
 
             // always play ambient sounds
             // it could be clear weather so the default ambient sounds for the scene should be played
-            timeOfDayManager.PlayAmbientSounds(3);
+            timeOfDayManagerClient.PlayAmbientSounds(3);
 
             // always monitor weather, it could be clear
             StartWeatherMonitoring();
@@ -355,7 +357,7 @@ namespace AnyRPG {
             DeactivateWeatherFogSettings();
 
             if (previousWeather.SuppressAmbientSounds == true) {
-                timeOfDayManager.AllowAmbientSounds();
+                timeOfDayManagerClient.AllowAmbientSounds();
             }
 
             if (weatherEffectController != null) {
@@ -410,12 +412,12 @@ namespace AnyRPG {
         private IEnumerator MonitorWeather(float inGameSeconds) {
             //Debug.Log($"WeatherManager.MonitorWeather({inGameSeconds})");
 
-            DateTime startTime = timeOfDayManager.InGameTime;
+            DateTime startTime = timeOfDayManagerServer.InGameTime;
             DateTime endTime = startTime.AddSeconds(inGameSeconds);
 
             //Debug.Log($"WeatherManager.MonitorWeather({inGameSeconds}) start: {startTime.ToShortDateString()} {startTime.ToShortTimeString()} end: {endTime.ToLongDateString()} {endTime.ToShortTimeString()}");
 
-            while (timeOfDayManager.InGameTime < endTime) {
+            while (timeOfDayManagerServer.InGameTime < endTime) {
                 yield return null;
             }
             ChooseWeather();

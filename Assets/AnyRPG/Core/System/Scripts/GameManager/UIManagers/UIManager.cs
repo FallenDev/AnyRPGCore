@@ -629,7 +629,7 @@ namespace AnyRPG {
             if (eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelLoad += HandleLevelLoad;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
             systemEventManager.OnPlayerUnitDespawn += HandlePlayerUnitDespawn;
             SystemEventManager.StartListening("OnBeforePlayerConnectionSpawn", HandleBeforePlayerConnectionSpawn);
@@ -647,7 +647,7 @@ namespace AnyRPG {
             if (!eventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnLevelLoad", HandleLevelLoad);
+            systemEventManager.OnLevelLoad -= HandleLevelLoad;
             systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;
             systemEventManager.OnPlayerUnitDespawn -= HandlePlayerUnitDespawn;
             //SystemEventManager.StopListening("OnPlayerUnitSpawn", HandleMainCamera);
@@ -656,7 +656,7 @@ namespace AnyRPG {
             eventSubscriptionsInitialized = false;
         }
 
-        public void HandleLevelLoad(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelLoad() {
             dragInProgress = false;
             foreach (CloseableWindow closeableWindow in openWindowQueue) {
                 closeableWindow.OpenWindow();

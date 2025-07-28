@@ -41,6 +41,11 @@ namespace AnyRPG {
         public event System.Action<UnitProfile> OnRemoveActivePet = delegate { };
         public event System.Action<int> OnTakeLoot = delegate { };
         public event System.Action OnPlayerDeath = delegate { };
+        public event System.Action OnCalculateRelativeTime = delegate { };
+        public event System.Action OnStartServer = delegate { };
+        public event System.Action OnStopServer = delegate { };
+        public event System.Action OnLevelLoad = delegate { };
+        public event System.Action OnLevelUnload = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -229,6 +234,26 @@ namespace AnyRPG {
 
         public void NotifyOnPlayerDeath() {
             OnPlayerDeath();
+        }
+
+        public void NotifyOnCalculateRelativeTime() {
+            OnCalculateRelativeTime();
+        }
+
+        public void NotifyOnStartServer() {
+            OnStartServer();
+        }
+
+        public void NotifyOnStopServer() {
+            OnStopServer();
+        }
+
+        public void NotifyOnLevelLoad() {
+            OnLevelLoad();
+        }
+
+        public void NotifyOnLevelUnload() {
+            OnLevelUnload();
         }
     }
 

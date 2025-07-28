@@ -17,23 +17,30 @@ namespace AnyRPG {
 
         private List<CombatTextController> inUseCombatTextControllers = new List<CombatTextController>();
 
+        // game manager references
         private CameraManager cameraManager = null;
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
         private CutSceneBarController cutSceneBarController = null;
+        private SystemEventManager systemEventManager = null;
 
         public Canvas CombatTextCanvas { get => combatTextCanvas; set => combatTextCanvas = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
+
+            //Debug.Log("NamePlateManager.Awake(): " + SystemGameManager.Instance.UIManager.NamePlateManager.gameObject.name);
+            SystemEventManager.StartListening("AfterCameraUpdate", HandleAfterCameraUpdate);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
             cameraManager = systemGameManager.CameraManager;
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
             cutSceneBarController = systemGameManager.UIManager.CutSceneBarController;
-
-            //Debug.Log("NamePlateManager.Awake(): " + SystemGameManager.Instance.UIManager.NamePlateManager.gameObject.name);
-            SystemEventManager.StartListening("AfterCameraUpdate", HandleAfterCameraUpdate);
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void HandleAfterCameraUpdate(string eventName, EventParamProperties eventParamProperties) {
@@ -48,7 +55,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             List<CombatTextController> removeList = new List<CombatTextController>();
             removeList.AddRange(inUseCombatTextControllers);
             foreach (CombatTextController combatTextController in removeList) {
@@ -145,17 +152,6 @@ namespace AnyRPG {
                     );
             }
         }
-
-        public void CleanupEventSubscriptions() {
-            SystemEventManager.StopListening("AfterCameraUpdate", HandleAfterCameraUpdate);
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
-
-        }
-
-        public void OnDestroy() {
-            CleanupEventSubscriptions();
-        }
-
 
     }
 

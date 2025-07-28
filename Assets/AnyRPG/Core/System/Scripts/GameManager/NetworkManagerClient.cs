@@ -54,6 +54,7 @@ namespace AnyRPG {
         private LootManager lootManager = null;
         private CraftingManager craftingManager = null;
         private SystemEventManager systemEventManager = null;
+        private TimeOfDayManagerServer timeOfDayManagerServer = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -81,6 +82,7 @@ namespace AnyRPG {
             craftingManager = systemGameManager.CraftingManager;
             systemEventManager = systemGameManager.SystemEventManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
+            timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
         }
 
         public bool Login(string username, string password, string server) {
@@ -594,6 +596,14 @@ namespace AnyRPG {
             Debug.Log($"NetworkManagerClient.AdvertiseSpawnPlayerRequest()");
 
             playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
+        }
+
+        public void SetStartTime(DateTime startTime) {
+            timeOfDayManagerServer.SetStartTime(startTime);
+        }
+
+        public void ProcessStartClientConnector() {
+            uIManager.ProcessLoginSuccess();
         }
 
         /*

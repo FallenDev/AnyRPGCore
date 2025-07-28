@@ -25,15 +25,21 @@ namespace AnyRPG {
         private CameraManager cameraManager = null;
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
+
+            SystemEventManager.StartListening("AfterCameraUpdate", HandleAfterCameraUpdate);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
             cameraManager = systemGameManager.CameraManager;
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
-
-            SystemEventManager.StartListening("AfterCameraUpdate", HandleAfterCameraUpdate);
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void AddMouseOver(NamePlateController namePlateController) {
@@ -50,7 +56,7 @@ namespace AnyRPG {
             UpdateNamePlates();
         }
 
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             mouseOverList.Clear();
         }
 
@@ -142,7 +148,7 @@ namespace AnyRPG {
 
         public void CleanupEventSubscriptions() {
             SystemEventManager.StopListening("AfterCameraUpdate", HandleAfterCameraUpdate);
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
         }
 
         public void OnDestroy() {

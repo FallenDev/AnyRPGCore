@@ -1324,7 +1324,7 @@ namespace AnyRPG {
         /// Set resources to maximum
         /// </summary>
         public void SetResourceAmountsToMaximum() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum()");
 
             if (PowerResourceList == null) {
                 return;
@@ -1335,7 +1335,7 @@ namespace AnyRPG {
                 if (_powerResource != null && powerResourceDictionary.ContainsKey(_powerResource)) {
                     if (_powerResource.FillOnReset == true) {
                         powerResourceDictionary[_powerResource].currentValue = GetPowerResourceMaxAmount(_powerResource);
-                        Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum(): Setting {_powerResource.ResourceName} to {GetPowerResourceMaxAmount(_powerResource)}");
+                        //Debug.Log($"{unitController.gameObject.name}.CharacterStats.SetResourceAmountsToMaximum(): Setting {_powerResource.ResourceName} to {GetPowerResourceMaxAmount(_powerResource)}");
                     }
                 }
                 NotifyOnResourceAmountChanged(_powerResource, (int)GetPowerResourceMaxAmount(_powerResource), (int)PowerResourceDictionary[_powerResource].currentValue);

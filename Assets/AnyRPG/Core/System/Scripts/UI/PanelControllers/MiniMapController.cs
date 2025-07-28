@@ -93,7 +93,7 @@ namespace AnyRPG {
         protected ObjectPooler objectPooler = null;
         protected MapManager mapManager = null;
         protected UIManager uIManager = null;
-        protected TimeOfDayManager timeOfDayManager = null;
+        protected TimeOfDayManagerServer timeOfDayManagerServer = null;
 
         // map indicators
         protected Dictionary<Interactable, MiniMapIndicatorController> mapIndicatorControllers = new Dictionary<Interactable, MiniMapIndicatorController>();
@@ -134,7 +134,7 @@ namespace AnyRPG {
             miniMapManager = uIManager.MiniMapManager;
             objectPooler = systemGameManager.ObjectPooler;
             mapManager = systemGameManager.UIManager.MapManager;
-            timeOfDayManager = systemGameManager.TimeOfDayManager;
+            timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
         }
 
         protected override void ProcessCreateEventSubscriptions() {
@@ -204,7 +204,7 @@ namespace AnyRPG {
                 UpdateMiniMap();
             }
 
-            clockText.text = timeOfDayManager.InGameTime.ToShortTimeString();
+            clockText.text = timeOfDayManagerServer.InGameTime.ToShortTimeString();
         }
 
         void UpdateMiniMap() {

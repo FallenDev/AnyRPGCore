@@ -9,7 +9,8 @@ namespace AnyRPG {
         private AbilityManager abilityManager = null;
 
         // game manager references
-        ObjectPooler objectPooler = null;
+        private ObjectPooler objectPooler = null;
+        private SystemEventManager systemEventManager = null;
 
         public IAbilityManager AbilityManager { get => abilityManager; }
         public MonoBehaviour MonoBehaviour { get => this; }
@@ -17,14 +18,18 @@ namespace AnyRPG {
         public override  void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
 
-            objectPooler = systemGameManager.ObjectPooler;
-
             abilityManager = new AbilityManager(this, systemGameManager);
-            SystemEventManager.StartListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload += HandleLevelUnload;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            objectPooler = systemGameManager.ObjectPooler;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         // ensure that no coroutine continues or other spell effects exist past the end of a level
-        public void HandleLevelUnload(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleLevelUnload() {
             foreach (Coroutine coroutine in abilityManager.DestroyAbilityEffectObjectCoroutines) {
                 StopCoroutine(coroutine);
             }
@@ -142,7 +147,7 @@ namespace AnyRPG {
 
         public void OnDestroy() {
             StopAllCoroutines();
-            SystemEventManager.StopListening("OnLevelUnload", HandleLevelUnload);
+            systemEventManager.OnLevelUnload -= HandleLevelUnload;
         }
     }
 

@@ -45,8 +45,27 @@ namespace AnyRPG {
             base.OnStartClient();
             //Debug.Log($"FishNetNetworkConnector.OnStartClient() ClientId: {networkManager.ClientManager.Connection.ClientId}");
 
+            RequestServerTime();
             RequestSpawnRequest();
-            systemGameManager.UIManager.ProcessLoginSuccess();
+            networkManagerClient.ProcessStartClientConnector();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void RequestServerTime(NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetNetworkConnector.RequestServerTime()");
+
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+
+            SetStartTime(networkConnection, networkManagerServer.GetServerStartTime());
+        }
+
+        [TargetRpc]
+        public void SetStartTime(NetworkConnection networkConnection, DateTime serverTime) {
+            Debug.Log($"FishNetNetworkConnector.SetStartTime({serverTime})");
+
+            networkManagerClient.SetStartTime(serverTime);
         }
 
         [ServerRpc(RequireOwnership = false)]

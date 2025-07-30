@@ -132,7 +132,10 @@ namespace AnyRPG {
         private TimeOfDayManagerServer timeOfDayManagerServer = null;
 
         [SerializeField]
-        private WeatherManager weatherManager = null;
+        private WeatherManagerClient weatherManagerClient = null;
+
+        [SerializeField]
+        private WeatherManagerServer weatherManagerServer = null;
 
         [SerializeField]
         private DialogManager dialogManager = null;
@@ -224,7 +227,8 @@ namespace AnyRPG {
         public ChatCommandManager ChatCommandManager { get => chatCommandManager; set => chatCommandManager = value; }
         public TimeOfDayManagerClient TimeOfDayManagerClient { get => timeOfDayManagerClient; set => timeOfDayManagerClient = value; }
         public TimeOfDayManagerServer TimeOfDayManagerServer { get => timeOfDayManagerServer; set => timeOfDayManagerServer = value; }
-        public WeatherManager WeatherManager { get => weatherManager; set => weatherManager = value; }
+        public WeatherManagerClient WeatherManagerClient { get => weatherManagerClient; set => weatherManagerClient = value; }
+        public WeatherManagerServer WeatherManagerServer { get => weatherManagerServer; set => weatherManagerServer = value; }
         public DialogManager DialogManager { get => dialogManager; set => dialogManager = value; }
         public ClassChangeManager ClassChangeManager { get => classChangeManager; set => classChangeManager = value; }
         public FactionChangeManager FactionChangeManager { get => factionChangeManager; set => factionChangeManager = value; }
@@ -314,7 +318,8 @@ namespace AnyRPG {
             chatCommandManager.Configure(this);
             timeOfDayManagerServer.Configure(this);
             timeOfDayManagerClient.Configure(this);
-            weatherManager.Configure(this);
+            weatherManagerClient.Configure(this);
+            weatherManagerServer.Configure(this);
             dialogManager.Configure(this);
             classChangeManager.Configure(this);
             factionChangeManager.Configure(this);

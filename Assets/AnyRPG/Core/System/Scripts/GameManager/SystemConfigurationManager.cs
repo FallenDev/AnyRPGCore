@@ -350,6 +350,11 @@ namespace AnyRPG {
         [SerializeField]
         private float defaultDespawnTimer = 0f;
 
+        [Header("AI Behavior")]
+
+        [Tooltip("If true, the AI will return to their start position if pulled too far away from it")]
+        [SerializeField]
+        private bool enableLeashing = true;
 
         [Header("DPS Scaling")]
 
@@ -788,6 +793,7 @@ namespace AnyRPG {
         public string ClientVersion { get => clientVersion; set => clientVersion = value; }
         public string GameServerAddress { get => gameServerAddress; set => gameServerAddress = value; }
         public List<SceneNode> LobbyGameScenes { get => lobbyGameScenes; }
+        public bool EnableLeashing { get => enableLeashing; set => enableLeashing = value; }
 
         //public bool AllowClickToMove { get => allowClickToMove; }
 

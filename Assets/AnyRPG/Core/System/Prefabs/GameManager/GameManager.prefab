@@ -6620,6 +6620,7 @@ GameObject:
   - component: {fileID: 4938176035281589816}
   - component: {fileID: 4755277341132930208}
   - component: {fileID: 7422654420152684263}
+  - component: {fileID: 8493791889151143922}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6989,7 +6990,8 @@ MonoBehaviour:
   chatCommandManager: {fileID: 3319926267122627146}
   timeOfDayManagerClient: {fileID: 327801564803084641}
   timeOfDayManagerServer: {fileID: 7422654420152684263}
-  weatherManager: {fileID: 2170718474153991019}
+  weatherManagerClient: {fileID: 2170718474153991019}
+  weatherManagerServer: {fileID: 8493791889151143922}
   dialogManager: {fileID: 4985764694926039326}
   classChangeManager: {fileID: 2572069944954128607}
   factionChangeManager: {fileID: 8511068743211999250}
@@ -7565,6 +7567,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3530219796919e64fad870bdb2e38a43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8493791889151143922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5684895214070870814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbff56dfce58df47a1baa129c4f2a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5742173228335772782

@@ -59,6 +59,7 @@ namespace AnyRPG {
         public abstract void RequestChangePlayerName(string newName);
         public abstract void RequestSpawnPet(UnitProfile unitProfile);
         public abstract void RequestDespawnPet(UnitProfile unitProfile);
+        public abstract void RequestSceneWeather();
 
         // server functions
         public abstract void StartServer();
@@ -96,6 +97,9 @@ namespace AnyRPG {
         public abstract void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName);
         public abstract Scene GetAccountScene(int accountId, string sceneName);
         public abstract void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest);
+        public abstract void AdvertiseEndWeather(int sceneHandle, WeatherProfile profile, bool immediate);
+        public abstract void AdvertiseChooseWeather(int sceneHandle, WeatherProfile profile);
+        public abstract void AdvertiseStartWeather(int sceneHandle);
 
         //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);

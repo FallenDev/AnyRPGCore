@@ -4,6 +4,7 @@ using FishNet.Object;
 using FishNet.Transporting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -83,7 +84,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestSpawnPlayerUnit(string sceneName, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetNetworkConnector.RequestSpawnPlayerUnit({sceneName}, {networkConnection.ClientId})");
+            //Debug.Log($"FishNetNetworkConnector.RequestSpawnPlayerUnit({sceneName}, {networkConnection.ClientId})");
 
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 return;
@@ -154,13 +155,13 @@ namespace AnyRPG {
                 return;
             }
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
-            Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId}) networkConnection.ClientId = {networkConnection.ClientId}");
+            //Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestServer({accountId}) networkConnection.ClientId = {networkConnection.ClientId}");
             AdvertiseAddSpawnRequestClient(networkConnection, loadSceneRequest);
         }
 
         [TargetRpc]
         public void AdvertiseAddSpawnRequestClient(NetworkConnection networkConnection, SpawnPlayerRequest spawnPlayerRequest) {
-            Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestClient()");
+            //Debug.Log($"FishNetNetworkConnector.AdvertiseAddSpawnRequestClient()");
 
             networkManagerClient.AdvertiseSpawnPlayerRequest(spawnPlayerRequest);
         }
@@ -626,10 +627,10 @@ namespace AnyRPG {
         }
 
         public void StartLobbyGame(int gameId) {
-            Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId})");
+            //Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId})");
 
             NetworkConnection[] networkConnections = new NetworkConnection[networkManagerServer.LobbyGames[gameId].PlayerList.Keys.Count];
-            Debug.Log($"FishNetNetworkConnector.StartLobbyGame() networkConnections.Length = {networkConnections.Length}");
+            //Debug.Log($"FishNetNetworkConnector.StartLobbyGame() networkConnections.Length = {networkConnections.Length}");
             LobbyGame lobbyGame = networkManagerServer.LobbyGames[gameId];
             SceneNode loadingSceneNode = systemDataFactory.GetResource<SceneNode>(lobbyGame.sceneResourceName);
             if (loadingSceneNode == null) {
@@ -647,7 +648,7 @@ namespace AnyRPG {
                     continue;
                 }
                 networkConnections[i] = fishNetNetworkManager.ServerManager.Clients[clientId];
-                Debug.Log($"FishNetNetworkConnector.StartLobbyGame() adding client {clientId} to networkConnections[{i}] for game {gameId}");
+                //Debug.Log($"FishNetNetworkConnector.StartLobbyGame() adding client {clientId} to networkConnections[{i}] for game {gameId}");
                 i++;
             }
 
@@ -659,7 +660,7 @@ namespace AnyRPG {
             sceneLoadData.Options.AllowStacking = true;
             sceneLoadData.PreferredActiveScene = new PreferredScene(SceneLookupData.CreateData(loadingSceneNode.SceneFile));
             networkManagerServer.SetLobbyGameLoadRequestHashcode(gameId, sceneLoadData.GetHashCode());
-            Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
+            //Debug.Log($"FishNetNetworkConnector.StartLobbyGame({gameId}) sceneloadDataHashCode {sceneLoadData.GetHashCode()}");
 
             fishNetNetworkManager.SceneManager.LoadConnectionScenes(networkConnections, sceneLoadData);
         }
@@ -1204,6 +1205,23 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void RequestSceneWeather(NetworkConnection networkConnection = null) {
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.RequestSceneWeather() could not find clientId {networkConnection.ClientId} in server clients");
+                return;
+            }
+            HashSet<Scene> sceneList = fishNetNetworkManager.ServerManager.Clients[networkConnection.ClientId].Scenes;
+            if (sceneList.Count == 0) {
+                Debug.LogWarning($"FishNetClientConnector.RequestSceneWeather() could not find any scenes for clientId {networkConnection.ClientId}");
+                return;
+            }
+            WeatherProfile weatherProfile = networkManagerServer.GetSceneWeatherProfile(sceneList.First().handle);
+            AdvertiseChooseWeatherClient(networkConnection, weatherProfile == null ? string.Empty : weatherProfile.ResourceName);
+            AdvertiseStartWeatherClient(networkConnection);
+        }
+
+
+        [ServerRpc(RequireOwnership = false)]
         public void RequestLogout(NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestLogout()");
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
@@ -1211,6 +1229,81 @@ namespace AnyRPG {
                 return;
             }
             networkManagerServer.Logout(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void AdvertiseChooseWeather(int sceneHandle, WeatherProfile weatherProfile) {
+            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeather({sceneHandle}, {weatherProfile?.ResourceName})");
+            // get list of clients in scene
+            Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
+            if (scene.IsValid() == false) {
+                Debug.LogWarning($"FishNetClientConnector.AdvertiseChooseWeather() could not find scene with handle {sceneHandle}");
+                return;
+            }
+            if (SceneManager.SceneConnections.ContainsKey(scene) == true) {
+                HashSet<NetworkConnection> clientsInScene = SceneManager.SceneConnections[scene];
+                foreach (NetworkConnection networkConnection in clientsInScene) {
+                    AdvertiseChooseWeatherClient(networkConnection, weatherProfile == null ? string.Empty : weatherProfile.ResourceName);
+                }
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseChooseWeatherClient(NetworkConnection networkConnection, string weatherProfileName) {
+            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeatherClient({weatherProfileName})");
+            WeatherProfile weatherProfile = null;
+            if (weatherProfileName != string.Empty) {
+                weatherProfile = systemDataFactory.GetResource<WeatherProfile>(weatherProfileName);
+            }
+            networkManagerClient.AdvertiseChooseWeather(weatherProfile);
+        }
+
+        public void AdvertiseEndWeather(int sceneHandle, WeatherProfile weatherProfile, bool immediate) {
+            Debug.Log($"FishNetClientConnector.AdvertiseEndWeather({sceneHandle}, {weatherProfile?.ResourceName}, {immediate})");
+
+            Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
+            if (scene.IsValid() == false) {
+                Debug.LogWarning($"FishNetClientConnector.AdvertiseChooseWeather() could not find scene with handle {sceneHandle}");
+                return;
+            }
+            if (SceneManager.SceneConnections.ContainsKey(scene) == true) {
+                HashSet<NetworkConnection> clientsInScene = SceneManager.SceneConnections[scene];
+                foreach (NetworkConnection networkConnection in clientsInScene) {
+                    AdvertiseEndWeatherClient(networkConnection, weatherProfile == null ? string.Empty : weatherProfile.ResourceName, immediate);
+                }
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseEndWeatherClient(NetworkConnection networkConnection, string profileName, bool immediate) {
+            Debug.Log($"FishNetClientConnector.AdvertiseEndWeatherClient({profileName}, {immediate})");
+            WeatherProfile weatherProfile = null;
+            if (profileName != string.Empty) {
+                weatherProfile = systemDataFactory.GetResource<WeatherProfile>(profileName);
+            }
+            networkManagerClient.AdvertiseEndWeather(weatherProfile, immediate);
+        }
+
+        public void AdvertiseStartWeather(int sceneHandle) {
+            Debug.Log($"FishNetClientConnector.AdvertiseStartWeather({sceneHandle})");
+
+            Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
+            if (scene.IsValid() == false) {
+                Debug.LogWarning($"FishNetClientConnector.AdvertiseChooseWeather() could not find scene with handle {sceneHandle}");
+                return;
+            }
+            if (SceneManager.SceneConnections.ContainsKey(scene) == true) {
+                HashSet<NetworkConnection> clientsInScene = SceneManager.SceneConnections[scene];
+                foreach (NetworkConnection networkConnection in clientsInScene) {
+                    AdvertiseStartWeatherClient(networkConnection);
+                }
+            }
+        }
+
+        [TargetRpc]
+        public void AdvertiseStartWeatherClient(NetworkConnection networkConnection) {
+            Debug.Log($"FishNetClientConnector.AdvertiseStartWeatherClient()");
+
+            networkManagerClient.AdvertiseStartWeather();
         }
 
         /*

@@ -13,7 +13,7 @@ namespace AnyRPG {
 
         // game manager references
         protected SystemDataFactory systemDataFactory = null;
-        protected WeatherManager weatherManager = null;
+        protected WeatherManagerClient weatherManager = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected SystemEventManager systemEventManager = null;
 
@@ -31,7 +31,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             systemDataFactory = systemGameManager.SystemDataFactory;
-            weatherManager = systemGameManager.WeatherManager;
+            weatherManager = systemGameManager.WeatherManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
         }

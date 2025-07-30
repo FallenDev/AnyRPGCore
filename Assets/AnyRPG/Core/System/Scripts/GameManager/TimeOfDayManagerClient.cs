@@ -40,7 +40,7 @@ namespace AnyRPG {
         protected SystemDataFactory systemDataFactory = null;
         protected LevelManager levelManager = null;
         protected AudioManager audioManager = null;
-        protected WeatherManager weatherManager = null;
+        protected WeatherManagerClient weatherManager = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected TimeOfDayManagerServer timeOfDayManagerServer = null;
         protected SystemEventManager systemEventManager = null;
@@ -70,7 +70,7 @@ namespace AnyRPG {
             systemDataFactory = systemGameManager.SystemDataFactory;
             levelManager = systemGameManager.LevelManager;
             audioManager = systemGameManager.AudioManager;
-            weatherManager = systemGameManager.WeatherManager;
+            weatherManager = systemGameManager.WeatherManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
@@ -93,7 +93,7 @@ namespace AnyRPG {
             //PlayAmbientSounds(3f);
         }
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             //Debug.Log("TimeOfDayManager.HandleLevelUnload()");
 
             rotateSunDirection = false;

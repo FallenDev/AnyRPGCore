@@ -514,6 +514,10 @@ namespace AnyRPG {
             clientConnector.RequestDespawnPet(unitProfile.ResourceName);
         }
 
+        public override void RequestSceneWeather() {
+            clientConnector.RequestSceneWeather();
+        }
+
         #endregion
 
         #region server functions
@@ -603,7 +607,7 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName) {
-            Debug.Log($"FishNetNetworkController.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"FishNetNetworkController.AdvertiseChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             clientConnector.AdvertiseChooseLobbyGameCharacter(gameId, accountId, unitProfileName);
         }
@@ -709,9 +713,26 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
-            Debug.Log($"FishNetNetworkController.AdvertiseAddSpawnRequest({accountId})");
+            //Debug.Log($"FishNetNetworkController.AdvertiseAddSpawnRequest({accountId})");
 
             clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
+        }
+
+        public override void AdvertiseStartWeather(int sceneHandle) {
+            Debug.Log($"FishNetNetworkController.AdvertiseStartWeather({sceneHandle})");
+
+            clientConnector.AdvertiseStartWeather(sceneHandle);
+        }
+
+        public override void AdvertiseChooseWeather(int sceneHandle, WeatherProfile profile) {
+            Debug.Log($"FishNetNetworkController.AdvertiseChooseWeather({sceneHandle}, {profile?.ResourceName})");
+
+            clientConnector.AdvertiseChooseWeather(sceneHandle, profile);
+        }
+
+        public override void AdvertiseEndWeather(int sceneHandle, WeatherProfile weatherProfile, bool immediate) {
+            Debug.Log($"FishNetNetworkController.AdvertiseEndWeather({sceneHandle}, {weatherProfile?.ResourceName}, {immediate})");
+            clientConnector.AdvertiseEndWeather(sceneHandle, weatherProfile, immediate);
         }
 
         public override void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {

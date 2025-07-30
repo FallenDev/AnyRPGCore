@@ -18,6 +18,7 @@ namespace AnyRPG {
         private NetworkManagerClient networkManagerClient = null;
         private NetworkManagerServer networkManagerServer = null;
         private CameraManager cameraManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -30,6 +31,7 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             cameraManager = systemGameManager.CameraManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void HandleSceneUnloaded(Scene scene) {
@@ -56,6 +58,7 @@ namespace AnyRPG {
                 loadedScenes.Add(scene.name, new Dictionary<int, Scene>());
             }
             loadedScenes[scene.name].Add(scene.handle, scene);
+            systemEventManager.NotifyOnAddLoadedScene(scene.handle, scene.name);
         }
 
         public void RemoveLoadedScene(int sceneHandle, string sceneName) {
@@ -67,6 +70,7 @@ namespace AnyRPG {
             }
 
             loadedScenes[sceneName].Remove(sceneHandle);
+            systemEventManager.NotifyOnRemoveLoadedScene(sceneHandle, sceneName);
         }
 
         public void ProcessLevelLoad(Scene loadedScene)  {

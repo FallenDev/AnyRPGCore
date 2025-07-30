@@ -422,13 +422,13 @@ namespace AnyRPG {
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
-            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId})");
+            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId})");
 
             AddSpawnRequest(accountId, loadSceneRequest, true);
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
-            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
 
             if (spawnRequests.ContainsKey(accountId)) {
                 spawnRequests[accountId] = loadSceneRequest;
@@ -443,23 +443,23 @@ namespace AnyRPG {
         }
 
         public void RemoveSpawnRequest(int accountId) {
-            Debug.Log($"PlayerManagerServer.RemoveSpawnRequest({accountId})");
+            //Debug.Log($"PlayerManagerServer.RemoveSpawnRequest({accountId})");
 
             spawnRequests.Remove(accountId);
         }
 
 
         public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId, string sceneName) {
-            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName})");
+            //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName})");
 
             SpawnPlayerRequest inputLoadSceneRequest = null;
             SpawnPlayerRequest outputLoadSceneRequest = new SpawnPlayerRequest();
 
             if (spawnRequests.ContainsKey(accountId)) {
-                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
+                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
                 inputLoadSceneRequest = spawnRequests[accountId];
             } else {
-                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
+                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
                 inputLoadSceneRequest = new SpawnPlayerRequest();
             }
             outputLoadSceneRequest.overrideSpawnLocation = inputLoadSceneRequest.overrideSpawnLocation;

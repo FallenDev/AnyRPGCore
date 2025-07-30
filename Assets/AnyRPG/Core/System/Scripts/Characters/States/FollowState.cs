@@ -32,13 +32,14 @@ namespace AnyRPG {
             if (unitController.Target != null) {
                 //Debug.Log("current agro range is " + baseController.Target.name + " and current distance to target is " + baseController.DistanceToTarget);
                 // evade if the target is out of aggro range.  In the future this could also be calculated as distance from start point if we would rather use a leash approach
-                // temporarily disable leashing.
-                /*
-                if (Vector3.Distance(aiController.transform.position, aiController.MyStartPosition) > aiController.MyLeashDistance ) {
-                    aiController.ChangeState(new EvadeState());
-                    return;
+
+                if (unitController.EnableLeashing == true) {
+                    if (Vector3.Distance(unitController.transform.position, unitController.StartPosition) > unitController.LeashDistance) {
+                        unitController.ChangeState(new EvadeState());
+                        return;
+                    }
                 }
-                */
+
                 /*
                 if (aiController.MyDistanceToTarget > aiController.MyAggroRange) {
                     aiController.ChangeState(new EvadeState());

@@ -29,7 +29,7 @@ namespace AnyRPG {
         }
 
         // ensure that no coroutine continues or other spell effects exist past the end of a level
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             foreach (Coroutine coroutine in abilityManager.DestroyAbilityEffectObjectCoroutines) {
                 StopCoroutine(coroutine);
             }

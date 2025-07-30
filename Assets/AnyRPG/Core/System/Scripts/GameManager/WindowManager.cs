@@ -50,7 +50,7 @@ namespace AnyRPG {
             systemEventManager.OnLevelUnload -= HandleLevelUnload;
         }
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             //Debug.Log("WindowManager.HandleLevelUnload()");
             windowStack.Clear();
             //navigationStack.Clear();

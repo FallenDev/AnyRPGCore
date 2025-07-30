@@ -326,7 +326,7 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             //DespawnPlayerUnit();
             if (playerController != null) {
                 playerController.ProcessLevelUnload();

@@ -75,7 +75,7 @@ namespace AnyRPG {
         }
 
         public void AddPlayerToList(int accountId, string userName) {
-            Debug.Log($"HostServerPanelController.AddPlayerToList({accountId}, {userName})");
+            //Debug.Log($"HostServerPanelController.AddPlayerToList({accountId}, {userName})");
 
             if (playerButtons.ContainsKey(accountId)) {
                 //Debug.Warning($"HostServerPanelController.AddPlayerToList() - player was already connected, and is reconnecting");
@@ -147,7 +147,7 @@ namespace AnyRPG {
         }
 
         public void HandleLobbyLogin(int accountId) {
-            Debug.Log($"HostServerPanelController.HandleLobbyLogin({accountId})");
+            //Debug.Log($"HostServerPanelController.HandleLobbyLogin({accountId})");
 
             AddPlayerToList(accountId, networkManagerServer.LoggedInAccounts[accountId].username);
         }

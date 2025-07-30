@@ -55,6 +55,7 @@ namespace AnyRPG {
         private CraftingManager craftingManager = null;
         private SystemEventManager systemEventManager = null;
         private TimeOfDayManagerServer timeOfDayManagerServer = null;
+        private WeatherManagerClient weatherManagerClient = null;
 
         public string Username { get => username; }
         public string Password { get => password; }
@@ -83,6 +84,7 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
+            weatherManagerClient = systemGameManager.WeatherManagerClient;
         }
 
         public bool Login(string username, string password, string server) {
@@ -604,6 +606,22 @@ namespace AnyRPG {
 
         public void ProcessStartClientConnector() {
             uIManager.ProcessLoginSuccess();
+        }
+
+        public void AdvertiseChooseWeather(WeatherProfile weatherProfile) {
+            weatherManagerClient.ChooseWeather(weatherProfile);
+        }
+
+        public void AdvertiseEndWeather(WeatherProfile profile, bool immediate) {
+            weatherManagerClient.EndWeather(profile, immediate);
+        }
+
+        public void AdvertiseStartWeather() {
+            weatherManagerClient.StartWeather();
+        }
+
+        public void RequestSceneWeather() {
+            networkController.RequestSceneWeather();
         }
 
         /*

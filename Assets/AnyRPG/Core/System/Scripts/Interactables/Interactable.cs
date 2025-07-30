@@ -933,7 +933,7 @@ namespace AnyRPG {
             // only needed in namePlateUnit and above
         }
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             ProcessLevelUnload();
         }
 

@@ -95,7 +95,7 @@ namespace AnyRPG {
             // initialize the scene dictionary
             foreach (SceneNode sceneNode in systemDataFactory.GetResourceList<SceneNode>()) {
                 if (sceneNode.SceneFile != null && sceneNode.SceneFile != string.Empty) {
-                    sceneDictionary.Add(sceneNode.SceneFile.ToLower(), sceneNode);
+                    sceneDictionary.Add(sceneNode.SceneFile, sceneNode);
                 }
             }
         }
@@ -190,8 +190,8 @@ namespace AnyRPG {
 
             activeSceneName = SceneManager.GetActiveScene().name;
 
-            if (sceneDictionary.ContainsKey(activeSceneName.ToLower())) {
-                activeSceneNode = sceneDictionary[activeSceneName.ToLower()];
+            if (sceneDictionary.ContainsKey(activeSceneName)) {
+                activeSceneNode = sceneDictionary[activeSceneName];
             } else {
                 activeSceneNode = null;
             }
@@ -385,7 +385,7 @@ namespace AnyRPG {
 
         public void ProcessBeforeLevelUnload() {
             mapManager.ProcessLevelUnload();
-            systemEventManager.NotifyOnLevelUnload();
+            systemEventManager.NotifyOnLevelUnload(SceneManager.GetActiveScene().handle);
 
             uIManager.DeactivatePlayerUI();
             uIManager.DeactivateInGameUI();

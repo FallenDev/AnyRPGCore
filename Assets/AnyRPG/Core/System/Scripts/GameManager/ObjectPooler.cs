@@ -39,7 +39,7 @@ namespace AnyRPG {
             PopulateObjectPool();
         }
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             //Debug.Log("ObjectPooler.HandleLevelUnload()");
             // if object should persist through scene changes globally, do nothing
             if (persistSceneChange == true) {

@@ -52,7 +52,7 @@ namespace AnyRPG {
 
         // game manager references
         private SystemDataFactory systemDataFactory = null;
-        private WeatherManager weatherManager = null;
+        private WeatherManagerClient weatherManager = null;
         private NetworkManagerServer networkManagerServer = null;
 
         public BoxCollider Collider { get => myCollider; set => myCollider = value; }
@@ -74,7 +74,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             systemDataFactory = systemGameManager.SystemDataFactory;
-            weatherManager = systemGameManager.WeatherManager;
+            weatherManager = systemGameManager.WeatherManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
 
         }

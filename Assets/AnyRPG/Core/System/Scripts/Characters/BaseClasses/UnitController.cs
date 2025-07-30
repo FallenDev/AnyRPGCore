@@ -125,6 +125,7 @@ namespace AnyRPG {
         private float leashDistance = 40f;
         private float maxDistanceFromMasterOnMove = 3f;
         private float maxCombatDistanceFromMasterOnMove = 15f;
+        private bool enableLeashing = false;
 
         // track the current movement sound overrides
         private List<MovementSoundArea> movementSoundAreas = new List<MovementSoundArea>();
@@ -446,6 +447,7 @@ namespace AnyRPG {
         public CharacterRequestData CharacterRequestData { get => characterRequestData; set => characterRequestData = value; }
         public CharacterActionBarManager CharacterActionBarManager { get => characterActionBarManager; }
         public bool CharacterConfigured { get => characterConfigured; }
+        public bool EnableLeashing { get => enableLeashing; set => enableLeashing = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -805,6 +807,9 @@ namespace AnyRPG {
             EnableAICommon();
 
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (systemConfigurationManager.EnableLeashing == true) {
+                    enableLeashing = true;
+                }
                 if (characterStats.IsAlive == false) {
                     ChangeState(new DeathState());
                 } else {

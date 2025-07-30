@@ -107,6 +107,7 @@ namespace AnyRPG {
         private LevelManager levelManager = null;
         private TimeOfDayManagerServer timeOfDayManagerServer = null;
         private SystemEventManager systemEventManager = null;
+        private WeatherManagerServer weatherManagerServer = null;
 
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
@@ -140,10 +141,11 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
+            weatherManagerServer = systemGameManager.WeatherManagerServer;
         }
 
         public void AddLoggedInAccount(int clientId, int accountId, string token) {
-            Debug.Log($"NetworkManagerServer.AddLoggedInAccount({clientId}, {accountId}, {token})");
+            //Debug.Log($"NetworkManagerServer.AddLoggedInAccount({clientId}, {accountId}, {token})");
 
             if (loginRequests.ContainsKey(clientId)) {
                 if (loggedInAccounts.ContainsKey(accountId)) {
@@ -236,7 +238,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginResponse(int clientId, int accountId, bool correctPassword, string token) {
-            Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {accountId}, {correctPassword}, {token})");
+            //Debug.Log($"NetworkManagerServer.ProcessLoginResponse({clientId}, {accountId}, {correctPassword}, {token})");
 
             SpawnPlayerRequest spawnPlayerRequest = null;
             if (correctPassword == true) {
@@ -411,13 +413,14 @@ namespace AnyRPG {
             networkController?.AdvertiseLobbyLogout(accountId);
         }
 
-
-
         public void ActivateServerMode() {
             //Debug.Log($"NetworkManagerServer.ActivateServerMode()");
 
             serverModeActive = true;
             systemEventManager.NotifyOnStartServer();
+            systemEventManager.OnChooseWeather += HandleChooseWeather;
+            systemEventManager.OnStartWeather += HandleStartWeather;
+            systemEventManager.OnEndWeather += HandleEndWeather;
         }
 
         public void DeactivateServerMode() {
@@ -430,8 +433,23 @@ namespace AnyRPG {
             lobbyGameChatText.Clear();
 
             systemEventManager.NotifyOnStopServer();
+            systemEventManager.OnChooseWeather -= HandleChooseWeather;
+            systemEventManager.OnStartWeather -= HandleStartWeather;
+            systemEventManager.OnEndWeather -= HandleEndWeather;
+
         }
 
+        private void HandleStartWeather(int sceneHandle) {
+            networkController.AdvertiseStartWeather(sceneHandle);
+        }
+
+        private void HandleEndWeather(int sceneHandle, WeatherProfile profile, bool immediate) {
+            networkController?.AdvertiseEndWeather(sceneHandle, profile, immediate);
+        }
+
+        private void HandleChooseWeather(int sceneHandle, WeatherProfile profile) {
+            networkController?.AdvertiseChooseWeather(sceneHandle, profile);
+        }
 
         public void StartServer() {
             //Debug.Log($"NetworkManagerServer.StartServer()");
@@ -511,7 +529,7 @@ namespace AnyRPG {
         }
 
         public void ChooseLobbyGameCharacter(int gameId, int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            Debug.Log($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName})");
 
             if (lobbyGames.ContainsKey(gameId) == false || loggedInAccounts.ContainsKey(accountId) == false) {
                 Debug.LogWarning($"NetworkManagerServer.ChooseLobbyGameCharacter({gameId}, {accountId}, {unitProfileName}) - lobby game or client does not exist");
@@ -908,7 +926,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnLobbyGamePlayer(int accountId, int gameId, string sceneName) {
-            Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {sceneName})");
+            //Debug.Log($"NetworkManagerServer.RequestSpawnLobbyGamePlayer({accountId}, {gameId}, {sceneName})");
 
             playerManagerServer.RequestSpawnPlayerUnit(accountId, sceneName);
         }
@@ -918,14 +936,14 @@ namespace AnyRPG {
         }
 
         private PlayerCharacterSaveData GetNewLobbyGamePlayerCharacterSaveData(int gameId, int accountId, string unitProfileName) {
-            Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfileName})");
+            //Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfileName})");
 
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
             return GetNewLobbyGamePlayerCharacterSaveData(gameId, accountId, unitProfile);
         }
 
         private PlayerCharacterSaveData GetNewLobbyGamePlayerCharacterSaveData(int gameId, int accountId, UnitProfile unitProfile) {
-            Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfile.ResourceName})");
+            //Debug.Log($"NetworkManagerServer.GetNewLobbyGamePlayerCharacterSaveData({gameId}, {accountId}, {unitProfile.ResourceName})");
 
             PlayerCharacterSaveData playerCharacterSaveData = saveManager.CreateSaveData();
             playerCharacterSaveData.PlayerCharacterId = accountId;
@@ -974,7 +992,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {
-            Debug.Log($"NetworkManagerServer.AdvertiseAddSpawnRequest({accountId})");
+            //Debug.Log($"NetworkManagerServer.AdvertiseAddSpawnRequest({accountId})");
 
             networkController.AdvertiseAddSpawnRequest(accountId, loadSceneRequest);
         }
@@ -993,6 +1011,10 @@ namespace AnyRPG {
 
         public DateTime GetServerStartTime() {
             return timeOfDayManagerServer.StartTime;
+        }
+
+        public WeatherProfile GetSceneWeatherProfile(int handle) {
+            return weatherManagerServer.GetSceneWeatherProfile(handle);
         }
     }
 

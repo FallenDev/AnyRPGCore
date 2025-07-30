@@ -45,7 +45,12 @@ namespace AnyRPG {
         public event System.Action OnStartServer = delegate { };
         public event System.Action OnStopServer = delegate { };
         public event System.Action OnLevelLoad = delegate { };
-        public event System.Action OnLevelUnload = delegate { };
+        public event System.Action<int> OnLevelUnload = delegate { };
+        public event System.Action<int, string> OnRemoveLoadedScene = delegate { };
+        public event System.Action<int, string> OnAddLoadedScene = delegate { };
+        public event System.Action<int, WeatherProfile, bool> OnEndWeather = delegate { };
+        public event System.Action<int, WeatherProfile> OnChooseWeather = delegate { };
+        public event System.Action<int> OnStartWeather = delegate { };
 
         // equipment manager
         public System.Action<EquipmentSlotProfile, InstantiatedEquipment> OnAddEquipment = delegate { };
@@ -252,8 +257,28 @@ namespace AnyRPG {
             OnLevelLoad();
         }
 
-        public void NotifyOnLevelUnload() {
-            OnLevelUnload();
+        public void NotifyOnLevelUnload(int sceneHandle) {
+            OnLevelUnload(sceneHandle);
+        }
+
+        public void NotifyOnRemoveLoadedScene(int sceneHandle, string sceneName) {
+            OnRemoveLoadedScene(sceneHandle, sceneName);
+        }
+
+        public void NotifyOnAddLoadedScene(int sceneHandle, string sceneName) {
+            OnAddLoadedScene(sceneHandle, sceneName);
+        }
+
+        public void NotifyOnEndWeather(int sceneHandle, WeatherProfile previousWeather, bool immediate) {
+            OnEndWeather(sceneHandle, previousWeather, immediate);
+        }
+
+        public void NotifyOnChooseWeather(int sceneHandle, WeatherProfile currentWeather) {
+            OnChooseWeather(sceneHandle, currentWeather);
+        }
+
+        public void NotifyOnStartWeather(int sceneHandle) {
+            OnStartWeather(sceneHandle);
         }
     }
 

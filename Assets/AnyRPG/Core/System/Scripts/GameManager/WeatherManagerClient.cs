@@ -5,14 +5,12 @@ using UnityEngine;
 
 namespace AnyRPG {
 
-    public class WeatherManager : ConfiguredMonoBehaviour {
+    public class WeatherManagerClient : ConfiguredMonoBehaviour {
 
         // state tracking
         private WeatherProfile previousWeather = null;
         private WeatherProfile currentWeather = null;
         private WeatherEffectController weatherEffectController = null;
-        private List<WeatherWeightNode> weatherWeights = new List<WeatherWeightNode>();
-        private Coroutine weatherCoroutine = null;
         private Coroutine fogCoroutine = null;
         private Coroutine shadowCoroutine = null;
         private AudioClip currentAmbientSound = null;
@@ -37,6 +35,7 @@ namespace AnyRPG {
         protected TimeOfDayManagerClient timeOfDayManagerClient = null;
         protected NetworkManagerServer networkManagerServer = null;
         protected SystemEventManager systemEventManager = null;
+        protected NetworkManagerClient networkManagerClient = null;
 
         public AudioClip CurrentAmbientSound { get => currentAmbientSound; set => currentAmbientSound = value; }
 
@@ -46,6 +45,11 @@ namespace AnyRPG {
             systemEventManager.OnLevelUnload += HandleLevelUnload;
             systemEventManager.OnLevelLoad += HandleLevelLoad;
             systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
+            systemEventManager.OnChooseWeather += HandleChooseWeather;
+            systemEventManager.OnStartWeather += HandleStartWeather;
+            systemEventManager.OnEndWeather += HandleEndWeather;
+            systemEventManager.OnStartServer += HandleStartServer;
+            systemEventManager.OnStopServer += HandlStopServer;
         }
 
         public override void SetGameManagerReferences() {
@@ -61,12 +65,41 @@ namespace AnyRPG {
             timeOfDayManagerClient = systemGameManager.TimeOfDayManagerClient;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
+            networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
-        public void HandleLevelUnload() {
-            //Debug.Log("WeatherManager.HandleLevelUnload()");
+        private void HandleStartServer() {
+            // weather manager client should not be listening for weather events when the server is running
+            systemEventManager.OnChooseWeather -= HandleChooseWeather;
+            systemEventManager.OnStartWeather -= HandleStartWeather;
+            systemEventManager.OnEndWeather -= HandleEndWeather;
+        }
 
-            EndWeather(currentWeather, true);
+        private void HandlStopServer() {
+            systemEventManager.OnChooseWeather += HandleChooseWeather;
+            systemEventManager.OnStartWeather += HandleStartWeather;
+            systemEventManager.OnEndWeather += HandleEndWeather;
+        }
+
+        private void HandleStartWeather(int sceneHandle) {
+            StartWeather();
+        }
+
+        private void HandleEndWeather(int sceneHandle, WeatherProfile profile, bool immediate) {
+            EndWeather(profile, immediate);
+        }
+
+        private void HandleChooseWeather(int sceneHandle, WeatherProfile weatherProfile) {
+            ChooseWeather(weatherProfile);
+        }
+
+
+        public void HandleLevelUnload(int sceneHandle) {
+            Debug.Log($"WeatherManagerClient.HandleLevelUnload()");
+
+            if (systemGameManager.GameMode == GameMode.Local) {
+                EndWeather(currentWeather, true);
+            }
             CleanupWeatherEffectControllers();
             previousWeather = null;
             currentWeather = null;
@@ -76,21 +109,25 @@ namespace AnyRPG {
         }
 
         public void HandleLevelLoad() {
-            //Debug.Log("WeatherManager.HandleLevelLoad()");
+            Debug.Log("WeatherManager.HandleLevelLoad()");
 
             if (networkManagerServer.ServerModeActive == true) {
                 return;
             }
-
+            if (levelManager.IsMainMenu() == true) {
+                return;
+            }
             GetSceneFogSettings();
             GetSceneShadowSettings();
-            if (levelManager.GetActiveSceneNode() != null) {
-                SetupWeatherList();
-                ChooseWeather();
+            if (systemGameManager.GameMode == GameMode.Local) {
+                return;
             }
+            // if the game is not in local mode, then the weather needs to be requested from the server
+            networkManagerClient.RequestSceneWeather();
         }
 
         public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
+            Debug.Log("WeatherManagerClient.HandlePlayerUnitSpawn()");
             // the weather may have spawned before the player.  If so, the weather needs to be set to follow the player now that it is spawned
 
             if (currentWeather == null) {
@@ -102,6 +139,7 @@ namespace AnyRPG {
         }
 
         private void GetSceneShadowSettings() {
+            Debug.Log("WeatherManagerClient.GetSceneShadowSettings()");
             if (RenderSettings.sun != null) {
                 sunLight = RenderSettings.sun;
                 defaultShadowStrength = sunLight.shadowStrength;
@@ -109,6 +147,8 @@ namespace AnyRPG {
         }
 
         private void GetSceneFogSettings() {
+            Debug.Log("WeatherManagerClient.GetSceneFogSettings()");
+
             defaultFogSettings.UseFog = RenderSettings.fog;
             defaultFogSettings.FogColor = RenderSettings.fogColor;
             defaultFogSettings.FogDensity = RenderSettings.fogDensity;
@@ -116,6 +156,8 @@ namespace AnyRPG {
         }
 
         public void ActivateWeatherFogSettings(FogSettings fogSettings) {
+            Debug.Log($"WeatherManagerClient.ActivateWeatherFogSettings()");
+
             weatherFogSettings = fogSettings;
             fogList.Add(weatherFogSettings);
             if (currentFogSettings != waterFogSettings) {
@@ -126,6 +168,8 @@ namespace AnyRPG {
         }
 
         public void DeactivateWeatherFogSettings() {
+            Debug.Log($"WeatherManagerClient.DeactivateWeatherFogSettings()");
+
             fogList.Remove(weatherFogSettings);
             if (currentFogSettings != waterFogSettings) {
                 currentFogSettings = defaultFogSettings;
@@ -135,6 +179,8 @@ namespace AnyRPG {
         }
 
         private void ActivateCurrentFogSettings() {
+            Debug.Log($"WeatherManagerClient.ActivateCurrentFogSettings()");
+
             if (fogCoroutine != null) {
                 StopCoroutine(fogCoroutine);
             }
@@ -238,69 +284,16 @@ namespace AnyRPG {
             ActivateCurrentFogSettings();
         }
 
-        private void SetupWeatherList() {
-            weatherWeights.Clear();
+        public void ChooseWeather(WeatherProfile weatherProfile) {
+            Debug.Log($"WeatherManagerClient.ChooseWeather({weatherProfile?.ResourceName})");
 
-            WeatherWeightNode clearWeatherWeightNode = new WeatherWeightNode();
-            clearWeatherWeightNode.Weight = levelManager.GetActiveSceneNode().NoWeatherWeight;
-            weatherWeights.Add(clearWeatherWeightNode);
-            weatherWeights.AddRange(levelManager.GetActiveSceneNode().WeatherWeights);
-        }
-
-        private void ChooseWeather() {
-            //Debug.Log("WeatherManager.ChooseWeather()");
-
-            if (weatherWeights.Count == 1) {
-                // no weather to choose from (clear weather is always in the list)
-                return;
-            }
-
-            int sumOfWeight = 0;
-            int accumulatedWeight = 0;
-            int usedIndex = 0;
-
-            // get sum of all weights
-            for (int i = 0; i < weatherWeights.Count; i++) {
-                sumOfWeight += weatherWeights[i].Weight;
-            }
-            if (sumOfWeight == 0) {
-                // there was weather, but it didn't have any weights
-                return;
-            }
-
-            // perform weighted random roll to determine weather
             previousWeather = currentWeather;
-            int rnd = UnityEngine.Random.Range(0, sumOfWeight);
-            for (int i = 0; i < weatherWeights.Count; i++) {
-                accumulatedWeight += (int)weatherWeights[i].Weight;
-                if (rnd < accumulatedWeight) {
-                    usedIndex = i;
-                    break;
-                }
-            }
-            currentWeather = weatherWeights[usedIndex].Weather;
-
-            // always get ambient sound even if current weather is null
-            // because the sound needs to be set to null or it will keep playing
-            // the old weather sound when switched to clear weather
-            // this is done here rather than in startWeather to avoid a crossfade to the wrong sound between EndWeather() and StartWeather()
-            //currentAmbientSound = currentWeather?.AmbientSound;
-
-            //Debug.Log("WeatherManager.ChooseWeather() picked: " + (currentWeather == null ? "clear" : currentWeather.DisplayName));
-
-            if (currentWeather == previousWeather) {
-
-                // weather is the same, just keep monitoring it
-                EndWeatherMonitoring();
-                StartWeatherMonitoring();
-                return;
-            }
-
-            EndWeather(previousWeather);
-            StartWeather();
+            currentWeather = weatherProfile;
         }
 
-        private void StartWeather() {
+        public void StartWeather() {
+            Debug.Log($"WeatherManagerClient.StartWeather()");
+
             if (currentWeather != null) {
                 if (currentWeather.PrefabProfile?.Prefab != null) {
                     GameObject prefabObject = objectPooler.GetPooledObject(currentWeather.PrefabProfile.Prefab);
@@ -331,12 +324,11 @@ namespace AnyRPG {
             // it could be clear weather so the default ambient sounds for the scene should be played
             timeOfDayManagerClient.PlayAmbientSounds(3);
 
-            // always monitor weather, it could be clear
-            StartWeatherMonitoring();
         }
 
-        private void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            
+        public void EndWeather(WeatherProfile previousWeather, bool immediate) {
+            Debug.Log($"WeatherManagerClient.EndWeather({previousWeather?.ResourceName}, {immediate})");
+
             currentAmbientSound = null;
 
             if (immediate == true) {
@@ -346,8 +338,6 @@ namespace AnyRPG {
                     shadowCoroutine = null;
                 }
             }
-
-            EndWeatherMonitoring();
 
             if (previousWeather == null) {
                 // no previous weather, nothing to do
@@ -398,31 +388,6 @@ namespace AnyRPG {
             fadingControllers.Clear();
         }
 
-        private void StartWeatherMonitoring() {
-            weatherCoroutine = StartCoroutine(MonitorWeather(levelManager.GetActiveSceneNode().RandomWeatherLength));
-        }
-
-        private void EndWeatherMonitoring() {
-            if (weatherCoroutine != null) {
-                StopCoroutine(weatherCoroutine);
-                weatherCoroutine = null;
-            }
-        }
-
-        private IEnumerator MonitorWeather(float inGameSeconds) {
-            //Debug.Log($"WeatherManager.MonitorWeather({inGameSeconds})");
-
-            DateTime startTime = timeOfDayManagerServer.InGameTime;
-            DateTime endTime = startTime.AddSeconds(inGameSeconds);
-
-            //Debug.Log($"WeatherManager.MonitorWeather({inGameSeconds}) start: {startTime.ToShortDateString()} {startTime.ToShortTimeString()} end: {endTime.ToLongDateString()} {endTime.ToShortTimeString()}");
-
-            while (timeOfDayManagerServer.InGameTime < endTime) {
-                yield return null;
-            }
-            ChooseWeather();
-        }
-
         private void FollowPlayer() {
             if (weatherEffectController != null && playerManager.ActiveUnitController != null) {
                 weatherEffectController.SetTarget(cameraManager.MainCameraGameObject);
@@ -430,36 +395,6 @@ namespace AnyRPG {
         }
 
 
-    }
-
-    [System.Serializable]
-    public class FogSettings {
-
-        [Tooltip("If true, fog will be turned on.")]
-        [SerializeField]
-        private bool useFog = false;
-
-        [Tooltip("The color of the fog.")]
-        [SerializeField]
-        private Color fogColor = new Color32(128, 128, 128, 255);
-
-        [Tooltip("The density of the fog.")]
-        [SerializeField]
-        [Range(0, 1)]
-        private float fogDensity = 0.05f;
-
-        public FogSettings() {
-        }
-
-        public FogSettings(bool useFog, Color fogColor, float fogDensity) {
-            this.useFog = useFog;
-            this.fogColor = fogColor;
-            this.fogDensity = fogDensity;
-        }
-
-        public bool UseFog { get => useFog; set => useFog = value; }
-        public Color FogColor { get => fogColor; set => fogColor = value; }
-        public float FogDensity { get => fogDensity; set => fogDensity = value; }
     }
 
 }

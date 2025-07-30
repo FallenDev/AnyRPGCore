@@ -56,7 +56,7 @@ namespace AnyRPG {
             UpdateNamePlates();
         }
 
-        public void HandleLevelUnload() {
+        public void HandleLevelUnload(int sceneHandle) {
             mouseOverList.Clear();
         }
 

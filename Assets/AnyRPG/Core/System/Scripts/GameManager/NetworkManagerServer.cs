@@ -400,16 +400,15 @@ namespace AnyRPG {
                 return;
             }
             int clientId = loggedInAccounts[accountId].clientId;
+            if (lobbyGameAccountLookup.ContainsKey(accountId) == true) {
+                int gameId = lobbyGameAccountLookup[accountId];
+                LeaveLobbyGame(gameId, accountId);
+            }
+
             loggedInAccounts.Remove(accountId);
             loggedInAccountsByClient.Remove(clientId);
 
             OnLobbyLogout(accountId);
-            foreach (LobbyGame lobbyGame in lobbyGames.Values) {
-                if (lobbyGame.leaderAccountId == accountId && lobbyGame.inProgress == false) {
-                    CancelLobbyGame(accountId, lobbyGame.gameId);
-                    break;
-                }
-            }
             networkController?.AdvertiseLobbyLogout(accountId);
         }
 
@@ -618,11 +617,11 @@ namespace AnyRPG {
                 // game or client doesn't exist
                 return;
             }
-            if (lobbyGames[gameId].leaderAccountId == accountId) {
+            if (lobbyGames[gameId].leaderAccountId == accountId && lobbyGames[gameId].inProgress == false) {
                 CancelLobbyGame(accountId, gameId);
             } else {
                 lobbyGames[gameId].RemovePlayer(accountId);
-                lobbyGameAccountLookup.Add(accountId, gameId);
+                lobbyGameAccountLookup.Remove(accountId);
                 OnLeaveLobbyGame(gameId, accountId);
                 networkController.AdvertiseAccountLeaveLobbyGame(gameId, accountId);
             }

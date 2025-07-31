@@ -131,7 +131,7 @@ namespace AnyRPG {
         }
 
         public void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
-            Debug.Log("WeatherManagerClient.HandlePlayerUnitSpawn()");
+            //Debug.Log("WeatherManagerClient.HandlePlayerUnitSpawn()");
             // the weather may have spawned before the player.  If so, the weather needs to be set to follow the player now that it is spawned
 
             if (currentWeather == null) {
@@ -172,7 +172,7 @@ namespace AnyRPG {
         }
 
         public void DeactivateWeatherFogSettings() {
-            Debug.Log($"WeatherManagerClient.DeactivateWeatherFogSettings()");
+            //Debug.Log($"WeatherManagerClient.DeactivateWeatherFogSettings()");
 
             fogList.Remove(weatherFogSettings);
             if (currentFogSettings != waterFogSettings) {
@@ -183,7 +183,7 @@ namespace AnyRPG {
         }
 
         private void ActivateCurrentFogSettings() {
-            Debug.Log($"WeatherManagerClient.ActivateCurrentFogSettings()");
+            //Debug.Log($"WeatherManagerClient.ActivateCurrentFogSettings()");
 
             if (fogCoroutine != null) {
                 StopCoroutine(fogCoroutine);

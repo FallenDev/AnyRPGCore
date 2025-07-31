@@ -326,7 +326,7 @@ namespace AnyRPG {
         }
         */
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             //DespawnPlayerUnit();
             if (playerController != null) {
                 playerController.ProcessLevelUnload();
@@ -563,7 +563,7 @@ namespace AnyRPG {
         }
 
         public void SpawnPlayerConnectionObject() {
-            Debug.Log("PlayerManager.SpawnPlayerConnection()");
+            Debug.Log("PlayerManager.SpawnPlayerConnectionObject()");
 
             if (playerConnectionObject != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerConnection(): The Player Connection is not null.  exiting.");

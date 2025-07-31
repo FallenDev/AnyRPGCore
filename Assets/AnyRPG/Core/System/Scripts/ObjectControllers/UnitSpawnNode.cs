@@ -249,7 +249,7 @@ namespace AnyRPG {
             ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.HandleLevelUnload()");
             Cleanup();
         }

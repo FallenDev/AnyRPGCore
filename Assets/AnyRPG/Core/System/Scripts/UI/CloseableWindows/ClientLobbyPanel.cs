@@ -178,7 +178,7 @@ namespace AnyRPG {
 
 
         public void RequestLobbyGameList() {
-            Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
+            //Debug.Log($"ClientLobbyPanelController.RequestLobbyGameList()");
 
             networkManagerClient.RequestLobbyGameList();
         }

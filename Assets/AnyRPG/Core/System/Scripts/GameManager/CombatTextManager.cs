@@ -55,7 +55,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             List<CombatTextController> removeList = new List<CombatTextController>();
             removeList.AddRange(inUseCombatTextControllers);
             foreach (CombatTextController combatTextController in removeList) {

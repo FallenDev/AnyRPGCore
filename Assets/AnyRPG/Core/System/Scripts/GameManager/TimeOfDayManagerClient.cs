@@ -93,7 +93,7 @@ namespace AnyRPG {
             //PlayAmbientSounds(3f);
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             //Debug.Log("TimeOfDayManager.HandleLevelUnload()");
 
             rotateSunDirection = false;

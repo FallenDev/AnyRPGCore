@@ -80,7 +80,7 @@ namespace AnyRPG {
                 }
             }
             currentWeather = weatherWeights[usedIndex].Weather;
-            weatherManagerServer.ChooseWeather(sceneHandle, currentWeather);
+            weatherManagerServer.ProcessChooseWeather(sceneHandle, currentWeather);
 
             if (currentWeather == previousWeather) {
 
@@ -128,7 +128,7 @@ namespace AnyRPG {
 
             // always monitor weather, it could be clear
             StartWeatherMonitoring();
-            weatherManagerServer.StartWeather(sceneHandle);
+            weatherManagerServer.ProcessStartWeather(sceneHandle);
         }
 
         public void EndWeather() {
@@ -144,10 +144,10 @@ namespace AnyRPG {
         }
 
         private void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherMonitor.EndWeather({previousWeather?.ResourceName}, {immediate})");
+            Debug.Log($"WeatherMonitor.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             EndWeatherMonitoring();
-            weatherManagerServer.EndWeather(sceneHandle, previousWeather, immediate);
+            weatherManagerServer.ProcessEndWeather(sceneHandle, previousWeather, immediate);
 
             if (previousWeather == null) {
                 // no previous weather, nothing to do

@@ -211,7 +211,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLoginSuccess(int accountId) {
-            Debug.Log($"NetworkManagerClient.ProcessLoginSuccess({accountId})");
+            //Debug.Log($"NetworkManagerClient.ProcessLoginSuccess({accountId})");
 
             // not doing this here because the connector has not spawned yet.
             //uIManager.ProcessLoginSuccess();
@@ -220,13 +220,13 @@ namespace AnyRPG {
         }
 
         public void CreatePlayerCharacter(AnyRPGSaveData anyRPGSaveData) {
-            Debug.Log($"NetworkManagerClient.CreatePlayerCharacterClient(AnyRPGSaveData)");
+            //Debug.Log($"NetworkManagerClient.CreatePlayerCharacterClient(AnyRPGSaveData)");
 
             networkController.CreatePlayerCharacter(anyRPGSaveData);
         }
 
         public void RequestLobbyGameList() {
-            Debug.Log($"NetworkManagerClient.RequestLobbyGameList()");
+            //Debug.Log($"NetworkManagerClient.RequestLobbyGameList()");
 
             networkController.RequestLobbyGameList();
         }
@@ -390,7 +390,7 @@ namespace AnyRPG {
         }
 
         public void LaunchLobbyGame(int gameId) {
-            Debug.Log($"NetworkManagerClient.LaunchLobbyGame({gameId})");
+            //Debug.Log($"NetworkManagerClient.LaunchLobbyGame({gameId})");
 
             if (lobbyGame == null || lobbyGame.gameId != gameId) {
                 // have not joined lobby game, or joined different lobby game
@@ -595,7 +595,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSpawnPlayerRequest(SpawnPlayerRequest spawnPlayerRequest) {
-            Debug.Log($"NetworkManagerClient.AdvertiseSpawnPlayerRequest()");
+            //Debug.Log($"NetworkManagerClient.AdvertiseSpawnPlayerRequest()");
 
             playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest);
         }

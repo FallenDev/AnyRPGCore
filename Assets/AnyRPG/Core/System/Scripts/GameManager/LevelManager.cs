@@ -198,20 +198,28 @@ namespace AnyRPG {
         }
 
         public bool IsMainMenu() {
-            if (activeSceneName == systemConfigurationManager.MainMenuSceneNode?.SceneFile) {
+            return IsMainMenu(activeSceneName);
+        }
+
+        public bool IsMainMenu(string matchSceneName) {
+            if (matchSceneName == systemConfigurationManager.MainMenuSceneNode?.SceneFile) {
                 return true;
             }
-            if (activeSceneName == systemConfigurationManager.MainMenuScene?.Replace(" ", "")) {
+            if (matchSceneName == systemConfigurationManager.MainMenuScene?.Replace(" ", "")) {
                 return true;
             }
             return false;
         }
 
         public bool IsInitializationScene() {
-            if (activeSceneName == systemConfigurationManager.InitializationSceneNode?.SceneFile) {
+            return IsInitializationScene(activeSceneName);
+        }
+
+        public bool IsInitializationScene(string matchSceneName) {
+            if (matchSceneName == systemConfigurationManager.InitializationSceneNode?.SceneFile) {
                 return true;
             }
-            if (activeSceneName == systemConfigurationManager.InitializationScene.Replace(" ", "")) {
+            if (matchSceneName == systemConfigurationManager.InitializationScene.Replace(" ", "")) {
                 return true;
             }
             return false;
@@ -385,7 +393,7 @@ namespace AnyRPG {
 
         public void ProcessBeforeLevelUnload() {
             mapManager.ProcessLevelUnload();
-            systemEventManager.NotifyOnLevelUnload(SceneManager.GetActiveScene().handle);
+            systemEventManager.NotifyOnLevelUnload(SceneManager.GetActiveScene().handle, SceneManager.GetActiveScene().name);
 
             uIManager.DeactivatePlayerUI();
             uIManager.DeactivateInGameUI();

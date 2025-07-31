@@ -67,7 +67,7 @@ namespace AnyRPG {
             CleanupEventSubscriptions();
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             ProcessLevelUnload();
         }
 

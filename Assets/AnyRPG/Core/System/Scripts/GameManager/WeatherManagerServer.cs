@@ -46,7 +46,7 @@ namespace AnyRPG {
         private void HandleRemoveLoadedScene(int sceneHandle, string sceneName) {
             Debug.Log($"WeatherManagerServer.HandleRemoveLoadedScene({sceneHandle}, {sceneName})");
 
-            ProcessRemoveLoadedScene(sceneHandle);
+            ProcessRemoveLoadedScene(sceneHandle, sceneName);
         }
 
         private void HandleAddLoadedScene(int sceneHandle, string sceneName) {
@@ -57,24 +57,25 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
-            Debug.Log($"WeatherManagerServer.HandleLevelUnload({sceneHandle})");
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
+            Debug.Log($"WeatherManagerServer.HandleLevelUnload({sceneHandle}, {sceneName})");
 
-            if (networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Network) {
                 return;
             }
 
-            ProcessRemoveLoadedScene(sceneHandle);
+            ProcessRemoveLoadedScene(sceneHandle, sceneName);
         }
 
         public void HandleLevelLoad() {
             Debug.Log("WeatherManagerServer.HandleLevelLoad()");
 
-            if (networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Network) {
+                // network mode level loads are handled by a different event subscription
                 return;
             }
 
-            if (levelManager.IsMainMenu() == true) {
+            if (levelManager.IsMainMenu() == true || levelManager.IsInitializationScene() == true) {
                 return;
             }
 
@@ -89,8 +90,8 @@ namespace AnyRPG {
             weatherMonitors.Add(sceneHandle, new WeatherMonitor(systemGameManager, sceneHandle, sceneNode));
         }
 
-        private void ProcessRemoveLoadedScene(int sceneHandle) {
-            Debug.Log($"WeatherManagerServer.ProcessRemoveLoadedScene({sceneHandle})");
+        private void ProcessRemoveLoadedScene(int sceneHandle, string sceneName) {
+            Debug.Log($"WeatherManagerServer.ProcessRemoveLoadedScene({sceneHandle}, {sceneName})");
 
             if (weatherMonitors.ContainsKey(sceneHandle) == true) {
                 weatherMonitors[sceneHandle].EndWeather();
@@ -98,19 +99,19 @@ namespace AnyRPG {
             }
         }
 
-        public void EndWeather(int sceneHandle, WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherManagerServer.EndWeather({sceneHandle}, {previousWeather?.ResourceName}, {immediate})");
+        public void ProcessEndWeather(int sceneHandle, WeatherProfile previousWeather, bool immediate) {
+            Debug.Log($"WeatherManagerServer.ProcessEndWeather({sceneHandle}, {(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             systemEventManager.NotifyOnEndWeather(sceneHandle, previousWeather, immediate);
         }
 
-        public void ChooseWeather(int sceneHandle, WeatherProfile currentWeather) {
-            Debug.Log($"WeatherManagerServer.ChooseWeather({sceneHandle}, {currentWeather?.ResourceName})");
+        public void ProcessChooseWeather(int sceneHandle, WeatherProfile currentWeather) {
+            Debug.Log($"WeatherManagerServer.ChooseWeather({sceneHandle}, {(currentWeather == null ? "null" : currentWeather?.ResourceName)})");
 
             systemEventManager.NotifyOnChooseWeather(sceneHandle, currentWeather);
         }
 
-        public void StartWeather(int sceneHandle) {
+        public void ProcessStartWeather(int sceneHandle) {
             Debug.Log($"WeatherManagerServer.StartWeather({sceneHandle})");
 
             systemEventManager.NotifyOnStartWeather(sceneHandle);

@@ -94,9 +94,13 @@ namespace AnyRPG {
         }
 
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             Debug.Log($"WeatherManagerClient.HandleLevelUnload()");
 
+            if (levelManager.IsMainMenu(sceneName) == true || levelManager.IsInitializationScene(sceneName) == true) {
+                // there is no weather in the main menu or initialization scene, so nothing to do
+                return;
+            }
             if (systemGameManager.GameMode == GameMode.Local) {
                 EndWeather(currentWeather, true);
             }
@@ -109,12 +113,12 @@ namespace AnyRPG {
         }
 
         public void HandleLevelLoad() {
-            Debug.Log("WeatherManager.HandleLevelLoad()");
+            Debug.Log("WeatherManagerClient.HandleLevelLoad()");
 
             if (networkManagerServer.ServerModeActive == true) {
                 return;
             }
-            if (levelManager.IsMainMenu() == true) {
+            if (levelManager.IsMainMenu() == true || levelManager.IsInitializationScene() == true) {
                 return;
             }
             GetSceneFogSettings();
@@ -139,7 +143,7 @@ namespace AnyRPG {
         }
 
         private void GetSceneShadowSettings() {
-            Debug.Log("WeatherManagerClient.GetSceneShadowSettings()");
+            //Debug.Log("WeatherManagerClient.GetSceneShadowSettings()");
             if (RenderSettings.sun != null) {
                 sunLight = RenderSettings.sun;
                 defaultShadowStrength = sunLight.shadowStrength;
@@ -147,7 +151,7 @@ namespace AnyRPG {
         }
 
         private void GetSceneFogSettings() {
-            Debug.Log("WeatherManagerClient.GetSceneFogSettings()");
+            //Debug.Log("WeatherManagerClient.GetSceneFogSettings()");
 
             defaultFogSettings.UseFog = RenderSettings.fog;
             defaultFogSettings.FogColor = RenderSettings.fogColor;
@@ -156,7 +160,7 @@ namespace AnyRPG {
         }
 
         public void ActivateWeatherFogSettings(FogSettings fogSettings) {
-            Debug.Log($"WeatherManagerClient.ActivateWeatherFogSettings()");
+            //Debug.Log($"WeatherManagerClient.ActivateWeatherFogSettings()");
 
             weatherFogSettings = fogSettings;
             fogList.Add(weatherFogSettings);
@@ -285,7 +289,7 @@ namespace AnyRPG {
         }
 
         public void ChooseWeather(WeatherProfile weatherProfile) {
-            Debug.Log($"WeatherManagerClient.ChooseWeather({weatherProfile?.ResourceName})");
+            Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
 
             previousWeather = currentWeather;
             currentWeather = weatherProfile;
@@ -327,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherManagerClient.EndWeather({previousWeather?.ResourceName}, {immediate})");
+            Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             currentAmbientSound = null;
 

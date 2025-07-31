@@ -64,7 +64,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void SetStartTime(NetworkConnection networkConnection, DateTime serverTime) {
-            Debug.Log($"FishNetNetworkConnector.SetStartTime({serverTime})");
+            //Debug.Log($"FishNetNetworkConnector.SetStartTime({serverTime})");
 
             networkManagerClient.SetStartTime(serverTime);
         }
@@ -119,7 +119,7 @@ namespace AnyRPG {
         }
 
         public void SpawnLobbyGamePlayer(int accountId, CharacterRequestData characterRequestData, Vector3 position, Vector3 forward, string sceneName) {
-            Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({accountId}, {characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {sceneName})");
+            //Debug.Log($"FishNetNetworkConnector.SpawnLobbyGamePlayer({accountId}, {characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {sceneName})");
 
             NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[accountId].clientId];
 
@@ -168,7 +168,7 @@ namespace AnyRPG {
 
 
         public Scene GetAccountScene(int accountId, string sceneName) {
-            Debug.Log($"FishNetNetworkConnector.GetAccountScene({accountId}, {sceneName})");
+            //Debug.Log($"FishNetNetworkConnector.GetAccountScene({accountId}, {sceneName})");
 
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
                 return default;
@@ -464,7 +464,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void ChooseLobbyGameCharacter(string unitProfileName, int gameId, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetNetworkConnector.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
+            //Debug.Log($"FishNetNetworkConnector.ChooseLobbyGameCharacter({unitProfileName}, {gameId})");
 
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 Debug.LogWarning($"FishNetNetworkConnector.ChooseLobbyGameCharacter({unitProfileName}, {gameId}) could not find clientId {networkConnection.ClientId} in logged in accounts");
@@ -1232,7 +1232,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseChooseWeather(int sceneHandle, WeatherProfile weatherProfile) {
-            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeather({sceneHandle}, {weatherProfile?.ResourceName})");
+            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
             // get list of clients in scene
             Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
             if (scene.IsValid() == false) {
@@ -1258,7 +1258,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseEndWeather(int sceneHandle, WeatherProfile weatherProfile, bool immediate) {
-            Debug.Log($"FishNetClientConnector.AdvertiseEndWeather({sceneHandle}, {weatherProfile?.ResourceName}, {immediate})");
+            Debug.Log($"FishNetClientConnector.AdvertiseEndWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)}, {immediate})");
 
             Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
             if (scene.IsValid() == false) {

@@ -81,7 +81,7 @@ namespace AnyRPG {
         */
 
         public void SetUnitController(UnitController unitController) {
-            Debug.Log($"PlayerCharacterMonitor.SetUnitController({unitController.gameObject.name})");
+            //Debug.Log($"PlayerCharacterMonitor.SetUnitController({unitController.gameObject.name})");
 
             this.unitController = unitController;
             disconnected = false;

@@ -138,7 +138,7 @@ namespace AnyRPG {
             SystemEventManager.StopListening("OnSaveGame", HandleSaveGame);
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             if (persistObjectPosition == false) {
                 return;
             }

@@ -122,7 +122,7 @@ namespace AnyRPG {
         }
 
         public void AddActivePlayer(int accountId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
 
             activePlayers.Add(accountId, unitController);
             activePlayerGameObjects.Add(unitController.gameObject, accountId);
@@ -574,7 +574,7 @@ namespace AnyRPG {
         }
 
         public void MonitorPlayerUnit(int accountId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
 
             if (playerCharacterMonitors.ContainsKey(accountId) == false) {
                 return;

@@ -40,7 +40,7 @@ namespace AnyRPG {
             systemEventManager = systemGameManager.SystemEventManager;
         }
 
-        public void HandleLevelUnload(int sceneHandle) {
+        public void HandleLevelUnload(int sceneHandle, string sceneName) {
             List<Interactable> removeList = new List<Interactable>();
             removeList.AddRange(mapIndicatorControllers);
             foreach (Interactable interactable in removeList) {

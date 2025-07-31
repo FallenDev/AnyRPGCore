@@ -724,14 +724,14 @@ namespace AnyRPG {
             clientConnector.AdvertiseStartWeather(sceneHandle);
         }
 
-        public override void AdvertiseChooseWeather(int sceneHandle, WeatherProfile profile) {
-            Debug.Log($"FishNetNetworkController.AdvertiseChooseWeather({sceneHandle}, {profile?.ResourceName})");
+        public override void AdvertiseChooseWeather(int sceneHandle, WeatherProfile weatherProfile) {
+            Debug.Log($"FishNetNetworkController.AdvertiseChooseWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
 
-            clientConnector.AdvertiseChooseWeather(sceneHandle, profile);
+            clientConnector.AdvertiseChooseWeather(sceneHandle, weatherProfile);
         }
 
         public override void AdvertiseEndWeather(int sceneHandle, WeatherProfile weatherProfile, bool immediate) {
-            Debug.Log($"FishNetNetworkController.AdvertiseEndWeather({sceneHandle}, {weatherProfile?.ResourceName}, {immediate})");
+            Debug.Log($"FishNetNetworkController.AdvertiseEndWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)}, {immediate})");
             clientConnector.AdvertiseEndWeather(sceneHandle, weatherProfile, immediate);
         }
 

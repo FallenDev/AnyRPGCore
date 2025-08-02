@@ -43,7 +43,8 @@ namespace AnyRPG {
 
         public LootableNodeComponent(Interactable interactable, LootableNodeProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             // initialize loot tables and states
-            //InitializeLootTableStates();
+            // why was this commented out?
+            InitializeLootTableStates();
         }
 
         public override void SetGameManagerReferences() {
@@ -164,6 +165,8 @@ namespace AnyRPG {
         }
 
         public void HandleTakeLoot(int accountId) {
+            Debug.Log($"{interactable.gameObject.name}.LootableNode.HandleTakeLoot({accountId})");
+
             CheckDropListSize();
         }
 
@@ -172,7 +175,8 @@ namespace AnyRPG {
         }
 
         public void CheckDropListSize() {
-            //Debug.Log($"{gameObject.name}.LootableNode.CheckDropListSize()");
+            Debug.Log($"{interactable.gameObject.name}.LootableNode.CheckDropListSize()");
+
             int lootCount = 0;
             foreach (Dictionary<int, LootTableState> lootTableStateDict in lootHolder.LootTableStates.Values) {
                 foreach (LootTableState lootTableState in lootTableStateDict.Values) {
@@ -215,6 +219,8 @@ namespace AnyRPG {
 
 
         private void InitializeLootTableStates() {
+            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.InitializeLootTableStates()");
+
             lootHolder.InitializeLootTableStates();
             foreach (LootTable lootTable in Props.LootTables) {
                 lootHolder.AddLootTableState(lootTable);

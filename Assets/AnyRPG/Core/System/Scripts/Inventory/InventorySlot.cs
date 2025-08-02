@@ -130,7 +130,7 @@ namespace AnyRPG {
         }
 
         public void RemoveItem(InstantiatedItem instantiatedItem) {
-            Debug.Log($"InventorySlot.RemoveItem({instantiatedItem.Item.ResourceName})");
+            //Debug.Log($"InventorySlot.RemoveItem({instantiatedItem.Item.ResourceName})");
 
             if (!IsEmpty) {
                 InstantiatedItems.Remove(instantiatedItem);
@@ -140,7 +140,7 @@ namespace AnyRPG {
         }
 
         public virtual void NotifyOnRemoveItem(InstantiatedItem instantiatedItem) {
-            Debug.Log($"InventorySlot.NotifyOnRemoveItem({instantiatedItem.Item.ResourceName})");
+            //Debug.Log($"InventorySlot.NotifyOnRemoveItem({instantiatedItem.Item.ResourceName})");
 
             OnRemoveItem(this, instantiatedItem);
         }

@@ -1251,7 +1251,8 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseChooseWeatherClient(NetworkConnection networkConnection, string weatherProfileName) {
-            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeatherClient({weatherProfileName})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseChooseWeatherClient({weatherProfileName})");
+
             WeatherProfile weatherProfile = null;
             if (weatherProfileName != string.Empty) {
                 weatherProfile = systemDataFactory.GetResource<WeatherProfile>(weatherProfileName);
@@ -1277,7 +1278,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseEndWeatherClient(NetworkConnection networkConnection, string profileName, bool immediate) {
-            Debug.Log($"FishNetClientConnector.AdvertiseEndWeatherClient({profileName}, {immediate})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseEndWeatherClient({profileName}, {immediate})");
             WeatherProfile weatherProfile = null;
             if (profileName != string.Empty) {
                 weatherProfile = systemDataFactory.GetResource<WeatherProfile>(profileName);
@@ -1303,7 +1304,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseStartWeatherClient(NetworkConnection networkConnection) {
-            Debug.Log($"FishNetClientConnector.AdvertiseStartWeatherClient()");
+            //Debug.Log($"FishNetClientConnector.AdvertiseStartWeatherClient()");
 
             networkManagerClient.AdvertiseStartWeather();
         }

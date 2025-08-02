@@ -188,7 +188,7 @@ namespace AnyRPG {
         */
 
         public void HandleEquipmentChanged() {
-            Debug.Log("CharacterPanel.HandleEquipmentChanged()");
+            //Debug.Log("CharacterPanel.HandleEquipmentChanged()");
 
             if (uIManager != null && uIManager.characterPanelWindow != null && uIManager.characterPanelWindow.IsOpen) {
 

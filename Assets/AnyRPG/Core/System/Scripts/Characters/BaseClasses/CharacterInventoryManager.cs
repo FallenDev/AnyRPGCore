@@ -177,7 +177,7 @@ namespace AnyRPG {
         }
 
         private void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem instantiatedItem) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleRemoveItemFromInventorySlot({instantiatedItem.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.HandleRemoveItemFromInventorySlot({instantiatedItem.Item.ResourceName})");
 
             NotifyOnItemCountChanged(instantiatedItem.Item);
             unitController.UnitEventController.NotifyOnRemoveItemFromInventorySlot(slot, instantiatedItem);
@@ -505,7 +505,7 @@ namespace AnyRPG {
         }
 
         public void RemoveInventoryItem(InstantiatedItem instantiatedItem, int slotIndex) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RemoveInventoryItem({instantiatedItem.ResourceName}, {slotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RemoveInventoryItem({instantiatedItem.ResourceName}, {slotIndex})");
 
             if (inventorySlots.Count > slotIndex) {
                 inventorySlots[slotIndex].RemoveItem(instantiatedItem);
@@ -971,7 +971,7 @@ namespace AnyRPG {
         }
 
         public void RequestUseItem(InventorySlot inventorySlot) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUseItem()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUseItem()");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 UseItem(inventorySlot);
@@ -981,7 +981,7 @@ namespace AnyRPG {
         }
 
         public void UseItem(InventorySlot inventorySlot) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UseItem()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UseItem()");
 
             if (inventorySlot.InstantiatedItem != null) {
                 inventorySlot.UseItem(unitController);
@@ -989,7 +989,7 @@ namespace AnyRPG {
         }
 
         public void UseItem(int slotIndex) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UseItem({slotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.UseItem({slotIndex})");
 
             if (inventorySlots.Count > slotIndex) {
                 UseItem(inventorySlots[slotIndex]);
@@ -997,7 +997,7 @@ namespace AnyRPG {
         }
 
         public void RequestUnequipBag(InstantiatedBag instantiatedBag, bool isBank) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUnequipBag({instantiatedBag.DisplayName}, {isBank})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestUnequipBag({instantiatedBag.DisplayName}, {isBank})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 UnequipBag(instantiatedBag, isBank);

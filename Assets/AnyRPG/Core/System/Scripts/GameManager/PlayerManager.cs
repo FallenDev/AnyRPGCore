@@ -493,7 +493,8 @@ namespace AnyRPG {
         }
 
         public void HandleModelReady() {
-            Debug.Log("PlayerManager.HandleModelReady()");
+            //Debug.Log("PlayerManager.HandleModelReady()");
+
             UnsubscribeFromModelReady();
 
             HandlePlayerUnitSpawn();
@@ -534,14 +535,14 @@ namespace AnyRPG {
         }
 
         public void SubscribeToModelReady() {
-            Debug.Log("PlayerManager.SubscribeToModelReady()");
+            //Debug.Log("PlayerManager.SubscribeToModelReady()");
 
             //activeUnitController.UnitModelController.OnModelUpdated += HandleModelReady;
             activeUnitController.UnitModelController.OnModelCreated += HandleModelReady;
         }
 
         public void UnsubscribeFromModelReady() {
-            Debug.Log("PlayerManager.UnsubscribeFromModelReady()");
+            //Debug.Log("PlayerManager.UnsubscribeFromModelReady()");
 
             //activeUnitController.UnitModelController.OnModelUpdated -= HandleModelReady;
             activeUnitController.UnitModelController.OnModelCreated -= HandleModelReady;

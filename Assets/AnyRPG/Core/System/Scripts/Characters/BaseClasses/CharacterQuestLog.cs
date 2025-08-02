@@ -290,7 +290,7 @@ namespace AnyRPG {
         }
 
         public void AcceptAchievement(Achievement achievement) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptAchievement({achievement.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptAchievement({achievement.ResourceName})");
 
             if (achievements.ContainsKey(achievement.ResourceName)) {
                 //Debug.Log("QuestLog.AcceptAchievement(" + achievement.ResourceName + "): already in log");

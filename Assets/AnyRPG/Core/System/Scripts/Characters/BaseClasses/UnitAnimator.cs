@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UMA.CharacterSystem;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -211,7 +212,8 @@ namespace AnyRPG {
         }
 
         public void Init(Animator animator) {
-            //animator = unitController.gameObject.GetComponentInChildren<Animator>();
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.Init({animator.GetInstanceID()})");
+
             if (animator == null) {
                 return;
             }
@@ -224,8 +226,16 @@ namespace AnyRPG {
             }
             characterAnimationEventReceiver.Setup(unitController);
             InitializeAnimator();
+            //unitController.UnitModelController.OnModelCreated += HandleModelCreated;
         }
 
+        /*
+        public void SetAnimator(Animator animator) {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetAnimator({animator.GetInstanceID()})");
+
+            this.animator = animator;
+        }
+        */
 
         public void DisableRootMotion() {
             //Debug.Log($"{gameObject.name}: CharacterAnimator.DisableRootMotion()");
@@ -249,6 +259,7 @@ namespace AnyRPG {
 
         public void InitializeAnimator() {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.InitializeAnimator()");
+
             if (initialized) {
                 return;
             }
@@ -256,16 +267,6 @@ namespace AnyRPG {
                 //Debug.Log($"{gameObject.name}.UnitAnimator.InitializeAnimator(): Could not find animator in children");
                 return;
             }
-            /*
-            if (systemConfigurationManager.UseThirdPartyMovementControl == true) {
-                if (thirdPartyAnimatorController == null) {
-                    thirdPartyAnimatorController = animator.runtimeAnimatorController;
-                }
-                if (thirdPartyAnimatorController != null) {
-                    thirdPartyOverrideController = new AnimatorOverrideController(thirdPartyAnimatorController);
-                }
-            }
-            */
 
             if (overrideController == null) {
                 //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.InitializeAnimator() override controller was null");
@@ -298,12 +299,6 @@ namespace AnyRPG {
 
         public void SetCorrectOverrideController(bool runUpdate = true) {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetCorrectOverrideController()");
-            /*
-            if (unitController.UnitControllerMode == UnitControllerMode.Player && systemConfigurationManager.UseThirdPartyMovementControl == true) {
-                SetOverrideController(thirdPartyOverrideController, runUpdate);
-                return;
-            }
-            */
 
             // AI or no third party movement control case
             SetOverrideController(overrideController, runUpdate);
@@ -315,7 +310,7 @@ namespace AnyRPG {
         }
 
         public void SetOverrideController(AnimatorOverrideController animatorOverrideController, bool runUpdate = true) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetOverrideController(" + animatorOverrideController.name + ", " + runUpdate + ")");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetOverrideController({animatorOverrideController.GetInstanceID()}, {runUpdate})");
 
             if (animator.runtimeAnimatorController != animatorOverrideController && animatorOverrideController != null) {
                 //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetOverrideController(): setting animator override");
@@ -332,10 +327,10 @@ namespace AnyRPG {
 
                 // set animator on UMA if one exists
                 if (unitController.UnitModelController != null) {
-                    //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetOverrideController(" + animatorOverrideController.name + ") setting override controller");
+                    //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetOverrideController({animatorOverrideController.GetInstanceID()}) setting override controller");
                     unitController.UnitModelController.SetAnimatorOverrideController(animatorOverrideController);
                 }
-                //animator.updateMode = AnimatorUpdateMode.
+
                 if (runUpdate) {
                     animator.Update(0f);
                 }
@@ -632,7 +627,7 @@ namespace AnyRPG {
         }
 
         public void ResetTrigger(string triggerName) {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetTrigger({triggerName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetTrigger({triggerName})");
 
             if (animator != null && ParameterExists(triggerName)) {
                 animator.ResetTrigger(triggerName);

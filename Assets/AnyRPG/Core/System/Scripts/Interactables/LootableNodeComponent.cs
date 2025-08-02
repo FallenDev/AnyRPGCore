@@ -219,7 +219,7 @@ namespace AnyRPG {
 
 
         private void InitializeLootTableStates() {
-            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.InitializeLootTableStates()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.InitializeLootTableStates()");
 
             lootHolder.InitializeLootTableStates();
             foreach (LootTable lootTable in Props.LootTables) {

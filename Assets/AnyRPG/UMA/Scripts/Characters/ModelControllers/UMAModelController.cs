@@ -6,6 +6,7 @@ using UnityEngine.AI;
 using UMA;
 using UMA.CharacterSystem;
 using UMA.PoseTools;
+using System;
 
 namespace AnyRPG {
     public class UMAModelController : ModelAppearanceController {
@@ -35,7 +36,17 @@ namespace AnyRPG {
             avatarDefinition.Wardrobe = new string[0];
             avatarDefinition.Dna = new DnaDef[0];
             avatarDefinition.Colors = new SharedColorDef[0];
+            //unitModelController.OnModelCreated += HandleModelCreated;
         }
+
+        /*
+        private void HandleModelCreated() {
+            Debug.Log($"{unitController.gameObject.name}.UMAModelController.HandleModelCreated()");
+
+            Animator animator = dynamicCharacterAvatar.GetComponent<Animator>();
+            unitController.UnitAnimator.SetAnimator(animator);
+        }
+        */
 
         public override T GetModelAppearanceController<T>() {
             return this as T;
@@ -518,6 +529,8 @@ namespace AnyRPG {
         }
 
         public override void SetAnimatorOverrideController(AnimatorOverrideController animatorOverrideController) {
+            //Debug.Log($"{unitController.gameObject.name}.UMAModelController.SetAnimatorOverrideController({animatorOverrideController.GetInstanceID()})");
+
             if (dynamicCharacterAvatar == null) {
                 return;
             }

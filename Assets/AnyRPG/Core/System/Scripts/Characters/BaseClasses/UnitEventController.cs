@@ -720,7 +720,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             OnRemoveItemFromInventorySlot(slot, item);
         }
@@ -766,13 +766,13 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestUseItem(int slotIndex) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUseItem({slotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUseItem({slotIndex})");
 
             OnRequestUseItem(slotIndex);
         }
 
         public void NotifyOnRebuildModelAppearance() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRebuildModelAppearance()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRebuildModelAppearance()");
 
             OnRebuildModelAppearance();
         }
@@ -782,7 +782,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnRequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnRequestUnequipToSlot({instantiatedEquipment.Item.ResourceName}, {inventorySlotId})");
 
             OnRequestUnequipToSlot(instantiatedEquipment, inventorySlotId);
         }

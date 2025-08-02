@@ -76,8 +76,8 @@ MonoBehaviour:
       m_Calls: []
   DelayUnload: 2
   BundleCheck: 1
-  KeepAnimatorController: 0
-  RecreateAnimatorOnRaceChange: 1
+  KeepAnimatorController: 1
+  RecreateAnimatorOnRaceChange: 0
   userInformation: 
   RecipeUpdated:
     m_PersistentCalls:

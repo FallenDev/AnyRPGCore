@@ -17,14 +17,16 @@ namespace AnyRPG {
         private Animator animator = null;
 
         private void FindGameManager() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager() position: {gameObject.transform.position}");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager()");
 
             // call character manager with spawnRequestId to complete configuration
             systemGameManager = GameObject.FindAnyObjectByType<SystemGameManager>();
             networkAnimator = GetComponent<NetworkAnimator>();
             unitController = GetComponentInParent<UnitController>();
             animator = GetComponent<Animator>();
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager(): animator: {animator.GetInstanceID()}");
             unitController.UnitEventController.OnInitializeAnimator += HandleInitializeAnimator;
+            //unitController.UnitModelController.OnModelCreated += HandleModelCreated;
 
             // clients are authoritative for their own animators, and server is authoritative for all others
             //Debug.Log($"{gameObject.name}.NetworkCharacterModel.FindGameManager(): IsOwner: {base.IsOwner}, OwnerId: {base.OwnerId}, ServerModeActive: {systemGameManager.NetworkManagerServer.ServerModeActive}");
@@ -34,20 +36,30 @@ namespace AnyRPG {
             }
         }
 
+        /*
+        private void HandleModelCreated() {
+            animator = GetComponent<Animator>();
+            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleModelCreated(): animator: {animator.GetInstanceID()}");
+
+            networkAnimator.SetAnimator(animator);
+        }
+        */
+
         private void HandleSetTrigger(string triggerName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleSetTrigger({triggerName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleSetTrigger({triggerName})");
 
             networkAnimator.SetTrigger(triggerName);
         }
 
         private void HandleResetTrigger(string triggerName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleResetTrigger({triggerName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleResetTrigger({triggerName})");
 
             networkAnimator.ResetTrigger(triggerName);
         }
 
         private void HandleInitializeAnimator() {
             //Debug.Log($"{gameObject.name}.NetworkCharacterModel.HandleInitializeAnimator()");
+
             networkAnimator.SetAnimator(animator);
         }
 

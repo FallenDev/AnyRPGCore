@@ -164,7 +164,8 @@ namespace AnyRPG {
         }
 
         public void SetAnimatorOverrideController(AnimatorOverrideController animatorOverrideController) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAnimatorOverrideController()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitModelController.SetAnimatorOverrideController({animatorOverrideController.GetInstanceID()})");
+
             if (modelAppearanceController == null) {
                 Debug.Log("Null model appearance controller!");
             }

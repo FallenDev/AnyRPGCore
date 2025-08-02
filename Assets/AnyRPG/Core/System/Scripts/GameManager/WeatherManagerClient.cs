@@ -95,7 +95,7 @@ namespace AnyRPG {
 
 
         public void HandleLevelUnload(int sceneHandle, string sceneName) {
-            Debug.Log($"WeatherManagerClient.HandleLevelUnload()");
+            //Debug.Log($"WeatherManagerClient.HandleLevelUnload({sceneHandle}, {sceneName})");
 
             if (levelManager.IsMainMenu(sceneName) == true || levelManager.IsInitializationScene(sceneName) == true) {
                 // there is no weather in the main menu or initialization scene, so nothing to do
@@ -113,7 +113,7 @@ namespace AnyRPG {
         }
 
         public void HandleLevelLoad() {
-            Debug.Log("WeatherManagerClient.HandleLevelLoad()");
+            //Debug.Log("WeatherManagerClient.HandleLevelLoad()");
 
             if (networkManagerServer.ServerModeActive == true) {
                 return;
@@ -289,14 +289,14 @@ namespace AnyRPG {
         }
 
         public void ChooseWeather(WeatherProfile weatherProfile) {
-            Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
+            //Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
 
             previousWeather = currentWeather;
             currentWeather = weatherProfile;
         }
 
         public void StartWeather() {
-            Debug.Log($"WeatherManagerClient.StartWeather()");
+            //Debug.Log($"WeatherManagerClient.StartWeather()");
 
             if (currentWeather != null) {
                 if (currentWeather.PrefabProfile?.Prefab != null) {
@@ -331,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
+            //Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             currentAmbientSound = null;
 

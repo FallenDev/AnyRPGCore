@@ -27,7 +27,8 @@ namespace AnyRPG {
         public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
         public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
         public event System.Action<UnitController, QuestBase> OnMarkQuestComplete = delegate { };
-        public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Quest> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Achievement> OnAchievementObjectiveStatusUpdated = delegate { };
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
         public event System.Action<UnitController, CraftAbilityProperties> OnSetCraftAbility = delegate { };
@@ -185,8 +186,12 @@ namespace AnyRPG {
             OnMarkQuestComplete(sourceUnitController, questBase);
         }
 
-        public void NotifyOnQuestObjectiveStatusUpdated(UnitController sourceUnitController, QuestBase questBase) {
-            OnQuestObjectiveStatusUpdated(sourceUnitController, questBase);
+        public void NotifyOnQuestObjectiveStatusUpdated(UnitController sourceUnitController, Quest quest) {
+            OnQuestObjectiveStatusUpdated(sourceUnitController, quest);
+        }
+
+        public void NotifyOnAchievementObjectiveStatusUpdated(UnitController sourceUnitController, Achievement achievement) {
+            OnAchievementObjectiveStatusUpdated(sourceUnitController, achievement);
         }
 
         public void NotifyOnLearnSkill(UnitController sourceUnitController, Skill skill) {

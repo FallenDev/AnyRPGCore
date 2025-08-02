@@ -107,15 +107,18 @@ namespace AnyRPG {
         public event System.Action<UnitController, Interactable> OnExitInteractableTrigger = delegate { };
         public event System.Action<UnitController, Interactable> OnEnterInteractableRange = delegate { };
         public event System.Action<UnitController, Interactable> OnExitInteractableRange = delegate { };
-        public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
-        //public event System.Action<UnitController, QuestBase> OnRemoveQuest = delegate { };
+        public event System.Action<UnitController, Quest> OnAcceptQuest = delegate { };
+        public event System.Action<UnitController, Achievement> OnAcceptAchievement = delegate { };
         public event System.Action<UnitController, QuestBase> OnAbandonQuest = delegate { };
-        public event System.Action<UnitController, QuestBase> OnTurnInQuest = delegate { };
-        public event System.Action<UnitController, QuestBase> OnMarkQuestComplete = delegate { };
-        public event System.Action<UnitController, QuestBase> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Quest> OnTurnInQuest = delegate { };
+        public event System.Action<UnitController, Quest> OnMarkQuestComplete = delegate { };
+        public event System.Action<UnitController, Achievement> OnMarkAchievementComplete = delegate { };
+        public event System.Action<UnitController, Quest> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController, Achievement> OnAchievementObjectiveStatusUpdated = delegate { };
         public event System.Action<UnitController, Skill> OnLearnSkill = delegate { };
         public event System.Action<UnitController, Skill> OnUnLearnSkill = delegate { };
-        public event System.Action<string, string, string, QuestObjectiveSaveData> OnSetQuestObjectiveCurrentAmount = delegate { };
+        public event System.Action<string, string, string, int> OnSetQuestObjectiveCurrentAmount = delegate { };
+        public event System.Action<string, string, string, int> OnSetAchievementObjectiveCurrentAmount = delegate { };
         public event System.Action<int, bool, int> OnPlaceInStack = delegate { };
         public event System.Action<int, bool, int> OnPlaceInEmpty = delegate { };
         public event System.Action<InstantiatedItem> OnGetNewInstantiatedItem = delegate { };
@@ -464,7 +467,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnStatusEffectAdd(StatusEffectNode statusEffectNode) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName})");
 
             OnStatusEffectAdd(statusEffectNode);
         }
@@ -613,24 +616,33 @@ namespace AnyRPG {
             OnExitInteractableRange(unitController, interactable);
         }
 
-        public void NotifyOnAcceptQuest(QuestBase questBase) {
+        public void NotifyOnAcceptQuest(Quest quest) {
             //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnAcceptQuest({questBase.ResourceName})");
 
-            OnAcceptQuest(unitController, questBase);
+            OnAcceptQuest(unitController, quest);
         }
 
-        /*
-        public void NotifyOnRemoveQuest(QuestBase questBase) {
-            OnRemoveQuest(unitController, questBase);
-        }
-        */
+        public void NotifyOnAcceptAchievement(Achievement achievement) {
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnAcceptQuest({questBase.ResourceName})");
 
-        public void NotifyOnMarkQuestComplete(QuestBase questBase) {
-            OnMarkQuestComplete(unitController, questBase);
+            OnAcceptAchievement(unitController, achievement);
         }
 
-        public void NotifyOnQuestObjectiveStatusUpdated(QuestBase questBase) {
-            OnQuestObjectiveStatusUpdated(unitController, questBase);
+
+        public void NotifyOnMarkQuestComplete(Quest quest) {
+            OnMarkQuestComplete(unitController, quest);
+        }
+
+        public void NotifyOnMarkAchievementComplete(Achievement achievement) {
+            OnMarkAchievementComplete(unitController, achievement);
+        }
+
+        public void NotifyOnQuestObjectiveStatusUpdated(Quest quest) {
+            OnQuestObjectiveStatusUpdated(unitController, quest);
+        }
+
+        public void NotifyOnAchievementObjectiveStatusUpdated(Achievement achievement) {
+            OnAchievementObjectiveStatusUpdated(unitController, achievement);
         }
 
         public void NotifyOnLearnSkill(Skill newSkill) {
@@ -641,16 +653,20 @@ namespace AnyRPG {
             OnUnLearnSkill(unitController, oldSkill);
         }
 
-        public void NotifyOnSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
-            OnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
+        public void NotifyOnSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            OnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, amount);
+        }
+
+        public void NotifyOnSetAchievementObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            OnSetAchievementObjectiveCurrentAmount(questName, objectiveType, objectiveName, amount);
         }
 
         public void NotifyOnAbandonQuest(QuestBase oldQuest) {
             OnAbandonQuest(unitController, oldQuest);
         }
 
-        public void NotifyOnTurnInQuest(QuestBase oldQuest) {
-            OnTurnInQuest(unitController, oldQuest);
+        public void NotifyOnTurnInQuest(Quest quest) {
+            OnTurnInQuest(unitController, quest);
         }
 
         public void NotifyOnPlaceInStack(InstantiatedItem instantiatedItem, bool addToBank, int slotIndex) {

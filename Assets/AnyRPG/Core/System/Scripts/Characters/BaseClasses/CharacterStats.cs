@@ -838,7 +838,7 @@ namespace AnyRPG {
         }
 
         public StatusEffectNode ApplyStatusEffect(StatusEffectProperties statusEffect, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ApplyStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.ApplyStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
 
             // add to effect list since it was not in there
             if (statusEffect == null) {
@@ -947,7 +947,7 @@ namespace AnyRPG {
         }
 
         public bool AddStatusEffectStack(StatusEffectProperties statusEffect) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddStatusEffectStack({statusEffect.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddStatusEffectStack({statusEffect.ResourceName})");
 
             // check if status effect already exists on target
             StatusEffectProperties comparedStatusEffect = null;
@@ -1541,7 +1541,7 @@ namespace AnyRPG {
         }
 
         public IEnumerator Tick(IAbilityCaster characterSource, AbilityEffectContext abilityEffectContext, StatusEffectProperties statusEffect, StatusEffectNode statusEffectNode) {
-            Debug.Log($"{unitController.gameObject.name}.StatusEffect.Tick({statusEffect.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.Tick({statusEffect.ResourceName})");
 
             float elapsedTime = 0f;
 

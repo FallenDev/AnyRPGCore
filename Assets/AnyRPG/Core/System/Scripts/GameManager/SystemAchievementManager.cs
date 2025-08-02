@@ -56,7 +56,7 @@ namespace AnyRPG {
 
             foreach (Achievement resource in systemDataFactory.GetResourceList<Achievement>()) {
                 if (resource.TurnedIn(sourceUnitController) == false && resource.IsComplete(sourceUnitController) == false) {
-                    resource.AcceptQuest(sourceUnitController);
+                    sourceUnitController.CharacterQuestLog.AcceptAchievement(resource);
                 }
             }
         }

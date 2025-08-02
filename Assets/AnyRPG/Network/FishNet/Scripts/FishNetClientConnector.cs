@@ -1224,6 +1224,7 @@ namespace AnyRPG {
         [ServerRpc(RequireOwnership = false)]
         public void RequestLogout(NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestLogout()");
+
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 Debug.LogWarning($"FishNetNetworkConnector.RequestLogout() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
@@ -1232,7 +1233,8 @@ namespace AnyRPG {
         }
 
         public void AdvertiseChooseWeather(int sceneHandle, WeatherProfile weatherProfile) {
-            Debug.Log($"FishNetClientConnector.AdvertiseChooseWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseChooseWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
+
             // get list of clients in scene
             Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
             if (scene.IsValid() == false) {
@@ -1258,7 +1260,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseEndWeather(int sceneHandle, WeatherProfile weatherProfile, bool immediate) {
-            Debug.Log($"FishNetClientConnector.AdvertiseEndWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)}, {immediate})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseEndWeather({sceneHandle}, {(weatherProfile == null ? "null" : weatherProfile.ResourceName)}, {immediate})");
 
             Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
             if (scene.IsValid() == false) {
@@ -1284,7 +1286,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseStartWeather(int sceneHandle) {
-            Debug.Log($"FishNetClientConnector.AdvertiseStartWeather({sceneHandle})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseStartWeather({sceneHandle})");
 
             Scene scene = FishNet.Managing.Scened.SceneManager.GetScene(sceneHandle);
             if (scene.IsValid() == false) {

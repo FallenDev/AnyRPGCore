@@ -231,6 +231,30 @@ namespace AnyRPG {
             messageFeedManager.WriteMessage(sourceUnitController, $"Quest Accepted: {DisplayName}");
         }
 
+        public override int GetObjectiveCurrentAmount(UnitController sourceUnitController, string objectiveTypeName, string objectiveName) {
+            return sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(ResourceName, objectiveTypeName, objectiveName).Amount;
+        }
+
+        public override void SetObjectiveCurrentAmount(UnitController sourceUnitController, string objectiveTypeName, string objectiveName, int amount) {
+            sourceUnitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(ResourceName, objectiveTypeName, objectiveName, amount);
+        }
+
+        public override void ResetObjectiveSaveData(UnitController sourceUnitController) {
+            sourceUnitController.CharacterQuestLog.ResetQuestObjectiveSaveData(ResourceName);
+        }
+
+        public override void NotifyOnObjectiveStatusUpdated(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
+        }
+
+        public override void NotifyOnMarkComplete(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnMarkQuestComplete(this);
+        }
+
+        public override void NotifyOnAcceptQuest(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnAcceptQuest(this);
+        }
+
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             //Debug.Log(DisplayName + ".Quest.SetupScriptableObjects(" + (systemGameManager == null ? "null" : systemGameManager.gameObject.name) + "): ID: " + GetInstanceID());
 

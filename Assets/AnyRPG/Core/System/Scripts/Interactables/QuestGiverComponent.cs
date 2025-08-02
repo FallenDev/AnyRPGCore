@@ -22,7 +22,7 @@ namespace AnyRPG {
         public QuestGiverComponent(Interactable interactable, QuestGiverProps interactableOptionProps, SystemGameManager systemGameManager) : base(interactable, interactableOptionProps, systemGameManager) {
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 foreach (QuestNode questNode in QuestGiverProps.Quests) {
-                    questNode.Quest.OnQuestStatusUpdated += HandlePrerequisiteUpdates;
+                    questNode.Quest.OnQuestBaseStatusUpdated += HandlePrerequisiteUpdates;
                 }
             }
 
@@ -314,7 +314,7 @@ namespace AnyRPG {
             base.CleanupScriptableObjects();
 
             foreach (QuestNode questNode in QuestGiverProps.Quests) {
-                questNode.Quest.OnQuestStatusUpdated -= HandlePrerequisiteUpdates;
+                questNode.Quest.OnQuestBaseStatusUpdated -= HandlePrerequisiteUpdates;
             }
         }
     }

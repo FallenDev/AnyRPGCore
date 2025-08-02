@@ -45,7 +45,7 @@ namespace AnyRPG {
                 if (lootTable != null) {
                     lootTables.Add(lootTable);
                 } else {
-                    Debug.LogError("Could not find loot table " + lootTableName + " while initializing Loot Node");
+                    Debug.LogError($"Could not find loot table {lootTableName} while initializing Loot Node");
                 }
             }
         }

@@ -63,14 +63,13 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public int CurrentAmount(UnitController sourceUnitController) {
-            return sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName).Amount;
+        public virtual int CurrentAmount(UnitController sourceUnitController) {
+            //return sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName).Amount;
+            return questBase.GetObjectiveCurrentAmount(sourceUnitController, ObjectiveType.Name, ObjectiveName);
         }
 
         public void SetCurrentAmount(UnitController sourceUnitController, int value) {
-            QuestObjectiveSaveData saveData = sourceUnitController.CharacterQuestLog.GetQuestObjectiveSaveData(questBase.ResourceName, ObjectiveType.Name, ObjectiveName);
-            saveData.Amount = value;
-            sourceUnitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(questBase.ResourceName, ObjectiveType.Name, ObjectiveName, saveData);
+            questBase.SetObjectiveCurrentAmount(sourceUnitController, ObjectiveType.Name, ObjectiveName, value);
         }
 
 

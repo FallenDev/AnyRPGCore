@@ -68,8 +68,11 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuest;
                 unitController.UnitEventController.OnTurnInQuest += HandleTurnInQuest;
                 unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestComplete;
+                unitController.UnitEventController.OnMarkAchievementComplete += HandleMarkAchievementComplete;
                 unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdated;
+                unitController.UnitEventController.OnAchievementObjectiveStatusUpdated += HandleAchievementObjectiveStatusUpdated;
                 unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
+                unitController.UnitEventController.OnSetAchievementObjectiveCurrentAmount += HandleSetAchievementObjectiveCurrentAmount;
                 unitController.UnitEventController.OnAddItemToInventorySlot += HandleAddItemToInventorySlot;
                 unitController.UnitEventController.OnRemoveItemFromInventorySlot += HandleRemoveItemFromInventorySlot;
                 unitController.UnitEventController.OnAddItemToBankSlot += HandleAddItemToBankSlot;
@@ -230,18 +233,30 @@ namespace AnyRPG {
         }
 
 
-        private void HandleSetQuestObjectiveCurrentAmount(string arg1, string arg2, string arg3, QuestObjectiveSaveData data) {
+        private void HandleSetQuestObjectiveCurrentAmount(string arg1, string arg2, string arg3, int amount) {
             SaveQuestData();
+            //SaveAchievementData();
+        }
+
+        private void HandleSetAchievementObjectiveCurrentAmount(string arg1, string arg2, string arg3, int amount) {
+            //SaveQuestData();
             SaveAchievementData();
         }
 
-        private void HandleQuestObjectiveStatusUpdated(UnitController controller, QuestBase questBase) {
+        private void HandleQuestObjectiveStatusUpdated(UnitController controller, Quest quest) {
+            SaveQuestData();
+        }
+
+        private void HandleAchievementObjectiveStatusUpdated(UnitController controller, Achievement achievement) {
             SaveQuestData();
             SaveAchievementData();
         }
 
         private void HandleMarkQuestComplete(UnitController controller, QuestBase questBase) {
             SaveQuestData();
+        }
+
+        private void HandleMarkAchievementComplete(UnitController controller, Achievement achievement) {
             SaveAchievementData();
         }
 

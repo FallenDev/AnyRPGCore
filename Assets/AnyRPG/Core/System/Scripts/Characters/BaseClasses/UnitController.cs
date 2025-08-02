@@ -161,6 +161,7 @@ namespace AnyRPG {
         protected KeyBindManager keyBindManager = null;
         protected AudioManager audioManager = null;
         protected CharacterManager characterManager = null;
+        protected SystemAchievementManager systemAchievementManager = null;
 
         //public INamePlateTarget NamePlateTarget { get => namePlateTarget; set => namePlateTarget = value; }
         public NavMeshAgent NavMeshAgent { get => agent; set => agent = value; }
@@ -496,6 +497,7 @@ namespace AnyRPG {
             keyBindManager = systemGameManager.KeyBindManager;
             audioManager = systemGameManager.AudioManager;
             characterManager = systemGameManager.CharacterManager;
+            systemAchievementManager = systemGameManager.SystemAchievementManager;
         }
 
         protected override void CreateMaterialController() {
@@ -1200,6 +1202,11 @@ namespace AnyRPG {
 
             // this must be called after setting the level in case the character has gear that is higher than level 1
             characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
+
+            if (characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player
+                && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true)) {
+                systemAchievementManager.AcceptAchievements(this);
+            }
 
             // there could have been patches that provide new capabilities since the data was saved, so we need to capture the current state again
             // this is also necessary in order to transfer settings like toughness and faction to network clients for pets

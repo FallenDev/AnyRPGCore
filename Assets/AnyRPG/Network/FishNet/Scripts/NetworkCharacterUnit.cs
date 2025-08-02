@@ -206,14 +206,18 @@ namespace AnyRPG {
             unitController.UnitEventController.OnEnterInteractableRange += HandleEnterInteractableRangeServer;
             unitController.UnitEventController.OnExitInteractableRange += HandleExitInteractableRangeServer;
             unitController.UnitEventController.OnAcceptQuest += HandleAcceptQuestServer;
+            unitController.UnitEventController.OnAcceptAchievement += HandleAcceptAchievementServer;
             unitController.UnitEventController.OnAbandonQuest += HandleAbandonQuestServer;
             unitController.UnitEventController.OnTurnInQuest += HandleTurnInQuestServer;
             unitController.UnitEventController.OnMarkQuestComplete += HandleMarkQuestCompleteServer;
+            unitController.UnitEventController.OnMarkAchievementComplete += HandleMarkAchievementCompleteServer;
             //unitController.UnitEventController.OnRemoveQuest += HandleRemoveQuestServer;
             unitController.UnitEventController.OnLearnSkill += HandleLearnSkillServer;
             unitController.UnitEventController.OnUnLearnSkill += HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount += HandleSetQuestObjectiveCurrentAmount;
+            unitController.UnitEventController.OnSetAchievementObjectiveCurrentAmount += HandleSetAchievementObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated += HandleQuestObjectiveStatusUpdatedServer;
+            unitController.UnitEventController.OnAchievementObjectiveStatusUpdated += HandleAchievementObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption += HandleStartInteractWithOption;
             unitController.UnitEventController.OnGetNewInstantiatedItem += HandleGetNewInstantiatedItem;
             unitController.UnitEventController.OnDeleteItem += HandleDeleteItemServer;
@@ -303,6 +307,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnLearnSkill -= HandleLearnSkillServer;
             unitController.UnitEventController.OnUnLearnSkill -= HandleUnLearnSkillServer;
             unitController.UnitEventController.OnSetQuestObjectiveCurrentAmount -= HandleSetQuestObjectiveCurrentAmount;
+            unitController.UnitEventController.OnSetAchievementObjectiveCurrentAmount -= HandleSetAchievementObjectiveCurrentAmount;
             unitController.UnitEventController.OnQuestObjectiveStatusUpdated -= HandleQuestObjectiveStatusUpdatedServer;
             //unitController.UnitEventController.OnStartInteractWithOption -= HandleStartInteractWithOptionServer;
             unitController.UnitEventController.OnGetNewInstantiatedItem -= HandleGetNewInstantiatedItem;
@@ -1249,18 +1254,32 @@ namespace AnyRPG {
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
         }
 
-        public void HandleMarkQuestCompleteServer(UnitController controller, QuestBase questBase) {
-            HandleMarkQuestCompleteClient(questBase.DisplayName);
+        public void HandleMarkQuestCompleteServer(UnitController controller, Quest quest) {
+            HandleMarkQuestCompleteClient(quest.ResourceName);
         }
 
         [ObserversRpc]
         public void HandleMarkQuestCompleteClient(string questName) {
-            Quest questBase = systemDataFactory.GetResource<Quest>(questName);
-            if (questBase == null) {
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest == null) {
                 return;
             }
-            questBase.MarkComplete(unitController, true, false);
+            unitController.CharacterQuestLog.MarkQuestComplete(quest);
         }
+
+        public void HandleMarkAchievementCompleteServer(UnitController controller, Achievement achievement) {
+            HandleMarkAchievementCompleteClient(achievement.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleMarkAchievementCompleteClient(string resourceName) {
+            Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
+            if (achievement == null) {
+                return;
+            }
+            unitController.CharacterQuestLog.MarkAchievementComplete(achievement);
+        }
+
 
         public void HandleQuestObjectiveStatusUpdatedServer(UnitController controller, QuestBase questBase) {
             HandleQuestObjectiveStatusUpdatedClient(questBase.ResourceName);
@@ -1275,9 +1294,28 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(questBase);
         }
 
+        public void HandleAchievementObjectiveStatusUpdatedServer(UnitController controller, Achievement achievement) {
+            HandleAchievementObjectiveStatusUpdatedClient(achievement.ResourceName);
+        }
+
         [ObserversRpc]
-        public void HandleSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
-            unitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
+        public void HandleAchievementObjectiveStatusUpdatedClient(string resourceName) {
+            Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
+            if (achievement == null) {
+                return;
+            }
+            unitController.UnitEventController.NotifyOnAchievementObjectiveStatusUpdated(achievement);
+        }
+
+
+        [ObserversRpc]
+        public void HandleSetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            unitController.CharacterQuestLog.SetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, amount);
+        }
+
+        [ObserversRpc]
+        public void HandleSetAchievementObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            unitController.CharacterQuestLog.SetAchievementObjectiveCurrentAmount(questName, objectiveType, objectiveName, amount);
         }
 
         public void HandleLearnSkillServer(UnitController sourceUnitController, Skill skill) {
@@ -1304,7 +1342,7 @@ namespace AnyRPG {
             }
         }
 
-        public void HandleAcceptQuestServer(UnitController sourceUnitController, QuestBase quest) {
+        public void HandleAcceptQuestServer(UnitController sourceUnitController, Quest quest) {
             HandleAcceptQuestClient(quest.ResourceName);
         }
 
@@ -1317,6 +1355,21 @@ namespace AnyRPG {
                 unitController.CharacterQuestLog.AcceptQuest(quest);
             }
         }
+
+        public void HandleAcceptAchievementServer(UnitController sourceUnitController, Achievement achievement) {
+            HandleAcceptAchievementClient(achievement.ResourceName);
+        }
+
+        [ObserversRpc]
+        public void HandleAcceptAchievementClient(string resourceName) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAcceptQuestClient({resourceName})");
+
+            Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
+            if (achievement != null) {
+                unitController.CharacterQuestLog.AcceptAchievement(achievement);
+            }
+        }
+
 
         public void HandleAbandonQuestServer(UnitController sourceUnitController, QuestBase quest) {
             HandleAbandonQuestClient(quest.ResourceName);

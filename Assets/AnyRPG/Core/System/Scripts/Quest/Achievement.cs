@@ -25,8 +25,8 @@ namespace AnyRPG {
             if (printMessages == true) {
                 messageFeedManager.WriteMessage(sourceUnitController, string.Format("Achievement: {0} Complete!", DisplayName));
             }
-            playerManager.PlayLevelUpEffects(sourceUnitController, 0);
 
+            //sourceUnitController.CharacterQuestLog.ProcessMarkAchievementComplete();
             SetTurnedIn(sourceUnitController, true);
         }
 
@@ -44,6 +44,30 @@ namespace AnyRPG {
             return sourceUnitController.CharacterQuestLog.HasAchievement(ResourceName);
         }
 
+        public override int GetObjectiveCurrentAmount(UnitController sourceUnitController, string objectiveTypeName, string objectiveName) {
+            return sourceUnitController.CharacterQuestLog.GetAchievementObjectiveSaveData(ResourceName, objectiveTypeName, objectiveName).Amount;
+        }
+
+        public override void SetObjectiveCurrentAmount(UnitController sourceUnitController, string objectiveTypeName, string objectiveName, int amount) {
+            sourceUnitController.CharacterQuestLog.SetAchievementObjectiveCurrentAmount(ResourceName, objectiveTypeName, objectiveName, amount);
+        }
+
+        public override void ResetObjectiveSaveData(UnitController sourceUnitController) {
+            //Debug.Log($"{ResourceName}.Achievement.ResetObjectiveSaveData({sourceUnitController.gameObject.name})");
+            sourceUnitController.CharacterQuestLog.ResetAchievementObjectiveSaveData(ResourceName);
+        }
+
+        public override void NotifyOnObjectiveStatusUpdated(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnAchievementObjectiveStatusUpdated(this);
+        }
+
+        public override void NotifyOnMarkComplete(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnMarkAchievementComplete(this);
+        }
+
+        public override void NotifyOnAcceptQuest(UnitController sourceUnitController) {
+            sourceUnitController.UnitEventController.NotifyOnAcceptAchievement(this);
+        }
     }
 
 }

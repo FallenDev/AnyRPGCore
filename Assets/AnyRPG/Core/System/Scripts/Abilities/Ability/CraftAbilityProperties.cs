@@ -43,16 +43,16 @@ namespace AnyRPG {
         }
 
         public override bool CanUseOn(Interactable target, IAbilityCaster source, bool performCooldownChecks = true, AbilityEffectContext abilityEffectContext = null, bool playerInitiated = false, bool performRangeChecks = true) {
-            Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")})");
+            //Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")})");
 
             if (!base.CanUseOn(target, source, performCooldownChecks, abilityEffectContext, playerInitiated, performRangeChecks)) {
-                Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) base.CanUseOn failed");
+                //Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) base.CanUseOn failed");
                 return false;
             }
 
             // to prevent casting this ability on a valid crafting target from action bars with no recipe to make, it is not possible to cast if there is nothing in the queue
             if (source.AbilityManager.GetCharacterUnit().UnitController.CharacterCraftingManager.CraftingQueue.Count == 0) {
-                Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) crafting queue is empty");
+                //Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) crafting queue is empty");
                 return false;
             }
 
@@ -61,7 +61,7 @@ namespace AnyRPG {
                 if (playerInitiated) {
                     source.AbilityManager.ReceiveCombatMessage($"Cannot cast {DisplayName}. This ability must target a crafting node");
                 }
-                Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) target does not have a crafting node component");
+                //Debug.Log($"CraftAbility.CanUseOn({source.gameObject.name}, {(target ? target.gameObject.name : "null")}) target does not have a crafting node component");
                 return false;
             }
 

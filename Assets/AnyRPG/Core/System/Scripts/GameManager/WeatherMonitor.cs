@@ -24,7 +24,7 @@ namespace AnyRPG {
         public WeatherProfile CurrentWeather { get => currentWeather; }
 
         public WeatherMonitor(SystemGameManager systemGameManager, int sceneHandle, SceneNode sceneNode) {
-            Debug.Log($"WeatherMonitor.WeatherMonitor({sceneHandle}, {sceneNode.ResourceName})");
+            //Debug.Log($"WeatherMonitor.WeatherMonitor({sceneHandle}, {sceneNode.ResourceName})");
 
             this.sceneNode = sceneNode;
             this.sceneHandle = sceneHandle;
@@ -40,7 +40,7 @@ namespace AnyRPG {
         }
 
         private void SetupWeatherList() {
-            Debug.Log($"WeatherMonitor.SetupWeatherList()");
+            //Debug.Log($"WeatherMonitor.SetupWeatherList()");
 
             WeatherWeightNode clearWeatherWeightNode = new WeatherWeightNode();
             clearWeatherWeightNode.Weight = sceneNode.NoWeatherWeight;
@@ -49,7 +49,7 @@ namespace AnyRPG {
         }
 
         private void ChooseWeather() {
-            Debug.Log("WeatherMonitor.ChooseWeather()");
+            //Debug.Log("WeatherMonitor.ChooseWeather()");
 
             if (weatherWeights.Count == 1) {
                 // no weather to choose from (clear weather is always in the list)
@@ -95,13 +95,13 @@ namespace AnyRPG {
         }
 
         private void StartWeatherMonitoring() {
-            Debug.Log($"WeatherMonitor.StartWeatherMonitoring()");
+            //Debug.Log($"WeatherMonitor.StartWeatherMonitoring()");
 
             weatherCoroutine = weatherManagerServer.StartCoroutine(MonitorWeather(sceneNode.RandomWeatherLength));
         }
 
         private void EndWeatherMonitoring() {
-            Debug.Log($"WeatherMonitor.EndWeatherMonitoring()");
+            //Debug.Log($"WeatherMonitor.EndWeatherMonitoring()");
 
             if (weatherCoroutine != null) {
                 weatherManagerServer.StopCoroutine(weatherCoroutine);
@@ -110,7 +110,7 @@ namespace AnyRPG {
         }
 
         private IEnumerator MonitorWeather(float inGameSeconds) {
-            Debug.Log($"WeatherMonitor.MonitorWeather({inGameSeconds})");
+            //Debug.Log($"WeatherMonitor.MonitorWeather({inGameSeconds})");
 
             DateTime startTime = timeOfDayManagerServer.InGameTime;
             DateTime endTime = startTime.AddSeconds(inGameSeconds);
@@ -124,7 +124,7 @@ namespace AnyRPG {
         }
 
         private void StartWeather() {
-            Debug.Log($"WeatherMonitor.StartWeather()");
+            //Debug.Log($"WeatherMonitor.StartWeather()");
 
             // always monitor weather, it could be clear
             StartWeatherMonitoring();
@@ -132,19 +132,19 @@ namespace AnyRPG {
         }
 
         public void EndWeather() {
-            Debug.Log($"WeatherMonitor.EndWeather()");
+            //Debug.Log($"WeatherMonitor.EndWeather()");
 
             EndWeather(currentWeather, true);
         }
 
         private void EndWeather(WeatherProfile previousWeather) {
-            Debug.Log($"WeatherMonitor.EndWeather({previousWeather?.ResourceName})");
+            //Debug.Log($"WeatherMonitor.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)})");
 
             EndWeather(previousWeather, false);
         }
 
         private void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherMonitor.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
+            //Debug.Log($"WeatherMonitor.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             EndWeatherMonitoring();
             weatherManagerServer.ProcessEndWeather(sceneHandle, previousWeather, immediate);

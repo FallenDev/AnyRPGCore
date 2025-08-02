@@ -51,13 +51,13 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            questObjective.OnQuestStatusUpdated += HandleQuestStatusUpdated;
+            questObjective.OnQuestBaseStatusUpdated += HandleQuestStatusUpdated;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            questObjective.OnQuestStatusUpdated -= HandleQuestStatusUpdated;
+            questObjective.OnQuestBaseStatusUpdated -= HandleQuestStatusUpdated;
         }
 
 

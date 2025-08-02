@@ -11,8 +11,8 @@ namespace AnyRPG {
 
     public abstract class QuestBase : DescribableResource, IPrerequisiteOwner {
 
-        public event System.Action<UnitController> OnQuestStatusUpdated = delegate { };
-        public event System.Action<UnitController> OnQuestObjectiveStatusUpdated = delegate { };
+        public event System.Action<UnitController> OnQuestBaseStatusUpdated = delegate { };
+        public event System.Action<UnitController> OnQuestBaseObjectiveStatusUpdated = delegate { };
 
         [Header("Objectives")]
 
@@ -72,7 +72,7 @@ namespace AnyRPG {
 
             //Debug.Log(DisplayName + ".Quest.TurnedIn = " + value);
             if (notify) {
-                OnQuestStatusUpdated(sourceUnitController);
+                OnQuestBaseStatusUpdated(sourceUnitController);
             }
         }
 
@@ -105,6 +105,7 @@ namespace AnyRPG {
         public bool MarkedComplete(UnitController sourceUnitController) {
             return GetSaveData(sourceUnitController).markedComplete;
         }
+
         public void SetMarkedComplete(UnitController sourceUnitController, bool value) { 
             QuestSaveData saveData = GetSaveData(sourceUnitController);
             saveData.markedComplete = value;
@@ -123,7 +124,7 @@ namespace AnyRPG {
             SetMarkedComplete(sourceUnitController, false);
 
             //sourceUnitController.UnitEventController.NotifyOnRemoveQuest(this);
-            OnQuestStatusUpdated(sourceUnitController);
+            OnQuestBaseStatusUpdated(sourceUnitController);
         }
 
         protected virtual void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
@@ -135,12 +136,12 @@ namespace AnyRPG {
                 return;
             }
 
+            SetMarkedComplete(sourceUnitController, true);
             ProcessMarkComplete(sourceUnitController, printMessages);
 
-            SetMarkedComplete(sourceUnitController, true);
             if (notifyOnUpdate == true) {
-                sourceUnitController.UnitEventController.NotifyOnMarkQuestComplete(this);
-                OnQuestStatusUpdated(sourceUnitController);
+                NotifyOnMarkComplete(sourceUnitController);
+                OnQuestBaseStatusUpdated(sourceUnitController);
             }
         }
 
@@ -278,8 +279,8 @@ namespace AnyRPG {
                 }
             }
 
-            sourceUnitController.UnitEventController.NotifyOnAcceptQuest(this);
-            OnQuestStatusUpdated(sourceUnitController);
+            NotifyOnAcceptQuest(sourceUnitController);
+            OnQuestBaseStatusUpdated(sourceUnitController);
         }
 
         public virtual void CheckCompletion(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
@@ -290,8 +291,8 @@ namespace AnyRPG {
             }
 
             // since this method only gets called as a result of a quest objective status updating, we need to notify for that
-            sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
-            OnQuestObjectiveStatusUpdated(sourceUnitController);
+            NotifyOnObjectiveStatusUpdated(sourceUnitController);
+            OnQuestBaseObjectiveStatusUpdated(sourceUnitController);
 
             if (StepsComplete(sourceUnitController, printMessages)) {
                 MarkComplete(sourceUnitController, notifyOnUpdate, printMessages);
@@ -314,7 +315,7 @@ namespace AnyRPG {
                     }
 
                     // reset save data from this step in case the next step contains an objective of the same type, but different amount
-                    sourceUnitController.CharacterQuestLog.ResetQuestObjectiveSaveData(ResourceName);
+                    ResetObjectiveSaveData(sourceUnitController);
 
                     // subscribe the current step objectives
                     foreach (QuestObjective questObjective in steps[i].QuestObjectives) {
@@ -361,8 +362,15 @@ namespace AnyRPG {
         }
 
         public virtual void HandlePrerequisiteUpdates(UnitController sourceUnitController) {
-            OnQuestStatusUpdated(sourceUnitController);
+            OnQuestBaseStatusUpdated(sourceUnitController);
         }
+
+        public abstract int GetObjectiveCurrentAmount(UnitController sourceUnitController, string name, string objectiveName);
+        public abstract void SetObjectiveCurrentAmount(UnitController sourceUnitController, string name, string objectiveName, int value);
+        public abstract void ResetObjectiveSaveData(UnitController sourceUnitController);
+        public abstract void NotifyOnObjectiveStatusUpdated(UnitController sourceUnitController);
+        public abstract void NotifyOnMarkComplete(UnitController sourceUnitController);
+        public abstract void NotifyOnAcceptQuest(UnitController sourceUnitController);
     }
 
     [System.Serializable]

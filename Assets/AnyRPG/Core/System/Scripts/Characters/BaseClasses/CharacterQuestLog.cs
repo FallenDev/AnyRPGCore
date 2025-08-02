@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace AnyRPG {
     /// <summary>
@@ -232,16 +233,17 @@ namespace AnyRPG {
             achievementObjectiveSaveDataDictionary[questName] = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
         }
 
-        public QuestObjectiveSaveData GetQuestObjectiveSaveData(string questName, string objectiveType, string objectiveName) {
+
+        public QuestObjectiveSaveData GetObjectiveSaveData(Dictionary<string, Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>> dictionary, string questName, string objectiveType, string objectiveName) {
             QuestObjectiveSaveData saveData;
 
             // first, check if this quest is in the main objective dictionary.  If not, add it.
             Dictionary<string, Dictionary<string, QuestObjectiveSaveData>> questObjectiveSaveData;
-            if (questObjectiveSaveDataDictionary.ContainsKey(questName)) {
-                questObjectiveSaveData = questObjectiveSaveDataDictionary[questName];
+            if (dictionary.ContainsKey(questName)) {
+                questObjectiveSaveData = dictionary[questName];
             } else {
                 questObjectiveSaveData = new Dictionary<string, Dictionary<string, QuestObjectiveSaveData>>();
-                questObjectiveSaveDataDictionary.Add(questName, questObjectiveSaveData);
+                dictionary.Add(questName, questObjectiveSaveData);
             }
 
             Dictionary<string, QuestObjectiveSaveData> questObjectiveSaveDataType;
@@ -264,6 +266,16 @@ namespace AnyRPG {
             return saveData;
         }
 
+        public QuestObjectiveSaveData GetAchievementObjectiveSaveData(string questName, string objectiveType, string objectiveName) {
+
+            return GetObjectiveSaveData(achievementObjectiveSaveDataDictionary, questName, objectiveType, objectiveName);
+        }
+
+        public QuestObjectiveSaveData GetQuestObjectiveSaveData(string questName, string objectiveType, string objectiveName) {
+            
+            return GetObjectiveSaveData(questObjectiveSaveDataDictionary, questName, objectiveType, objectiveName);
+        }
+
         public void AcceptAchievement(QuestSaveData questSaveData) {
 
             Achievement achievement = systemDataFactory.GetResource<Achievement>(questSaveData.QuestName);
@@ -274,14 +286,22 @@ namespace AnyRPG {
                 return;
             }
 
+            AcceptAchievement(achievement);
+        }
+
+        public void AcceptAchievement(Achievement achievement) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptAchievement({achievement.ResourceName})");
+
+            if (achievements.ContainsKey(achievement.ResourceName)) {
+                //Debug.Log("QuestLog.AcceptAchievement(" + achievement.ResourceName + "): already in log");
+                return;
+            }
+
+            achievements[achievement.ResourceName] = achievement;
             // change to new subscription method in quest to avoid duplicated out of date code not tracking newer objective types
             achievement.AcceptQuest(unitController, false, false);
             // gotta check here because kills and ability use are not automatically checked on accept because under normal circumstances those amounts must start at 0
             achievement.CheckCompletion(unitController, true, false);
-            achievements[achievement.ResourceName] = achievement;
-
-            // just in case one quest was complete but not turned in
-            //CheckCompletion();
         }
 
         public bool HasAchievement(string achievementName) {
@@ -305,10 +325,36 @@ namespace AnyRPG {
             achievements.Clear();
         }
 
-        public void SetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
-            questObjectiveSaveDataDictionary[questName][objectiveType][objectiveName] = saveData;
-            unitController.UnitEventController.NotifyOnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
+        public void SetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            QuestObjectiveSaveData saveData = GetQuestObjectiveSaveData(questName, objectiveType, objectiveName);
+            saveData.Amount = amount;
+            SetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
         }
+
+        private void SetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
+            questObjectiveSaveDataDictionary[questName][objectiveType][objectiveName] = saveData;
+            unitController.UnitEventController.NotifyOnSetQuestObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData.Amount);
+        }
+
+        public void SetAchievementObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
+            QuestObjectiveSaveData saveData = GetAchievementObjectiveSaveData(questName, objectiveType, objectiveName);
+            saveData.Amount = amount;
+            SetAchievementObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData);
+        }
+
+        private void SetAchievementObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, QuestObjectiveSaveData saveData) {
+            achievementObjectiveSaveDataDictionary[questName][objectiveType][objectiveName] = saveData;
+            unitController.UnitEventController.NotifyOnSetAchievementObjectiveCurrentAmount(questName, objectiveType, objectiveName, saveData.Amount);
+        }
+
+        public void MarkQuestComplete(Quest quest) {
+            quest.MarkComplete(unitController, true, false);
+        }
+
+        public void MarkAchievementComplete(Achievement achievement) {
+            achievement.MarkComplete(unitController, true, false);
+        }
+
     }
 
 }

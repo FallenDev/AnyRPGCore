@@ -135,7 +135,6 @@ namespace AnyRPG {
                 return;
             }
             SubscribeToPlayerEvents(unitController);
-            systemAchievementManager.AcceptAchievements(unitController);
 
             if (levelManager.SceneDictionary.ContainsKey(unitController.gameObject.scene.name) == false) {
                 return;

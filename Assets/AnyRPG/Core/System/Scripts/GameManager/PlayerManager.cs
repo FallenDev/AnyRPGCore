@@ -674,6 +674,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange += HandleNameChange;
             unitController.UnitEventController.OnRemoveActivePet += HandleRemoveActivePet;
+            unitController.UnitEventController.OnMarkAchievementComplete += HandleMarkAchievementComplete;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -732,6 +733,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetGamepadActionButton += HandleUnsetGamepadActionButton;
             unitController.UnitEventController.OnNameChange -= HandleNameChange;
             unitController.UnitEventController.OnRemoveActivePet -= HandleRemoveActivePet;
+            unitController.UnitEventController.OnMarkAchievementComplete -= HandleMarkAchievementComplete;
+        }
+
+        public void HandleMarkAchievementComplete(UnitController targetUnitController, Achievement achievement) {
+            PlayLevelUpEffects(targetUnitController, 0);
         }
 
         public void HandleRemoveActivePet(UnitProfile unitProfile) {
@@ -809,8 +815,8 @@ namespace AnyRPG {
             systemEventManager.NotifyOnUnLearnSkill(unitController, skill);
         }
 
-        public void HandleQuestObjectiveStatusUpdated(UnitController sourceUnitController, QuestBase questBase) {
-            systemEventManager.NotifyOnQuestObjectiveStatusUpdated(sourceUnitController, questBase);
+        public void HandleQuestObjectiveStatusUpdated(UnitController sourceUnitController, Quest quest) {
+            systemEventManager.NotifyOnQuestObjectiveStatusUpdated(sourceUnitController, quest);
         }
 
         public void HandleMarkQuestComplete(UnitController sourceUnitController, QuestBase questBase) {

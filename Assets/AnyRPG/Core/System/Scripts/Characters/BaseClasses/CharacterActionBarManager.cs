@@ -58,6 +58,10 @@ namespace AnyRPG {
         }
 
         private void HandleLearnAbility(UnitController controller, AbilityProperties abilityProperties) {
+            if (abilityProperties.AutoAddToBars == false) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterActionBarManager.HandleLearnAbility({abilityProperties.ResourceName}) - AutoAddToBars is false, not adding ability to action bar");
+                return;
+            }
             AddAbility(abilityProperties);
         }
 

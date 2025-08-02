@@ -150,7 +150,7 @@ namespace AnyRPG {
             }
 
             if (emptySlotProfile == null) {
-                Debug.Log($"EquipmentManager.EquipEquipment({newItem.ResourceName}, {equipmentSlotProfile?.DisplayName}): no empty slots found, unequipping first slot");
+                //Debug.Log($"EquipmentManager.EquipEquipment({newItem.ResourceName}, {equipmentSlotProfile?.DisplayName}): no empty slots found, unequipping first slot");
                 if (slotProfileList != null && slotProfileList.Count > 0) {
                     UnequipEquipment(slotProfileList[0]);
                     emptySlotProfile = GetFirstEmptySlot(slotProfileList);

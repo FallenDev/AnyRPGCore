@@ -537,7 +537,7 @@ namespace AnyRPG {
             //Debug.Log("Savemanager.LoadGame() rotation: " + anyRPGSaveData.PlayerRotationX + ", " + anyRPGSaveData.PlayerRotationY + ", " + anyRPGSaveData.PlayerRotationZ);
 
             // disable auto-accept achievements since we haven't loaded the data that tells us if they are complete yet
-            systemAchievementManager.CleanupEventSubscriptions();
+            //systemAchievementManager.CleanupEventSubscriptions();
 
             playerManager.SpawnPlayerConnection(playerCharacterSaveData);
 

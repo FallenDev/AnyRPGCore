@@ -19,6 +19,7 @@ namespace AnyRPG {
         public abstract void Disconnect();
         public abstract void RequestSpawnPlayerUnit(string sceneName);
         public abstract void RequestRespawnPlayerUnit();
+        public abstract void RequestDespawnPlayerUnit();
         public abstract void RequestRevivePlayerUnit();
         public abstract GameObject RequestSpawnModelPrefab(/*int spawnRequestId, int serverSpawnRequestId,*/ GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward);
         public abstract void LoadScene(string sceneName);
@@ -100,6 +101,7 @@ namespace AnyRPG {
         public abstract void AdvertiseEndWeather(int sceneHandle, WeatherProfile profile, bool immediate);
         public abstract void AdvertiseChooseWeather(int sceneHandle, WeatherProfile profile);
         public abstract void AdvertiseStartWeather(int sceneHandle);
+        public abstract void AdvertiseLoadCutscene(Cutscene cutscene, int accountId);
 
         //public abstract void SetCraftingManagerAbility(int accountId, string abilityName);
         //public abstract void AdvertiseInteractWithSkillTrainerComponentServer(int accountId, Interactable interactable, int optionIndex);

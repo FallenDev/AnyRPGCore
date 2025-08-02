@@ -14,7 +14,7 @@ namespace AnyRPG {
         public event System.Action<string> OnBeginLoadingLevel = delegate { };
 
         private bool navMeshAvailable;
-        private string returnSceneName = string.Empty;
+        private SceneNode returnScene = null;
         private Bounds sceneBounds;
 
         private Coroutine loadCutSceneCoroutine = null;
@@ -48,7 +48,7 @@ namespace AnyRPG {
         public bool NavMeshAvailable { get => navMeshAvailable; set => navMeshAvailable = value; }
         //public Vector3 SpawnRotationOverride { get => spawnRotationOverride; set => spawnRotationOverride = value; }
         //public Vector3 SpawnLocationOverride { get => spawnLocationOverride; set => spawnLocationOverride = value; }
-        public string ReturnSceneName { get => returnSceneName; set => returnSceneName = value; }
+        //public SceneNode ReturnSceneName { get => returnScene; set => returnScene = value; }
         public bool LoadingLevel { get => loadingLevel; set => loadingLevel = value; }
         public string ActiveSceneName { get => activeSceneName; set => activeSceneName = value; }
         public Bounds SceneBounds { get => sceneBounds; }
@@ -76,7 +76,7 @@ namespace AnyRPG {
 
         public void PerformSetupActivities() {
             InitializeLevelManager();
-            PerformLevelLoadActivities();
+            PerformLevelLoadActivities(true);
         }
 
         private void InitializeLevelManager() {
@@ -159,21 +159,22 @@ namespace AnyRPG {
         /// <param name="newScene"></param>
         /// <param name="loadSceneMode"></param>
         public void HandleLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
-            //Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             if (!levelManagerInitialized) {
                 //Debug.Log("Levelmanager.OnLoadLevel(): Start has not run yet, returning!");
                 return;
             }
-            if (systemGameManager.GameMode == GameMode.Local) {
-                ProcessLevelLoad();
+            SetActiveSceneNode();
+            if (systemGameManager.GameMode == GameMode.Local || IsCutscene()) {
+                ProcessLevelLoad(false);
             }
         }
 
-        public void ProcessLevelLoad() {
-            //Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
+        public void ProcessLevelLoad(bool setActiveSceneNode) {
+            Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
 
-            PerformLevelLoadActivities();
+            PerformLevelLoadActivities(setActiveSceneNode);
             NavMesh.pathfindingIterationsPerFrame = 500;
         }
 
@@ -225,11 +226,13 @@ namespace AnyRPG {
             return false;
         }
 
-        public void PerformLevelLoadActivities() {
+        public void PerformLevelLoadActivities(bool setActiveSceneNode) {
             Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             loadingLevel = false;
-            SetActiveSceneNode();
+            if (setActiveSceneNode) {
+                SetActiveSceneNode();
+            }
             systemGameManager.AutoConfigureMonoBehaviours(SceneManager.GetActiveScene());
 
             // determine if this is the game manager loading scene
@@ -298,7 +301,7 @@ namespace AnyRPG {
         }
 
         private void ActivateSceneCamera() {
-            //Debug.Log("Levelmanager.ActivateSceneCamera()");
+            Debug.Log("Levelmanager.ActivateSceneCamera()");
 
             if (activeSceneNode?.AutoPlayCutscene != null
                 && (activeSceneNode.AutoPlayCutscene.Repeatable == true || activeSceneNode.AutoPlayCutscene.Viewed == false)) {
@@ -313,7 +316,7 @@ namespace AnyRPG {
         }
 
         public void LoadCutSceneWithDelay(Cutscene cutscene) {
-            //Debug.Log("Levelmanager.LoadCutSceneWithDelay(" + (cutscene == null ? null : cutscene.DisplayName) + ")");
+            Debug.Log($"Levelmanager.LoadCutSceneWithDelay({(cutscene == null ? null : cutscene.ResourceName)})");
             // doing this so that methods that needs to do something on successful interaction have time before the level unloads
 
             if (loadingLevel == false) {
@@ -323,6 +326,7 @@ namespace AnyRPG {
         }
 
         private IEnumerator LoadCutSceneDelay(Cutscene cutscene) {
+            Debug.Log($"LevelManager.LoadCutSceneDelay({cutscene.ResourceName})");
             //yield return new WaitForSeconds(1);
             yield return null;
             loadCutSceneCoroutine = null;
@@ -330,8 +334,11 @@ namespace AnyRPG {
         }
 
         public void LoadCutScene(Cutscene cutscene) {
-            //Debug.Log("LevelManager.LoadCutScene(" + sceneName + ")");
+            Debug.Log($"LevelManager.LoadCutScene({cutscene.ResourceName})");
+
             if (playerManager.ActiveUnitController != null) {
+                // with the new save manager code, this should happen automatically on despawn
+                /*
                 SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest() {
                     overrideSpawnDirection = true,
                     spawnForwardDirection = playerManager.ActiveUnitController.transform.forward,
@@ -339,17 +346,18 @@ namespace AnyRPG {
                     spawnLocation = playerManager.ActiveUnitController.transform.position
                 };
                 playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
+                */
             }
-            returnSceneName = activeSceneNode.ResourceName;
+            returnScene = activeSceneNode;
             uIManager.CutSceneBarController.AssignCutScene(cutscene);
-            LoadLevel(cutscene.LoadScene.ResourceName);
+            LoadLevel(cutscene.LoadScene);
         }
 
         public void EndCutscene(Cutscene cutscene) {
             //Debug.Log("LevelManager.EndCutscene()");
             if (cutscene != null && cutscene.UnloadSceneOnEnd == true) {
                 //Debug.Log("Levelmanager.ActivateSceneCamera(): activating cutscene bars");
-                LoadLevel(returnSceneName);
+                LoadLevel(returnScene);
             } else {
 
                 //cameraManager.ActivateMainCamera();
@@ -372,6 +380,18 @@ namespace AnyRPG {
         /// load a new level
         /// </summary>
         /// <param name="levelName"></param>
+        public void LoadLevel(SceneNode loadSceneNode) {
+            Debug.Log($"LevelManager.LoadLevel({loadSceneNode.ResourceName})");
+
+            ProcessBeforeLevelUnload();
+
+            StartLoadAsync(loadSceneNode);
+        }
+
+        /// <summary>
+        /// load a new level
+        /// </summary>
+        /// <param name="levelName"></param>
         public void LoadLevel(string levelName) {
             //Debug.Log("LevelManager.LoadLevel(" + levelName + ")");
 
@@ -383,9 +403,8 @@ namespace AnyRPG {
 
             loadingSceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
             if (loadingSceneNode != null) {
-                StartLoadAsync(loadingSceneNode.SceneFile);
+                StartLoadAsync(loadingSceneNode);
             } else {
-
                 StartLoadAsync(levelName);
                 //Debug.LogError("LevelManager.LoadLevel(" + levelName + "): could not find scene node with that name!");
             }
@@ -400,7 +419,19 @@ namespace AnyRPG {
             uIManager.DeactivateSystemMenuUI();
         }
 
+        private void StartLoadAsync(SceneNode loadSceneNode) {
+            Debug.Log($"LevelManager.StartLoadAsync({loadSceneNode.ResourceName}) cutscene: {loadSceneNode.IsCutScene}");
+
+            if (systemGameManager.GameMode == GameMode.Local || loadSceneNode.IsCutScene) {
+                StartCoroutine(LoadAsynchronously(loadSceneNode.SceneFile));
+                return;
+            }
+            StartLoadAsync(loadSceneNode.SceneFile);
+        }
+
         private void StartLoadAsync(string sceneName) {
+            Debug.Log($"LevelManager.StartLoadAsync({sceneName})");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 StartCoroutine(LoadAsynchronously(sceneName));
                 return;
@@ -408,6 +439,13 @@ namespace AnyRPG {
 
             // network load
             networkManagerClient.LoadScene(sceneName);
+        }
+
+        public bool IsCutscene() {
+            if (activeSceneNode != null) {
+                return activeSceneNode.IsCutScene;
+            }
+            return false;
         }
 
         public void LoadDefaultStartingZone() {
@@ -444,8 +482,9 @@ namespace AnyRPG {
             OnSetLoadingProgress(newProgress);
         }
 
-        IEnumerator LoadAsynchronously(string sceneName) { // scene name is just the name of the current scene being loaded
-            //Debug.Log("LevelManager.LoadAsynchronously(" + sceneName + ")");
+        // scene name is just the name of the current scene being loaded
+        IEnumerator LoadAsynchronously(string sceneName) {
+            Debug.Log($"LevelManager.LoadAsynchronously({sceneName})");
 
             NotifyOnBeginLoadingLevel(sceneName);
 

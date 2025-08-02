@@ -198,11 +198,13 @@ namespace AnyRPG {
         }
 
         public void LateUpdate() {
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true
                 && cameraManager.ThirdPartyCamera.activeInHierarchy == true
                 && playerManager.PlayerUnitSpawned == true) {
                 UpdateMiniMap();
             }
+            */
 
             clockText.text = timeOfDayManagerServer.InGameTime.ToShortTimeString();
         }

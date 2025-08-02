@@ -22,6 +22,7 @@ namespace AnyRPG {
         // game manager references
         protected CharacterManager characterManager = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected LevelManager levelManager = null;
 
         public List<UnitProfile> UnitProfiles { get => unitProfiles; set => unitProfiles = value; }
         public Dictionary<UnitProfile, UnitController> ActiveUnitProfiles { get => activeUnitProfiles; set => activeUnitProfiles = value; }
@@ -37,6 +38,7 @@ namespace AnyRPG {
 
             characterManager = systemGameManager.CharacterManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public void ProcessCapabilityProviderChange(CapabilityConsumerSnapshot newSnapshot) {
@@ -161,13 +163,13 @@ namespace AnyRPG {
         }
 
         public void HandleCharacterUnitDespawn() {
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 DespawnAllPets();
             }
         }
 
         public void HandleDie() {
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 DespawnAllPets();
             }
         }

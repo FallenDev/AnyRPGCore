@@ -109,6 +109,16 @@ namespace AnyRPG {
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void RequestDespawnPlayerUnit(NetworkConnection networkConnection = null) {
+            Debug.Log($"FishNetClientConnector.RequestDespawnPlayerUnit()");
+
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                return;
+            }
+            networkManagerServer.RequestDespawnPlayerUnit(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void RequestRevivePlayerUnit(NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestRevivePlayerUnit()");
 
@@ -1307,6 +1317,38 @@ namespace AnyRPG {
             //Debug.Log($"FishNetClientConnector.AdvertiseStartWeatherClient()");
 
             networkManagerClient.AdvertiseStartWeather();
+        }
+
+        public void AdvertiseLoadCutscene(Cutscene cutscene, int accountId) {
+            Debug.Log($"FishNetClientConnector.AdvertiseLoadCutscene({cutscene.ResourceName}, {accountId})");
+
+            if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
+                Debug.Log($"FishNetClientConnector.AdvertiseLoadCutscene() could not find client id {accountId}");
+                return;
+            }
+            int clientId = networkManagerServer.LoggedInAccounts[accountId].clientId;
+            if (fishNetNetworkManager.ServerManager.Clients.ContainsKey(clientId) == false) {
+                return;
+            }
+
+            // unload the current scene for the client
+            NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[clientId];
+            SceneUnloadData sceneUnloadData = new SceneUnloadData(networkConnection.Scenes.First());
+            base.NetworkManager.SceneManager.UnloadConnectionScenes(networkConnection, sceneUnloadData);
+
+            AdvertiseLoadCutsceneClient(fishNetNetworkManager.ServerManager.Clients[clientId], cutscene.ResourceName);
+        }
+
+        [TargetRpc]
+        public void AdvertiseLoadCutsceneClient(NetworkConnection networkConnection, string cutSceneName) {
+            Debug.Log($"FishNetClientConnector.AdvertiseLoadCutsceneClient({cutSceneName})");
+
+            Cutscene cutScene = systemDataFactory.GetResource<Cutscene>(cutSceneName);
+            if (cutScene == null) {
+                Debug.LogWarning($"FishNetClientConnector.AdvertiseLoadCutsceneClient() could not find cutscene {cutSceneName}");
+                return;
+            }
+            networkManagerClient.AdvertiseLoadCutscene(cutScene);
         }
 
         /*

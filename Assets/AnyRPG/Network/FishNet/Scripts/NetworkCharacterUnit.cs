@@ -795,7 +795,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
 
             NetworkCharacterUnit sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<NetworkCharacterUnit>();
             
@@ -804,7 +804,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddStatusEffectClient(string resourceName, NetworkCharacterUnit sourceNetworkCharacterUnit) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
             StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
             if (statusEffect == null) {
@@ -820,14 +820,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddBagServer(InstantiatedBag instantiatedBag, BagNode node) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagServer({instantiatedBag.Bag.ResourceName}, {node.NodeIndex})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagServer({instantiatedBag.Bag.ResourceName}, {node.NodeIndex})");
 
             HandleAddBagClient(instantiatedBag.InstanceId, node.NodeIndex, node.IsBankNode);
         }
 
         [ObserversRpc]
         public void HandleAddBagClient(int itemInstanceId, int nodeIndex, bool isBankNode) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagClient({itemInstanceId}, {nodeIndex}, {isBankNode})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagClient({itemInstanceId}, {nodeIndex}, {isBankNode})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
                 BagNode bagNode = null;
@@ -1918,7 +1918,7 @@ namespace AnyRPG {
 
         [ServerRpc]
         public void HandleBeginAbilityServer(string abilityName, NetworkInteractable targetNetworkInteractable, bool playerInitiated) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityServer({abilityName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityServer({abilityName})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {

@@ -11,22 +11,23 @@ namespace AnyRPG {
     /// </summary>
     public class SystemAchievementManager : ConfiguredMonoBehaviour {
 
-        private bool eventSubscriptionsInitialized = false;
+        //private bool eventSubscriptionsInitialized = false;
 
         // game manager references
-        PlayerManager playerManager = null;
+        //PlayerManager playerManager = null;
         SystemDataFactory systemDataFactory = null;
-        NetworkManagerClient networkManagerClient = null;
+        //NetworkManagerClient networkManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
-            playerManager = systemGameManager.PlayerManager;
+            //playerManager = systemGameManager.PlayerManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
-            networkManagerClient = systemGameManager.NetworkManagerClient;
+            //networkManagerClient = systemGameManager.NetworkManagerClient;
 
-            CreateEventSubscriptions();
+            //CreateEventSubscriptions();
         }
 
+        /*
         public void CreateEventSubscriptions() {
             //Debug.Log("PlayerManager.CreateEventSubscriptions()");
             if (eventSubscriptionsInitialized) {
@@ -42,13 +43,14 @@ namespace AnyRPG {
             }
             eventSubscriptionsInitialized = false;
         }
+        */
 
         public void OnDisable() {
-            //Debug.Log("PlayerManager.OnDisable()");
+            //Debug.Log("SystemAchievementManager.OnDisable()");
             if (SystemGameManager.IsShuttingDown) {
                 return;
             }
-            CleanupEventSubscriptions();
+            //CleanupEventSubscriptions();
         }
 
         public void AcceptAchievements(UnitController sourceUnitController) {

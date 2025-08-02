@@ -331,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnDropCombat() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDropCombat()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDropCombat()");
 
             OnDropCombat();
         }
@@ -473,7 +473,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAddStatusEffectStack(string resourceName) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddStatusEffectStack({resourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAddStatusEffectStack({resourceName})");
 
             OnAddStatusEffectStack(resourceName);
         }
@@ -557,7 +557,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnAnimatorClearAbilityAction() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnClearAbilityAction()");
 
             OnAnimatorClearAbilityAction();
         }

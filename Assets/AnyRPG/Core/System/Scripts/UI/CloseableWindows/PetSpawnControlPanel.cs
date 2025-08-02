@@ -254,12 +254,12 @@ namespace AnyRPG {
         }
 
         public void SpawnUnit() {
-            playerManager.SpawnPet(SelectedPetSpawnButton.UnitProfile);
+            playerManager.RequestSpawnPet(SelectedPetSpawnButton.UnitProfile);
             ClosePanel();
         }
 
         public void DespawnUnit() {
-            playerManager.DespawnPet(SelectedPetSpawnButton.UnitProfile);
+            playerManager.RequestDespawnPet(SelectedPetSpawnButton.UnitProfile);
             //ClosePanel();
         }
 

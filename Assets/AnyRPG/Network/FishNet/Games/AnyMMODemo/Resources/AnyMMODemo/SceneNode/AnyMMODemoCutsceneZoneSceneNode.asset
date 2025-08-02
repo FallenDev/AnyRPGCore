@@ -20,6 +20,7 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
+  loadingScreenImage: {fileID: 0}
   useRegionalFile: 0
   sceneFile: AnyMMODemoCutsceneZone
   dayAmbientSoundsProfile: 
@@ -35,6 +36,7 @@ MonoBehaviour:
   allowMount: 0
   suppressCharacterSpawn: 1
   suppressMainCamera: 1
+  isCutScene: 1
   autoPlayCutsceneName: Battle
   environmentStateNames:
   - Day
@@ -71,6 +73,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   blendedSkybox: 0

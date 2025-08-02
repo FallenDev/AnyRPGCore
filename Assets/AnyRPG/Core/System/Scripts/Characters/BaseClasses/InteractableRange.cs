@@ -20,6 +20,7 @@ namespace AnyRPG {
         // game manager references
         protected PlayerManagerServer playerManagerServer = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected LevelManager levelManager = null;
 
         protected Dictionary<GameObject, UnitController> inRangeGameObjects = new Dictionary<GameObject, UnitController>();
 
@@ -33,6 +34,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             playerManagerServer = systemGameManager.PlayerManagerServer;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public void SetInteractable(Interactable interactable) {
@@ -49,7 +51,7 @@ namespace AnyRPG {
                 extents = new Vector3(interactable.InteractionMaxRange, interactable.InteractionMaxRange, interactable.InteractionMaxRange);
             }
             */
-            if (colliderWasActive && (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local)) {
+            if (colliderWasActive && (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local || levelManager.IsCutscene())) {
                 EnableCollider();
             }
         }

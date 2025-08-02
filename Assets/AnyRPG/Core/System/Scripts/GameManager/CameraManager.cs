@@ -40,9 +40,9 @@ namespace AnyRPG {
         [SerializeField]
         private Camera petPreviewCamera = null;
 
-        private GameObject thirdPartyCameraGameObject = null;
+        //private GameObject thirdPartyCameraGameObject = null;
 
-        private Camera thirdPartyCamera = null;
+        //private Camera thirdPartyCamera = null;
 
         private AnyRPGCameraController mainCameraController;
 
@@ -70,16 +70,18 @@ namespace AnyRPG {
         public AnyRPGCameraController MainCameraController { get => mainCameraController; set => mainCameraController = value; }
         public Camera UnitPreviewCamera { get => unitPreviewCamera; set => unitPreviewCamera = value; }
         public Camera PetPreviewCamera { get => petPreviewCamera; set => petPreviewCamera = value; }
-        public GameObject ThirdPartyCamera { get => thirdPartyCameraGameObject; set => thirdPartyCameraGameObject = value; }
+        //public GameObject ThirdPartyCamera { get => thirdPartyCameraGameObject; set => thirdPartyCameraGameObject = value; }
 
         public Camera ActiveMainCamera {
             get {
                 if (MainCameraGameObject != null && MainCameraGameObject.activeSelf == true && MainCamera != null) {
                     return MainCamera;
                 }
+                /*
                 if (ThirdPartyCamera != null && ThirdPartyCamera.activeSelf == true && thirdPartyCamera != null) {
                     return thirdPartyCamera;
                 }
+                */
                 return null;
             }
         }
@@ -91,12 +93,13 @@ namespace AnyRPG {
             //Debug.Log("CameraManager.Awake()");
             base.Configure(systemGameManager);
 
-            CheckConfiguration();
+            //CheckConfiguration();
 
             // attach camera to player
             mainCameraController = mainCameraGameObject.GetComponent<AnyRPGCameraController>();
             mainCameraController.Configure(systemGameManager);
 
+            /*
             if (thirdPartyCameraGameObject == null && systemConfigurationManager.ThirdPartyCamera != null) {
                 thirdPartyCameraGameObject = Instantiate(systemConfigurationManager.ThirdPartyCamera, transform);
                 if (thirdPartyCameraGameObject != null) {
@@ -108,9 +111,10 @@ namespace AnyRPG {
                     Debug.LogWarning("Unable to instantiate third party camera GameObject");
                 }
             }
+            */
 
             DisablePreviewCameras();
-            DisableThirdPartyCamera();
+            //DisableThirdPartyCamera();
             DisableFocusCamera();
 
             CreateEventSubscriptions();
@@ -143,14 +147,17 @@ namespace AnyRPG {
             DisableCutsceneCamera();
         }
 
+        /*
         private void CheckConfiguration() {
             if (systemConfigurationManager.UseThirdPartyCameraControl == true && systemConfigurationManager.ThirdPartyCamera == null && (thirdPartyCamera == null || thirdPartyCameraGameObject == null)) {
                 Debug.LogError("CameraManager.CheckConfiguration(): The system configuration option 'Use Third Party Camera' is true, but no third party camera is configured in the Camera Manager. Check inspector!");
             }
         }
+        */
 
         public void ActivateMainCamera(bool prePositionCamera = false) {
-            //Debug.Log("CameraManager.ActivateMainCamera()");
+            Debug.Log($"CameraManager.ActivateMainCamera({prePositionCamera})");
+
             if (systemConfigurationManager == null) {
                 // can't get camera settings, so just return
                 return;
@@ -160,38 +167,48 @@ namespace AnyRPG {
                 MainCameraGameObject.SetActive(true);
                 return;
             }
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == false) {
                 MainCameraGameObject.SetActive(true);
                 return;
             }
-
+            */
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
                 EnableThirdPartyCamera(prePositionCamera);
                 return;
             }
+            */
 
             // fallback in case no camera found
             MainCameraGameObject.SetActive(true);
         }
 
         public void SwitchToMainCamera() {
-            //Debug.Log("CameraManager.SwitchToMainCamera()");
+            Debug.Log("CameraManager.SwitchToMainCamera()");
+
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
                 DisableThirdPartyCamera();
             }
+            */
             MainCameraGameObject.SetActive(true);
         }
 
         public void DeactivateMainCamera() {
-            //Debug.Log("CameraManager.DeactivateMainCamera()");
+            Debug.Log("CameraManager.DeactivateMainCamera()");
+
             MainCameraGameObject.SetActive(false);
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
                 DisableThirdPartyCamera();
             }
+            */
         }
 
         public void EnableCutsceneCamera() {
-            //Debug.Log("CameraManager.EnableCutsceneCamera()");
+            Debug.Log("CameraManager.EnableCutsceneCamera()");
+
             if (currentCutsceneCameraController != null) {
                 //Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
                 currentCutsceneCameraController.gameObject.SetActive(true);
@@ -199,13 +216,15 @@ namespace AnyRPG {
         }
 
         public void DisableCutsceneCamera() {
-            //Debug.Log("CameraManager.DisableCutsceneCamera()");
+            Debug.Log("CameraManager.DisableCutsceneCamera()");
+
             if (currentCutsceneCameraController != null) {
                 //Debug.Log("CameraManager.DisableCutsceneCamera(): disabling");
                 currentCutsceneCameraController.gameObject.SetActive(false);
             }
         }
 
+        /*
         public void EnableThirdPartyCamera(bool prePositionCamera = false) {
             //Debug.Log("CameraManager.EnableThirdPartyCamera()");
             if (thirdPartyCameraGameObject != null) {
@@ -220,13 +239,16 @@ namespace AnyRPG {
                 thirdPartyCameraGameObject.SetActive(true);
             }
         }
+        */
 
+        /*
         public void DisableThirdPartyCamera() {
             //Debug.Log("CameraManager.DisableThirdPartyCamera()");
             if (thirdPartyCameraGameObject != null) {
                 thirdPartyCameraGameObject.SetActive(false);
             }
         }
+        */
 
         private void DisablePreviewCameras() {
             if (characterPanelCamera != null) {

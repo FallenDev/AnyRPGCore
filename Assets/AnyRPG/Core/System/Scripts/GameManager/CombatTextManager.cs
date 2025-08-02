@@ -47,6 +47,7 @@ namespace AnyRPG {
             UpdateCombatText();
         }
 
+        /*
         public void LateUpdate() {
             if (systemConfigurationManager.UseThirdPartyCameraControl == true
                 && cameraManager.ThirdPartyCamera.activeInHierarchy == true
@@ -54,6 +55,7 @@ namespace AnyRPG {
                 UpdateCombatText();
             }
         }
+        */
 
         public void HandleLevelUnload(int sceneHandle, string sceneName) {
             List<CombatTextController> removeList = new List<CombatTextController>();

@@ -991,7 +991,7 @@ namespace AnyRPG {
         }
 
         public virtual bool Cast(IAbilityCaster sourceCharacter, Interactable target, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{ResourceName}.BaseAbility.Cast(" + (sourceCharacter == null ? "null" : sourceCharacter.AbilityManager.Name) + ", " + (target == null ? "null" : target.name) + ")");
+            //Debug.Log($"{ResourceName}.BaseAbility.Cast(" + (sourceCharacter == null ? "null" : sourceCharacter.AbilityManager.Name) + ", " + (target == null ? "null" : target.name) + ")");
             
             if (!CanCast(sourceCharacter)) {
                 //Debug.Log(resourceName + ".BaseAbility.Cast(" + sourceCharacter.AbilityManager.Name + ", " + (target == null ? "null" : target.name) + " CAN'T CAST!!!");
@@ -1102,7 +1102,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupAbilityPrefabs(IAbilityCaster sourceCharacter) {
-            Debug.Log($"{DisplayName}.BaseAbility.ProcessCleanupAbilityPrefabs()");
+            //Debug.Log($"{DisplayName}.BaseAbility.ProcessCleanupAbilityPrefabs()");
 
             if (despawnPrefabsOnCastEnd == false) {
                 return;

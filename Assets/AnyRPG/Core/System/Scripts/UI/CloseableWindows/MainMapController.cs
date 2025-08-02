@@ -119,11 +119,13 @@ namespace AnyRPG {
             if (uIManager.mainMapWindow.IsOpen == false) {
                 return;
             }
+            /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true
                 && cameraManager.ThirdPartyCamera.activeInHierarchy == true
                 && playerManager.PlayerUnitSpawned == true) {
                 UpdateMainMap();
             }
+            */
         }
 
         private void UpdateIndicatorPositions() {

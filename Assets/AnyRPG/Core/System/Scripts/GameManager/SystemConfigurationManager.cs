@@ -214,7 +214,7 @@ namespace AnyRPG {
         [SerializeField]
         private bool allowAutoAttack = true;
        
-
+        /*
         [Header("CAMERA")]
 
         [Tooltip("Use a third party camera (such as Invector) to follow the character.  Built-in camera will still be used for menus and cutscenes.")]
@@ -224,6 +224,7 @@ namespace AnyRPG {
         [Tooltip("A reference to the third party camera prefab to be used")]
         [SerializeField]
         private GameObject thirdPartyCamera = null;
+        */
 
 
         [Header("ANIMATION")]
@@ -681,7 +682,7 @@ namespace AnyRPG {
         public AnimationProfile SystemAnimationProfile { get => systemAnimationProfile; set => systemAnimationProfile = value; }
         public List<ProjectorColorMapNode> FocusProjectorColorMap { get => highlightCircleColorMap; set => highlightCircleColorMap = value; }
         //public bool UseThirdPartyMovementControl { get => useThirdPartyMovementControl; set => useThirdPartyMovementControl = value; }
-        public bool UseThirdPartyCameraControl { get => useThirdPartyCameraControl; set => useThirdPartyCameraControl = value; }
+        //public bool UseThirdPartyCameraControl { get => useThirdPartyCameraControl; set => useThirdPartyCameraControl = value; }
         public bool AllowAutoAttack { get => allowAutoAttack; set => allowAutoAttack = value; }
         public int XpRequiredPerLevel { get => xpRequiredPerLevel; set => xpRequiredPerLevel = value; }
         public int BaseQuestXP { get => baseQuestXP; set => baseQuestXP = value; }
@@ -746,7 +747,7 @@ namespace AnyRPG {
 
         //public bool EquipDefaultBackPack { get => equipDefaultBackPack; set => equipDefaultBackPack = value; }
         public string DefaultPlayerUnitLayer { get => defaultPlayerUnitLayer; set => defaultPlayerUnitLayer = value; }
-        public GameObject ThirdPartyCamera { get => thirdPartyCamera; set => thirdPartyCamera = value; }
+        //public GameObject ThirdPartyCamera { get => thirdPartyCamera; set => thirdPartyCamera = value; }
         public string DefaultBackpackItem { get => defaultBackpackItem; set => defaultBackpackItem = value; }
         //public string DefaultBankBagItem { get => defaultBankBagItem; set => defaultBankBagItem = value; }
         public string MainMenuScene { get => mainMenuScene; set => mainMenuScene = value; }

@@ -718,6 +718,26 @@ namespace AnyRPG {
                 networkManagerServer.AdvertiseAddSpawnRequest(accountId, spawnRequests[accountId]);
             }
         }
+
+        public void LoadCutscene(Cutscene cutscene, UnitController sourceUnitController) {
+            if (activePlayerLookup.ContainsKey(sourceUnitController)) {
+                int accountId = activePlayerLookup[sourceUnitController];
+                SpawnPlayerRequest spawnPlayerRequest = new SpawnPlayerRequest() {
+                    overrideSpawnDirection = true,
+                    spawnForwardDirection = sourceUnitController.transform.forward,
+                    overrideSpawnLocation = true,
+                    spawnLocation = sourceUnitController.transform.position
+                };
+                DespawnPlayerUnit(accountId);
+                AddSpawnRequest(accountId, spawnPlayerRequest, true);
+                if (networkManagerServer.ServerModeActive) {
+                    networkManagerServer.AdvertiseLoadCutscene(cutscene, accountId);
+                } else {
+                    // local mode active, continue with cutscene
+                    levelManager.LoadCutSceneWithDelay(cutscene);
+                }
+            }
+        }
     }
 
 }

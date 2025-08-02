@@ -357,7 +357,7 @@ namespace AnyRPG {
         }
 
         private void ProcessDropCombat() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.ProcessDropCombat()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.ProcessDropCombat()");
 
             unitController.UnitAnimator.SetBool("InCombat", false);
 

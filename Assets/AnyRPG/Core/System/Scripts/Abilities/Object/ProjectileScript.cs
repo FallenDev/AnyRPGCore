@@ -38,7 +38,7 @@ namespace AnyRPG {
         }
 
         public void Initialize(ProjectileEffectProperties projectileEffectProperties, IAbilityCaster source, Interactable target, Vector3 positionOffset, GameObject go, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{gameObject.name}.ProjectileScript.Initialize({projectileEffectProperties.ResourceName}, {source.AbilityManager.Name}, {(target == null ? "null" : target.name)}, {positionOffset}, {go.name})");
+            //Debug.Log($"{gameObject.name}.ProjectileScript.Initialize({projectileEffectProperties.ResourceName}, {source.AbilityManager.Name}, {(target == null ? "null" : target.name)}, {positionOffset}, {go.name})");
 
             projectileGameObject = go;
             this.source = source;

@@ -101,7 +101,7 @@ namespace AnyRPG {
                 // there is no weather in the main menu or initialization scene, so nothing to do
                 return;
             }
-            if (systemGameManager.GameMode == GameMode.Local) {
+            if (systemGameManager.GameMode == GameMode.Local || levelManager.IsCutscene()) {
                 EndWeather(currentWeather, true);
             }
             CleanupWeatherEffectControllers();
@@ -123,7 +123,7 @@ namespace AnyRPG {
             }
             GetSceneFogSettings();
             GetSceneShadowSettings();
-            if (systemGameManager.GameMode == GameMode.Local) {
+            if (systemGameManager.GameMode == GameMode.Local || levelManager.IsCutscene()) {
                 return;
             }
             // if the game is not in local mode, then the weather needs to be requested from the server

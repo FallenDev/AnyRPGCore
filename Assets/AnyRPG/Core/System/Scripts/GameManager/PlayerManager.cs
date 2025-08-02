@@ -452,11 +452,13 @@ namespace AnyRPG {
                 HandlePlayerUnitSpawn();
             }
 
+            /*
             if (systemGameManager.GameMode == GameMode.Local) {
                 // load player data from saveManager
 
                 systemAchievementManager.CreateEventSubscriptions();
             }
+            */
 
             if (PlayerPrefs.HasKey("ShowNewPlayerHints") == false) {
                 if (controlsManager.GamePadModeActive == true) {
@@ -1043,7 +1045,7 @@ namespace AnyRPG {
             }
         }
 
-        public void SpawnPet(UnitProfile unitProfile) {
+        public void RequestSpawnPet(UnitProfile unitProfile) {
             if (systemGameManager.GameMode == GameMode.Local) {
                 playerManagerServer.SpawnPet(unitController, unitProfile);
             } else {
@@ -1051,7 +1053,7 @@ namespace AnyRPG {
             }
         }
 
-        public void DespawnPet(UnitProfile unitProfile) {
+        public void RequestDespawnPet(UnitProfile unitProfile) {
             if (systemGameManager.GameMode == GameMode.Local) {
                 playerManagerServer.DespawnPet(unitController, unitProfile);
             } else {

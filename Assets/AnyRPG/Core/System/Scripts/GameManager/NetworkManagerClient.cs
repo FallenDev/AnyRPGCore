@@ -108,7 +108,7 @@ namespace AnyRPG {
         }
 
         public void LoadScene(string sceneName) {
-            //Debug.Log($"NetworkManagerClient.LoadScene({sceneName})");
+            Debug.Log($"NetworkManagerClient.LoadScene({sceneName})");
 
             networkController.LoadScene(sceneName);
         }
@@ -622,6 +622,16 @@ namespace AnyRPG {
 
         public void RequestSceneWeather() {
             networkController.RequestSceneWeather();
+        }
+
+        public void RequestDespawnPlayer() {
+            Debug.Log($"NetworkManagerClient.RequestDespawnPlayer()");
+            networkController.RequestDespawnPlayerUnit();
+        }
+
+        public void AdvertiseLoadCutscene(Cutscene cutscene) {
+            levelManager.LoadCutSceneWithDelay(cutscene);
+
         }
 
         /*

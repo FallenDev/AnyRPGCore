@@ -103,6 +103,10 @@ namespace AnyRPG {
         [SerializeField]
         private bool suppressMainCamera = false;
 
+        [Tooltip("If true, this scene will only load on the client in a network game.")]
+        [SerializeField]
+        private bool isCutScene = false;
+
         [Tooltip("A Cutscene to play automatically when this level is loaded.")]
         [SerializeField]
         [ResourceSelector(resourceType = typeof(Cutscene))]
@@ -271,6 +275,7 @@ namespace AnyRPG {
 
         public SunRotationMode SunRotationMode { get => sunRotationMode; set => sunRotationMode = value; }
         public Sprite LoadingScreenImage { get => loadingScreenImage; set => loadingScreenImage = value; }
+        public bool IsCutScene { get => isCutScene; set => isCutScene = value; }
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();

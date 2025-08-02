@@ -243,7 +243,7 @@ namespace AnyRPG {
             //Debug.Log($"FishNetNetworkController.HandleLoadEnd() AsServer: {obj.QueueData.AsServer}");
 
             if (systemGameManager.GameMode == GameMode.Network) {
-                levelManager.ProcessLevelLoad();
+                levelManager.ProcessLevelLoad(true);
             }
 
         }
@@ -317,6 +317,12 @@ namespace AnyRPG {
             //Debug.Log($"FishNetNetworkController.SpawnLobbyGamePlayer({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             clientConnector.RequestRespawnPlayerUnit();
+        }
+
+        public override void RequestDespawnPlayerUnit() {
+            Debug.Log($"FishNetNetworkController.RequestDespawnPlayerUnit()");
+
+            clientConnector.RequestDespawnPlayerUnit();
         }
 
         public override void RequestRevivePlayerUnit() {
@@ -716,6 +722,10 @@ namespace AnyRPG {
             //Debug.Log($"FishNetNetworkController.AdvertiseAddSpawnRequest({accountId})");
 
             clientConnector.AdvertiseAddSpawnRequestServer(accountId, loadSceneRequest);
+        }
+
+        public override void AdvertiseLoadCutscene(Cutscene cutscene, int accountId) {
+            clientConnector.AdvertiseLoadCutscene(cutscene, accountId);
         }
 
         public override void AdvertiseStartWeather(int sceneHandle) {

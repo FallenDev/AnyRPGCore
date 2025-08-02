@@ -684,6 +684,23 @@ namespace AnyRPG {
             playerManagerServer.DespawnPlayerUnit(accountId);
         }
 
+        public void RequestDespawnPlayerUnit(int accountId) {
+            Debug.Log($"NetworkManagerServer.RequestDespawnPlayerUnit({accountId})");
+
+            // this method is only called when loading a cutscene, so we need to create a spawn request so the player spawns
+            // at the correct position and direction when the cutscene ends
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId)) {
+                SpawnPlayerRequest spawnPlayerRequest = new SpawnPlayerRequest() {
+                    overrideSpawnDirection = true,
+                    spawnForwardDirection = playerManagerServer.ActivePlayers[accountId].transform.forward,
+                    overrideSpawnLocation = true,
+                    spawnLocation = playerManagerServer.ActivePlayers[accountId].transform.position
+                };
+                DespawnPlayerUnit(accountId);
+                playerManagerServer.AddSpawnRequest(accountId, spawnPlayerRequest, true);
+            }
+        }
+
         public static string ShortenStringOnNewline(string message, int messageLength) {
             // if the chat text is greater than the max size, keep splitting it on newlines until reaches an acceptable size
             while (message.Length > messageLength && message.Contains("\n")) {
@@ -1014,6 +1031,10 @@ namespace AnyRPG {
 
         public WeatherProfile GetSceneWeatherProfile(int handle) {
             return weatherManagerServer.GetSceneWeatherProfile(handle);
+        }
+
+        public void AdvertiseLoadCutscene(Cutscene cutscene, int accountId) {
+            networkController.AdvertiseLoadCutscene(cutscene, accountId);
         }
     }
 

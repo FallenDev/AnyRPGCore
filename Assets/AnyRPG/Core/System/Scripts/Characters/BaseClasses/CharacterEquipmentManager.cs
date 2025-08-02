@@ -179,7 +179,7 @@ namespace AnyRPG {
         }
 
         public override void UnequipEquipment(EquipmentSlotProfile equipmentSlotProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipEquipment({(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.ResourceName)})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipEquipment({(equipmentSlotProfile == null ? "null" : equipmentSlotProfile.ResourceName)})");
             // intentionally not calling base
             // this override exists to intercept a list-only update and perform more character level log
             //base.UnequipFromList(equipmentSlotProfile);
@@ -260,7 +260,7 @@ namespace AnyRPG {
         }
 
         public InstantiatedEquipment Unequip(EquipmentSlotProfile equipmentSlot, int slotIndex = -1) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Unequip({(equipmentSlot == null ? "null" : equipmentSlot.ResourceName)}, {slotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.Unequip({(equipmentSlot == null ? "null" : equipmentSlot.ResourceName)}, {slotIndex})");
 
             if (CurrentEquipment.ContainsKey(equipmentSlot) && CurrentEquipment[equipmentSlot].InstantiatedEquipment != null) {
                 //Debug.Log("equipment manager trying to unequip item in slot " + equipmentSlot.ToString() + "; currentEquipment has this slot key");

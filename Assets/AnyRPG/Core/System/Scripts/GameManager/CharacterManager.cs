@@ -225,7 +225,7 @@ namespace AnyRPG {
         }
 
         public void HandleAfterDie(CharacterStats deadCharacterStats) {
-            if (deadCharacterStats.UnitController.GetCurrentInteractables(playerManager.UnitController).Count == 0) {
+            if (playerManager.UnitController == null || deadCharacterStats.UnitController.GetCurrentInteractables(playerManager.UnitController).Count == 0) {
                 deadCharacterStats.UnitController.OutlineController.TurnOffOutline();
             }
         }

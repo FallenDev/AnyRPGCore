@@ -1360,11 +1360,11 @@ namespace AnyRPG {
         */
 
         public void Die() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.Die()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.Die()");
 
             if (isAlive) {
                 isAlive = false;
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene()) {
                     // should only be done on server
                     ClearStatusEffects(false);
                     // should only be done on server
@@ -1376,7 +1376,7 @@ namespace AnyRPG {
                 // because this results in loot roll, it needs to be done after status effects are cleared, but before aggro table is cleared
                 unitController.UnitEventController.NotifyOnBeforeDie(unitController);
 
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene()) {
                     // should only be done on server
                     unitController.CharacterPetManager.HandleDie();
                     // should only be done on server
@@ -1384,13 +1384,14 @@ namespace AnyRPG {
                 }
                 if (systemGameManager.GameMode == GameMode.Local
                     || unitController.IsOwner
-                    || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                    || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)
+                    || levelManager.IsCutscene()) { 
                     // should only be done on server or authoritative client
                     unitController.FreezePositionXZ();
                     // should only be done on server or authoritative client
                     unitController.UnitAnimator.HandleDie();
                 }
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false || levelManager.IsCutscene()) {
                     // should be done on client
                     unitController.RemoveNamePlate();
                     // should be done on client
@@ -1429,7 +1430,7 @@ namespace AnyRPG {
             }
             unitController.UnitAnimator.EnableAnimator();
             isReviving = true;
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene()) {
                 // should only be done on server
                 unitController.CancelDespawnDelay();
             }
@@ -1437,10 +1438,11 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnReviveBegin(reviveTime);
             if (systemGameManager.GameMode == GameMode.Local
                 || unitController.IsOwner
-                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)
+                || levelManager.IsCutscene()) {
                 unitController.UnitAnimator.HandleReviveBegin();
             }
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 resurrectionCoroutine = unitController.StartCoroutine(WaitForResurrection(reviveTime));
             }
         }
@@ -1464,18 +1466,19 @@ namespace AnyRPG {
 
             if (systemGameManager.GameMode == GameMode.Local
                 || unitController.IsOwner
-                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)) {
+                || (networkManagerServer.ServerModeActive && unitController.UnitControllerMode != UnitControllerMode.Player)
+                || levelManager.IsCutscene()) {
                 // should only be done on server or authoritative client
                 unitController.UnitAnimator.HandleReviveComplete();
             }
             isReviving = false;
             isAlive = true;
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 // should only be done on server
                 ReviveRaw();
             }
             unitController.FreezeRotation();
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false || levelManager.IsCutscene()) {
                 // should be done on client
                 unitController.InitializeNamePlate();
                 // minimap updates
@@ -1552,7 +1555,7 @@ namespace AnyRPG {
                 statusEffectNode.SetRemainingDuration(statusEffect.Duration);
             }
             if (statusEffect.CastZeroTick) {
-                if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
+                if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene())) {
                     statusEffect.CastTick(characterSource, unitController, abilityEffectContext);
                 }
             }
@@ -1568,7 +1571,7 @@ namespace AnyRPG {
 
                 if (elapsedTime >= statusEffect.TickRate && statusEffect.TickRate != 0) {
                     if (characterSource != null) {
-                        if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+                        if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene()) {
                             statusEffect.CastTick(characterSource, unitController, abilityEffectContext);
                         }
                         elapsedTime -= statusEffect.TickRate;
@@ -1576,17 +1579,17 @@ namespace AnyRPG {
                 }
                 statusEffectNode.UpdateStatusNode();
             }
-            if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
+            if (characterSource != null && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene())) {
                 statusEffect.CastComplete(characterSource, unitController, abilityEffectContext);
             }
 
-            if (statusEffects.ContainsKey(statusEffect.ResourceName) && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive)) {
+            if (statusEffects.ContainsKey(statusEffect.ResourceName) && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || levelManager.IsCutscene())) {
                 statusEffects[statusEffect.ResourceName].CancelStatusEffect();
             }
         }
 
         public void Update() {
-            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer) {
+            if (systemGameManager.GameMode == GameMode.Local || unitController.IsServer || levelManager.IsCutscene()) {
                 PerformResourceRegen();
             }
         }

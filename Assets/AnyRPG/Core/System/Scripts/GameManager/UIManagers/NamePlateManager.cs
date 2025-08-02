@@ -59,7 +59,7 @@ namespace AnyRPG {
         public void HandleLevelUnload(int sceneHandle, string sceneName) {
             mouseOverList.Clear();
         }
-
+        /*
         public void LateUpdate() {
             if (systemConfigurationManager.UseThirdPartyCameraControl == true
                 && cameraManager.ThirdPartyCamera.activeInHierarchy == true
@@ -67,6 +67,7 @@ namespace AnyRPG {
                 UpdateNamePlates();
             }
         }
+        */
 
         private void UpdateNamePlates() {
             foreach (NamePlateController namePlateController in namePlates.Values) {
@@ -96,7 +97,8 @@ namespace AnyRPG {
         }
 
         public NamePlateController SpawnNamePlate(NamePlateUnit namePlateUnit, bool usePositionOffset) {
-            //Debug.Log("NamePlateManager.SpawnNamePlate(" + namePlateUnit.DisplayName + ")");
+            //Debug.Log($"NamePlateManager.SpawnNamePlate({namePlateUnit.gameObject.name})");
+
             NamePlateController namePlate = objectPooler.GetPooledObject(namePlatePrefab, namePlateContainer).GetComponent<NamePlateController>();
             namePlate.Configure(systemGameManager);
             namePlates.Add(namePlateUnit, namePlate);
@@ -118,7 +120,7 @@ namespace AnyRPG {
         }
 
         public void RemoveNamePlate(NamePlateUnit namePlateUnit) {
-            //Debug.Log($"NamePlatemanager.RemoveNamePlate({namePlateUnit.gameObject.name})");
+            //Debug.Log($"NamePlatemanager.RemoveNamePlate({namePlateUnit?.gameObject?.name})");
 
             if (namePlates.ContainsKey(namePlateUnit)) {
                 //Debug.Log($"NamePlatemanager.RemoveNamePlate({namePlateUnit.gameObject.name}) namePlates contains key");

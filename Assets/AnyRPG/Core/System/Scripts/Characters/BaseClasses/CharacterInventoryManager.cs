@@ -465,7 +465,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="instantiatedItem"></param>
         public bool AddItem(InstantiatedItem instantiatedItem, bool addToBank, bool performUniqueCheck = true) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddItem({(instantiatedItem == null ? "null" : instantiatedItem.DisplayName)}, {addToBank})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddItem({(instantiatedItem == null ? "null" : instantiatedItem.DisplayName)}, {addToBank})");
 
             if (instantiatedItem == null) {
                 return false;

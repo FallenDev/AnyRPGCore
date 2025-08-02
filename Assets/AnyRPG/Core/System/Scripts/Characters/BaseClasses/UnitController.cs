@@ -716,7 +716,7 @@ namespace AnyRPG {
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
             if (masterUnitController != null) {
                 ApplyControlEffects(masterUnitController);
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                     characterStats.SetLevelInternal(masterUnitController.CharacterStats.Level);
                     ChangeState(new IdleState());
                     SetAggroRange();
@@ -741,7 +741,7 @@ namespace AnyRPG {
             // enabling idle state will reset the destination so we need to re-enable it
             //Vector3 leashDestination = LeashPosition;
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 ChangeState(new IdleState());
                 SetAggroRange();
                 SetDestination(LeashPosition);
@@ -808,7 +808,7 @@ namespace AnyRPG {
             InitializeNamePlateController();
             EnableAICommon();
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 if (systemConfigurationManager.EnableLeashing == true) {
                     enableLeashing = true;
                 }
@@ -825,7 +825,7 @@ namespace AnyRPG {
             unitModelController.SetDefaultLayer(systemConfigurationManager.DefaultCharacterUnitLayer);
 
             // enable agent needs to be done before changing state or idle -> patrol transition will not work because of an inactive navmeshagent
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 if (unitProfile != null && unitProfile.IsMobile == true) {
                     useAgent = true;
                 }
@@ -922,7 +922,7 @@ namespace AnyRPG {
         }
 
         private IEnumerator DespawnDelay(float delayTime, bool addSystemDefaultTime) {
-            Debug.Log($"{gameObject.name}.UnitController.DespawnDelay({delayTime}, {addSystemDefaultTime})");
+            //Debug.Log($"{gameObject.name}.UnitController.DespawnDelay({delayTime}, {addSystemDefaultTime})");
 
             // add all possible delays together
             float extraTime = 0f;
@@ -1204,7 +1204,7 @@ namespace AnyRPG {
             characterEquipmentManager.LoadDefaultEquipment((characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player ? false : true));
 
             if (characterConfigurationRequest.unitControllerMode == UnitControllerMode.Player
-                && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true)) {
+                && (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene())) {
                 systemAchievementManager.AcceptAchievements(this);
             }
 
@@ -1481,7 +1481,7 @@ namespace AnyRPG {
                     //Debug.Log($"{gameObject.name}.AIController.ApplyControlEffects(): masterUnit is null, returning");
                     return;
                 }
-                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                     masterUnit.UnitEventController.OnClearTarget += HandleClearTarget;
                     masterUnit.UnitEventController.OnBeginCastOnEnemy += HandleMasterAttack;
                     masterUnit.UnitEventController.OnDropCombat += HandleMasterDropCombat;
@@ -2176,7 +2176,7 @@ namespace AnyRPG {
                 AbilityProperties validCombatStrategyAbility = CombatStrategy.GetValidAbility(this);
                 if (validCombatStrategyAbility != null) {
                     characterAbilityManager.BeginAbility(validCombatStrategyAbility);
-                    Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using combat strategy ability: {validCombatStrategyAbility.ResourceName}");
+                    //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using combat strategy ability: {validCombatStrategyAbility.ResourceName}");
                     return true;
                 }
             } else {
@@ -2184,7 +2184,7 @@ namespace AnyRPG {
                 AbilityProperties validAttackAbility = characterCombat.GetValidAttackAbility();
                 if (validAttackAbility != null) {
                     characterAbilityManager.BeginAbility(validAttackAbility);
-                    Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using random attack ability: {validAttackAbility.ResourceName}");
+                    //Debug.Log($"{gameObject.name}.UnitController.CanGetValidAttack({beginAttack}): using random attack ability: {validAttackAbility.ResourceName}");
                     return true;
                 }
             }

@@ -24,6 +24,7 @@ namespace AnyRPG {
         // game manager references
         protected ObjectPooler objectPooler = null;
         protected NetworkManagerServer networkManagerServer = null;
+        protected LevelManager levelManager = null;
 
         public virtual bool ControlLocked {
             get {
@@ -86,6 +87,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public virtual CharacterUnit GetCharacterUnit() {
@@ -574,14 +576,14 @@ namespace AnyRPG {
         }
 
         public virtual Dictionary<PrefabProfile, List<GameObject>> SpawnProjectileEffectPrefabs(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {projectileEffectProperties.ResourceName})");
+            //Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs({target}, {(originalTarget == null ? "null" : originalTarget.name)}, {projectileEffectProperties.ResourceName})");
 
             Dictionary<PrefabProfile, List<GameObject>> prefabObjects = ProcessSpawnAbilityEffectPrefabs(target, originalTarget, projectileEffectProperties, abilityEffectContext);
             
             if (prefabObjects != null) {
                 foreach (List<GameObject> gameObjectList in prefabObjects.Values) {
                     foreach (GameObject go in gameObjectList) {
-                        Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs(): found gameobject: " + go.name);
+                        //Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.SpawnProjectileEffectPrefabs(): found gameobject: " + go.name);
                         //go.transform.parent = playerManager.EffectPrefabParent.transform;
                         go.transform.parent = null;
                         ProjectileScript projectileScript = go.GetComponentInChildren<ProjectileScript>();
@@ -640,7 +642,7 @@ namespace AnyRPG {
                 }
 
                 // delayed damage
-                if (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local) {
+                if (networkManagerServer.ServerModeActive == true || systemGameManager.GameMode == GameMode.Local || levelManager.IsCutscene()) {
                     BeginPerformAbilityHitDelay(abilityCaster, target, abilityEffectContext, channeledEffectProperties);
                 }
             } else {
@@ -652,9 +654,9 @@ namespace AnyRPG {
         }
 
         public void HandleProjectileCollision(IAbilityCaster source, Interactable target, GameObject abilityEffectObject, AbilityEffectContext abilityEffectInput, ProjectileScript projectileScript) {
-            Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.HandleProjectileCollision({source.AbilityManager.Name}, {(target == null ? "null" : target.gameObject.name)}, {abilityEffectObject.name}, {projectileScript.ProjectileEffectProperties.ResourceName})");
+            //Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.HandleProjectileCollision({source.AbilityManager.Name}, {(target == null ? "null" : target.gameObject.name)}, {abilityEffectObject.name}, {projectileScript.ProjectileEffectProperties.ResourceName})");
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || levelManager.IsCutscene()) {
                 projectileScript.ProjectileEffectProperties.PerformAbilityHit(source, target, abilityEffectInput);
             }
             projectileScript.OnCollission -= HandleProjectileCollision;

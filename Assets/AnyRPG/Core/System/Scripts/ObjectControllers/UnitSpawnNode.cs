@@ -123,6 +123,7 @@ namespace AnyRPG {
         private CharacterManager characterManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private SystemEventManager systemEventManager = null;
+        private LevelManager levelManager = null;
 
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
@@ -155,8 +156,11 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
 
             base.Configure(systemGameManager);
-
+            bool isCutscene = false;
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                isCutscene = levelManager.IsCutscene();
+            }
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isCutscene == false) {
                 gameObject.SetActive(false);
                 return;
             }
@@ -165,14 +169,14 @@ namespace AnyRPG {
             if (!triggerBased) {
                 SpawnWithDelay();
             }
-            if (systemGameManager.GameMode == GameMode.Local) {
+            if (systemGameManager.GameMode == GameMode.Local || isCutscene) {
                 CreateEventSubscriptions();
             } else if (networkManagerServer.ServerModeActive) {
                 CreateServerEventSubscriptions();
             }
 
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || isCutscene == true) {
                 // server does not respond to player spawn
                 CheckPrerequisites(null);
             }
@@ -187,6 +191,7 @@ namespace AnyRPG {
             characterManager = systemGameManager.CharacterManager;
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
+            levelManager = systemGameManager.LevelManager;
         }
 
         private void CreateEventSubscriptions() {
@@ -400,7 +405,7 @@ namespace AnyRPG {
             }
 
             int _unitLevel = unitLevel;
-            if (systemGameManager.GameMode == GameMode.Local) {
+            if (systemGameManager.GameMode == GameMode.Local && levelManager.IsCutscene() == false) {
                 _unitLevel = (dynamicLevel ? playerManager.UnitController.CharacterStats.Level : unitLevel) + extraLevels;
             }
             CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(unitProfile);
@@ -589,7 +594,7 @@ namespace AnyRPG {
         /// <param name="countdownTime"></param>
         /// <returns></returns>
         private IEnumerator StartSpawnCountdown(int countdownTime) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
 
             float currentTimer = countdownTime;
 

@@ -473,7 +473,7 @@ namespace AnyRPG {
         /// <param name="targetCharacterUnit"></param>
         /// <returns></returns>
         public void PerformAbilityAction(AbilityProperties baseAbility, int clipIndex) {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityAction({baseAbility.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.PerformAbilityAction({baseAbility.ResourceName})");
 
             /*
             if (animator == null) {
@@ -608,7 +608,7 @@ namespace AnyRPG {
         }
 
         public void HandleDie() {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
             // not subscribed to
             //unitController.UnitEventController.NotifyOnAnimatorDeath();

@@ -33,6 +33,7 @@ namespace AnyRPG {
 
         // game manager references
         protected NetworkManagerServer networkManagerServer = null;
+        protected LevelManager levelManager = null;
 
         public Transform NamePlateTransform { get => namePlateTransform; set => namePlateTransform = value; }
         public AggroRange AggroRangeController { get => aggroRangeController; set => aggroRangeController = value; }
@@ -63,6 +64,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             networkManagerServer = systemGameManager.NetworkManagerServer;
+            levelManager = systemGameManager.LevelManager;
         }
 
         public bool MovementSoundIsPlaying(bool ignoreOneShots = true) {

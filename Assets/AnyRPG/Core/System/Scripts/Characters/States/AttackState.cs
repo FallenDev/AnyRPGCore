@@ -8,7 +8,7 @@ namespace AnyRPG {
         private UnitController unitController;
 
         public void Enter(UnitController unitController) {
-            Debug.Log($"{unitController.gameObject.name}.AttackState.Enter()");
+            //Debug.Log($"{unitController.gameObject.name}.AttackState.Enter()");
 
             this.unitController = unitController;
             this.unitController.UnitMotor.StopFollowingTarget();

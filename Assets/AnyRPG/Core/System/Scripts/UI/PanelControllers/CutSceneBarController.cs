@@ -93,7 +93,7 @@ namespace AnyRPG {
         }
 
         public void StartCutScene(Cutscene cutscene) {
-            //Debug.Log("CutSceneBarController.StartCutScene(" + cutscene.DisplayName + ")");
+            Debug.Log($"CutSceneBarController.StartCutScene({cutscene.DisplayName})");
 
             if (cutscene.TimelineName != null
                 && cutscene.TimelineName != string.Empty

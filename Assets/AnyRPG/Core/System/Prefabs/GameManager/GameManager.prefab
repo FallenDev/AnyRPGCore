@@ -6709,8 +6709,6 @@ MonoBehaviour:
   fallDamagePerMeter: 2
   fallDamageMinDistance: 10
   allowAutoAttack: 1
-  useThirdPartyCameraControl: 0
-  thirdPartyCamera: {fileID: 0}
   systemAnimationProfileName: System Default Animation Profile
   syncMovementAnimationSpeed: 0
   defaultAnimationProfileName: Human
@@ -6733,6 +6731,7 @@ MonoBehaviour:
   useKillXPLevelMultiplierDemoninator: 1
   killXPMultiplierLevelCap: 20
   defaultDespawnTimer: 20
+  enableLeashing: 1
   weaponDPSBudgetPerLevel: 2.5
   statBudgetPerLevel: 0
   powerResources: []
@@ -9267,7 +9266,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 37881856
+    m_Bits: 37882112
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 8400000, guid: bde9af15ee44834488fba86e52c7416e, type: 2}
   m_TargetDisplay: 0

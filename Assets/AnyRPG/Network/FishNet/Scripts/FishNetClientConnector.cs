@@ -1341,7 +1341,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseLoadCutsceneClient(NetworkConnection networkConnection, string cutSceneName) {
-            Debug.Log($"FishNetClientConnector.AdvertiseLoadCutsceneClient({cutSceneName})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseLoadCutsceneClient({cutSceneName})");
 
             Cutscene cutScene = systemDataFactory.GetResource<Cutscene>(cutSceneName);
             if (cutScene == null) {

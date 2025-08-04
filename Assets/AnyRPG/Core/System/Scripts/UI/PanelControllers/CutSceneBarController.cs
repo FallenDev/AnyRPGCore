@@ -98,6 +98,7 @@ namespace AnyRPG {
             if (cutscene.TimelineName != null
                 && cutscene.TimelineName != string.Empty
                 && systemPlayableDirectorManager.PlayableDirectorDictionary.ContainsKey(cutscene.TimelineName)) {
+                Debug.Log($"CutSceneBarController.StartCutScene(): playing cutscene timeline: {cutscene.TimelineName}");
                 systemPlayableDirectorManager.PlayableDirectorDictionary[cutscene.TimelineName].Play();
             }
 
@@ -127,7 +128,7 @@ namespace AnyRPG {
         }
 
         public void EndCutScene() {
-            //Debug.Log("CutSceneBarController.EndCutScene()");
+            Debug.Log("CutSceneBarController.EndCutScene()");
 
             if (currentCutscene != null
                 && currentCutscene.TimelineName != null

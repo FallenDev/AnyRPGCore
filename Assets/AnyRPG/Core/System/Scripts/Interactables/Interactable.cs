@@ -629,7 +629,29 @@ namespace AnyRPG {
 
             Dictionary<int, InteractableOptionComponent> currentInteractables = new Dictionary<int, InteractableOptionComponent>();
             foreach (KeyValuePair<int, InteractableOptionComponent> interactableOption in interactables) {
-                if (interactableOption.Value.CanInteract(sourceUnitController, false, false)) {
+                if (interactableOption.Value.CanInteract(sourceUnitController, false, false, true)) {
+                    //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables(): Adding interactable: {interactableOption.ToString()}");
+                    currentInteractables.Add(interactableOption.Key, interactableOption.Value);
+                } else {
+                    //Debug.Log($"{gameObject.name}.Interactable.GetValidInteractables(): invalid interactable: {interactableOption.ToString()}");
+                }
+            }
+            return currentInteractables;
+        }
+
+        public Dictionary<int, InteractableOptionComponent> GetSwitchInteractables(UnitController sourceUnitController) {
+            //Debug.Log($"{gameObject.name}.Interactable.GetSwitchInteractables({sourceUnitController?.gameObject.name})");
+
+            /*
+            // switches will often not be interactable, so we can skip this check
+            if (notInteractable == true) {
+                return new Dictionary<int, InteractableOptionComponent>();
+            }
+            */
+
+            Dictionary<int, InteractableOptionComponent> currentInteractables = new Dictionary<int, InteractableOptionComponent>();
+            foreach (KeyValuePair<int, InteractableOptionComponent> interactableOption in interactables) {
+                if (interactableOption.Value.CanInteract(sourceUnitController, false, false, true, true)) {
                     //Debug.Log($"{gameObject.name}.Interactable.GetCurrentInteractables(): Adding interactable: {interactableOption.ToString()}");
                     currentInteractables.Add(interactableOption.Key, interactableOption.Value);
                 } else {
@@ -699,6 +721,12 @@ namespace AnyRPG {
                 // ANOTHER WAY WOULD BE DETECT NAMEPLATE UNDER MOUSE IN PLAYERCONTROLLER AND REMOVE THE AUTOMATIC MOUSEOVER RECEIVERS FROM ALL INTERACTABLES AND NAMEPLATES
                 //Debug.Log($"{gameObject.name}.Interactable.OnMouseEnter(): should not activate mouseover when windows are in front of things");
                 return;
+            }
+
+            foreach (InteractableOptionComponent interactableOption in interactables.Values) {
+                if (interactableOption.BlockTooltip == true) {
+                    return;
+                }
             }
 
             // moved to before the return statement.  This is because we still want a tooltip even if there are no current interactions to perform
@@ -1024,6 +1052,8 @@ namespace AnyRPG {
         #region events
 
         public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{gameObject.name}.Interactable.NotifyOnInteractionWithOptionStarted({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
+            
             OnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
         }
 

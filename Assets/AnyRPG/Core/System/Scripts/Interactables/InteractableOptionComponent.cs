@@ -26,6 +26,7 @@ namespace AnyRPG {
         public Interactable Interactable { get => interactable; set => interactable = value; }
         public virtual InteractableOptionProps InteractableOptionProps { get => interactableOptionProps; }
         public virtual int PriorityValue { get => 0; }
+        public virtual bool BlockTooltip { get => false; }
         public virtual string DisplayName {
             get {
                 if (interactionPanelTitle != string.Empty) {
@@ -137,17 +138,18 @@ namespace AnyRPG {
             return true;
         }
 
-        public virtual bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public virtual bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             //Debug.Log(interactable.gameObject.name + this.ToString() + ".InteractableOptionComponent.CanInteract(" + processRangeCheck + ", " + passedRangeCheck + ", " + factionValue + ")");
             if (processRangeCheck == true && passedRangeCheck == false) {
-                //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact(): range check failed");
+                //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact(): range check failed");
                 return false;
             }
             if (ProcessCombatOnly() == false) {
-                //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact(): combatOnly check failed");
+                //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact(): combatOnly check failed");
                 return false;
             }
             if (processNonCombatCheck == true && NonCombatOptionsAvailable() == false) {
+                //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact(): non-combat options not available");
                 return false;
             }
 
@@ -159,7 +161,8 @@ namespace AnyRPG {
         }
 
         public virtual bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            //Debug.Log(interactable.gameObject.name + ".InteractableOptionComponent.Interact()");
+            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex}) : {this.GetType()}");
+
             //source.CancelMountEffects();
             if (sourceUnitController != null) {
                 // this could have come from a trigger, so we can't make the assumption there is a source UnitController
@@ -194,6 +197,7 @@ namespace AnyRPG {
         /// <param name="sourceUnitController"></param>
         /// <param name="componentIndex"></param>
         public virtual void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.ClientInteraction({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
             // handle client-only stuff in child classes
         }
 
@@ -323,6 +327,20 @@ namespace AnyRPG {
 
         public void CallMiniMapStatusUpdateHandler() {
             interactable?.HandleMiniMapStatusUpdate(this);
+        }
+
+        public int GetSwitchOptionIndex(UnitController sourceUnitController) {
+            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex(): {this.GetType()}");
+
+            Dictionary<int, InteractableOptionComponent> allOptions = interactable.GetSwitchInteractables(sourceUnitController);
+            foreach (int optionIndex in allOptions.Keys) {
+                Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : checking option {optionIndex} : {allOptions[optionIndex].GetType()}");
+                if (allOptions[optionIndex] == this) {
+                    return optionIndex;
+                }
+            }
+            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : no match found return -1");
+            return -1;
         }
 
         public virtual void SetupScriptableObjects() {

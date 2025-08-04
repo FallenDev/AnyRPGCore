@@ -89,7 +89,7 @@ namespace AnyRPG {
             return (optionCount == 0 ? 0 : 1);
         }
 
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.CanInteract()");
             bool returnValue = ((GetCurrentOptionCount(sourceUnitController) > 0 && base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck)) ? true : false);
             //Debug.Log($"{gameObject.name}.SkillTrainer.CanInteract(): return: " + returnValue);
@@ -98,7 +98,7 @@ namespace AnyRPG {
 
         public override bool CanShowMiniMapIcon(UnitController sourceUnitController) {
             float relationValue = interactable.PerformFactionCheck(sourceUnitController);
-            return CanInteract(sourceUnitController, false, false);
+            return CanInteract(sourceUnitController, false, false, true);
         }
 
         //public override bool PlayInteractionSound() {

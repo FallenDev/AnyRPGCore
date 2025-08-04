@@ -16503,13 +16503,14 @@ GameObject:
   - component: {fileID: 393183660}
   - component: {fileID: 393183659}
   - component: {fileID: 393183658}
+  - component: {fileID: 393183662}
   m_Layer: 0
   m_Name: DungeonDoorTimelineController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &393183657
 Transform:
   m_ObjectHideFlags: 0
@@ -16604,6 +16605,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e805c7a9b9724841a300728976c3075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &393183662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393183656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae915218a2d3064d9cf329ac2f9eb85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 926343727}
+  _networkObjectCache: {fileID: 0}
 --- !u!1001 &398220989
 PrefabInstance:
   m_ObjectHideFlags: 0

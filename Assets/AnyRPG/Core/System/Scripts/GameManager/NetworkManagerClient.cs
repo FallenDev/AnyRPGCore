@@ -429,7 +429,7 @@ namespace AnyRPG {
         */
 
         public void InteractWithOption(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
-            Debug.Log($"NetworkManagerClient.InteractWithOption({targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"NetworkManagerClient.InteractWithOption({targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             networkController.InteractWithOption(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
         }

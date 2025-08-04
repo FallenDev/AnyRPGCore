@@ -1644,8 +1644,6 @@ namespace AnyRPG {
             UnitMotor.ResetPath();
         }
 
-
-
         public void DisableAggro() {
             //Debug.Log($"{gameObject.name}AIController.DisableAggro()");
             if (unitComponentController.AggroRangeController != null) {

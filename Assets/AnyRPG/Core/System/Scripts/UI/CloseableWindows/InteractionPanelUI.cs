@@ -231,7 +231,7 @@ namespace AnyRPG {
 
             foreach (InteractionPanelScript interactionPanelScript in interactionPanelScripts) {
                 //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script");
-                if (interactionPanelScript.InteractableOption.CanInteract(playerManager.UnitController) && interactionPanelScript.InteractableOption.GetCurrentOptionCount(playerManager.UnitController) == 1) {
+                if (interactionPanelScript.InteractableOption.CanInteract(playerManager.UnitController, false, false, true) && interactionPanelScript.InteractableOption.GetCurrentOptionCount(playerManager.UnitController) == 1) {
                     //Debug.Log("InteractionPanelUI.ShowInteractablesCommon(" + interactable.name + "): Checking interaction Panel Script: canInteract is TRUE!!!");
                     interactionManager.InteractWithOptionClient(playerManager.UnitController, interactable, interactionPanelScript.InteractableOption, interactionPanelScript.ComponentIndex, interactionPanelScript.ChoiceIndex);
                     //interactionPanelScript.Value.InteractableOption.Interact(playerManager.UnitController.CharacterUnit, interactionPanelScript.Key);

@@ -15,12 +15,12 @@ namespace AnyRPG {
             interactionPanelTitle = "Interactable";
         }
 
-        public override bool CanInteract(UnitController source, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
 
-            if (Props.SwitchOnly == true) {
+            if (Props.SwitchOnly == true && viaSwitch == false) {
                 return false;
             }
-            return base.CanInteract(source, processRangeCheck, passedRangeCheck, processNonCombatCheck);
+            return base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck);
         }
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {

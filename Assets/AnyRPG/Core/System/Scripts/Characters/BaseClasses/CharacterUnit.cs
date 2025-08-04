@@ -66,7 +66,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="targetCharacter"></param>
         /// <returns></returns>
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             float factionValue = Faction.RelationWith(sourceUnitController, unitController);
             if (ProcessFactionValue(factionValue) == true && unitController.CharacterStats.IsAlive == true) {
                 //Debug.Log(source.name + " can interact with us!");
@@ -79,7 +79,7 @@ namespace AnyRPG {
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".CharacterUnit.Interact(" + source.DisplayName + ")");
 
-            if (CanInteract(sourceUnitController, false, false)) {
+            if (CanInteract(sourceUnitController, false, false, true)) {
                 base.Interact(sourceUnitController, componentIndex, choiceIndex);
 
                 // attempt to put the caster in combat so it can unsheath bows, wands, etc

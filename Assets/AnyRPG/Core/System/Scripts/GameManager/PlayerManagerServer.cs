@@ -146,7 +146,7 @@ namespace AnyRPG {
         }
 
         public void RemoveActivePlayer(int accountId) {
-            Debug.Log($"PlayerManagerServer.RemoveActivePlayer({accountId})");
+            //Debug.Log($"PlayerManagerServer.RemoveActivePlayer({accountId})");
 
             if (ActivePlayers.ContainsKey(accountId) == false) {
                 return;

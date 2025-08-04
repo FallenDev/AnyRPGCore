@@ -51,7 +51,7 @@ namespace AnyRPG {
             HandlePrerequisiteUpdates(playerManager.UnitController);
         }
 
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             //Debug.Log($"{gameObject.name}.QuestGiver.CanInteract()");
             if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count == 0) {
                 return false;
@@ -179,7 +179,7 @@ namespace AnyRPG {
             }
 
             float relationValue = interactable.PerformFactionCheck(playerManager.UnitController);
-            if (CanInteract(playerManager.UnitController, false, false) == false) {
+            if (CanInteract(playerManager.UnitController, false, false, true) == false) {
                 //Debug.Log($"{gameObject.name}.QuestGiver.GetIndicatorType(): Cannot interact.  Return empty string");
                 return string.Empty;
             }

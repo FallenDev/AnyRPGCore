@@ -25,6 +25,8 @@ namespace AnyRPG {
         // game manager references
         protected LootManager lootManager = null;
 
+        public override bool BlockTooltip => Props.SpawnObject.activeSelf == false;
+
         public override bool PrerequisitesMet(UnitController sourceUnitController) {
             bool returnResult = base.PrerequisitesMet(sourceUnitController);
             if (returnResult == false) {
@@ -233,7 +235,7 @@ namespace AnyRPG {
             uIManager.lootWindow.CloseWindow();
         }
 
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             //Debug.Log(interactable.gameObject.name + ".LootableNode.CanInteract()");
             bool returnValue = base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck);
             if (returnValue == false) {

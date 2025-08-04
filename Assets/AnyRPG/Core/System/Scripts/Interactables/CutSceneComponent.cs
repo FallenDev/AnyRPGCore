@@ -40,7 +40,7 @@ namespace AnyRPG {
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"CutSceneComponent.ClientInteraction({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"CutSceneComponent.ClientInteraction({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             // save character position and stuff here

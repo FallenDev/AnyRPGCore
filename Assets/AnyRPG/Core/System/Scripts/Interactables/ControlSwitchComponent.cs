@@ -21,7 +21,8 @@ namespace AnyRPG {
         }
 
         public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            //Debug.Log(interactable.gameObject.name + ".ControlSwitchComponent.Interact()");
+            Debug.Log($"{interactable.gameObject.name}.ControlSwitchComponent.Interact({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
+
             if (Props.ActivationLimit > 0 && activationCount >= Props.ActivationLimit) {
                 // this has already been activated the number of allowed times
                 return false;
@@ -46,7 +47,10 @@ namespace AnyRPG {
 
             if (Props.ControlObjects != null) {
                 foreach (InteractableOptionComponent interactableOption in Props.ControlObjects) {
-                    interactableOption.Interact(sourceUnitController, componentIndex, choiceIndex);
+                    int controlComponentIndex = interactableOption.GetSwitchOptionIndex(sourceUnitController);
+                    if (controlComponentIndex >= 0) {
+                        interactableOption.Interact(sourceUnitController, controlComponentIndex, 0);
+                    }
                 }
             }
             

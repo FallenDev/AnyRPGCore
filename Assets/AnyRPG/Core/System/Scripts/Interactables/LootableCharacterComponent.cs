@@ -235,7 +235,7 @@ namespace AnyRPG {
             }
         }
 
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
 
             float factionValue = Faction.RelationWith(sourceUnitController, unitController);
             // you can't loot friendly characters

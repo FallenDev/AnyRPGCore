@@ -5,6 +5,7 @@ using FishNet.Object.Synchronizing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -48,7 +49,11 @@ namespace AnyRPG {
             }
 
             // network objects will not be active on clients when the autoconfigure runs, so they must configure themselves
-            interactable.AutoConfigure(systemGameManager);
+            List<AutoConfiguredMonoBehaviour> autoConfiguredMonoBehaviours = GetComponents<AutoConfiguredMonoBehaviour>().ToList();
+            foreach (AutoConfiguredMonoBehaviour autoConfiguredMonoBehaviour in autoConfiguredMonoBehaviours) {
+               autoConfiguredMonoBehaviour.AutoConfigure(systemGameManager);
+            }
+            //interactable.AutoConfigure(systemGameManager);
 
             SubscribeToClientInteractableEvents();
         }
@@ -95,10 +100,10 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerInteractableEvents() {
-            //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
+            Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
 
             if (eventRegistrationComplete == true) {
-                //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): already registered");
+                Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): already registered");
                 return;
             }
 
@@ -291,6 +296,7 @@ namespace AnyRPG {
         */
 
         public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStarted({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
 
             NetworkCharacterUnit targetNetworkCharacterUnit = null;
             if (sourceUnitController != null) {
@@ -299,19 +305,23 @@ namespace AnyRPG {
             HandleInteractionWithOptionStartedClient(targetNetworkCharacterUnit, componentIndex, choiceIndex);
         }
 
+        /// <summary>
+        /// this triggers an event that results in ClientInteract() on players on their own clients
+        /// </summary>
+        /// <param name="sourceNetworkCharacterUnit"></param>
+        /// <param name="componentIndex"></param>
+        /// <param name="choiceIndex"></param>
         [ObserversRpc]
         public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
-            // what was the point of this ?  all interactions are server side so this just causes clients to launch what is supposed
-            // to be a server only interaction, which crashes because its being run on the client
-            // update - its supposed to trigger an event that result in ClientInteract() on players on their own clients
-            
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStartedClient({(sourceNetworkCharacterUnit == null ? "null" : sourceNetworkCharacterUnit.gameObject.name)}, {componentIndex}, {choiceIndex})");
+
             UnitController sourceUnitController = null;
             if (sourceNetworkCharacterUnit == null) {
                 return;
             }
             sourceUnitController = sourceNetworkCharacterUnit.UnitController;
 
-            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetCurrentInteractables(sourceUnitController);
+            Dictionary<int, InteractableOptionComponent> currentInteractables = interactable.GetSwitchInteractables(sourceUnitController);
             if (currentInteractables.ContainsKey(componentIndex)) {
                 //currentInteractables[componentIndex].ClientInteract(sourceUnitController, componentIndex, choiceIndex);
                 sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(currentInteractables[componentIndex], componentIndex, choiceIndex);

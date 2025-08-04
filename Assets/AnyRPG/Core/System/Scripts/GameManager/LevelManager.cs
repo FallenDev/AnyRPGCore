@@ -354,9 +354,14 @@ namespace AnyRPG {
         }
 
         public void EndCutscene(Cutscene cutscene) {
-            //Debug.Log("LevelManager.EndCutscene()");
+            Debug.Log("LevelManager.EndCutscene()");
+
             if (cutscene != null && cutscene.UnloadSceneOnEnd == true) {
                 //Debug.Log("Levelmanager.ActivateSceneCamera(): activating cutscene bars");
+                // we must do this here because the cutscene camera will be unloaded with the scene
+                // so the main camera must be active or Unity will display that "no cameras rendering" message
+                cameraManager.DisableCutsceneCamera();
+                cameraManager.ActivateMainCamera();
                 LoadLevel(returnScene);
             } else {
 

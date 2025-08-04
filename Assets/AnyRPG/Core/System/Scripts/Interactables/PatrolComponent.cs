@@ -87,7 +87,7 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck = false, bool passedRangeCheck = false, bool processNonCombatCheck = true) {
+        public override bool CanInteract(UnitController sourceUnitController, bool processRangeCheck, bool passedRangeCheck, bool processNonCombatCheck, bool viaSwitch = false) {
             //Debug.Log($"{gameObject.name}.BehaviorInteractable.CanInteract()");
             if (!base.CanInteract(sourceUnitController, processRangeCheck, passedRangeCheck, processNonCombatCheck)) {
                 return false;

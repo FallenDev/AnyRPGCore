@@ -681,7 +681,7 @@ namespace AnyRPG {
         }
 
         public void UnsubscribeFromPlayerEvents() {
-            Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
+            //Debug.Log("PlayerManager.UnsubscribeFromPlayerEvents()");
 
             unitController.UnitEventController.OnImmuneToEffect -= HandleImmuneToEffect;
             unitController.UnitEventController.OnBeforeDie -= HandleBeforeDie;
@@ -807,6 +807,8 @@ namespace AnyRPG {
         }
 
         public void HandleStartInteractWithOption(UnitController sourceUnitController, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            //Debug.Log($"PlayerManager.HandleStartInteractWithOption({sourceUnitController.gameObject.name}, {interactableOptionComponent.Interactable.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             interactableOptionComponent.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
         }
 

@@ -345,6 +345,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnStartInteractWithOption(InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStartInteractWithOption({interactableOptionComponent.Interactable.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             OnStartInteractWithOption(unitController, interactableOptionComponent, componentIndex, choiceIndex);
         }
 

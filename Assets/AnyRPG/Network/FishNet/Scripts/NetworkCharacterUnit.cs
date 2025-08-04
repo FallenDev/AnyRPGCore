@@ -1762,7 +1762,7 @@ namespace AnyRPG {
 
 
         private void HandleSetTargetClient(Interactable target) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetClient(" + (target == null ? "null" : target.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetClient({(target == null ? "null" : target.gameObject.name)})");
 
             NetworkInteractable networkInteractable = null;
             if (target != null) {

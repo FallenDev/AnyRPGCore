@@ -74,7 +74,7 @@ namespace AnyRPG {
 
         public Camera ActiveMainCamera {
             get {
-                if (MainCameraGameObject != null && MainCameraGameObject.activeSelf == true && MainCamera != null) {
+                if (mainCameraGameObject != null && mainCameraGameObject.activeSelf == true && MainCamera != null) {
                     return MainCamera;
                 }
                 /*
@@ -142,8 +142,13 @@ namespace AnyRPG {
         }
 
         public void CheckForCutsceneCamera() {
+            Debug.Log("CameraManager.CheckForCutsceneCamera()");
+
             //currentCutsceneCameraController = null;
-            currentCutsceneCameraController = GameObject.FindAnyObjectByType<CutsceneCameraController>();
+            currentCutsceneCameraController = GameObject.FindAnyObjectByType<CutsceneCameraController>(FindObjectsInactive.Include);
+            if (currentCutsceneCameraController != null && currentCutsceneCameraController.gameObject.activeSelf == false) {
+                currentCutsceneCameraController.Configure(systemGameManager);
+            }
             DisableCutsceneCamera();
         }
 
@@ -156,7 +161,7 @@ namespace AnyRPG {
         */
 
         public void ActivateMainCamera(bool prePositionCamera = false) {
-            Debug.Log($"CameraManager.ActivateMainCamera({prePositionCamera})");
+            Debug.Log($"CameraManager.ActivateMainCamera({prePositionCamera})  frame: {Time.frameCount}");
 
             if (systemConfigurationManager == null) {
                 // can't get camera settings, so just return
@@ -164,7 +169,7 @@ namespace AnyRPG {
             }
             if (levelManager.IsMainMenu()
                 || levelManager.IsInitializationScene()) {
-                MainCameraGameObject.SetActive(true);
+                mainCameraGameObject.SetActive(true);
                 return;
             }
             /*
@@ -181,24 +186,24 @@ namespace AnyRPG {
             */
 
             // fallback in case no camera found
-            MainCameraGameObject.SetActive(true);
+            mainCameraGameObject.SetActive(true);
         }
 
         public void SwitchToMainCamera() {
-            Debug.Log("CameraManager.SwitchToMainCamera()");
+            Debug.Log($"CameraManager.SwitchToMainCamera() frame: {Time.frameCount}");
 
             /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
                 DisableThirdPartyCamera();
             }
             */
-            MainCameraGameObject.SetActive(true);
+            mainCameraGameObject.SetActive(true);
         }
 
         public void DeactivateMainCamera() {
-            Debug.Log("CameraManager.DeactivateMainCamera()");
+            Debug.Log($"CameraManager.DeactivateMainCamera() frame: {Time.frameCount}");
 
-            MainCameraGameObject.SetActive(false);
+            mainCameraGameObject.SetActive(false);
             /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
                 DisableThirdPartyCamera();
@@ -207,16 +212,18 @@ namespace AnyRPG {
         }
 
         public void EnableCutsceneCamera() {
-            Debug.Log("CameraManager.EnableCutsceneCamera()");
+            Debug.Log($"CameraManager.EnableCutsceneCamera() frame: {Time.frameCount}");
 
             if (currentCutsceneCameraController != null) {
-                //Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
+                Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
                 currentCutsceneCameraController.gameObject.SetActive(true);
+            } else {
+                Debug.LogWarning("CameraManager.EnableCutsceneCamera(): currentCutsceneCameraController is null");
             }
         }
 
         public void DisableCutsceneCamera() {
-            Debug.Log("CameraManager.DisableCutsceneCamera()");
+            Debug.Log($"CameraManager.DisableCutsceneCamera() frame: {Time.frameCount}");
 
             if (currentCutsceneCameraController != null) {
                 //Debug.Log("CameraManager.DisableCutsceneCamera(): disabling");

@@ -53,7 +53,7 @@ namespace AnyRPG {
         }
 
         public bool Interact(UnitController sourceUnitController, Interactable target) {
-            Debug.Log($"InteractionManager.Interact({sourceUnitController.gameObject.name}, {target.gameObject.name})");
+            //Debug.Log($"InteractionManager.Interact({sourceUnitController.gameObject.name}, {target.gameObject.name})");
 
             // get reference to name now since interactable could change scene and then target reference is lost
             string targetDisplayName = target.DisplayName;
@@ -68,7 +68,7 @@ namespace AnyRPG {
         }
 
         public bool InteractWithInteractable(UnitController sourceUnitController, Interactable targetInteractable) {
-            Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
+            //Debug.Log($"InteractionManager.InteractWithInteractable({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name})");
 
             // perform range check
             bool passedRangeCheck = false;
@@ -103,7 +103,7 @@ namespace AnyRPG {
             Dictionary<int, InteractableOptionComponent> inRangeInteractables = new Dictionary<int, InteractableOptionComponent>();
             foreach (KeyValuePair<int, InteractableOptionComponent> validInteractable in validInteractables) {
                 //Debug.Log($"{gameObject.name}.Interactable.Interact(" + source.name + "): valid interactable name: " + validInteractable);
-                if (validInteractable.Value.CanInteract(sourceUnitController, true, passedRangeCheck)) {
+                if (validInteractable.Value.CanInteract(sourceUnitController, true, passedRangeCheck, true)) {
                     inRangeInteractables.Add(validInteractable.Key, validInteractable.Value);
                 }
             }

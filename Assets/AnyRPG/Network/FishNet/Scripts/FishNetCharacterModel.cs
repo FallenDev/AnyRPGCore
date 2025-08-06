@@ -9,7 +9,7 @@ using UnityEngine;
 
 
 namespace AnyRPG {
-    public class NetworkCharacterModel : SpawnedNetworkObject {
+    public class FishNetCharacterModel : SpawnedNetworkObject {
 
         private SystemGameManager systemGameManager = null;
         private NetworkAnimator networkAnimator = null;

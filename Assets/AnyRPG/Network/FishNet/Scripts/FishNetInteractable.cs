@@ -11,7 +11,7 @@ using static UnityEngine.GraphicsBuffer;
 
 
 namespace AnyRPG {
-    public class NetworkInteractable : SpawnedNetworkObject {
+    public class FishNetInteractable : SpawnedNetworkObject {
 
         private Interactable interactable = null;
 
@@ -100,7 +100,7 @@ namespace AnyRPG {
         }
 
         public void SubscribeToServerInteractableEvents() {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents()");
 
             if (eventRegistrationComplete == true) {
                 Debug.Log($"{gameObject.name}.NetworkInteractable.SubscribeToServerInteractableEvents(): already registered");
@@ -298,9 +298,9 @@ namespace AnyRPG {
         public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStarted({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
 
-            NetworkCharacterUnit targetNetworkCharacterUnit = null;
+            FishNetUnitController targetNetworkCharacterUnit = null;
             if (sourceUnitController != null) {
-                targetNetworkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+                targetNetworkCharacterUnit = sourceUnitController.GetComponent<FishNetUnitController>();
             }
             HandleInteractionWithOptionStartedClient(targetNetworkCharacterUnit, componentIndex, choiceIndex);
         }
@@ -312,7 +312,7 @@ namespace AnyRPG {
         /// <param name="componentIndex"></param>
         /// <param name="choiceIndex"></param>
         [ObserversRpc]
-        public void HandleInteractionWithOptionStartedClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
+        public void HandleInteractionWithOptionStartedClient(FishNetUnitController sourceNetworkCharacterUnit, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStartedClient({(sourceNetworkCharacterUnit == null ? "null" : sourceNetworkCharacterUnit.gameObject.name)}, {componentIndex}, {choiceIndex})");
 
             UnitController sourceUnitController = null;

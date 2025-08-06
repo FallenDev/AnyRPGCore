@@ -650,10 +650,12 @@ namespace AnyRPG {
         }
         */
 
+        /*
         public void SetMountedState(UnitController mountUnitController, UnitProfile mountUnitProfile) {
             characterPetManager.DespawnAllPets();
             unitMountManager.SetMountedState(mountUnitController, mountUnitProfile);
         }
+        */
 
         public void SetRider(UnitController riderUnitController) {
             this.riderUnitController = riderUnitController;
@@ -763,8 +765,18 @@ namespace AnyRPG {
                 myCollider.isTrigger = false;
             }
             rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
-            rigidBody.isKinematic = false;
-            rigidBody.useGravity = true;
+            if (systemGameManager.GameMode == GameMode.Local || (networkManagerServer.ServerModeActive == false && isOwner == true)) {
+                // movement is client authoritative, so physics should be applied in local games, or on the authoritative network client
+                rigidBody.isKinematic = false;
+            } else {
+                rigidBody.isKinematic = true;
+            }
+            if (networkManagerServer.ServerModeActive == true || (systemGameManager.GameMode == GameMode.Network && isOwner == false)) {
+                // movement is client authoritative, so gravity should not be applied on the server
+                rigidBody.useGravity = false;
+            } else {
+                rigidBody.useGravity = true;
+            }
             rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             useAgent = false;
             DisableAgent();
@@ -784,13 +796,22 @@ namespace AnyRPG {
             if (networkManagerServer.ServerModeActive == true || (systemGameManager.GameMode == GameMode.Network && isOwner == false)) {
                 // movement is client authoritative, so gravity should not be applied on the server
                 rigidBody.useGravity = false;
+                FreezeAll();
             } else {
+                // local games or authoritative clients
                 rigidBody.useGravity = true;
+                FreezePositionXZ();
             }
-            rigidBody.isKinematic = false;
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true || (systemGameManager.GameMode == GameMode.Network && isOwner == true)) {
+                // movement is client authoritative, so physics should be applied on the authoritative client
+                rigidBody.isKinematic = false;
+            } else {
+                rigidBody.isKinematic = true;
+            }
             rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
             rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+
 
             myCollider.isTrigger = false;
 
@@ -908,7 +929,7 @@ namespace AnyRPG {
         }
 
         public void Despawn(float delayTime = 0f, bool addSystemDefaultTime = true, bool forceDespawn = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+            Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
 
             if (forceDespawn == true) {
                 DespawnImmediate();
@@ -2221,8 +2242,8 @@ namespace AnyRPG {
             }
         }
 
-        public void DeActivateMountedState() {
-            unitMountManager.DeActivateMountedState();
+        public void DeactivateMountedState() {
+            unitMountManager.DeactivateMountedState();
         }
 
         public override void UpdateMiniMapIndicator() {

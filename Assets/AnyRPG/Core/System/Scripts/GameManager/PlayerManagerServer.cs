@@ -675,11 +675,13 @@ namespace AnyRPG {
         public void PostInit(UnitController unitController) {
             //Debug.Log($"PlayerManagerServer.PostInit({unitController.gameObject.name}, account: {unitController.CharacterRequestData.accountId})");
 
+            /*
             // load player data from the active player characters dictionary
             if (!playerCharacterMonitors.ContainsKey(unitController.CharacterRequestData.accountId)) {
                 //Debug.LogError($"PlayerManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
                 return;
             }
+            */
         }
 
         public void RequestSpawnPet(int accountId, UnitProfile unitProfile) {

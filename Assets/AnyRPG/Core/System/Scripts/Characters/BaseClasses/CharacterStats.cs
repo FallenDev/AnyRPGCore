@@ -838,7 +838,7 @@ namespace AnyRPG {
         }
 
         public StatusEffectNode ApplyStatusEffect(StatusEffectProperties statusEffect, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.ApplyStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ApplyStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
 
             // add to effect list since it was not in there
             if (statusEffect == null) {
@@ -914,17 +914,17 @@ namespace AnyRPG {
             return _statusEffectNode;
         }
 
-        public StatusEffectNode AddNewStatusEffect(StatusEffectProperties statusEffect, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddNewStatusEffect({statusEffect.ResourceName}, {sourceCharacter.AbilityManager.Name})");
+        public StatusEffectNode AddNewStatusEffect(StatusEffectProperties statusEffectProperties, IAbilityCaster sourceCharacter, AbilityEffectContext abilityEffectContext) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterStats.AddNewStatusEffect({statusEffectProperties.ResourceName}, {sourceCharacter.AbilityManager.Name})");
 
             StatusEffectNode newStatusEffectNode = new StatusEffectNode(systemGameManager);
-            statusEffects.Add(statusEffect.ResourceName, newStatusEffectNode);
+            statusEffects.Add(statusEffectProperties.ResourceName, newStatusEffectNode);
 
             // set base ability to null so that all damage taken by a status effect tick is considered ability damage for combat text purposes
             abilityEffectContext.baseAbility = null;
 
-            newStatusEffectNode.Setup(unitController, statusEffect, abilityEffectContext);
-            Coroutine newCoroutine = unitController.StartCoroutine(Tick(sourceCharacter, abilityEffectContext, statusEffect, newStatusEffectNode));
+            newStatusEffectNode.Setup(unitController, statusEffectProperties, abilityEffectContext);
+            Coroutine newCoroutine = unitController.StartCoroutine(Tick(sourceCharacter, abilityEffectContext, statusEffectProperties, newStatusEffectNode));
             newStatusEffectNode.MonitorCoroutine = newCoroutine;
             //newStatusEffectNode.Setup(this, _statusEffect, newCoroutine);
 
@@ -940,7 +940,7 @@ namespace AnyRPG {
             }
 
             if (newStatusEffectNode != null) {
-                unitController.UnitModelController.ProcessAddStatusEffect(newStatusEffectNode, statusEffect, abilityEffectContext);
+                unitController.UnitModelController.ProcessAddStatusEffect(newStatusEffectNode, statusEffectProperties, abilityEffectContext);
             }
 
             return newStatusEffectNode;

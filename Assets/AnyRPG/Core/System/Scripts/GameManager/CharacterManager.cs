@@ -81,7 +81,7 @@ namespace AnyRPG {
 
         // on the network
         public UnitController SpawnUnitPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
-            //Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {scene.name})");
+            Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {scene.name})");
 
             return networkManagerServer.SpawnCharacterPrefab(characterRequestData, parentTransform, position, forward, scene);
         }
@@ -290,14 +290,14 @@ namespace AnyRPG {
         }
         */
 
-        private GameObject SpawnModelPrefab(/*int clientSpawnRequestId, int serverSpawnRequestId,*/ GameMode spawnMode, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"CharacterManager.SpawnModelPrefab({spawnRequestId}, {spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name})");
+        private GameObject SpawnModelPrefab(GameMode spawnMode, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
+            Debug.Log($"CharacterManager.SpawnModelPrefab({spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
 
             if (spawnMode == GameMode.Network) {
                 if (networkManagerServer.ServerModeActive == true) {
-                    return networkManagerServer.SpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ spawnPrefab, parentTransform, position, forward);
+                    return networkManagerServer.SpawnModelPrefab(spawnPrefab, parentTransform, position, forward);
                 } else {
-                    return networkManagerClient.RequestSpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ spawnPrefab, parentTransform, position, forward);
+                    return networkManagerClient.RequestSpawnModelPrefab(spawnPrefab, parentTransform, position, forward);
                 }
             }
             return LocalSpawnPrefab(spawnPrefab, parentTransform, position, forward);
@@ -311,35 +311,23 @@ namespace AnyRPG {
         /// <param name="settingsTransform"></param>
         /// <returns></returns>
         public GameObject SpawnModelPrefab(UnitController unitController, UnitProfile unitProfile, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name})");
-
-            /*
-            if (modelSpawnRequests.ContainsKey(unitController) == false) {
-                //Debug.Log($"CharacterManager.SpawnModelPrefab() return null not in spawn requests");
-                return null;
-            }
-            */
+            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}, {parentTransform.gameObject.name}, {position}, {forward})");
 
             if (networkUnownedUnits.Contains(unitController)) {
                 //Debug.Log($"CharacterManager.SpawnModelPrefab() network unowned unit");
                 return null;
             }
 
-            //int clientSpawnRequestId = modelSpawnRequests[unitController].clientSpawnRequestId;
-            //int serverSpawnRequestId = modelSpawnRequests[unitController].serverSpawnRequestId;
-            //Debug.Log($"CharacterManager.SpawnModelPrefab({unitController.gameObject.name}, {unitProfile.ResourceName}) removing unitController from modelSpawnRequests");
-            //modelSpawnRequests.Remove(unitController);
-
             if (localUnits.Contains(unitController)) {
-                return SpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ GameMode.Local, unitProfile.UnitPrefabProps.ModelPrefab, parentTransform, position, forward);
+                return SpawnModelPrefab(GameMode.Local, unitProfile.UnitPrefabProps.ModelPrefab, parentTransform, position, forward);
             }
 
             if (networkOwnedUnits.Contains(unitController)) {
-                return SpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ GameMode.Network, unitProfile.UnitPrefabProps.NetworkModelPrefab, parentTransform, position, forward);
+                return SpawnModelPrefab(GameMode.Network, unitProfile.UnitPrefabProps.NetworkModelPrefab, parentTransform, position, forward);
             }
 
             if (serverOwnedUnits.Contains(unitController)) {
-                return SpawnModelPrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ GameMode.Network, unitProfile.UnitPrefabProps.NetworkModelPrefab, parentTransform, position, forward);
+                return SpawnModelPrefab(GameMode.Network, unitProfile.UnitPrefabProps.NetworkModelPrefab, parentTransform, position, forward);
             }
 
             return null;

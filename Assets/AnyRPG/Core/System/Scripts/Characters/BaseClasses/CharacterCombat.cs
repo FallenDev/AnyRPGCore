@@ -374,7 +374,7 @@ namespace AnyRPG {
         }
 
         public void DeactivateAutoAttack() {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.DeActivateAutoAttack()");
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.DeactivateAutoAttack()");
 
             autoAttackActive = false;
             unitController.UnitEventController.NotifyOnDeactivateAutoAttack();

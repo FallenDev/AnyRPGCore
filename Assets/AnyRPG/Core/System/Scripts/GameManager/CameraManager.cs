@@ -142,7 +142,7 @@ namespace AnyRPG {
         }
 
         public void CheckForCutsceneCamera() {
-            Debug.Log("CameraManager.CheckForCutsceneCamera()");
+            //Debug.Log("CameraManager.CheckForCutsceneCamera()");
 
             //currentCutsceneCameraController = null;
             currentCutsceneCameraController = GameObject.FindAnyObjectByType<CutsceneCameraController>(FindObjectsInactive.Include);
@@ -161,7 +161,7 @@ namespace AnyRPG {
         */
 
         public void ActivateMainCamera(bool prePositionCamera = false) {
-            Debug.Log($"CameraManager.ActivateMainCamera({prePositionCamera})  frame: {Time.frameCount}");
+            //Debug.Log($"CameraManager.ActivateMainCamera({prePositionCamera})  frame: {Time.frameCount}");
 
             if (systemConfigurationManager == null) {
                 // can't get camera settings, so just return
@@ -190,7 +190,7 @@ namespace AnyRPG {
         }
 
         public void SwitchToMainCamera() {
-            Debug.Log($"CameraManager.SwitchToMainCamera() frame: {Time.frameCount}");
+            //Debug.Log($"CameraManager.SwitchToMainCamera() frame: {Time.frameCount}");
 
             /*
             if (systemConfigurationManager.UseThirdPartyCameraControl == true) {
@@ -201,7 +201,7 @@ namespace AnyRPG {
         }
 
         public void DeactivateMainCamera() {
-            Debug.Log($"CameraManager.DeactivateMainCamera() frame: {Time.frameCount}");
+            //Debug.Log($"CameraManager.DeactivateMainCamera() frame: {Time.frameCount}");
 
             mainCameraGameObject.SetActive(false);
             /*
@@ -212,7 +212,7 @@ namespace AnyRPG {
         }
 
         public void EnableCutsceneCamera() {
-            Debug.Log($"CameraManager.EnableCutsceneCamera() frame: {Time.frameCount}");
+            //Debug.Log($"CameraManager.EnableCutsceneCamera() frame: {Time.frameCount}");
 
             if (currentCutsceneCameraController != null) {
                 Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
@@ -223,7 +223,7 @@ namespace AnyRPG {
         }
 
         public void DisableCutsceneCamera() {
-            Debug.Log($"CameraManager.DisableCutsceneCamera() frame: {Time.frameCount}");
+            //Debug.Log($"CameraManager.DisableCutsceneCamera() frame: {Time.frameCount}");
 
             if (currentCutsceneCameraController != null) {
                 //Debug.Log("CameraManager.DisableCutsceneCamera(): disabling");

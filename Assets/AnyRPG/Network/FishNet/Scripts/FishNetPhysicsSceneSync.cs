@@ -8,7 +8,7 @@ namespace AnyRPG {
     /// <summary>
     /// Synchronizes scene physics if not the default physics scene.
     /// </summary>
-    public class PhysicsSceneSync : NetworkBehaviour {
+    public class FishNetPhysicsSceneSync : NetworkBehaviour {
         /// <summary>
         /// True to synchronize physics 2d.
         /// </summary>

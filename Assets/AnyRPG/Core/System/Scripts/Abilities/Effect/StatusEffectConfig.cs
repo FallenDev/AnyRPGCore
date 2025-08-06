@@ -15,10 +15,10 @@ namespace AnyRPG {
         public override AbilityEffectProperties AbilityEffectProperties { get => effectProperties; }
 
         public override string Convert(Ability ability, string pathName) {
-
+            /*
             string effectType = "Status";
             Debug.Log($"{effectType}EffectConfig.Convert({ability.resourceName})");
-            StatusEffect newAbilityEffect = ScriptableObject.CreateInstance($"{effectType}Effect") as StatusEffect;
+            StatusEffectBase newAbilityEffect = ScriptableObject.CreateInstance($"{effectType}Effect") as StatusEffectBase;
             newAbilityEffect.statusEffectProperties = effectProperties;
 
             CopyResourceProperties(ability, newAbilityEffect, effectType);
@@ -28,6 +28,8 @@ namespace AnyRPG {
             //AssetDatabase.CreateAsset(newAbilityEffect, scriptableObjectPath);
 
             return $"{ability.resourceName} {effectType}";
+            */
+            return string.Empty;
         }
 
     }

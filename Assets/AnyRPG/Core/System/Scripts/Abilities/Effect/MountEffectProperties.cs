@@ -41,8 +41,10 @@ namespace AnyRPG {
             if (targetUnitController == null) {
                 return;
             }
-            targetUnitController.DeActivateMountedState();
-            
+            if (systemGameManager.GameMode == GameMode.Local || systemGameManager.NetworkManagerServer.ServerModeActive == true) {
+                targetUnitController.DeactivateMountedState();
+            }
+
             base.CancelEffect(targetUnitController);
         }
 
@@ -65,12 +67,13 @@ namespace AnyRPG {
             }
             Dictionary<PrefabProfile, List<GameObject>> returnObjects = base.Cast(source, target, originalTarget, abilityEffectInput);
 
-            source.AbilityManager.SetMountedState(unitProfile);
+            source.AbilityManager.SummonMount(unitProfile);
             
             return returnObjects;
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {
+            Debug.Log($"MountEffectProperties.SetupScriptableObjects({describable.ResourceName})");
             base.SetupScriptableObjects(systemGameManager, describable);
 
             if (unitProfileName != null && unitProfileName != string.Empty) {
@@ -78,10 +81,10 @@ namespace AnyRPG {
                 if (tmpUnitProfile != null) {
                     unitProfile = tmpUnitProfile;
                 } else {
-                    Debug.LogError("MountEffect.SetupScriptableObjects(): Could not find prefab Profile : " + unitProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"MountEffectProperties.SetupScriptableObjects(): Could not find prefab Profile : {unitProfileName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             } else {
-                Debug.LogError("MountEffect.SetupScriptableObjects(): Mount effect requires a unit prefab profile but non was configured while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                Debug.LogError($"MountEffectProperties.SetupScriptableObjects(): Mount effect requires a unit prefab profile but non was configured while inititalizing {ResourceName}.  CHECK INSPECTOR");
             }
 
         }

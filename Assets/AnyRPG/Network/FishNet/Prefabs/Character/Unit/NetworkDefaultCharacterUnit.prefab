@@ -86,7 +86,7 @@ PrefabInstance:
     - target: {fileID: 7989242567668304555, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
       propertyPath: m_UUID
-      value: 947f24fd-1323-4bb0-bcc4-4a058882e19a
+      value: 61ff4252-4353-4009-9e5f-424873126f8c
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -127,7 +127,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8873413205694323065}
   _networkObjectCache: {fileID: 8873413205694323065}
   _componentConfiguration: 0
-  _synchronizeParent: 0
+  _synchronizeParent: 1
   _packing:
     Position: 1
     Rotation: 1
@@ -208,13 +208,13 @@ MonoBehaviour:
   _enableStateForwarding: 1
   _networkTransform: {fileID: 0}
   _ownerInterpolation: 1
-  _ownerSmoothedProperties: 255
+  _ownerSmoothedProperties: 4294967295
   _adaptiveInterpolation: 3
-  _spectatorSmoothedProperties: 255
+  _spectatorSmoothedProperties: 4294967295
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 69
+  <PrefabId>k__BackingField: 70
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11266477648363333465
   <SceneId>k__BackingField: 0

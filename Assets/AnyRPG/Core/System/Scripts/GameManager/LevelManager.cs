@@ -301,7 +301,7 @@ namespace AnyRPG {
         }
 
         private void ActivateSceneCamera() {
-            Debug.Log("Levelmanager.ActivateSceneCamera()");
+            //Debug.Log("Levelmanager.ActivateSceneCamera()");
 
             if (activeSceneNode?.AutoPlayCutscene != null
                 && (activeSceneNode.AutoPlayCutscene.Repeatable == true || activeSceneNode.AutoPlayCutscene.Viewed == false)) {

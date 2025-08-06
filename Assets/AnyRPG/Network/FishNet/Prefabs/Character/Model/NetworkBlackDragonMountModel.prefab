@@ -61,7 +61,7 @@ PrefabInstance:
     - target: {fileID: 943068409625311753, guid: 022ab4d98a489344283da6d08ddec94c,
         type: 3}
       propertyPath: m_Name
-      value: NetworkBlackDragonModel
+      value: NetworkBlackDragonMountModel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -82,7 +82,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4433161076889295592, guid: 022ab4d98a489344283da6d08ddec94c,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 174868717524669793}
+      addedObject: {fileID: 468414717277404827}
   m_SourcePrefab: {fileID: 100100000, guid: 022ab4d98a489344283da6d08ddec94c, type: 3}
 --- !u!1 &754525357944249870 stripped
 GameObject:
@@ -90,7 +90,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4034482349698286822}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &174868717524669793
+--- !u!114 &468414717277404827
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,7 +131,7 @@ MonoBehaviour:
   _synchronizeWhenDisabled: 0
   _smoothFloats: 1
   _interpolation: 2
-  _clientAuthoritative: 0
+  _clientAuthoritative: 1
   _sendToOwner: 0
 --- !u!114 &2316381857745387070
 MonoBehaviour:
@@ -172,15 +172,15 @@ MonoBehaviour:
   _enableStateForwarding: 1
   _networkTransform: {fileID: 0}
   _ownerInterpolation: 1
-  _ownerSmoothedProperties: 255
+  _ownerSmoothedProperties: 4294967295
   _adaptiveInterpolation: 3
-  _spectatorSmoothedProperties: 255
+  _spectatorSmoothedProperties: 4294967295
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 59
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 8918276081532352252
+  <AssetPathHash>k__BackingField: 9808233873667863984
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

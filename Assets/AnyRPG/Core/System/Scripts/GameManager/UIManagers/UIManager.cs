@@ -487,7 +487,7 @@ namespace AnyRPG {
             // get references to all the items in the mouseover window we will need to update
             mouseOverText = mouseOverWindow.transform.GetComponentInChildren<TextMeshProUGUI>();
 
-            DeActivateMouseOverWindow();
+            DeactivateMouseOverWindow();
 
         }
 
@@ -1084,7 +1084,7 @@ namespace AnyRPG {
             mouseOverText.text = newFocus.transform.name;
         }
 
-        public void DeActivateMouseOverWindow() {
+        public void DeactivateMouseOverWindow() {
             mouseOverWindow.gameObject.SetActive(false);
         }
 

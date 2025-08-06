@@ -38,7 +38,7 @@ namespace AnyRPG {
         //Interactable ReturnTarget(AbilityEffect abilityEffect, Interactable target);
         float PerformAbilityAction(AbilityProperties baseAbility, AnimationClip animationClip, int clipIndex, UnitController targetUnitController, AbilityEffectContext abilityEffectContext);
 
-        void SetMountedState(UnitProfile mountUnitProfile);
+        void SummonMount(UnitProfile mountUnitProfile);
 
         AttachmentPointNode GetHeldAttachmentPointNode(AbilityAttachmentNode attachmentNode);
 

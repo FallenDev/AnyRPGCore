@@ -1,7 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace AnyRPG {
 
@@ -40,7 +41,7 @@ namespace AnyRPG {
         public event System.Action OnCastCancel = delegate { };
         public event System.Action<UnitProfile> OnUnitDestroy = delegate { };
         public event System.Action<UnitController> OnActivateMountedState = delegate { };
-        public event System.Action OnDeActivateMountedState = delegate { };
+        public event System.Action OnDeactivateMountedState = delegate { };
         public event System.Action OnStartInteract = delegate { };
         public event System.Action OnStopInteract = delegate { };
         public event System.Action<UnitController, InteractableOptionComponent, int, int> OnStartInteractWithOption = delegate { };
@@ -176,6 +177,12 @@ namespace AnyRPG {
         public event System.Action OnDeactivateAutoAttack = delegate { };
         public event System.Action OnStartFlying = delegate { };
         public event System.Action OnStopFlying = delegate { };
+        public event System.Action<UnitController, UnitProfile> OnSetMountedState = delegate { };
+        //public event System.Action<Transform, Vector3, Vector3> OnHandleMountUnitSpawn = delegate { };
+        public event System.Action<Transform> OnSetParent = delegate { };
+        public event System.Action OnUnsetParent = delegate { };
+        public event System.Action OnMountUnitSpawn = delegate { };
+        public event System.Action OnDespawnMountUnit = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -491,12 +498,19 @@ namespace AnyRPG {
         public void NotifyOnCastCancel() {
             OnCastCancel();
         }
+
         public void NotifyOnActivateMountedState(UnitController mountUnitController) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnActivateMountedState({mountUnitController.gameObject.name})");
+
             OnActivateMountedState(mountUnitController);
         }
-        public void NotifyOnDeActivateMountedState() {
-            OnDeActivateMountedState();
+
+        public void NotifyOnDeactivateMountedState() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDeactivateMountedState()");
+
+            OnDeactivateMountedState();
         }
+
         public void NotifyOnBeginChatMessage(string message) {
             //Debug.Log($"{gameObject.name}.NotifyOnMessageFeed(" + message + ")");
             OnBeginChatMessage(message);
@@ -939,8 +953,39 @@ namespace AnyRPG {
             OnStartFlying();
         }
 
-        internal void NotifyOnStopFlying() {
+        public void NotifyOnStopFlying() {
             OnStopFlying();
+        }
+
+        public void NotifyOnSetMountedState(UnitController mountUnitController, UnitProfile mountUnitProfile) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetMountedState({mountUnitController.gameObject.name}, {mountUnitProfile.ResourceName})");
+
+            OnSetMountedState(mountUnitController, mountUnitProfile);
+        }
+
+        public void NotifyOnSetParent(Transform mountPoint) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetParent({(mountPoint == null ? "null" : mountPoint.gameObject.name)})");
+
+            //public void NotifyOnSetParent(Transform mountPoint, Vector3 position, Vector3 localEulerAngles) {
+            OnSetParent(mountPoint);
+        }
+
+        public void NotifyOnUnsetParent() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnUnSetParent()");
+
+            OnUnsetParent();
+        }
+
+        public void NotifyOnMountUnitSpawn() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnMountUnitSpawn()");
+
+            OnMountUnitSpawn();
+        }
+
+        public void NotifyOnDespawnMountUnit() {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnMountUnit()");
+
+            OnDespawnMountUnit();
         }
 
         #endregion

@@ -6,7 +6,7 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 namespace AnyRPG {
-    public class CharacterAbilityManager : AbilityManager, ICharacterRequestor {
+    public class CharacterAbilityManager : AbilityManager {
 
         protected UnitController unitController;
 
@@ -14,7 +14,7 @@ namespace AnyRPG {
 
         protected Vector3 groundTarget = Vector3.zero;
 
-        protected bool targettingModeActive = false;
+        protected bool targetingModeActive = false;
         protected AbilityProperties groundTargetAbility = null;
 
         // does killing the player you are currently targetting stop your cast.  gets set to false when channeling aoe.
@@ -49,6 +49,7 @@ namespace AnyRPG {
         // game manager references
         private PlayerManager playerManager = null;
         private CastTargettingManager castTargettingManager = null;
+        private CharacterManager characterManager = null;
 
         public float InitialGlobalCoolDown { get => initialGlobalCoolDown; set => initialGlobalCoolDown = value; }
         public float RemainingGlobalCoolDown { get => remainingGlobalCoolDown; set => remainingGlobalCoolDown = value; }
@@ -129,6 +130,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
             castTargettingManager = systemGameManager.CastTargettingManager;
+            characterManager = systemGameManager.CharacterManager;
         }
 
         public bool PerformingAnyAbility() {
@@ -143,21 +145,12 @@ namespace AnyRPG {
             return unitController.CharacterUnit;
         }
 
-        public override void SetMountedState(UnitProfile mountUnitProfile) {
-            base.SetMountedState(mountUnitProfile);
-            CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(mountUnitProfile);
-            characterConfigurationRequest.unitControllerMode = UnitControllerMode.Mount;
-            CharacterRequestData characterRequestData = new CharacterRequestData(this,
-                systemGameManager.GameMode,
-                characterConfigurationRequest);
-            systemGameManager.CharacterManager.SpawnUnitPrefabLocal(characterRequestData, UnitGameObject.transform.parent, UnitGameObject.transform.position, UnitGameObject.transform.forward);
-        }
+        public override void SummonMount(UnitProfile mountUnitProfile) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SummonMount({mountUnitProfile.ResourceName})");
 
-        public void ConfigureSpawnedCharacter(UnitController unitController) {
-        }
+            base.SummonMount(mountUnitProfile);
 
-        public void PostInit(UnitController unitController) {
-            this.unitController.SetMountedState(unitController, unitController.CharacterRequestData.characterConfigurationRequest.unitProfile);
+            unitController.UnitMountManager.SummonMount(mountUnitProfile);
         }
 
         public override List<AbilityEffectProperties> GetDefaultHitEffects() {
@@ -1088,10 +1081,10 @@ namespace AnyRPG {
 
         public void ActivateTargettingMode(AbilityProperties baseAbility, Interactable target) {
             //Debug.Log("CharacterAbilityManager.ActivateTargettingMode()");
-            targettingModeActive = true;
+            targetingModeActive = true;
             groundTargetAbility = baseAbility;
             if (unitController.UnitControllerMode == UnitControllerMode.AI || unitController.UnitControllerMode == UnitControllerMode.Pet) {
-                targettingModeActive = false;
+                targetingModeActive = false;
                 groundTarget = target.transform.position;
             }
             unitController.UnitEventController.NotifyOnActivateTargetingMode(baseAbility);
@@ -1099,7 +1092,7 @@ namespace AnyRPG {
 
         public bool WaitingForTarget() {
             //Debug.Log("CharacterAbilityManager.WaitingForTarget(): returning: " + targettingModeActive);
-            return targettingModeActive;
+            return targetingModeActive;
         }
 
         private Vector3 GetGroundTarget() {
@@ -1117,15 +1110,15 @@ namespace AnyRPG {
             SetGroundTarget(newGroundTarget);
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false || levelManager.IsCutscene()) {
                 AbilityProperties ability = groundTargetAbility;
-                DeActivateTargettingMode();
+                DeactivateTargetingMode();
                 BeginAbility(ability, null);
             }
         }
 
-        public void DeActivateTargettingMode() {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DeActivateTargettingMode()");
+        public void DeactivateTargetingMode() {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.DeactivateTargetingMode()");
 
-            targettingModeActive = false;
+            targetingModeActive = false;
             groundTargetAbility = null;
             castTargettingManager.DisableProjector();
         }

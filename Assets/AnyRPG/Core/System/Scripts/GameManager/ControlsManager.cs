@@ -104,8 +104,8 @@ namespace AnyRPG {
             }
         }
 
-        public void DeActivateGamepadMode(bool toggleUI) {
-            //Debug.Log("ControlsManager.DeActivateGamepadMode()");
+        public void DeactivateGamepadMode(bool toggleUI) {
+            //Debug.Log("ControlsManager.DeactivateGamepadMode()");
             gamePadModeActive = false;
             gamePadInputActive = false;
             UnlockMouse();

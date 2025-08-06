@@ -1,3 +1,4 @@
+using FishNet.Component.Transforming;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
@@ -139,7 +140,7 @@ namespace AnyRPG {
             }
 
             // update syncvars
-            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
+            FishNetUnitController networkCharacterUnit = nob.gameObject.GetComponent<FishNetUnitController>();
             if (networkCharacterUnit == null) {
                 return;
             }
@@ -200,7 +201,7 @@ namespace AnyRPG {
         }
 
         public UnitController SpawnCharacterUnit(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
-            //Debug.Log($"FishNetNetworkConnector.SpawnCharacterUnit({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
+            Debug.Log($"FishNetNetworkConnector.SpawnCharacterUnit({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName})");
 
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(characterRequestData.characterConfigurationRequest.unitProfile.ResourceName);
             if (unitProfile == null) {
@@ -214,7 +215,7 @@ namespace AnyRPG {
 
             NetworkObject nob = GetSpawnablePrefab(unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
             // update syncvars
-            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
+            FishNetUnitController networkCharacterUnit = nob.gameObject.GetComponent<FishNetUnitController>();
             if (networkCharacterUnit != null) {
                 networkCharacterUnit.unitProfileName.Value = unitProfile.ResourceName;
                 networkCharacterUnit.unitControllerMode.Value = characterRequestData.characterConfigurationRequest.unitControllerMode;
@@ -223,7 +224,18 @@ namespace AnyRPG {
             UnitController unitController = nob.gameObject.GetComponent<UnitController>();
             unitController.CharacterRequestData = characterRequestData;
 
-            SpawnScenePrefab(nob, scene);
+            if (characterRequestData.characterConfigurationRequest.unitControllerMode == UnitControllerMode.Mount && characterRequestData.accountId != -1) {
+                // if the request is for a mount, we need to determine if the mount is owned by a player and set ownership
+                if (networkManagerServer.LoggedInAccounts.ContainsKey(characterRequestData.accountId)
+                    && fishNetNetworkManager.ServerManager.Clients.ContainsKey(networkManagerServer.LoggedInAccounts[characterRequestData.accountId].clientId)) {
+                    NetworkConnection networkConnection = fishNetNetworkManager.ServerManager.Clients[networkManagerServer.LoggedInAccounts[characterRequestData.accountId].clientId];
+                    if (networkConnection != null) {
+                        SpawnPrefab(nob, networkConnection, scene);
+                    }
+                }
+            } else {
+                SpawnScenePrefab(nob, scene);
+            }
 
             return unitController;
         }
@@ -248,9 +260,9 @@ namespace AnyRPG {
             characterConfigurationRequest.unitControllerMode = unitControllerMode;
             CharacterRequestData characterRequestData = new CharacterRequestData(null, GameMode.Network, characterConfigurationRequest);
             //characterManager.AddUnitSpawnRequest(serverSpawnRequestId, characterRequestData);
-            NetworkObject nob = GetSpawnablePrefab(/*clientSpawnRequestId, serverSpawnRequestId,*/ unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
+            NetworkObject nob = GetSpawnablePrefab(unitProfile.UnitPrefabProps.NetworkUnitPrefab, parentTransform, position, forward);
             // update syncvars
-            NetworkCharacterUnit networkCharacterUnit = nob.gameObject.GetComponent<NetworkCharacterUnit>();
+            FishNetUnitController networkCharacterUnit = nob.gameObject.GetComponent<FishNetUnitController>();
             if (networkCharacterUnit != null) {
                 networkCharacterUnit.unitProfileName.Value = unitProfileName;
                 networkCharacterUnit.unitControllerMode.Value = unitControllerMode;
@@ -264,17 +276,17 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestSpawnModelPrefab(GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward, NetworkConnection networkConnection = null) {
-            //Debug.Log($"FishNetClientConnector.SpawnModelPrefab({clientSpawnRequestId}, {parentTransform.gameObject.name})");
+            Debug.Log($"FishNetClientConnector.SpawnModelPrefab({prefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
 
-            //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
+            //NetworkObject nob = GetSpawnablePrefab(networkConnection, prefab, parentTransform, position, forward);
             NetworkObject nob = GetSpawnablePrefab(prefab, parentTransform, position, forward);
             SpawnPrefab(nob, networkConnection, default);
         }
 
         public void SpawnModelPrefabServer(GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            //Debug.Log($"FishNetClientConnector.SpawnModelPrefabServer({clientSpawnRequestId}, {parentTransform.gameObject.name})");
+            Debug.Log($"FishNetClientConnector.SpawnModelPrefabServer({parentTransform.gameObject.name}, {position}, {forward})");
 
-            //NetworkObject nob = GetSpawnablePrefab(networkConnection, clientSpawnRequestId, serverSpawnRequestId, prefab, parentTransform, position, forward);
+            //NetworkObject nob = GetSpawnablePrefab(networkConnection, prefab, parentTransform, position, forward);
             NetworkObject nob = GetSpawnablePrefab(prefab, parentTransform, position, forward);
             SpawnPrefab(nob, null, default);
         }
@@ -319,7 +331,7 @@ namespace AnyRPG {
         }
 
         private void SpawnPrefab(NetworkObject nob, NetworkConnection networkConnection, Scene scene) {
-            //Debug.Log($"FishNetClientConnector.SpawnPrefab({nob.gameObject.name}, {scene.name}({scene.handle}))");
+            Debug.Log($"FishNetClientConnector.SpawnPrefab({nob.gameObject.name}, {scene.name}({scene.handle}))");
 
             fishNetNetworkManager.ServerManager.Spawn(nob, networkConnection, scene);
         }
@@ -783,19 +795,19 @@ namespace AnyRPG {
         }
 
         public void InteractWithOptionClient(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
-            NetworkCharacterUnit networkCharacterUnit = null;
+            FishNetUnitController networkCharacterUnit = null;
             if (sourceUnitController != null) {
-                networkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+                networkCharacterUnit = sourceUnitController.GetComponent<FishNetUnitController>();
             }
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (targetInteractable != null) {
-                networkInteractable = targetInteractable.GetComponent<NetworkInteractable>();
+                networkInteractable = targetInteractable.GetComponent<FishNetInteractable>();
             }
             InteractWithOptionServer(networkCharacterUnit, networkInteractable, componentIndex, choiceIndex);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void InteractWithOptionServer(NetworkCharacterUnit sourceNetworkCharacterUnit, NetworkInteractable targetNetworkInteractable, int componentIndex, int choiceIndex) {
+        public void InteractWithOptionServer(FishNetUnitController sourceNetworkCharacterUnit, FishNetInteractable targetNetworkInteractable, int componentIndex, int choiceIndex) {
             Debug.Log($"FishNetNetworkConnector.InteractWithOptionServer({sourceNetworkCharacterUnit?.gameObject.name}, {targetNetworkInteractable?.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             UnitController sourceUnitController = null;
@@ -884,15 +896,15 @@ namespace AnyRPG {
         }
         
         public void SellVendorItemClient(Interactable interactable, int componentIndex, int itemInstanceId) {
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
             SellVendorItemServer(networkInteractable, componentIndex, itemInstanceId);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SellVendorItemServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int itemInstanceId, NetworkConnection networkConnection = null) {
+        public void SellVendorItemServer(FishNetInteractable targetNetworkInteractable, int componentIndex, int itemInstanceId, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 Debug.LogWarning($"FishNetNetworkConnector.SellVendorItemServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
@@ -907,15 +919,15 @@ namespace AnyRPG {
         public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName) {
             Debug.Log($"FishNetClientConnector.RequestSpawnUnit({interactable.gameObject.name}, {componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
 
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
             RequestSpawnUnitServer(networkInteractable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfileName, unitToughnessName);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RequestSpawnUnitServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName, NetworkConnection networkConnection = null) {
+        public void RequestSpawnUnitServer(FishNetInteractable targetNetworkInteractable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, string unitProfileName, string unitToughnessName, NetworkConnection networkConnection = null) {
             Debug.Log($"FishNetClientConnector.RequestSpawnUnitServer({componentIndex}, {unitLevel}, {extraLevels}, {useDynamicLevel}, {unitProfileName}, {unitToughnessName})");
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 Debug.LogWarning($"FishNetNetworkConnector.RequestSpawnUnitServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
@@ -934,15 +946,15 @@ namespace AnyRPG {
         }
 
         public void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
             BuyItemFromVendorServer(networkInteractable, componentIndex, collectionIndex, itemIndex, resourceName);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void BuyItemFromVendorServer(NetworkInteractable targetNetworkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, NetworkConnection networkConnection = null) {
+        public void BuyItemFromVendorServer(FishNetInteractable targetNetworkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 Debug.LogWarning($"FishNetNetworkConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
@@ -984,13 +996,13 @@ namespace AnyRPG {
         }
 
         public void AdvertiseAddToBuyBackCollection(UnitController sourceUnitController, int accountId, Interactable interactable, int componentIndex, InstantiatedItem newInstantiatedItem) {
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
-            NetworkCharacterUnit networkCharacterUnit = null;
+            FishNetUnitController networkCharacterUnit = null;
             if (sourceUnitController != null) {
-                networkCharacterUnit = interactable.GetComponent<NetworkCharacterUnit>();
+                networkCharacterUnit = interactable.GetComponent<FishNetUnitController>();
             }
             if (networkManagerServer.LoggedInAccounts.ContainsKey(accountId) == false) {
                 Debug.Log($"FishNetClientConnector.AdvertiseAddToBuyBackCollection() could not find client id {accountId}");
@@ -1005,26 +1017,26 @@ namespace AnyRPG {
         }
 
         [TargetRpc]
-        public void AdvertiseAddToBuyBackCollectionClient(NetworkConnection networkConnection, NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int instantiatedItemId) {
+        public void AdvertiseAddToBuyBackCollectionClient(NetworkConnection networkConnection, FishNetUnitController networkCharacterUnit, FishNetInteractable networkInteractable, int componentIndex, int instantiatedItemId) {
             networkManagerClient.AdvertiseAddToBuyBackCollection(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, instantiatedItemId);
         }
 
         public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
             Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
-            NetworkCharacterUnit networkCharacterUnit = null;
+            FishNetUnitController networkCharacterUnit = null;
             if (sourceUnitController != null) {
-                networkCharacterUnit = interactable.GetComponent<NetworkCharacterUnit>();
+                networkCharacterUnit = interactable.GetComponent<FishNetUnitController>();
             }
             AdvertiseSellItemToPlayerClient(networkCharacterUnit, networkInteractable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 
         [ObserversRpc]
-        public void AdvertiseSellItemToPlayerClient(NetworkCharacterUnit networkCharacterUnit, NetworkInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
+        public void AdvertiseSellItemToPlayerClient(FishNetUnitController networkCharacterUnit, FishNetInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
             Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({networkCharacterUnit.gameObject.name}, {networkInteractable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             networkManagerClient.AdvertiseSellItemToPlayerClient(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }

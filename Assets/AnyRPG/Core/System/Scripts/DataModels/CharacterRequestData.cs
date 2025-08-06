@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AnyRPG {
     public class CharacterRequestData {
 
-        public int accountId;
+        public int accountId = -1;
         public ICharacterRequestor characterRequestor;
         public GameMode requestMode;
         public CharacterConfigurationRequest characterConfigurationRequest;

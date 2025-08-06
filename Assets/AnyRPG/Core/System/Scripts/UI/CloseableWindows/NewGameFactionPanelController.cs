@@ -161,8 +161,8 @@ namespace AnyRPG {
                         rewardIcon.AddAbility(capabilityProps.TraitList[i].AbilityEffectProperties as StatusEffectProperties);
                         traitRewardIcons.Add(rewardIcon);
                         /*
-                        if ((characterClass.TraitList[i] as StatusEffect).MyRequiredLevel > 1) {
-                            rewardIcon.StackSizeText.text = "Level\n" + (characterClass.TraitList[i] as StatusEffect).MyRequiredLevel;
+                        if ((characterClass.TraitList[i] as StatusEffectBase).MyRequiredLevel > 1) {
+                            rewardIcon.StackSizeText.text = "Level\n" + (characterClass.TraitList[i] as StatusEffectBase).MyRequiredLevel;
                             rewardIcon.MyHighlightIcon.color = new Color32(255, 255, 255, 80);
                         }
                         */

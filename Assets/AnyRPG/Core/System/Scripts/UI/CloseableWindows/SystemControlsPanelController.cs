@@ -125,7 +125,7 @@ namespace AnyRPG {
             // check joystick inverse
             if (PlayerPrefs.GetInt("GamepadMode") == 0) {
                 gamepadModeButton.SetOff();
-                controlsManager.DeActivateGamepadMode(false);
+                controlsManager.DeactivateGamepadMode(false);
             } else if (PlayerPrefs.GetInt("GamepadMode") == 1) {
                 gamepadModeButton.SetOn();
                 controlsManager.ActivateGamepadMode(false);
@@ -167,7 +167,7 @@ namespace AnyRPG {
                 PlayerPrefs.SetInt("GamepadMode", 0);
                 uIManager.MessageFeedManager.WriteMessage("Gamepad Mode: off");
                 gamepadModeButton.SetOff();
-                controlsManager.DeActivateGamepadMode(true);
+                controlsManager.DeactivateGamepadMode(true);
             }
         }
 

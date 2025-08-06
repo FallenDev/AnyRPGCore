@@ -11,7 +11,7 @@ using static UnityEngine.GraphicsBuffer;
 
 
 namespace AnyRPG {
-    public class NetworkCharacterUnit : NetworkInteractable {
+    public class FishNetUnitController : FishNetInteractable {
 
         public event System.Action OnCompleteCharacterRequest = delegate { };
 
@@ -21,6 +21,7 @@ namespace AnyRPG {
 
         private UnitProfile unitProfile = null;
         private UnitController unitController = null;
+        private NetworkObject networkObject = null;
 
         public UnitController UnitController { get => unitController; }
 
@@ -38,6 +39,7 @@ namespace AnyRPG {
         protected override void Configure() {
             base.Configure();
             unitController = GetComponent<UnitController>();
+            networkObject = GetComponent<NetworkObject>();
         }
 
 
@@ -133,7 +135,11 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveMouseUseable += HandleRequestMoveMouseUseable;
                 unitController.UnitEventController.OnRequestAssignMouseUseable += HandleRequestAssignMouseUseable;
                 unitController.UnitEventController.OnRequestClearMouseUseable += HandleRequestClearMouseUseable;
+                unitController.UnitEventController.OnSetParent += HandleSetParent;
+                unitController.UnitEventController.OnDeactivateMountedState += HandleDeactivateMountedStateOwner;
             }
+            // all clients
+            unitController.UnitEventController.OnUnsetParent += HandleUnsetParent;
             //unitController.UnitEventController.OnDespawn += HandleDespawnClient;
         }
 
@@ -167,7 +173,11 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnRequestMoveMouseUseable -= HandleRequestMoveMouseUseable;
                 unitController.UnitEventController.OnRequestAssignMouseUseable -= HandleRequestAssignMouseUseable;
                 unitController.UnitEventController.OnRequestClearMouseUseable -= HandleRequestClearMouseUseable;
+                unitController.UnitEventController.OnSetParent -= HandleSetParent;
+                unitController.UnitEventController.OnDeactivateMountedState -= HandleDeactivateMountedStateOwner;
             }
+            // all clients
+            unitController.UnitEventController.OnUnsetParent -= HandleUnsetParent;
             //unitController.UnitEventController.OnDespawn -= HandleDespawnClient;
         }
 
@@ -265,7 +275,15 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDeactivateAutoAttack += HandleDeactivateAutoAttackServer;
             unitController.UnitEventController.OnSpawnActionObjects += HandleSpawnActionObjectsServer;
             unitController.UnitEventController.OnDespawnActionObjects += HandleDespawnActionObjectsServer;
+            unitController.UnitEventController.OnSetMountedState += HandleSetMountedStateServer;
+            unitController.UnitEventController.OnActivateMountedState += HandleActivateMountedStateServer;
+            unitController.UnitEventController.OnDeactivateMountedState += HandleDeactivateMountedState;
+            //unitController.UnitEventController.OnSetParent += HandleSetParent;
+            unitController.UnitEventController.OnUnsetParent += HandleUnsetParent;
+            //unitController.UnitEventController.OnMountUnitSpawn += HandleMountUnitSpawnServer;
+            unitController.UnitEventController.OnDespawnMountUnit += HandleDespawnMountUnitServer;
         }
+
 
         public void UnsubscribeFromServerUnitEvents() {
             if (unitController == null) {
@@ -355,6 +373,119 @@ namespace AnyRPG {
             unitController.UnitEventController.OnDeactivateAutoAttack -= HandleDeactivateAutoAttackServer;
             unitController.UnitEventController.OnSpawnActionObjects -= HandleSpawnActionObjectsServer;
             unitController.UnitEventController.OnDespawnActionObjects -= HandleDespawnActionObjectsServer;
+            unitController.UnitEventController.OnSetMountedState -= HandleSetMountedStateServer;
+            unitController.UnitEventController.OnActivateMountedState -= HandleActivateMountedStateServer;
+            unitController.UnitEventController.OnDeactivateMountedState -= HandleDeactivateMountedState;
+            //unitController.UnitEventController.OnSetParent -= HandleSetParent;
+            unitController.UnitEventController.OnUnsetParent += HandleUnsetParent;
+            //unitController.UnitEventController.OnMountUnitSpawn -= HandleMountUnitSpawnServer;
+            unitController.UnitEventController.OnDespawnMountUnit -= HandleDespawnMountUnitServer;
+        }
+
+        private void HandleDespawnMountUnitServer() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDespawnMountUnitServer()");
+
+            HandleDespawnMountUnitClient();
+        }
+
+        [ObserversRpc]
+        public void HandleDespawnMountUnitClient() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDespawnMountUnitClient()");
+
+            unitController.UnitMountManager.DespawnMountUnit();
+        }
+
+        private void HandleMountUnitSpawnServer() {
+            //HandleMountUnitSpawnClient();
+        }
+
+        [ObserversRpc]
+        private void HandleMountUnitSpawnClient() {
+            if (base.IsOwner == true) {
+                unitController.UnitMountManager.HandleMountUnitSpawn();
+            }
+            
+        }
+
+        private void HandleSetParent(Transform parentTransform) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetParent({(parentTransform == null ? "null" : parentTransform.gameObject.name)})");
+
+            if (networkObject != null && parentTransform != null) {
+                Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetParent({(parentTransform == null ? "null" : parentTransform.gameObject.name)}) networkObject is not null");
+                NetworkBehaviour nobParent = parentTransform.GetComponent<NetworkBehaviour>();
+                if (nobParent == null) {
+                    Debug.LogWarning($"{gameObject.name}.FishNetUnitController.HandleSetParent({parentTransform.gameObject.name}) No EmptyNetworkBehaviour found on parent.  Please check inspector!");
+                } else {
+                    Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetParent({parentTransform.gameObject.name}) setting parent transform");
+                    networkObject.SetParent(nobParent);
+                }
+            }
+        }
+
+        private void HandleUnsetParent() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleUnsetParent() setting parent transform to null");
+            
+            networkObject.UnsetParent();
+            unitController.UnitMountManager.ProcessUnsetParent();
+        }
+
+        private void HandleDeactivateMountedStateOwner() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDeactivateMountedStateOwner()");
+
+            HandleDeactivateMountedStateServer();
+        }
+
+        [ServerRpc]
+        private void HandleDeactivateMountedStateServer() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDeactivateMountedStateServer() frame: {Time.frameCount}");
+
+            unitController.UnitMountManager.DespawnMountUnit();
+        }
+
+        private void HandleDeactivateMountedState() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDeactivateMountedState()");
+
+            HandleDeactivateMountedStateClient();
+        }
+
+        [ObserversRpc]
+        public void HandleDeactivateMountedStateClient() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDeactivateMountedState()");
+
+            unitController.UnitMountManager.DeactivateMountedState();
+        }
+
+
+        private void HandleActivateMountedStateServer(UnitController mountUnitController) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleActivateMountedStateServer({mountUnitController.gameObject.name})");
+
+            HandleActiveateMountedStateClient();
+        }
+
+        [ObserversRpc]
+        public void HandleActiveateMountedStateClient() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleActivateMountedStateClient()");
+
+            unitController.UnitMountManager.ActivateMountedState();
+        }
+
+        private void HandleSetMountedStateServer(UnitController sourceUnitController, UnitProfile unitProfile) {
+
+            FishNetUnitController targetNetworkCharacterUnit = sourceUnitController.GetComponent<FishNetUnitController>();
+            if (targetNetworkCharacterUnit == null) {
+                return;
+            }
+
+            HandleSetMountedStateClient(targetNetworkCharacterUnit, unitProfile.ResourceName);
+        }
+
+        [ObserversRpc]
+        private void HandleSetMountedStateClient(FishNetUnitController targetNetworkCharacterUnit, string unitProfileName) {
+            UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
+            if (unitProfile == null) {
+                return;
+            }
+            unitController.UnitMountManager.SetMountedState(targetNetworkCharacterUnit.UnitController, unitProfile);
         }
 
         private void HandleDespawnActionObjectsServer() {
@@ -462,7 +593,7 @@ namespace AnyRPG {
         public void HandleAddActivePetServer(UnitProfile profile, UnitController petUnitController) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer({profile?.ResourceName}, {petUnitController?.gameObject.name})");
 
-            NetworkCharacterUnit targetNetworkCharacterUnit = petUnitController.GetComponent<NetworkCharacterUnit>();
+            FishNetUnitController targetNetworkCharacterUnit = petUnitController.GetComponent<FishNetUnitController>();
             if (targetNetworkCharacterUnit == null) {
                 //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer(): targetNetworkCharacterUnit is null for {petUnitController?.gameObject.name}");
                 return;
@@ -472,7 +603,7 @@ namespace AnyRPG {
         }
 
         [ObserversRpc]
-        public void HandleAddActivePetClient(string petResourceName, NetworkCharacterUnit targetNetworkCharacterUnit) {
+        public void HandleAddActivePetClient(string petResourceName, FishNetUnitController targetNetworkCharacterUnit) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetClient({petResourceName}, {targetNetworkCharacterUnit?.gameObject.name})");
             
             if (targetNetworkCharacterUnit?.unitController == null) {
@@ -718,15 +849,15 @@ namespace AnyRPG {
         public void HandleTakeDamageServer(IAbilityCaster sourceCaster, UnitController target, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, AbilityEffectContext context) {
             
             UnitController sourceUnitController = sourceCaster as UnitController;
-            NetworkCharacterUnit networkCharacterUnit = null;
+            FishNetUnitController networkCharacterUnit = null;
             if (sourceUnitController != null) {
-                networkCharacterUnit = sourceUnitController.GetComponent<NetworkCharacterUnit>();
+                networkCharacterUnit = sourceUnitController.GetComponent<FishNetUnitController>();
             }
             HandleTakeDamageClient(networkCharacterUnit, amount, combatTextType, combatMagnitude, abilityName, context.GetSerializableContext());
         }
 
         [ObserversRpc]
-        public void HandleTakeDamageClient(NetworkCharacterUnit sourceNetworkCharacterUnit, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, SerializableAbilityEffectContext context) {
+        public void HandleTakeDamageClient(FishNetUnitController sourceNetworkCharacterUnit, int amount, CombatTextType combatTextType, CombatMagnitude combatMagnitude, string abilityName, SerializableAbilityEffectContext context) {
             IAbilityCaster sourceCaster = null;
             if (sourceNetworkCharacterUnit == null) {
                 sourceCaster = systemGameManager.SystemAbilityController;
@@ -737,15 +868,15 @@ namespace AnyRPG {
         }
 
         public void HandleReceiveCombatTextEventServer(UnitController targetUnitController, int amount, CombatTextType type, CombatMagnitude magnitude, AbilityEffectContext context) {
-            NetworkCharacterUnit networkCharacterUnit = null;
+            FishNetUnitController networkCharacterUnit = null;
             if (targetUnitController != null) {
-                networkCharacterUnit = targetUnitController.GetComponent<NetworkCharacterUnit>();
+                networkCharacterUnit = targetUnitController.GetComponent<FishNetUnitController>();
             }
             ReceiveCombatTextEventClient(networkCharacterUnit, amount, type, magnitude, context.GetSerializableContext());
         }
 
         [ObserversRpc]
-        public void ReceiveCombatTextEventClient(NetworkCharacterUnit targetNetworkCharacterUnit, int amount, CombatTextType type, CombatMagnitude magnitude, SerializableAbilityEffectContext context) {
+        public void ReceiveCombatTextEventClient(FishNetUnitController targetNetworkCharacterUnit, int amount, CombatTextType type, CombatMagnitude magnitude, SerializableAbilityEffectContext context) {
             if (targetNetworkCharacterUnit != null) {
                 unitController.UnitEventController.NotifyOnReceiveCombatTextEvent(targetNetworkCharacterUnit.unitController, amount, type, magnitude, new AbilityEffectContext(unitController, null, context, systemGameManager));
             }
@@ -770,7 +901,7 @@ namespace AnyRPG {
         public void CancelStatusEffectClient(string resourceName) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CancelStatusEffectClient({resourceName})");
 
-            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
                 return;
             }
@@ -787,7 +918,7 @@ namespace AnyRPG {
         public void AddStatusEffectStackClient(string resourceName) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectStackClient({resourceName})");
 
-            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
                 return;
             }
@@ -795,18 +926,18 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
 
-            NetworkCharacterUnit sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<NetworkCharacterUnit>();
+            FishNetUnitController sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<FishNetUnitController>();
             
             AddStatusEffectClient(statusEffectNode.StatusEffect.ResourceName, sourceNetworkCharacterUnit);
         }
 
         [ObserversRpc]
-        public void AddStatusEffectClient(string resourceName, NetworkCharacterUnit sourceNetworkCharacterUnit) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+        public void AddStatusEffectClient(string resourceName, FishNetUnitController sourceNetworkCharacterUnit) {
+            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
-            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
                 return;
             }
@@ -1173,7 +1304,7 @@ namespace AnyRPG {
 
         [ServerRpc]
         public void RequestCancelStatusEffect(string resourceName) {
-            StatusEffect statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffect;
+            StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
                 return;
             }
@@ -1413,15 +1544,15 @@ namespace AnyRPG {
 
         private void HandleEnterInteractableRangeServer(UnitController controller, Interactable interactable) {
 
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
             HandleEnterInteractableRangeClient(networkInteractable);
         }
 
         [ObserversRpc]
-        private void HandleEnterInteractableRangeClient(NetworkInteractable networkInteractable) {
+        private void HandleEnterInteractableRangeClient(FishNetInteractable networkInteractable) {
             Interactable interactable = null;
             if (networkInteractable != null) {
                 interactable = networkInteractable.Interactable;
@@ -1431,15 +1562,15 @@ namespace AnyRPG {
 
         private void HandleExitInteractableRangeServer(UnitController controller, Interactable interactable) {
 
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (interactable != null) {
-                networkInteractable = interactable.GetComponent<NetworkInteractable>();
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
             HandleExitInteractableRangeClient(networkInteractable);
         }
 
         [ObserversRpc]
-        private void HandleExitInteractableRangeClient(NetworkInteractable networkInteractable) {
+        private void HandleExitInteractableRangeClient(FishNetInteractable networkInteractable) {
             Interactable interactable = null;
             if (networkInteractable != null) {
                 interactable = networkInteractable.Interactable;
@@ -1495,7 +1626,7 @@ namespace AnyRPG {
         */
 
         [ObserversRpc]
-        public void HandleEnterInteractableTriggerClient(NetworkInteractable networkInteractable) {
+        public void HandleEnterInteractableTriggerClient(FishNetInteractable networkInteractable) {
             Interactable triggerInteractable = null;
             if (networkInteractable != null) {
                 triggerInteractable = networkInteractable.Interactable;
@@ -1537,19 +1668,19 @@ namespace AnyRPG {
         public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityEffectPrefabsServer()");
 
-            NetworkInteractable networkTarget = null;
+            FishNetInteractable networkTarget = null;
             if (target != null) {
-                networkTarget = target.GetComponent<NetworkInteractable>();
+                networkTarget = target.GetComponent<FishNetInteractable>();
             }
-            NetworkInteractable networkOriginalTarget = null;
+            FishNetInteractable networkOriginalTarget = null;
             if (originalTarget != null) {
-                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+                networkOriginalTarget = originalTarget.GetComponent<FishNetInteractable>();
             }
             HandleSpawnAbilityEffectPrefabsClient(networkTarget, networkOriginalTarget, lengthEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
         }
 
         [ObserversRpc]
-        public void HandleSpawnAbilityEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
+        public void HandleSpawnAbilityEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
@@ -1574,19 +1705,19 @@ namespace AnyRPG {
         public void HandleSpawnProjectileEffectPrefabsServer(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {projectileEffectProperties.ResourceName})");
 
-            NetworkInteractable networkTarget = null;
+            FishNetInteractable networkTarget = null;
             if (target != null) {
-                networkTarget = target.GetComponent<NetworkInteractable>();
+                networkTarget = target.GetComponent<FishNetInteractable>();
             }
-            NetworkInteractable networkOriginalTarget = null;
+            FishNetInteractable networkOriginalTarget = null;
             if (target != null) {
-                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+                networkOriginalTarget = originalTarget.GetComponent<FishNetInteractable>();
             }
             HandleSpawnProjectileEffectPrefabsClient(networkTarget, networkOriginalTarget, projectileEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
         }
 
         [ObserversRpc]
-        public void HandleSpawnProjectileEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
+        public void HandleSpawnProjectileEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             ProjectileEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ProjectileEffect;
@@ -1611,19 +1742,19 @@ namespace AnyRPG {
         public void HandleSpawnChanneledEffectPrefabsServer(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnChanneledEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {channeledEffectProperties.ResourceName})");
 
-            NetworkInteractable networkTarget = null;
+            FishNetInteractable networkTarget = null;
             if (target != null) {
-                networkTarget = target.GetComponent<NetworkInteractable>();
+                networkTarget = target.GetComponent<FishNetInteractable>();
             }
-            NetworkInteractable networkOriginalTarget = null;
+            FishNetInteractable networkOriginalTarget = null;
             if (target != null) {
-                networkOriginalTarget = originalTarget.GetComponent<NetworkInteractable>();
+                networkOriginalTarget = originalTarget.GetComponent<FishNetInteractable>();
             }
             HandleSpawnChanneledEffectPrefabsClient(networkTarget, networkOriginalTarget, channeledEffectProperties.ResourceName, abilityEffectContext.GetSerializableContext());
         }
 
         [ObserversRpc]
-        public void HandleSpawnChanneledEffectPrefabsClient(NetworkInteractable networkTarget, NetworkInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
+        public void HandleSpawnChanneledEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             ChanneledEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ChanneledEffect;
@@ -1680,15 +1811,15 @@ namespace AnyRPG {
         private void HandleEnterCombatServer(Interactable targetInteractable) {
             Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleEnterCombatServer(" + (targetInteractable == null ? "null" : targetInteractable.gameObject.name) + ")");
 
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (targetInteractable != null) {
-                networkInteractable = targetInteractable.GetComponent<NetworkInteractable>();
+                networkInteractable = targetInteractable.GetComponent<FishNetInteractable>();
             }
             HandleEnterCombatClient(networkInteractable);
         }
 
         [ObserversRpc]
-        public void HandleEnterCombatClient(NetworkInteractable networkInteractable) {
+        public void HandleEnterCombatClient(FishNetInteractable networkInteractable) {
             Debug.Log($"{gameObject.name}.HandleEnterCombatClient()");
             
             if (networkInteractable != null) {
@@ -1764,15 +1895,15 @@ namespace AnyRPG {
         private void HandleSetTargetClient(Interactable target) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetClient({(target == null ? "null" : target.gameObject.name)})");
 
-            NetworkInteractable networkInteractable = null;
+            FishNetInteractable networkInteractable = null;
             if (target != null) {
-                networkInteractable = target.GetComponent<NetworkInteractable>();
+                networkInteractable = target.GetComponent<FishNetInteractable>();
             }
             HandleSetTargetServer(networkInteractable);
         }
 
         [ServerRpc]
-        private void HandleSetTargetServer(NetworkInteractable networkInteractable) {
+        private void HandleSetTargetServer(FishNetInteractable networkInteractable) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
 
             unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
@@ -1909,15 +2040,15 @@ namespace AnyRPG {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
 
 
-            NetworkInteractable targetNetworkInteractable = null;
+            FishNetInteractable targetNetworkInteractable = null;
             if (target != null) {
-                targetNetworkInteractable = target.GetComponent<NetworkInteractable>();
+                targetNetworkInteractable = target.GetComponent<FishNetInteractable>();
             }
             HandleBeginAbilityServer(abilityProperties.ResourceName, targetNetworkInteractable, playerInitiated);
         }
 
         [ServerRpc]
-        public void HandleBeginAbilityServer(string abilityName, NetworkInteractable targetNetworkInteractable, bool playerInitiated) {
+        public void HandleBeginAbilityServer(string abilityName, FishNetInteractable targetNetworkInteractable, bool playerInitiated) {
             //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityServer({abilityName})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);

@@ -950,7 +950,7 @@ namespace AnyRPG {
                     playerManager.ActiveUnitController.CharacterAbilityManager.TryToStopAnyAbility();
                     playerManager.UnitController.UnitActionManager.TryToStopAction();
                 }
-                playerManager.ActiveUnitController.CharacterAbilityManager.DeActivateTargettingMode();
+                playerManager.ActiveUnitController.CharacterAbilityManager.DeactivateTargetingMode();
             }
         }
 
@@ -1105,7 +1105,7 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange += HandleFactionChange;
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange += HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState += HandleActivateMountedState;
-            playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState += HandleDeActivateMountedState;
+            playerManager.ActiveUnitController.UnitEventController.OnDeactivateMountedState += HandleDeactivateMountedState;
             systemEventManager.OnPlayerUnitDespawn += HandleUnitDespawn;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel += HandleCastCancel;
             playerManager.ActiveUnitController.UnitModelController.OnModelUpdated += HandleModelUpdated;
@@ -1123,7 +1123,7 @@ namespace AnyRPG {
             playerManager.ActiveUnitController.UnitEventController.OnFactionChange -= HandleFactionChange;
             playerManager.ActiveUnitController.UnitEventController.OnSpecializationChange -= HandleSpecializationChange;
             playerManager.ActiveUnitController.UnitEventController.OnActivateMountedState -= HandleActivateMountedState;
-            playerManager.ActiveUnitController.UnitEventController.OnDeActivateMountedState -= HandleDeActivateMountedState;
+            playerManager.ActiveUnitController.UnitEventController.OnDeactivateMountedState -= HandleDeactivateMountedState;
             playerManager.ActiveUnitController.OnInitializeNamePlate -= HandleInitializeNamePlate;
             systemEventManager.OnPlayerUnitDespawn -= HandleUnitDespawn;
             playerManager.ActiveUnitController.UnitEventController.OnCastCancel -= HandleCastCancel;
@@ -1183,7 +1183,7 @@ namespace AnyRPG {
             SystemEventManager.TriggerEvent("OnStartRiding", eventParam);
         }
 
-        public void HandleDeActivateMountedState() {
+        public void HandleDeactivateMountedState() {
 
             /*
             if (systemConfigurationManager.UseThirdPartyMovementControl == true) {

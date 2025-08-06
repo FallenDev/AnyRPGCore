@@ -147,7 +147,7 @@ namespace AnyRPG {
             portraitSnapshotImage.texture = portraitTexture;
             originalPrimaryResourceSliderWidth = primaryResourceSliderLayout.preferredWidth;
             originalSecondaryResourceSliderWidth = secondaryResourceSliderLayout.preferredWidth;
-            DeActivateCastBar();
+            DeactivateCastBar();
             controllerInitialized = true;
             //Debug.Log($"{gameObject.name}: UnitFrameController.Awake() originalHealthSliderWidth: " + originalHealthSliderWidth);
         }
@@ -465,7 +465,7 @@ namespace AnyRPG {
             this.followTransform = targetBone;
         }
 
-        private void DeActivateCastBar() {
+        private void DeactivateCastBar() {
             castBarController.ClearTarget();
         }
 

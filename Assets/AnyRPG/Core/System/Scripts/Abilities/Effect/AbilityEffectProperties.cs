@@ -297,7 +297,7 @@ namespace AnyRPG {
 
         public virtual void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {
             //public virtual void SetupScriptableObjects(SystemGameManager systemGameManager, string displayName) {
-            //Debug.Log(DisplayName + ".AbilityEffect.SetupscriptableObjects()");
+            //Debug.Log($"AbilityEffectProperties.SetupScriptableObjects({describable.ResourceName})");
 
             //this.displayName = displayName;
             describableData = describable;

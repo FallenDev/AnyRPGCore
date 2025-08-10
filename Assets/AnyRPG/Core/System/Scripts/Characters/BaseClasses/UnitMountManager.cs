@@ -15,6 +15,9 @@ namespace AnyRPG {
         private UnitController mountUnitController = null;
         private UnitProfile mountUnitProfile = null;
 
+        // state tracking
+        private bool lateJoin = false;
+
         // game manager references
         private PlayerManager playerManager = null;
         private PlayerManagerServer playerManagerServer = null;
@@ -98,7 +101,11 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.UnitMountManager.HandleMountModelReady()");
 
             UnsubscribeFromMountModelReady();
-            HandleMountUnitSpawn();
+            if (lateJoin == true) {
+                ActivateMountedState(true);
+            } else {
+                HandleMountUnitSpawn();
+            }
         }
 
         public void UnsubscribeFromMountModelReady() {
@@ -137,18 +144,20 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnMountUnitSpawn();
         }
 
-        public void ActivateMountedState() {
+        public void ActivateMountedState(bool lateJoin = false) {
             Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ActivateMountedState()");
 
             unitController?.UnitModelController?.SheathWeapons();
 
             // set player animator to riding state
-            if (systemGameManager.GameMode == GameMode.Local || (networkManagerServer.ServerModeActive == false && unitController.IsOwner == true)) {
+            if (systemGameManager.GameMode == GameMode.Local
+                || (networkManagerServer.ServerModeActive == false && unitController.IsOwner == true)
+                || lateJoin == true) {
                 unitController.UnitAnimator.SetRiding(true);
             }
 
             // set player unit to riding state
-            unitController.Mounted = true;
+            unitController.IsMounted = true;
 
             ConfigureCharacterMountedPhysics();
 
@@ -157,6 +166,7 @@ namespace AnyRPG {
             mountUnitController.CharacterUnit = unitController.CharacterUnit;
 
             unitController.UnitEventController.NotifyOnActivateMountedState(mountUnitController);
+            lateJoin = false;
         }
 
         public void ConfigureCharacterMountedPhysics() {
@@ -186,6 +196,7 @@ namespace AnyRPG {
         public void DeactivateMountedState() {
             Debug.Log($"{unitController.gameObject.name}.UnitMountManager.DeactivateMountedState()");
 
+            lateJoin = false;
             UnsubscribeFromMountModelReady();
             if (mountUnitController != null && unitController != null && unitController.enabled == true) {
 
@@ -204,7 +215,7 @@ namespace AnyRPG {
                 ConfigureCharacterRegularPhysics();
 
                 // set player unit to normal state
-                unitController.Mounted = false;
+                unitController.IsMounted = false;
                 // testing disabled now since there is only one of those
                 /*
                 if (playerManager.PlayerUnitMovementController) {
@@ -305,6 +316,32 @@ namespace AnyRPG {
         public void ProcessUnsetParent() {
             if (mountUnitController != null) {
                 mountUnitController.gameObject.SetActive(false);
+            }
+        }
+
+        public void ProcessModelCreated() {
+            //Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated()");
+
+            if (unitController.CharacterSaveManager.SaveData.isMounted == false) {
+                //Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() isMounted = false");
+                return;
+            }
+            Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() isMounted = TRUE");
+
+            UnitController mountUnitController = null;
+            if (unitController.transform.parent != null) {
+                mountUnitController = unitController.transform.parent.GetComponentInParent<UnitController>();
+            }
+            if (mountUnitController == null) {
+                return;
+            }
+            Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() mountUnitController: {mountUnitController.gameObject.name}");
+            lateJoin = true;
+            SetMountedState(mountUnitController, mountUnitController.CharacterRequestData.characterConfigurationRequest.unitProfile);
+            if (mountUnitController?.UnitModelController != null && mountUnitController.UnitModelController.ModelCreated == false) {
+                SubscribeToMountModelReady();
+            } else {
+                ActivateMountedState(true);
             }
         }
     }

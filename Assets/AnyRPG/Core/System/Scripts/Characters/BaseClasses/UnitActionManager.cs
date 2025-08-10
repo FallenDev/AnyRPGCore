@@ -417,7 +417,7 @@ namespace AnyRPG {
         }
 
         private bool NotMounted() {
-            if (unitController.Mounted == true) {
+            if (unitController.IsMounted == true) {
                 return false;
             }
             return true;

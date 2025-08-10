@@ -36,7 +36,8 @@ namespace AnyRPG {
 
         public override Transform NamePlateTransform {
             get {
-                if (unitController.Mounted == true
+                //Debug.Log($"{unitController.gameObject.name}.UnitNamePlateController.NamePlateTransform() mount: {(unitController.UnitMountManager.MountUnitController == null ? "null" : unitController.UnitMountManager.MountUnitController.gameObject.name)}");
+                if (unitController.IsMounted == true
                     && unitController.UnitMountManager.MountUnitController != null
                     && unitController.UnitMountManager.MountUnitController.NamePlateController != null
                     && unitController.UnitMountManager.MountUnitController.NamePlateController.NamePlateTransform != null) {

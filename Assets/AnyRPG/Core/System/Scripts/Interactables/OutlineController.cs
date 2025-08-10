@@ -56,7 +56,7 @@ namespace AnyRPG {
         public void SendRequestToCameraHighlighter() {
             //Debug.Log($"{interactable.gameObject.name}.OutlineController.SendRequestToCameraHighlighter()");
 
-            outlineColor = interactable.GetGlowColor();
+            outlineColor = interactable.CharacterTarget.GetGlowColor();
 
             if (interactable.ObjectMaterialController.MeshRenderers != null && interactable.ObjectMaterialController.MeshRenderers.Length > 0) {
                 cameraManager.MainCameraHighlighter.AddOutlinedObject(interactable, outlineColor, interactable.ObjectMaterialController.MeshRenderers);

@@ -145,13 +145,14 @@ namespace AnyRPG {
                     continue;
                 }
                 foreach (AbilityEffectProperties abilityEffect in abilityEffectList) {
-                    if (abilityEffect.CanUseOn(targetInteractable, source, abilityEffectContext) == false) {
+                    if (abilityEffect.CanUseOn(targetInteractable.CharacterTarget, source, abilityEffectContext) == false) {
                         canAdd = false;
                     }
                 }
                 if (canAdd) {
                     AOETargetNode validTargetNode = new AOETargetNode();
-                    validTargetNode.targetGameObject = targetInteractable.InteractableTarget;
+                    //validTargetNode.targetGameObject = targetInteractable.InteractableTarget;
+                    validTargetNode.targetGameObject = targetInteractable.CharacterTarget;
                     validTargetNode.abilityEffectInput = abilityEffectContext;
                     validTargets.Add(validTargetNode);
                 }

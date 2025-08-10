@@ -146,7 +146,7 @@ namespace AnyRPG {
         }
 
         public override void SummonMount(UnitProfile mountUnitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SummonMount({mountUnitProfile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.SummonMount({mountUnitProfile.ResourceName})");
 
             base.SummonMount(mountUnitProfile);
 

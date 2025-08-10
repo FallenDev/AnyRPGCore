@@ -333,7 +333,7 @@ namespace AnyRPG {
 
 
         public override GameObject RequestSpawnModelPrefab(GameObject prefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"FishNetNetworkController.RequestSpawnModelPrefab({prefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
+            //Debug.Log($"FishNetNetworkController.RequestSpawnModelPrefab({prefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
 
             clientConnector.RequestSpawnModelPrefab(prefab, parentTransform, position, forward);
             return null;

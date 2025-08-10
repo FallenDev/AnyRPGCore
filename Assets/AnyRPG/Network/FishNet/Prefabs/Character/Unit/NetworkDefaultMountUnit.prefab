@@ -16,7 +16,7 @@ PrefabInstance:
     - target: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
       propertyPath: m_Name
-      value: NetworkDefaultCharacterUnit
+      value: NetworkDefaultMountUnit
       objectReference: {fileID: 0}
     - target: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
@@ -86,7 +86,7 @@ PrefabInstance:
     - target: {fileID: 7989242567668304555, guid: ba09f14eb0109ba459f4520b82c3fadc,
         type: 3}
       propertyPath: m_UUID
-      value: 4ca98e37-c153-4add-9ba5-20538c6a8b35
+      value: c1c76393-9d1b-4ee8-9397-dc9a1ae1fe39
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -197,7 +197,7 @@ MonoBehaviour:
   _isNetworked: 1
   _isSpawnable: 1
   _isGlobal: 0
-  _initializeOrder: -1
+  _initializeOrder: -3
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
@@ -216,7 +216,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 70
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 11266477648363333465
+  <AssetPathHash>k__BackingField: 6010497054468889913
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

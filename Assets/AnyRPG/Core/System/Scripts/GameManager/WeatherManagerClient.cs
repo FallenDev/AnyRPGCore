@@ -95,7 +95,7 @@ namespace AnyRPG {
 
 
         public void HandleLevelUnload(int sceneHandle, string sceneName) {
-            //Debug.Log($"WeatherManagerClient.HandleLevelUnload({sceneHandle}, {sceneName})");
+            Debug.Log($"WeatherManagerClient.HandleLevelUnload({sceneHandle}, {sceneName})");
 
             if (levelManager.IsMainMenu(sceneName) == true || levelManager.IsInitializationScene(sceneName) == true) {
                 // there is no weather in the main menu or initialization scene, so nothing to do
@@ -113,7 +113,7 @@ namespace AnyRPG {
         }
 
         public void HandleLevelLoad() {
-            //Debug.Log("WeatherManagerClient.HandleLevelLoad()");
+            Debug.Log("WeatherManagerClient.HandleLevelLoad()");
 
             if (networkManagerServer.ServerModeActive == true) {
                 return;
@@ -331,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            //Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
+            Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             currentAmbientSound = null;
 

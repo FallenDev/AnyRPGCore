@@ -100,7 +100,7 @@ namespace AnyRPG {
         private bool canGlideOverride = false;
 
         // track current state
-        private bool mounted = false;
+        private bool isMounted = false;
         private bool walking = false;
         private bool frozen = false;
         private bool stunned = false;
@@ -318,7 +318,7 @@ namespace AnyRPG {
         */
 
         public List<string> PatrolNames { get => patrolNames; set => patrolNames = value; }
-        public bool Mounted { get => mounted; set => mounted = value; }
+        public bool IsMounted { get => isMounted; set => isMounted = value; }
         public List<string> BehaviorNames { get => behaviorNames; set => behaviorNames = value; }
         public bool UseBehaviorCopy { get => useBehaviorCopy; set => useBehaviorCopy = value; }
         public IUUID UUID {
@@ -356,7 +356,7 @@ namespace AnyRPG {
                 // allow collider checks to consider this collider to be the collider of the mount when the unit is mounted
                 // this allows things like projectile effects and hitbox collider checks to aim for the active collider on the mount
                 // instead of the inactive one on the rider
-                if (mounted && unitMountManager.MountUnitController != null) {
+                if (isMounted && unitMountManager.MountUnitController != null) {
                     return unitMountManager.MountUnitController.gameObject;
                 }
                 return base.InteractableGameObject;
@@ -373,12 +373,36 @@ namespace AnyRPG {
                 // allow collider checks to consider this collider to be the collider of the mount when the unit is mounted
                 // this allows things like projectile effects and hitbox collider checks to aim for the active collider on the mount
                 // instead of the inactive one on the rider
-                if (mounted && unitMountManager.MountUnitController != null) {
+                if (isMounted && unitMountManager.MountUnitController != null) {
                     return unitMountManager.MountUnitController;
                 }
                 return base.InteractableTarget;
             }
         }
+
+        public override Interactable CharacterTarget {
+            get {
+                // allow collider checks to consider this collider to be the collider of the rider when this unit is the mount
+                // this allows things like the mount hittin a portal or entering an enemy agro range to trigger the player interaction
+                if (unitControllerMode == UnitControllerMode.Mount && riderUnitController != null) {
+                    return riderUnitController;
+                }
+                return base.CharacterTarget;
+            }
+        }
+
+        public override Interactable PhysicalTarget {
+            get {
+                // allow collider checks to consider this collider to be the collider of the mount when the unit is mounted
+                // this allows things like projectile effects and hitbox collider checks to aim for the active collider on the mount
+                // instead of the inactive one on the rider
+                if (isMounted && unitMountManager.MountUnitController != null) {
+                    return unitMountManager.MountUnitController;
+                }
+                return base.InteractableTarget;
+            }
+        }
+
 
         public override float InteractionMaxRange {
             get {
@@ -449,6 +473,7 @@ namespace AnyRPG {
         public CharacterActionBarManager CharacterActionBarManager { get => characterActionBarManager; }
         public bool CharacterConfigured { get => characterConfigured; }
         public bool EnableLeashing { get => enableLeashing; set => enableLeashing = value; }
+        public UnitController RiderUnitController { get => riderUnitController; set => riderUnitController = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -1056,7 +1081,7 @@ namespace AnyRPG {
             canGlide = false;
             canGlideOverride = false;
 
-            mounted = false;
+            isMounted = false;
             walking = false;
             frozen = false;
             stunned = false;
@@ -1378,7 +1403,7 @@ namespace AnyRPG {
         public virtual void CancelMountEffects() {
             //Debug.Log($"{gameObject.name}.UnitController.CancelMountEffects()");
 
-            if (mounted == true) {
+            if (isMounted == true) {
                 //Debug.Log($"{gameObject.name}.UnitController.CancelMountEffects(): unit is mounted");
 
                 foreach (StatusEffectNode statusEffectNode in characterStats.StatusEffects.Values) {
@@ -1772,7 +1797,7 @@ namespace AnyRPG {
             // note : this will not work for third paty controllers without these parameters.  Third party controllers should be setup to use footstep hit audio
             if (unitAnimator != null
                 && UnitAnimator.IsInAir() == false
-                && mounted == false
+                && isMounted == false
                 && ControlLocked == false
                 && swimming == false
                 && flying == false

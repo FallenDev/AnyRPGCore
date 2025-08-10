@@ -49,13 +49,14 @@ namespace AnyRPG {
             this.unitController = unitController;
         }
 
-        public void HandleSetTarget() {
+        public void HandleTargeted() {
             //Debug.Log("FocusTargettingController.HandleSetTarget()");
             if (unitController == null) {
                 // don't show this under inanimate units
-                HandleClearTarget();
+                HandleUnTargeted();
                 return;
             }
+
             meshRenderer.enabled = true;
             colorOverrideDictionary.Clear();
             if (unitController.BaseCharacter.UnitToughness != null && unitController.BaseCharacter.UnitToughness.FocusProjectorOverrideMap != null) {
@@ -71,7 +72,7 @@ namespace AnyRPG {
             SetCircleRadius(unitController.CharacterUnit.HitBoxSize * 2f);
         }
 
-        public void HandleClearTarget() {
+        public void HandleUnTargeted() {
             //Debug.Log("FocusTargettingController.HandleClearTarget()");
             if (meshRenderer != null) {
                 meshRenderer.enabled = false;

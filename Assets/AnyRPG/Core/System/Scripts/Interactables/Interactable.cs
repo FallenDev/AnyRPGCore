@@ -198,6 +198,18 @@ namespace AnyRPG {
             }
         }
 
+        public virtual Interactable CharacterTarget {
+            get {
+                return this;
+            }
+        }
+
+        public virtual Interactable PhysicalTarget {
+            get {
+                return this;
+            }
+        }
+
         public bool IsMouseOverUnit { get => isMouseOverUnit; set => isMouseOverUnit = value; }
         public bool IsMouseOverNameplate { get => isMouseOverNameplate; set => isMouseOverNameplate = value; }
         public string InteractionTooltipText { get => interactionTooltipText; set => interactionTooltipText = value; }
@@ -731,10 +743,10 @@ namespace AnyRPG {
 
             // moved to before the return statement.  This is because we still want a tooltip even if there are no current interactions to perform
             // added pivot so the tooltip doesn't bounce around
-            uIManager.ShowToolTip(new Vector2(0, 1), uIManager.MouseOverWindow.transform.position, this);
+            uIManager.ShowToolTip(new Vector2(0, 1), uIManager.MouseOverWindow.transform.position, CharacterTarget);
 
             // this function will not be triggered on the server, so sending the client player is ok
-            if (GetCurrentInteractables(playerManager.ActiveUnitController).Count == 0) {
+            if (CharacterTarget.GetCurrentInteractables(playerManager.ActiveUnitController).Count == 0) {
                 //if (GetValidInteractables(playerManager.UnitController.MyCharacterUnit).Count == 0) {
                 //Debug.Log($"{gameObject.name}.Interactable.OnMouseEnter(): No current Interactables.  Not glowing.");
                 return;
@@ -1055,6 +1067,14 @@ namespace AnyRPG {
             Debug.Log($"{gameObject.name}.Interactable.NotifyOnInteractionWithOptionStarted({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
             
             OnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
+        }
+
+        public void HandleTargeted() {
+            unitComponentController?.HighlightController?.HandleTargeted();
+        }
+
+        public void HandleUnTargeted() {
+            unitComponentController?.HighlightController?.HandleUnTargeted();
         }
 
         #endregion

@@ -359,6 +359,9 @@ namespace AnyRPG {
 
             unitController.SetModelReady();
 
+            if (modelWasCreated == false) {
+                unitController.UnitMountManager.ProcessModelCreated();
+            }
         }
 
         public void CalculateFloatHeight() {

@@ -493,7 +493,7 @@ namespace AnyRPG {
                 if (mouseOverInteractable != null && mouseOverInteractable.IsTrigger == false) {
                     //Debug.Log("setting interaction target to " + hit.collider.gameObject.name);
                     //interactionTarget = hit.collider.gameObject;
-                    InterActWithTarget(mouseOverInteractable);
+                    InterActWithTarget(mouseOverInteractable.CharacterTarget);
                 }
                 //Debug.Log("We hit " + hit.collider.name + " " + hit.point);
             }
@@ -602,7 +602,8 @@ namespace AnyRPG {
                 //RemoveFocus();
                 playerManager.UnitController.ClearTarget();
             } else if (mouseOverInteractable != null) {
-                playerManager.UnitController.SetTarget(mouseOverInteractable);
+                //playerManager.UnitController.SetTarget(mouseOverInteractable);
+                playerManager.UnitController.SetTarget(mouseOverInteractable.CharacterTarget);
             }
             //}
 
@@ -698,13 +699,13 @@ namespace AnyRPG {
                 if (targetCharacterUnit != null
                     && targetCharacterUnit != oldTarget
                     //&& (includeFriendly == true || ValidEnemyTarget(targetCharacterUnit))) {
-                    && (includeFriendly == true || ValidEnemyTarget(targetCharacterUnit))) {
+                    && (includeFriendly == true || ValidEnemyTarget(targetCharacterUnit.CharacterTarget))) {
 
                     // check if the unit is actually in front of our character.
                     // not doing any cone or angles for now, anywhere in front will do.  might adjust this a bit later to prevent targetting units nearly adjacent to us and far away
                     Vector3 transformedPosition = playerManager.ActiveUnitController.transform.InverseTransformPoint(targetCharacterUnit.transform.position);
                     if (transformedPosition.z > 0f) {
-                        allTabTargets.Add(targetCharacterUnit);
+                        allTabTargets.Add(targetCharacterUnit.CharacterTarget);
 
                     }
                 }
@@ -974,11 +975,12 @@ namespace AnyRPG {
                 uIManager.FocusUnitFrameController.ClearTarget();
             }
             namePlateManager.ClearFocus();
-            oldTarget?.UnitComponentController?.HighlightController?.HandleClearTarget();
+            oldTarget?.PhysicalTarget.HandleUnTargeted();
         }
 
         public void HandleSetTarget(Interactable newTarget) {
-            //Debug.Log("PlayerController.HandleSetTarget(" + (newTarget == null ? "null" : newTarget.name) + ")");
+            Debug.Log($"PlayerController.HandleSetTarget({(newTarget == null ? "null" : newTarget.gameObject.name)})");
+
             if (newTarget == null) {
                 return;
             }
@@ -990,7 +992,7 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("PlayerController.SetTarget(): InamePlateUnit is null ???!?");
             }
-            newTarget?.UnitComponentController?.HighlightController?.HandleSetTarget();
+            newTarget?.PhysicalTarget.HandleTargeted();
         }
 
         /// <summary>

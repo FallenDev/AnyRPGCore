@@ -926,7 +926,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
 
             FishNetUnitController sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<FishNetUnitController>();
             
@@ -935,7 +935,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddStatusEffectClient(string resourceName, FishNetUnitController sourceNetworkCharacterUnit) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
             StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
@@ -1937,6 +1937,7 @@ namespace AnyRPG {
                 }
                 if (saveData != null) {
                     characterRequestData.saveData = saveData;
+                    //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, isMounted: {saveData.isMounted})");
                 }
                 unitController.CharacterRequestData = characterRequestData;
                 systemGameManager.CharacterManager.CompleteNetworkCharacterRequest(unitController);
@@ -1965,7 +1966,7 @@ namespace AnyRPG {
         }
 
         public void HandlePerformAbilityCastAnimationServer(AbilityProperties baseAbility, int clipIndex) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationServer({baseAbility.ResourceName}, {clipIndex})");
+            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationServer({baseAbility.ResourceName}, {clipIndex})");
 
             HandlePerformAbilityCastAnimationClient(baseAbility.ResourceName, clipIndex);
         }

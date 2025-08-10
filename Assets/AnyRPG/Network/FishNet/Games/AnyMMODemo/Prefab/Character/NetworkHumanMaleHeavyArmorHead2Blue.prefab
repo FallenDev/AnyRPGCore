@@ -158,6 +158,7 @@ MonoBehaviour:
   NetworkBehaviours:
   - {fileID: -5706301469514796879}
   - {fileID: -6870941131180266416}
+  - {fileID: 0}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}

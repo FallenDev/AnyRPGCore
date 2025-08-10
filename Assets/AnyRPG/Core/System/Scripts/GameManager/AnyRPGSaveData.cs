@@ -17,6 +17,7 @@ namespace AnyRPG {
         public string classSpecialization = string.Empty;
         public string playerFaction = string.Empty;
         public bool isDead = false;
+        public bool isMounted = false;
         public bool initializeResourceAmounts = false;
         public bool OverrideLocation = false;
         public float PlayerLocationX;

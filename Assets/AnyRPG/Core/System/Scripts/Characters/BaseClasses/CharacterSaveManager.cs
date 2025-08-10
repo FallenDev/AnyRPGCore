@@ -90,6 +90,7 @@ namespace AnyRPG {
                 unitController.UnitEventController.OnCancelStatusEffect += HandleCancelStatusEffect;
                 unitController.UnitEventController.OnAddPet += HandleAddPet;
                 unitController.UnitEventController.OnSetReputationAmount += HandleSetReputationAmount;
+                unitController.UnitEventController.OnActivateMountedState += HandleActivateMountedState;
                 eventSubscriptionsInitialized = true;
             }
         }
@@ -102,6 +103,7 @@ namespace AnyRPG {
             saveData.PlayerLevel = unitController.CharacterStats.Level;
             saveData.currentExperience = unitController.CharacterStats.CurrentXP;
             saveData.isDead = !unitController.CharacterStats.IsAlive;
+            //saveData.isMounted = unitController.IsMounted;
             if (unitController.BaseCharacter.Faction != null) {
                 saveData.playerFaction = unitController.BaseCharacter.Faction.ResourceName;
             } else {
@@ -149,6 +151,13 @@ namespace AnyRPG {
             SaveStatusEffectData();
             SavePetData();
         }
+
+        private void HandleActivateMountedState(UnitController controller) {
+            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleActivateMountedState()");
+
+            saveData.isMounted = true;
+        }
+
 
         private void HandleReviveComplete(UnitController controller) {
             saveData.isDead = false;

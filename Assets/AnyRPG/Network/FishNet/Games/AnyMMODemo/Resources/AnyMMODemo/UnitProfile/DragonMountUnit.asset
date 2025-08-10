@@ -26,7 +26,7 @@ MonoBehaviour:
   unitPrefabProps:
     unitPrefab: {fileID: 2692339740015506113, guid: ba09f14eb0109ba459f4520b82c3fadc,
       type: 3}
-    networkUnitPrefab: {fileID: 4649811912837811180, guid: 12c19dd49d989d944a7cfa426bb86594,
+    networkUnitPrefab: {fileID: 4649811912837811180, guid: c2d3558ccd9401348a50d2ce6d20fb73,
       type: 3}
     modelPrefab: {fileID: 943068409625311753, guid: 022ab4d98a489344283da6d08ddec94c,
       type: 3}

@@ -81,7 +81,7 @@ namespace AnyRPG {
 
         // on the network
         public UnitController SpawnUnitPrefab(CharacterRequestData characterRequestData, Transform parentTransform, Vector3 position, Vector3 forward, Scene scene) {
-            Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {scene.name})");
+            //Debug.Log($"CharacterManager.SpawnUnitPrefab({characterRequestData.characterConfigurationRequest.unitProfile.ResourceName}, {position}, {forward}, {scene.name})");
 
             return networkManagerServer.SpawnCharacterPrefab(characterRequestData, parentTransform, position, forward, scene);
         }
@@ -291,7 +291,7 @@ namespace AnyRPG {
         */
 
         private GameObject SpawnModelPrefab(GameMode spawnMode, GameObject spawnPrefab, Transform parentTransform, Vector3 position, Vector3 forward) {
-            Debug.Log($"CharacterManager.SpawnModelPrefab({spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
+            //Debug.Log($"CharacterManager.SpawnModelPrefab({spawnMode}, {spawnPrefab.name}, {parentTransform.gameObject.name}, {position}, {forward})");
 
             if (spawnMode == GameMode.Network) {
                 if (networkManagerServer.ServerModeActive == true) {

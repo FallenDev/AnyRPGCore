@@ -95,6 +95,7 @@ namespace AnyRPG {
         protected bool miniMapIndicatorReady = false;
         protected bool isMouseOverUnit = false;
         protected bool isMouseOverNameplate = false;
+        protected bool isTargeted = false;
 
         protected bool initialized = false;
         protected bool startHasRun = false;
@@ -216,6 +217,7 @@ namespace AnyRPG {
         public OutlineController OutlineController { get => outlineController; }
         public ObjectMaterialController ObjectMaterialController { get => objectMaterialController; }
         public bool SuppressInteractionWindow { get => suppressInteractionWindow; set => suppressInteractionWindow = value; }
+        public bool IsTargeted { get => isTargeted; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             //Debug.Log($"{gameObject.name}.Spawnable.Configure()");
@@ -1016,7 +1018,7 @@ namespace AnyRPG {
             componentReferencesInitialized = false;
             initialized = false;
             eventSubscriptionsInitialized = false;
-
+            isTargeted = false;
         }
 
         public virtual void OnSendObjectToPool() {
@@ -1064,13 +1066,27 @@ namespace AnyRPG {
         #region events
 
         public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{gameObject.name}.Interactable.NotifyOnInteractionWithOptionStarted({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{gameObject.name}.Interactable.NotifyOnInteractionWithOptionStarted({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex})");
             
             OnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
         }
 
+        public void SetTargeted() {
+            //Debug.Log($"{gameObject.name}.Interactable.SetTargeted()");
+
+            isTargeted = true;
+            HandleTargeted();
+        }
+
         public void HandleTargeted() {
             unitComponentController?.HighlightController?.HandleTargeted();
+        }
+
+        public void SetUnTargeted() {
+            //Debug.Log($"{gameObject.name}.Interactable.SetUnTargeted()");
+
+            isTargeted = false;
+            HandleUnTargeted();
         }
 
         public void HandleUnTargeted() {

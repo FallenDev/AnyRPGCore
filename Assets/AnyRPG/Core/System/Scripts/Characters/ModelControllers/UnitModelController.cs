@@ -103,7 +103,8 @@ namespace AnyRPG {
         }
 
         public void ResetSettings() {
-            modelAppearanceController.ResetSettings();
+            // check for null here because this could happen from a network disconnect
+            modelAppearanceController?.ResetSettings();
         }
 
         public void SetUnitModel(GameObject go) {
@@ -282,8 +283,9 @@ namespace AnyRPG {
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
-            mecanimModelController.DespawnModel();
-            modelAppearanceController.DespawnModel();
+            // check for null here because this could happen from a network disconnect
+            mecanimModelController?.DespawnModel();
+            modelAppearanceController?.DespawnModel();
             if (unitController.UnitProfile?.UnitPrefabProps?.ModelPrefab != null) {
                 if (networkManagerServer.ServerModeActive == true) {
                     // this is happening on the server, return the object to the pool

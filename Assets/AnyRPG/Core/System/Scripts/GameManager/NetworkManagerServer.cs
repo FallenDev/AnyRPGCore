@@ -721,6 +721,8 @@ namespace AnyRPG {
         }
 
         public void ReturnObjectToPool(GameObject returnedObject) {
+            Debug.Log($"NetworkManagerServer.ReturnObjectToPool({returnedObject.name})");
+
             networkController.ReturnObjectToPool(returnedObject);
         }
 

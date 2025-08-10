@@ -813,6 +813,8 @@ namespace AnyRPG {
         }
 
         public void ReturnObjectToPool(GameObject returnedObject) {
+            Debug.Log($"FishNetNetworkConnector.ReturnObjectToPool({returnedObject.name})");
+
             fishNetNetworkManager.ServerManager.Despawn(returnedObject);
         }
 

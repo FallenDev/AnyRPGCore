@@ -33,15 +33,15 @@ namespace AnyRPG {
         }
 
         public override void ProcessOpenWindowNotification() {
-            Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification()");
+            //Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification()");
 
             base.ProcessOpenWindowNotification();
 
             if (playerManager.UnitController.CharacterStats.CanRevive() == true) {
-                Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification(): CanRevive is true, enabling revive button");
+                //Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification(): CanRevive is true, enabling revive button");
                 reviveButton.gameObject.SetActive(true);
             } else {
-                Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification(): CanRevive is false, disabling revive button");
+                //Debug.Log("PlayerDeathPanelController.ProcessOpenWindowNotification(): CanRevive is false, disabling revive button");
                 reviveButton.gameObject.SetActive(false);
             }
         }

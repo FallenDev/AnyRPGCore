@@ -101,7 +101,7 @@ namespace AnyRPG {
                 // there is no weather in the main menu or initialization scene, so nothing to do
                 return;
             }
-            if (systemGameManager.GameMode == GameMode.Local || levelManager.IsCutscene()) {
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 EndWeather(currentWeather, true);
             }
             CleanupWeatherEffectControllers();
@@ -289,7 +289,7 @@ namespace AnyRPG {
         }
 
         public void ChooseWeather(WeatherProfile weatherProfile) {
-            //Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
+            Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
 
             previousWeather = currentWeather;
             currentWeather = weatherProfile;

@@ -954,7 +954,11 @@ namespace AnyRPG {
         }
 
         public void Despawn(float delayTime = 0f, bool addSystemDefaultTime = true, bool forceDespawn = false) {
-            Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+            //Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+
+            if (initialized == false) {
+                return;
+            }
 
             if (forceDespawn == true) {
                 DespawnImmediate();
@@ -993,10 +997,17 @@ namespace AnyRPG {
         private void DespawnImmediate() {
             //Debug.Log($"{gameObject.name}.UnitController.DespawnImmediate()");
 
+            if (initialized == false) {
+                return;
+            }
+
             despawning = true;
+
+            // clear target before notify despawn or nothing will be subscribed clearTarget event
+            ClearTarget();
+
             unitEventController.NotifyOnDespawn(this);
 
-            ClearTarget();
             CancelMountEffects();
             // this could be a mount which has no base character - check for nulls
             characterStats.HandleCharacterUnitDespawn();
@@ -1939,7 +1950,8 @@ namespace AnyRPG {
 
         public override void ProcessLevelUnload() {
             //Debug.Log($"{gameObject.name}.UnitController.ProcessLevelUnload()");
-            if (gameObject.activeSelf == false) {
+
+            if (gameObject == null || gameObject.activeSelf == false) {
                 // this could be a mount unit that was already despawned via the player CancelMountEffects() calls
                 return;
             }
@@ -2125,7 +2137,8 @@ namespace AnyRPG {
         }
 
         public void ClearTarget() {
-            //Debug.Log($"{gameObject.name}: basecontroller.ClearTarget()");
+            //Debug.Log($"{gameObject.name}.UnitController.ClearTarget()");
+
             if (target != null) {
                 target.OnInteractableDisable -= HandleTargetDisable;
             }

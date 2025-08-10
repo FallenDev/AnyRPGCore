@@ -195,7 +195,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="characterTarget"></param>
         public void Attack(UnitController characterTarget, bool playerInitiated = false) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCombat.Attack({(characterTarget == null ? "null" : characterTarget.gameObject.name)})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.Attack({(characterTarget == null ? "null" : characterTarget.gameObject.name)})");
 
             if (characterTarget == null) {
                 //Debug.Log("You must have a target to attack");

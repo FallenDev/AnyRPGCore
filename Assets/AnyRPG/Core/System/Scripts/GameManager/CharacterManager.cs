@@ -95,16 +95,25 @@ namespace AnyRPG {
 
 
         public void ProcessStopNetworkUnit(UnitController unitController) {
-            //Debug.Log($"CharacterManager.ProcessStopClient({unitController.gameObject.name})");
+            //Debug.Log($"CharacterManager.ProcessStopNetworkUnit({unitController.gameObject.name})");
 
             if (unitController.IsOwner == true && networkOwnedUnits.Contains(unitController)) {
                 //HandleNetworkOwnedUnitDespawn(unitController);
                 unitController.Despawn(0f, false, true);
+                return;
             }
             if (unitController.IsOwner == false && networkUnownedUnits.Contains(unitController)) {
                 //HandleNetworkUnownedUnitDespawn(unitController);
                 unitController.Despawn(0f, false, true);
+                return;
             }
+
+            if (networkManagerServer.ServerModeActive == true) {
+                return;
+            }
+            // add default case because network disconnect could happen before initialization is completed
+            unitController.Despawn(0f, false, true);
+
         }
 
         /*
@@ -334,6 +343,8 @@ namespace AnyRPG {
         }
 
         public void PoolUnitController(UnitController unitController) {
+            //Debug.Log($"CharacterManager.PoolUnitController({unitController.gameObject.name})");
+
             if (localUnits.Contains(unitController)) {
                 objectPooler.ReturnObjectToPool(unitController.gameObject);
                 return;
@@ -341,8 +352,8 @@ namespace AnyRPG {
             if (networkManagerServer.ServerModeActive == true) {
                 // this is happening on the server, return the object to the pool
                 // disabled because crashing.  On server, network objects are automatically despawned when level unloads
-                //networkManagerServer.ReturnObjectToPool(unitController.gameObject);
-                unitController.gameObject.SetActive(false);
+                //unitController.gameObject.SetActive(false);
+                networkManagerServer.ReturnObjectToPool(unitController.gameObject);
             } else {
                 // this is happening on the client
                 if (localUnits.Contains(unitController)) {

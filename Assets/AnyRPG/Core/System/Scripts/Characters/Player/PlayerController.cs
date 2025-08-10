@@ -680,9 +680,9 @@ namespace AnyRPG {
             List<Interactable> allTabTargets = new List<Interactable>();
             int validMask = 0;
             if (includeInteractable) {
-                validMask = (1 << LayerMask.NameToLayer("CharacterUnit")) | (1 << LayerMask.NameToLayer("Interactable"));
+                validMask = (1 << LayerMask.NameToLayer("CharacterUnit")) | (1 << LayerMask.NameToLayer("Interactable")) | (1 << LayerMask.NameToLayer("Player"));
             } else {
-                validMask = 1 << LayerMask.NameToLayer("CharacterUnit");
+                validMask = 1 << LayerMask.NameToLayer("CharacterUnit") | (1 << LayerMask.NameToLayer("Player"));
             }
             Collider[] hitColliders = new Collider[100];
             playerManager.UnitController.PhysicsScene.OverlapSphere(playerManager.ActiveUnitController.transform.position, tabTargetMaxDistance, hitColliders, validMask, QueryTriggerInteraction.UseGlobal);
@@ -692,7 +692,7 @@ namespace AnyRPG {
             foreach (Collider hitCollider in hitColliders) {
                 //Debug.Log("GetNextTabTarget(): collider length: " + hitColliders.Length);
                 //GameObject collidedGameObject = hitCollider.gameObject;
-                if (hitCollider == null) {
+                if (hitCollider == null || hitCollider.gameObject == playerManager.UnitController.gameObject) {
                     continue;
                 }
                 Interactable targetCharacterUnit = hitCollider.gameObject.GetComponent<Interactable>();
@@ -969,17 +969,18 @@ namespace AnyRPG {
 
         public void HandleClearTarget(Interactable oldTarget) {
             //Debug.Log("PlayerController.HandleClearTarget()");
+
             if (PlayerPrefs.HasKey("LockUI") == true && PlayerPrefs.GetInt("LockUI") == 0) {
                 uIManager.FocusUnitFrameController.ClearTarget(false);
             } else {
                 uIManager.FocusUnitFrameController.ClearTarget();
             }
             namePlateManager.ClearFocus();
-            oldTarget?.PhysicalTarget.HandleUnTargeted();
+            oldTarget?.PhysicalTarget.SetUnTargeted();
         }
 
         public void HandleSetTarget(Interactable newTarget) {
-            Debug.Log($"PlayerController.HandleSetTarget({(newTarget == null ? "null" : newTarget.gameObject.name)})");
+            //Debug.Log($"PlayerController.HandleSetTarget({(newTarget == null ? "null" : newTarget.gameObject.name)})");
 
             if (newTarget == null) {
                 return;
@@ -992,7 +993,7 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("PlayerController.SetTarget(): InamePlateUnit is null ???!?");
             }
-            newTarget?.PhysicalTarget.HandleTargeted();
+            newTarget?.PhysicalTarget.SetTargeted();
         }
 
         /// <summary>

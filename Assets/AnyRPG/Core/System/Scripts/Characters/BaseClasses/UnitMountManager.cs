@@ -167,6 +167,10 @@ namespace AnyRPG {
 
             unitController.UnitEventController.NotifyOnActivateMountedState(mountUnitController);
             lateJoin = false;
+            if ((systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) && unitController.IsTargeted == true) {
+                unitController.SetUnTargeted();
+                mountUnitController.SetTargeted();
+            }
         }
 
         public void ConfigureCharacterMountedPhysics() {
@@ -228,6 +232,10 @@ namespace AnyRPG {
                 //playerManager.UnitController.MyAnimatedUnit.MyCharacterAnimator.SetBool("Riding", false);
 
                 unitController.UnitEventController.NotifyOnDeactivateMountedState();
+            }
+            if ((systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) && mountUnitController.IsTargeted == true) {
+                unitController.SetTargeted();
+                mountUnitController.SetUnTargeted();
             }
             if (systemGameManager.GameMode == GameMode.Local) {
                 DespawnMountUnit();
@@ -326,7 +334,7 @@ namespace AnyRPG {
                 //Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() isMounted = false");
                 return;
             }
-            Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() isMounted = TRUE");
+            //Debug.Log($"{unitController.gameObject.name}.UnitMountManager.ProcessModelCreated() isMounted = TRUE");
 
             UnitController mountUnitController = null;
             if (unitController.transform.parent != null) {

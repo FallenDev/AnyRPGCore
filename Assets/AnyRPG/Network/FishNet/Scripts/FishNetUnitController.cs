@@ -26,14 +26,10 @@ namespace AnyRPG {
         public UnitController UnitController { get => unitController; }
 
         protected override void Awake() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.Awake() position: { gameObject.transform.position}");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.Awake() position: { gameObject.transform.position}");
             base.Awake();
 
             unitControllerMode.Value = UnitControllerMode.Preview;
-        }
-
-        private void HandleDataReceived(NetworkTransform.TransformData prev, NetworkTransform.TransformData next) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDataReceived({prev.Position}, {next.Position})");
         }
 
         protected override void Configure() {
@@ -44,8 +40,8 @@ namespace AnyRPG {
 
 
         public override void OnStartClient() {
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStartClient()");
             base.OnStartClient();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartClient()");
 
             Configure();
             if (systemGameManager == null) {
@@ -63,8 +59,10 @@ namespace AnyRPG {
         }
 
         public override void OnStopClient() {
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopClient()");
+
             base.OnStopClient();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopClient()");
+
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
@@ -75,7 +73,7 @@ namespace AnyRPG {
 
         public override void OnStartServer() {
             base.OnStartServer();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStartServer()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStartServer()");
 
             Configure();
             if (systemGameManager == null) {
@@ -88,7 +86,7 @@ namespace AnyRPG {
 
         public override void OnStopServer() {
             base.OnStopServer();
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.OnStopServer()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer()");
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
@@ -97,7 +95,7 @@ namespace AnyRPG {
         }
 
         public void CompleteClientCharacterRequest(AnyRPGSaveData saveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteClientCharacterRequest()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.CompleteClientCharacterRequest()");
 
             CompleteCharacterRequest(base.IsOwner, saveData);
             SubscribeToClientUnitEvents();
@@ -489,14 +487,14 @@ namespace AnyRPG {
         }
 
         private void HandleDespawnActionObjectsServer() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnActionObjectsServer()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDespawnActionObjectsServer()");
 
             HandleDespawnActionObjectsClient();
         }
 
         [ObserversRpc]
         private void HandleDespawnActionObjectsClient() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnActionObjectsClient()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDespawnActionObjectsClient()");
 
             unitController.UnitActionManager.DespawnActionObjects();
         }
@@ -507,7 +505,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         private void HandleSpawnActionObjectsClient(string animatedActionResourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnActionObjectsClient({animatedActionResourceName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnActionObjectsClient({animatedActionResourceName})");
 
             AnimatedAction animatedAction = systemDataFactory.GetResource<AnimatedAction>(animatedActionResourceName);
             if (animatedAction == null) {
@@ -518,27 +516,27 @@ namespace AnyRPG {
 
 
         private void HandleDeactivateAutoAttackServer() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDeactivateAutoAttackServer()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDeactivateAutoAttackServer()");
 
             HandleDeactivateAutoAttackClient();
         }
 
         [ObserversRpc]
         private void HandleDeactivateAutoAttackClient() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackClient()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleActivateAutoAttackClient()");
 
             unitController.CharacterCombat.DeactivateAutoAttack();
         }
 
         private void HandleActivateAutoAttackServer() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackServer()");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleActivateAutoAttackServer()");
 
             HandleActivateAutoAttackClient();
         }
 
         [ObserversRpc]
         private void HandleActivateAutoAttackClient() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleActivateAutoAttackClient()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleActivateAutoAttackClient()");
 
             unitController.CharacterCombat.ActivateAutoAttack();
         }
@@ -552,7 +550,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void HandleInitiateGlobalCooldownClient(NetworkConnection networkConnection, float coolDownLength) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleInitiateGlobalCooldownClient({coolDownLength})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleInitiateGlobalCooldownClient({coolDownLength})");
             unitController.CharacterAbilityManager.InitiateGlobalCooldown(coolDownLength);
         }
 
@@ -565,7 +563,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void HandleBeginAbilityCoolDownClient(NetworkConnection networkConnection, string abilityResourceName, float coolDownLength) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityCoolDownClient({abilityResourceName}, {coolDownLength})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleBeginAbilityCoolDownClient({abilityResourceName}, {coolDownLength})");
             Ability ability = systemDataFactory.GetResource<Ability>(abilityResourceName);
             if (ability == null) {
                 return;
@@ -582,7 +580,7 @@ namespace AnyRPG {
 
         [TargetRpc]
         private void HandleBeginActionCoolDownClient(NetworkConnection networkConnection, int itemInstanceId, float coolDownLength) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginActionCoolDownClient({actionResourceName}, {coolDownLength})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleBeginActionCoolDownClient({actionResourceName}, {coolDownLength})");
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedActionItem) {
                 unitController.CharacterAbilityManager.BeginActionCoolDown(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedActionItem, coolDownLength);
             }
@@ -591,11 +589,11 @@ namespace AnyRPG {
 
 
         public void HandleAddActivePetServer(UnitProfile profile, UnitController petUnitController) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer({profile?.ResourceName}, {petUnitController?.gameObject.name})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddActivePetServer({profile?.ResourceName}, {petUnitController?.gameObject.name})");
 
             FishNetUnitController targetNetworkCharacterUnit = petUnitController.GetComponent<FishNetUnitController>();
             if (targetNetworkCharacterUnit == null) {
-                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetServer(): targetNetworkCharacterUnit is null for {petUnitController?.gameObject.name}");
+                //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddActivePetServer(): targetNetworkCharacterUnit is null for {petUnitController?.gameObject.name}");
                 return;
             }
 
@@ -604,10 +602,10 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAddActivePetClient(string petResourceName, FishNetUnitController targetNetworkCharacterUnit) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetClient({petResourceName}, {targetNetworkCharacterUnit?.gameObject.name})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddActivePetClient({petResourceName}, {targetNetworkCharacterUnit?.gameObject.name})");
             
             if (targetNetworkCharacterUnit?.unitController == null) {
-                //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddActivePetClient(): targetNetworkCharacterUnit is null");
+                //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddActivePetClient(): targetNetworkCharacterUnit is null");
                 return;
             }
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(petResourceName);
@@ -624,7 +622,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAddPetClient(string petResourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddPetClient({petResourceName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddPetClient({petResourceName})");
             
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(petResourceName);
             
@@ -892,14 +890,14 @@ namespace AnyRPG {
         }
 
         public void HandleCancelStatusEffectServer(StatusEffectProperties statusEffectProperties) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCancelStatusEffectServer({statusEffectProperties.ResourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleCancelStatusEffectServer({statusEffectProperties.ResourceName})");
 
             CancelStatusEffectClient(statusEffectProperties.ResourceName);
         }
 
         [ObserversRpc]
         public void CancelStatusEffectClient(string resourceName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CancelStatusEffectClient({resourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.CancelStatusEffectClient({resourceName})");
 
             StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
@@ -909,14 +907,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddStatusEffectStackServer(string resourceName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddStatusEffectStackServer({resourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddStatusEffectStackServer({resourceName})");
 
             AddStatusEffectStackClient(resourceName);
         }
 
         [ObserversRpc]
         public void AddStatusEffectStackClient(string resourceName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectStackClient({resourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.AddStatusEffectStackClient({resourceName})");
 
             StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
@@ -926,7 +924,7 @@ namespace AnyRPG {
         }
 
         public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
 
             FishNetUnitController sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<FishNetUnitController>();
             
@@ -935,7 +933,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddStatusEffectClient(string resourceName, FishNetUnitController sourceNetworkCharacterUnit) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.AddStatusEffectClient({resourceName}, {sourceNetworkCharacterUnit?.gameObject.name})");
 
             StatusEffectBase statusEffect = systemDataFactory.GetResource<AbilityEffect>(resourceName) as StatusEffectBase;
             if (statusEffect == null) {
@@ -951,14 +949,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddBagServer(InstantiatedBag instantiatedBag, BagNode node) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagServer({instantiatedBag.Bag.ResourceName}, {node.NodeIndex})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddBagServer({instantiatedBag.Bag.ResourceName}, {node.NodeIndex})");
 
             HandleAddBagClient(instantiatedBag.InstanceId, node.NodeIndex, node.IsBankNode);
         }
 
         [ObserversRpc]
         public void HandleAddBagClient(int itemInstanceId, int nodeIndex, bool isBankNode) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddBagClient({itemInstanceId}, {nodeIndex}, {isBankNode})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddBagClient({itemInstanceId}, {nodeIndex}, {isBankNode})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
                 BagNode bagNode = null;
@@ -1000,7 +998,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleCastTimeChangedClient(string abilityName, float castPercent) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleCastTimeChangedClient({abilityName}, {castPercent})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleCastTimeChangedClient({abilityName}, {castPercent})");
 
             Ability ability = systemDataFactory.GetResource<Ability>(abilityName);
             unitController.UnitEventController.NotifyOnCastTimeChanged(unitController, ability.AbilityProperties, castPercent);
@@ -1078,7 +1076,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
+            Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
             int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
             AddItemToInventorySlotClient(slotIndex, item.InstanceId);
@@ -1086,7 +1084,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddItemToInventorySlotClient(int slotIndex, int itemInstanceId) {
-            Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
+            Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.AddInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
@@ -1094,7 +1092,7 @@ namespace AnyRPG {
         }
 
         public void HandleRemoveItemFromInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.HandleRemoveItemFromInventorySlot({item.Item.ResourceName})");
 
             RemoveItemFromInventorySlotClient(slot.GetCurrentInventorySlotIndex(unitController), item.InstanceId);
 
@@ -1102,7 +1100,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void RemoveItemFromInventorySlotClient(int slotIndex, int itemInstanceId) {
-            //Debug.Log($"{unitController.gameObject.name}.NetworkCharacterUnit.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
+            //Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.RemoveItemFromInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.RemoveInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
@@ -1148,14 +1146,14 @@ namespace AnyRPG {
         }
 
         public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddEquipment({profile.ResourceName}, {equipment.Equipment.ResourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddEquipment({profile.ResourceName}, {equipment.Equipment.ResourceName})");
 
             HandleAddEquipmentClient(profile.ResourceName, equipment.InstanceId);
         }
 
         [ObserversRpc]
         public void HandleAddEquipmentClient(string equipmentSlotProfileName, int itemInstanceId) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAddEquipmentClient({equipmentSlotProfileName}, {itemInstanceId})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAddEquipmentClient({equipmentSlotProfileName}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
@@ -1192,14 +1190,14 @@ namespace AnyRPG {
         }
 
         public void HandleRequestUseItem(int slotIndex) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestUseItemClient({slotIndex})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleRequestUseItemClient({slotIndex})");
 
             RequestUseItemClient(slotIndex);
         }
 
         [ServerRpc]
         private void RequestUseItemClient(int slotIndex) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestUseItemClient({slotIndex})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.RequestUseItemClient({slotIndex})");
 
             unitController.CharacterInventoryManager.UseItem(slotIndex);
         }
@@ -1216,13 +1214,13 @@ namespace AnyRPG {
         }
 
         public void HandleRequestUnequipToSlot(InstantiatedEquipment equipment, int inventorySlotId) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestUnequipToSlot({equipment.Equipment.ResourceName}, {inventorySlotId}) instanceId: {equipment.InstanceId}");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleRequestUnequipToSlot({equipment.Equipment.ResourceName}, {inventorySlotId}) instanceId: {equipment.InstanceId}");
             RequestUnequipToSlot(equipment.InstanceId, inventorySlotId);
         }
 
         [ServerRpc]
         public void RequestUnequipToSlot(int itemInstanceId, int inventorySlotId) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestUnequipToSlot({itemInstanceId}, {inventorySlotId})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.RequestUnequipToSlot({itemInstanceId}, {inventorySlotId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 unitController.CharacterEquipmentManager.UnequipToSlot(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedEquipment, inventorySlotId);
@@ -1286,13 +1284,13 @@ namespace AnyRPG {
         }
 
         public void HandleRequestAddBagFromInventory(InstantiatedBag instantiatedBag, int nodeIndex, bool isBankNode) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestAddBagFromInventory({instantiatedBag.InstanceId}, {nodeIndex}, {isBankNode})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleRequestAddBagFromInventory({instantiatedBag.InstanceId}, {nodeIndex}, {isBankNode})");
             RequestAddBagFromInventory(instantiatedBag.InstanceId, nodeIndex, isBankNode);
         }
 
         [ServerRpc]
         public void RequestAddBagFromInventory(int itemInstanceId, int nodeIndex, bool isBankNode) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestAddBagFromInventory({itemInstanceId}, {nodeIndex}, {isBankNode})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.RequestAddBagFromInventory({itemInstanceId}, {nodeIndex}, {isBankNode})");
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedBag) {
                 unitController.CharacterInventoryManager.AddBagFromInventory(systemItemManager.InstantiatedItems[itemInstanceId] as InstantiatedBag, nodeIndex, isBankNode);
             }
@@ -1344,13 +1342,13 @@ namespace AnyRPG {
 
 
         public void HandleRequestEquipToSlot(InstantiatedEquipment equipment, EquipmentSlotProfile profile) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleRequestEquipToSlot({equipment.Equipment.ResourceName}, {profile.ResourceName}) instanceId: {equipment.InstanceId}");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleRequestEquipToSlot({equipment.Equipment.ResourceName}, {profile.ResourceName}) instanceId: {equipment.InstanceId}");
             RequestEquipToSlot(equipment.InstanceId, profile.ResourceName);
         }
 
         [ServerRpc]
         public void RequestEquipToSlot(int itemInstanceId, string equipmentSlotProfileName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.RequestEquipToSlot({itemInstanceId}, {equipmentSlotProfileName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.RequestEquipToSlot({itemInstanceId}, {equipmentSlotProfileName})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) && systemItemManager.InstantiatedItems[itemInstanceId] is InstantiatedEquipment) {
                 EquipmentSlotProfile equipmentSlotProfile = systemDataFactory.GetResource<EquipmentSlotProfile>(equipmentSlotProfileName);
@@ -1372,7 +1370,7 @@ namespace AnyRPG {
         }
 
         public void HandleGetNewInstantiatedItem(InstantiatedItem instantiatedItem) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItem({instantiatedItem.ResourceName}) instanceId: {instantiatedItem.InstanceId}");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleGetNewInstantiatedItem({instantiatedItem.ResourceName}) instanceId: {instantiatedItem.InstanceId}");
             
             InventorySlotSaveData inventorySlotSaveData = instantiatedItem.GetSlotSaveData();
             HandleGetNewInstantiatedItemClient(instantiatedItem.InstanceId, inventorySlotSaveData);
@@ -1380,7 +1378,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
             
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
         }
@@ -1479,7 +1477,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAcceptQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAcceptQuestClient({questName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
@@ -1493,7 +1491,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAcceptAchievementClient(string resourceName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAcceptQuestClient({resourceName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({resourceName})");
 
             Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
             if (achievement != null) {
@@ -1508,7 +1506,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAbandonQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleAbandonQuestClient({questName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAbandonQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
@@ -1522,7 +1520,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleTurnInQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleTurnInQuestClient({questName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleTurnInQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
@@ -1595,7 +1593,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleFactionChangeClient(string newFactionName) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleFactionChangeClient({newFactionName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleFactionChangeClient({newFactionName})");
 
             Faction newFaction = systemDataFactory.GetResource<Faction>(newFactionName);
             if (newFaction == null) {
@@ -1666,7 +1664,7 @@ namespace AnyRPG {
         }
 
         public void HandleSpawnAbilityEffectPrefabsServer(Interactable target, Interactable originalTarget, LengthEffectProperties lengthEffectProperties, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityEffectPrefabsServer()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityEffectPrefabsServer()");
 
             FishNetInteractable networkTarget = null;
             if (target != null) {
@@ -1681,7 +1679,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleSpawnAbilityEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityObjectsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             AbilityEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName);
             if (abilityEffect == null) {
@@ -1703,7 +1701,7 @@ namespace AnyRPG {
         }
 
         public void HandleSpawnProjectileEffectPrefabsServer(Interactable target, Interactable originalTarget, ProjectileEffectProperties projectileEffectProperties, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {projectileEffectProperties.ResourceName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnProjectileEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {projectileEffectProperties.ResourceName})");
 
             FishNetInteractable networkTarget = null;
             if (target != null) {
@@ -1718,7 +1716,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleSpawnProjectileEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             ProjectileEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ProjectileEffect;
             if (abilityEffect == null) {
@@ -1740,7 +1738,7 @@ namespace AnyRPG {
         }
 
         public void HandleSpawnChanneledEffectPrefabsServer(Interactable target, Interactable originalTarget, ChanneledEffectProperties channeledEffectProperties, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnChanneledEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {channeledEffectProperties.ResourceName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnChanneledEffectPrefabsServer({target?.gameObject.name}, {originalTarget?.gameObject.name}, {channeledEffectProperties.ResourceName})");
 
             FishNetInteractable networkTarget = null;
             if (target != null) {
@@ -1755,7 +1753,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleSpawnChanneledEffectPrefabsClient(FishNetInteractable networkTarget, FishNetInteractable networkOriginalTarget, string abilityEffectName, SerializableAbilityEffectContext serializableAbilityEffectContext) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnProjectileEffectPrefabsClient({networkTarget?.gameObject.name}, {networkOriginalTarget?.gameObject.name}, {abilityEffectName})");
 
             ChanneledEffect abilityEffect = systemGameManager.SystemDataFactory.GetResource<AbilityEffect>(abilityEffectName) as ChanneledEffect;
             if (abilityEffect == null) {
@@ -1778,14 +1776,14 @@ namespace AnyRPG {
 
 
         public void HandleSpawnAbilityObjectsServer(AbilityProperties ability, int index) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
 
             HandleSpawnAbilityObjectsClient(ability.ResourceName, index);
         }
 
         [ObserversRpc]
         public void HandleSpawnAbilityObjectsClient(string abilityName, int index) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSpawnAbilityObjectsClient()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityObjectsClient()");
 
             Ability ability = systemGameManager.SystemDataFactory.GetResource<Ability>(abilityName);
             if (ability != null) {
@@ -1795,21 +1793,21 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleDespawnAbilityObjects() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDespawnAbilityObjects()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDespawnAbilityObjects()");
 
             unitController.CharacterAbilityManager.DespawnAbilityObjects();
         }
 
         [ObserversRpc]
         public void HandleDropCombat() {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleDropCombat()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleDropCombat()");
 
             //unitController.CharacterCombat.TryToDropCombat();
             unitController.CharacterCombat.DropCombat(true);
         }
 
         private void HandleEnterCombatServer(Interactable targetInteractable) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleEnterCombatServer(" + (targetInteractable == null ? "null" : targetInteractable.gameObject.name) + ")");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleEnterCombatServer(" + (targetInteractable == null ? "null" : targetInteractable.gameObject.name) + ")");
 
             FishNetInteractable networkInteractable = null;
             if (targetInteractable != null) {
@@ -1820,7 +1818,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleEnterCombatClient(FishNetInteractable networkInteractable) {
-            Debug.Log($"{gameObject.name}.HandleEnterCombatClient()");
+            //Debug.Log($"{gameObject.name}.HandleEnterCombatClient()");
             
             if (networkInteractable != null) {
                 unitController.CharacterCombat.EnterCombat(networkInteractable.Interactable);
@@ -1829,7 +1827,7 @@ namespace AnyRPG {
 
 
         private void HandleBeforeDieServer(UnitController targetUnitController) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleBeforeDieServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
 
             HandleBeforeDieClient();
         }
@@ -1842,7 +1840,7 @@ namespace AnyRPG {
         }
 
         private void HandleReviveBeginServer(float reviveTime) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleReviveBeginServer()");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleReviveBeginServer()");
 
             // we don't need to pass the time to the client, since it will be calculated there anyway
             HandleReviveBeginClient();
@@ -1856,7 +1854,7 @@ namespace AnyRPG {
         }
 
         private void HandleReviveCompleteServer(UnitController targetUnitController) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleReviveCompleteServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleReviveCompleteServer(" + (targetUnitController == null ? "null" : targetUnitController.gameObject.name) + ")");
 
             HandleReviveCompleteClient();
         }
@@ -1870,7 +1868,7 @@ namespace AnyRPG {
 
 
         private void HandleClearTargetClient(Interactable oldTarget) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleClearTargetClient(" + (oldTarget == null ? "null" : oldTarget.gameObject.name) + ")");
 
             /*
             NetworkInteractable networkInteractable = null;
@@ -1884,7 +1882,7 @@ namespace AnyRPG {
 
         [ServerRpc]
         private void HandleClearTargetServer(/*NetworkInteractable networkInteractable*/) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleClearTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
             
             //unitController.SetTarget((networkInteractable == null ? null : networkInteractable.interactable));
             
@@ -1893,7 +1891,7 @@ namespace AnyRPG {
 
 
         private void HandleSetTargetClient(Interactable target) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetClient({(target == null ? "null" : target.gameObject.name)})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetTargetClient({(target == null ? "null" : target.gameObject.name)})");
 
             FishNetInteractable networkInteractable = null;
             if (target != null) {
@@ -1904,7 +1902,7 @@ namespace AnyRPG {
 
         [ServerRpc]
         private void HandleSetTargetServer(FishNetInteractable networkInteractable) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetTargetServer(" + (networkInteractable == null ? "null" : networkInteractable.gameObject.name) + ")");
 
             unitController.SetTarget((networkInteractable == null ? null : networkInteractable.Interactable));
         }
@@ -1914,11 +1912,11 @@ namespace AnyRPG {
         }
 
         private void CompleteCharacterRequest(bool isOwner, AnyRPGSaveData saveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, {(saveData == null ? "null" : "valid save data")})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.CompleteCharacterRequest({isOwner}, {(saveData == null ? "null" : "valid save data")})");
 
             /*
             if (base.Owner != null ) {
-                Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}) owner accountId: {base.OwnerId}");
+                Debug.Log($"{gameObject.name}.FishNetUnitController.CompleteCharacterRequest({isOwner}) owner accountId: {base.OwnerId}");
             }
             */
 
@@ -1937,7 +1935,7 @@ namespace AnyRPG {
                 }
                 if (saveData != null) {
                     characterRequestData.saveData = saveData;
-                    //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.CompleteCharacterRequest({isOwner}, isMounted: {saveData.isMounted})");
+                    //Debug.Log($"{gameObject.name}.FishNetUnitController.CompleteCharacterRequest({isOwner}, isMounted: {saveData.isMounted})");
                 }
                 unitController.CharacterRequestData = characterRequestData;
                 systemGameManager.CharacterManager.CompleteNetworkCharacterRequest(unitController);
@@ -1966,14 +1964,14 @@ namespace AnyRPG {
         }
 
         public void HandlePerformAbilityCastAnimationServer(AbilityProperties baseAbility, int clipIndex) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationServer({baseAbility.ResourceName}, {clipIndex})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandlePerformAbilityCastAnimationServer({baseAbility.ResourceName}, {clipIndex})");
 
             HandlePerformAbilityCastAnimationClient(baseAbility.ResourceName, clipIndex);
         }
 
         [ObserversRpc]
         public void HandlePerformAbilityCastAnimationClient(string abilityName, int clipIndex) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandlePerformAbilityCastAnimationClient({abilityName}, {clipIndex})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
@@ -1983,14 +1981,14 @@ namespace AnyRPG {
         }
 
         public void HandlePerformAbilityActionAnimationServer(AbilityProperties baseAbility, int clipIndex) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityActionAnimationServer({baseAbility.ResourceName}, {clipIndex})");
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandlePerformAbilityActionAnimationServer({baseAbility.ResourceName}, {clipIndex})");
 
             HandlePerformAbilityActionAnimationClient(baseAbility.ResourceName, clipIndex);
         }
 
         [ObserversRpc]
         public void HandlePerformAbilityActionAnimationClient(string abilityName, int clipIndex) {
-            Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandlePerformAbilityActionAnimationClient({abilityName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandlePerformAbilityActionAnimationClient({abilityName})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
@@ -2025,7 +2023,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleClearCastingClient() {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleClearCastingClient()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleClearCastingClient()");
 
             unitController.UnitAnimator.ClearCasting();
         }
@@ -2038,7 +2036,7 @@ namespace AnyRPG {
         */
 
         public void HandleBeginAbilityLocal(AbilityProperties abilityProperties, Interactable target, bool playerInitiated) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleBeginAbilityLocal({abilityProperties.ResourceName})");
 
 
             FishNetInteractable targetNetworkInteractable = null;
@@ -2050,7 +2048,7 @@ namespace AnyRPG {
 
         [ServerRpc]
         public void HandleBeginAbilityServer(string abilityName, FishNetInteractable targetNetworkInteractable, bool playerInitiated) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.HandleBeginAbilityServer({abilityName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleBeginAbilityServer({abilityName})");
 
             Ability baseAbility = systemDataFactory.GetResource<Ability>(abilityName);
             if (baseAbility == null) {
@@ -2074,14 +2072,14 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         public void GetClientSaveData(NetworkConnection networkConnection = null) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.GetClientSaveData()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.GetClientSaveData()");
 
             PutClientSaveData(networkConnection, unitController.CharacterSaveManager.SaveData);
         }
 
         [TargetRpc]
         public void PutClientSaveData(NetworkConnection networkConnection, AnyRPGSaveData saveData) {
-            //Debug.Log($"{gameObject.name}.NetworkCharacterUnit.PutClientSaveData()");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.PutClientSaveData()");
 
             CompleteClientCharacterRequest(saveData);
         }

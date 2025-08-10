@@ -1511,9 +1511,9 @@ namespace AnyRPG {
 
             if (finalTarget == null && ability.GetTargetOptions(unitController).RequireTarget == true) {
                 if (playerInitiated) {
-                    Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
+                    //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
                 }
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityCommon({ability.ResourceName}, {target?.name}): finalTarget is null. exiting");
                 return false;
             }
             if (finalTarget != null && PerformLOSCheck(finalTarget, ability) == false) {

@@ -151,6 +151,7 @@ namespace AnyRPG {
         private bool isOwner = false;
         private bool isServer = false;
         private bool isServerOwned = false;
+        private bool isDisconnected = false;
 
         // initial configuration
         private CharacterRequestData characterRequestData = null;
@@ -474,6 +475,7 @@ namespace AnyRPG {
         public bool CharacterConfigured { get => characterConfigured; }
         public bool EnableLeashing { get => enableLeashing; set => enableLeashing = value; }
         public UnitController RiderUnitController { get => riderUnitController; set => riderUnitController = value; }
+        public bool IsDisconnected { get => isDisconnected; set => isDisconnected = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -954,7 +956,7 @@ namespace AnyRPG {
         }
 
         public void Despawn(float delayTime = 0f, bool addSystemDefaultTime = true, bool forceDespawn = false) {
-            //Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+            Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
 
             if (initialized == false) {
                 return;
@@ -1032,6 +1034,7 @@ namespace AnyRPG {
             UnitEventController.NotifyOnUnitDestroy(unitProfile);
             ResetSettings();
             characterManager.PoolUnitController(this);
+            IsDisconnected = false;
         }
 
         /// <summary>

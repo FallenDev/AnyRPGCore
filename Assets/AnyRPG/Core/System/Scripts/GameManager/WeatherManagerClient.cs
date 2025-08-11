@@ -289,7 +289,7 @@ namespace AnyRPG {
         }
 
         public void ChooseWeather(WeatherProfile weatherProfile) {
-            Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
+            //Debug.Log($"WeatherManagerClient.ChooseWeather({(weatherProfile == null ? "null" : weatherProfile.ResourceName)})");
 
             previousWeather = currentWeather;
             currentWeather = weatherProfile;
@@ -331,7 +331,7 @@ namespace AnyRPG {
         }
 
         public void EndWeather(WeatherProfile previousWeather, bool immediate) {
-            Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
+            //Debug.Log($"WeatherManagerClient.EndWeather({(previousWeather == null ? "null" : previousWeather.ResourceName)}, {immediate})");
 
             currentAmbientSound = null;
 

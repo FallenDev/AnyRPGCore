@@ -85,12 +85,17 @@ namespace AnyRPG {
         }
 
         public override void OnStopServer() {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer()");
+
             base.OnStopServer();
-            //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer()");
             if (SystemGameManager.IsShuttingDown == true) {
                 return;
             }
             UnsubscribeFromServerUnitEvents();
+            if (unitController.CharacterConfigured == true) {
+                Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer() setting IsDisconnected = true");
+                unitController.IsDisconnected = true;
+            }
             systemGameManager.NetworkManagerServer.ProcessStopNetworkUnitServer(unitController);
         }
 
@@ -393,6 +398,7 @@ namespace AnyRPG {
             unitController.UnitMountManager.DespawnMountUnit();
         }
 
+        /*
         private void HandleMountUnitSpawnServer() {
             //HandleMountUnitSpawnClient();
         }
@@ -404,6 +410,7 @@ namespace AnyRPG {
             }
             
         }
+        */
 
         private void HandleSetParent(Transform parentTransform) {
             Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSetParent({(parentTransform == null ? "null" : parentTransform.gameObject.name)})");

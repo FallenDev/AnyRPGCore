@@ -95,7 +95,7 @@ namespace AnyRPG {
 
 
         public void ProcessStopNetworkUnit(UnitController unitController) {
-            //Debug.Log($"CharacterManager.ProcessStopNetworkUnit({unitController.gameObject.name})");
+            Debug.Log($"CharacterManager.ProcessStopNetworkUnit({unitController.gameObject.name})");
 
             if (unitController.IsOwner == true && networkOwnedUnits.Contains(unitController)) {
                 //HandleNetworkOwnedUnitDespawn(unitController);
@@ -353,7 +353,11 @@ namespace AnyRPG {
                 // this is happening on the server, return the object to the pool
                 // disabled because crashing.  On server, network objects are automatically despawned when level unloads
                 //unitController.gameObject.SetActive(false);
-                networkManagerServer.ReturnObjectToPool(unitController.gameObject);
+                if (unitController.IsDisconnected == false) {
+                    // if we manually called the despawn method, we want to return it to the pool
+                    // if a disconnect happened, we'll get an error on clients if we despawn it now because the network manager will try to despawn it next
+                    networkManagerServer.ReturnObjectToPool(unitController.gameObject);
+                }
             } else {
                 // this is happening on the client
                 if (localUnits.Contains(unitController)) {

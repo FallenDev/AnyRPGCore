@@ -218,6 +218,7 @@ namespace AnyRPG {
         public ObjectMaterialController ObjectMaterialController { get => objectMaterialController; }
         public bool SuppressInteractionWindow { get => suppressInteractionWindow; set => suppressInteractionWindow = value; }
         public bool IsTargeted { get => isTargeted; }
+        public bool Initialized { get => initialized; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             //Debug.Log($"{gameObject.name}.Spawnable.Configure()");

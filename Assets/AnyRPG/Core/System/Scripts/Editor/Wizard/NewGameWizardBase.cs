@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 namespace AnyRPG {
-    public abstract class NewGameWizardBase : ScriptableWizard {
+    public abstract class NewGameWizardBase : ScriptableWizard, ICreateSceneRequestor {
 
         // Template scene that will be used to create the new game load scene
         private const string pathToLoadSceneTemplate = "/AnyRPG/Core/Templates/Game/Scenes/LoadScene/LoadScene.unity";
@@ -21,7 +21,7 @@ namespace AnyRPG {
 
         private const string pathToSystemAbilitiesTemplate = "/AnyRPG/Core/Content/TemplatePackages/AbilityEffect/DefaultSystemEffectsTemplatePackage.asset";
         private const string pathToHealthPowerResourceTemplate = "/AnyRPG/Core/Content/TemplatePackages/PowerResource/HealthPowerResourceTemplatePackage.asset";
-        private const string pathToAttackAbilityTemplate = "/AnyRPG/Core/Content/TemplatePackages/BaseAbility/Attack/AttackAbilityTemplatePackage.asset";
+        private const string pathToAttackAbilityTemplate = "/AnyRPG/Core/Content/TemplatePackages/Ability/Attack/AttackAbilityTemplatePackage.asset";
 
         // optional template prefabs
         private const string pathToGoldCurrencyGroupTemplate = "/AnyRPG/Core/Content/TemplatePackages/Currency/GoldCurrencyGroupTemplatePackage.asset";
@@ -45,7 +45,7 @@ namespace AnyRPG {
             "AnimationProfile",
             "ArmorClass",
             "AudioProfile",
-            "BaseAbility",
+            "Ability",
             "BehaviorProfile",
             "CharacterClass",
             "CharacterRace",
@@ -98,7 +98,7 @@ namespace AnyRPG {
         // #######################
 
         public string gameName = "New Game";
-        public string gameVersion = "0.1a";
+        public string gameVersion = "1.0";
 
         // main menu options
         public AudioClip mainMenuMusic = null;
@@ -197,6 +197,10 @@ namespace AnyRPG {
             }
         }
 
+        public virtual void ModifyScene() {
+            // nothing here in the base
+        }
+
         protected string CreateNewGame() {
 
             EditorUtility.DisplayProgressBar("New Game Wizard", "Checking parameters...", 0.1f);
@@ -282,10 +286,12 @@ namespace AnyRPG {
             // Create a variant of the GameManager
             EditorUtility.DisplayProgressBar("New Game Wizard", "Making prefab variants...", 0.7f);
             GameObject gameManagerGameObject = (GameObject)AssetDatabase.LoadMainAssetAtPath("Assets" + pathToGameManagerPrefab);
-            GameObject gameManagerVariant = MakeGameManagerPrefabVariant(fileSystemGameName, gameManagerGameObject, prefabPath + "/GameManager/" + fileSystemGameName + "GameManager.prefab");
+            KeyValuePair<GameObject, GameObject> gameManagerVariants = MakeGameManagerPrefabVariant(fileSystemGameName, gameManagerGameObject, prefabPath + "/GameManager/" + fileSystemGameName + "GameManager.prefab");
+            GameObject gameManagerVariant = gameManagerVariants.Key;
+            GameObject gameManagerSceneVariant = gameManagerVariants.Value;
 
-            MakeOptionalContent(fileSystemGameName, prefabPath);
-
+            MakeOptionalContent(fileSystemGameName, prefabPath, gameManagerSceneVariant);
+            //return string.Empty;
             // create a variant of the SceneConfig prefab
             MakeSceneConfigPrefabVariant(fileSystemGameName, gameManagerVariant, prefabPath + "/GameManager/" + fileSystemGameName + "SceneConfig.prefab");
 
@@ -319,14 +325,14 @@ namespace AnyRPG {
             ConfigureMainMenuScriptableObjects(fileSystemGameName);
 
             // create first scene
-            NewSceneWizard.CreateScene(gameParentFolder, gameName, firstSceneName, copyExistingScene, existingScene, firstSceneDayAmbientSounds, firstSceneNightAmbientSounds, firstSceneMusic);
+            NewSceneWizard.CreateScene(gameParentFolder, gameName, firstSceneName, copyExistingScene, existingScene, firstSceneDayAmbientSounds, firstSceneNightAmbientSounds, firstSceneMusic, this);
 
             AssetDatabase.Refresh();
 
             return loadSceneAssetPath;
         }
 
-        protected virtual void MakeOptionalContent(string fileSystemGameName, string prefabPath) {
+        protected virtual void MakeOptionalContent(string fileSystemGameName, string prefabPath, GameObject gameManagerSceneVariant) {
             // nothing here for now
         }
 
@@ -563,19 +569,19 @@ namespace AnyRPG {
         }
         */
 
-        protected GameObject MakeGameManagerPrefabVariant(string fileSystemGameName, GameObject goToMakeVariantOf, string newPath) {
+        protected KeyValuePair<GameObject, GameObject> MakeGameManagerPrefabVariant(string fileSystemGameName, GameObject goToMakeVariantOf, string newPath) {
             Debug.Log("NewGameWizard.MakeGameManagerPrefabVariant(" + goToMakeVariantOf.name + ", " + newPath + ")");
 
             // make prefab variant of game manager
-            //GameObject instantiatedGO = (GameObject)PrefabUtility.InstantiatePrefab(goToMakeVariantOf);
-
             // instantiate original
-            GameObject instantiatedGO = (GameObject)PrefabUtility.InstantiatePrefab(goToMakeVariantOf);
-            instantiatedGO.name = fileSystemGameName + instantiatedGO.name;
+            GameObject instantiatedGameObject = (GameObject)PrefabUtility.InstantiatePrefab(goToMakeVariantOf);
+            instantiatedGameObject.name = fileSystemGameName + instantiatedGameObject.name;
+
+            ConfigureGameManager(instantiatedGameObject);
 
             // Set the properties of the GameManager for this game
             EditorUtility.DisplayProgressBar("New Game Wizard", "Configuration Game Settings...", 0.91f);
-            SystemConfigurationManager systemConfigurationManager = instantiatedGO.GetComponent<SystemConfigurationManager>();
+            SystemConfigurationManager systemConfigurationManager = instantiatedGameObject.GetComponent<SystemConfigurationManager>();
             systemConfigurationManager.GameName = gameName;
             systemConfigurationManager.GameVersion = gameVersion;
 
@@ -596,7 +602,7 @@ namespace AnyRPG {
             systemConfigurationManager.Capabilities.AbilityNames = new List<string>() { "Attack" };
 
             // character selection
-            SetDefaultPlayerUnitProfileName(systemConfigurationManager);
+            ConfigureGameOptions(systemConfigurationManager);
             systemConfigurationManager.CharacterSelectionType = CharacterSelectionType.RaceAndGender;
 
             // gold currency group
@@ -611,19 +617,6 @@ namespace AnyRPG {
                 systemConfigurationManager.NewGameAudio = "New Game";
             }
 
-            /*
-            if (useThirdPartyController == true) {
-                systemConfigurationManager.UseThirdPartyMovementControl = true;
-                systemConfigurationManager.AllowAutoAttack = false;
-                systemConfigurationManager.UseThirdPartyCameraControl = true;
-                systemConfigurationManager.DefaultPlayerUnitProfileName = "Invector UMA Player";
-                if (thirdPartyCameraPrefab != null) {
-                    systemConfigurationManager.ThirdPartyCamera = thirdPartyCameraPrefab;
-                }
-                //systemConfigurationManager.CharacterCreatorProfileNames = new List<string>() { "Invector UMA Player" };
-            }
-            */
-
             EditorUtility.DisplayProgressBar("New Game Wizard", "Copying resources...", 0.92f);
             // Create a Resources folder and point the game manager to it
             if (systemConfigurationManager.LoadResourcesFolders == null) {
@@ -635,21 +628,25 @@ namespace AnyRPG {
 
             // make variant on disk
             Debug.Log("saving " + newPath);
-            GameObject variant = PrefabUtility.SaveAsPrefabAsset(instantiatedGO, newPath);
+            GameObject variant = PrefabUtility.SaveAsPrefabAsset(instantiatedGameObject, newPath);
 
             // remove original from scene
-            GameObject.DestroyImmediate(instantiatedGO);
+            GameObject.DestroyImmediate(instantiatedGameObject);
 
             // instantiate new variant in scene
             //PrefabUtility.InstantiatePrefab(variant);
             GameObject sceneVariant = (GameObject)PrefabUtility.InstantiatePrefab(variant);
             //sceneVariant.name = goToMakeVariantOf.name;
 
-            return variant;
+            return new KeyValuePair<GameObject, GameObject>(variant, sceneVariant);
         }
 
-        protected virtual void SetDefaultPlayerUnitProfileName(SystemConfigurationManager systemConfigurationManager) {
+        protected virtual void ConfigureGameOptions(SystemConfigurationManager systemConfigurationManager) {
+            // nothing here in the base
+        }
 
+        protected virtual void ConfigureGameManager(GameObject instantiatedGameObject) {
+            // nothing here in the base
         }
 
         protected GameObject MakeSceneConfigPrefabVariant(string fileSystemGameName, GameObject gameManagerVariant, string newPath) {

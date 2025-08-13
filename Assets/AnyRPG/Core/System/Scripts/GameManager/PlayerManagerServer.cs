@@ -621,7 +621,7 @@ namespace AnyRPG {
                 //playerCharacterMonitors[accountId].StopMonitoring();
 
                 // flush data to database before stop monitoring
-                if (systemGameManager.GameMode == GameMode.Network) {
+                if (systemGameManager.GameMode == GameMode.Network && playerCharacterMonitors.ContainsKey(accountId) == true) {
                     SavePlayerCharacter(playerCharacterMonitors[accountId]);
                 }
             //}

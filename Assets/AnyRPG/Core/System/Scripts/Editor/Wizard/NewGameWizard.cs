@@ -20,8 +20,8 @@ namespace AnyRPG {
             ScriptableWizard.DisplayWizard<NewGameWizard>("New Game Wizard", "Create");
         }
 
-        protected override void SetDefaultPlayerUnitProfileName(SystemConfigurationManager systemConfigurationManager) {
-            base.SetDefaultPlayerUnitProfileName(systemConfigurationManager);
+        protected override void ConfigureGameOptions(SystemConfigurationManager systemConfigurationManager) {
+            base.ConfigureGameOptions(systemConfigurationManager);
 
             systemConfigurationManager.DefaultPlayerUnitProfileName = "Mecanim Human Male";
         }

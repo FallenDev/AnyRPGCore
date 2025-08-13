@@ -35,7 +35,7 @@ namespace AnyRPG {
         }
 
         public void HandleSceneUnloaded(Scene scene) {
-            Debug.Log($"LevelManagerServer.HandleSceneUnloaded({scene.name})");
+            //Debug.Log($"LevelManagerServer.HandleSceneUnloaded({scene.name})");
 
             // if the scene is not in the loaded scenes, then we don't need to do anything
             if (loadedScenes.ContainsKey(scene.name) == false) {

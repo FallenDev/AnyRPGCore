@@ -63,6 +63,7 @@ namespace AnyRPG {
         public Dictionary<int, LoggedInAccount> LobbyGamePlayerList { get => lobbyGamePlayerList; }
         public LobbyGame LobbyGame { get => lobbyGame; }
         public int AccountId { get => accountId; }
+        public NetworkController NetworkController { get => networkController; set => networkController = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);

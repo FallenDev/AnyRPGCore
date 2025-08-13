@@ -31,8 +31,8 @@ namespace AnyRPG {
             return base.CheckFilesExist();
         }
 
-        protected override void MakeOptionalContent(string fileSystemGameName, string prefabPath) {
-            base.MakeOptionalContent(fileSystemGameName, prefabPath);
+        protected override void MakeOptionalContent(string fileSystemGameName, string prefabPath, GameObject gameManagerSceneVariant) {
+            base.MakeOptionalContent(fileSystemGameName, prefabPath, gameManagerSceneVariant);
 
             // create a variant of the UMA GLIB prefab
             MakeUMAPrefabVariant(prefabPath + "/GameManager/UMA_GLIB.prefab", fileSystemGameName);
@@ -60,8 +60,8 @@ namespace AnyRPG {
             return variant;
         }
 
-        protected override void SetDefaultPlayerUnitProfileName(SystemConfigurationManager systemConfigurationManager) {
-            base.SetDefaultPlayerUnitProfileName(systemConfigurationManager);
+        protected override void ConfigureGameOptions(SystemConfigurationManager systemConfigurationManager) {
+            base.ConfigureGameOptions(systemConfigurationManager);
 
             systemConfigurationManager.DefaultPlayerUnitProfileName = "UMA Human Male";
         }

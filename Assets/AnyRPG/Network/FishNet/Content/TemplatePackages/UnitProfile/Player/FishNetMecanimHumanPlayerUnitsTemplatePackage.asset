@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c9b51b8d3aa844448aaeab0a989e2fa, type: 3}
-  m_Name: AttackAbilityTemplatePackage
+  m_Name: FishNetMecanimHumanPlayerUnitsTemplatePackage
   m_EditorClassIdentifier: 
-  resourceName: Attack Ability
+  resourceName: FishNet Mecanim Human Player Units
   displayName: 
   icon: {fileID: 0}
   iconBackgroundImage: {fileID: 0}
@@ -21,10 +21,11 @@ MonoBehaviour:
   resourceDescriptionProfile: 
   optionalOverride: 0
   resources:
-  - {fileID: 11400000, guid: bf9148df4a5387b42b84ce610531d02c, type: 2}
-  - {fileID: 11400000, guid: 0a08bed2b9c305e49b9acbb4bd8cce72, type: 2}
-  - {fileID: 11400000, guid: 46214fbbca204624fbdae539a18d1ffa, type: 2}
-  - {fileID: 11400000, guid: 7ccc384c958a4ce4299efe790cd50025, type: 2}
-  - {fileID: 11400000, guid: a49e4d90681cd1446947c5d50c0aac1f, type: 2}
+  - {fileID: 11400000, guid: 50dca25d28cfba946b105ac94d783949, type: 2}
+  - {fileID: 11400000, guid: a8e1ae57586902c46b2e30d471816db9, type: 2}
+  - {fileID: 11400000, guid: 23ecb31d0044f174186f2bf9086cf6d7, type: 2}
+  - {fileID: 11400000, guid: 4c99f7db0036d124a9491064503d78d9, type: 2}
+  - {fileID: 11400000, guid: a5f5d43bf3fa6804dbb0dc990ca21131, type: 2}
   prefabs: []
-  dependencies: []
+  dependencies:
+  - {fileID: 11400000, guid: 71a17ef7dc5259848a74b721f28342ca, type: 2}

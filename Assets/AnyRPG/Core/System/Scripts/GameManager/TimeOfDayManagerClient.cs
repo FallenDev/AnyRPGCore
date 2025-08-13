@@ -94,7 +94,7 @@ namespace AnyRPG {
         }
 
         public void HandleLevelUnload(int sceneHandle, string sceneName) {
-            Debug.Log("TimeOfDayManager.HandleLevelUnload()");
+            //Debug.Log("TimeOfDayManager.HandleLevelUnload()");
 
             rotateSunDirection = false;
             rotateSunColor = false;
@@ -114,7 +114,7 @@ namespace AnyRPG {
         }
 
         public void HandleLevelLoad() {
-            Debug.Log("TimeOfDayManager.HandleLevelLoad()");
+            //Debug.Log("TimeOfDayManager.HandleLevelLoad()");
 
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == true) {
                 return;

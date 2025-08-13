@@ -159,7 +159,7 @@ namespace AnyRPG {
         /// <param name="newScene"></param>
         /// <param name="loadSceneMode"></param>
         public void HandleLoadLevel(Scene newScene, LoadSceneMode loadSceneMode) {
-            Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.HandleLoadLevel({newScene.name}) SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             if (!levelManagerInitialized) {
                 //Debug.Log("Levelmanager.OnLoadLevel(): Start has not run yet, returning!");
@@ -172,7 +172,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLevelLoad(bool setActiveSceneNode) {
-            Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.ProcessLevelLoad(): {SceneManager.GetActiveScene().name}");
 
             PerformLevelLoadActivities(setActiveSceneNode);
             NavMesh.pathfindingIterationsPerFrame = 500;
@@ -227,7 +227,7 @@ namespace AnyRPG {
         }
 
         public void PerformLevelLoadActivities(bool setActiveSceneNode) {
-            Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             loadingLevel = false;
             if (setActiveSceneNode) {
@@ -425,7 +425,7 @@ namespace AnyRPG {
         }
 
         private void StartLoadAsync(SceneNode loadSceneNode) {
-            Debug.Log($"LevelManager.StartLoadAsync({loadSceneNode.ResourceName}) cutscene: {loadSceneNode.IsCutScene}");
+            //Debug.Log($"LevelManager.StartLoadAsync({loadSceneNode.ResourceName}) cutscene: {loadSceneNode.IsCutScene}");
 
             if (systemGameManager.GameMode == GameMode.Local || loadSceneNode.IsCutScene) {
                 StartCoroutine(LoadAsynchronously(loadSceneNode.SceneFile));
@@ -489,7 +489,7 @@ namespace AnyRPG {
 
         // scene name is just the name of the current scene being loaded
         IEnumerator LoadAsynchronously(string sceneName) {
-            Debug.Log($"LevelManager.LoadAsynchronously({sceneName})");
+            //Debug.Log($"LevelManager.LoadAsynchronously({sceneName})");
 
             NotifyOnBeginLoadingLevel(sceneName);
 

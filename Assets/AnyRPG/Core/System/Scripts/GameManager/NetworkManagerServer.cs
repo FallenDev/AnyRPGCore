@@ -176,7 +176,6 @@ namespace AnyRPG {
 
         }
 
-
         public void SavePlayerCharacter(PlayerCharacterMonitor playerCharacterMonitor) {
             if (playerCharacterMonitor.unitController != null) {
                 playerCharacterMonitor.SavePlayerLocation();

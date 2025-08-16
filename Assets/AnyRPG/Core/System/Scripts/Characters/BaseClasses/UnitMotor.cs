@@ -368,7 +368,8 @@ namespace AnyRPG {
         }
 
         public void Move(Vector3 moveDirection, bool isKnockBack = false) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitMotor.Move(" + moveDirection.x + ", " + moveDirection.y + ", " + moveDirection.z + "). current position: " + unitController.transform.position + "; Rigidbody velocity: " + unitController.RigidBody.velocity);
+            //Debug.Log($"{unitController.gameObject.name}.UnitMotor.Move({moveDirection.x}, {moveDirection.y}, {moveDirection.z}). current position: {unitController.transform.position}; Rigidbody velocity: {unitController.RigidBody.linearVelocity}");
+            
             if (isKnockBack
                 && unitController.UnitControllerMode == UnitControllerMode.Player) {
                 if (playerManager.PlayerUnitMovementController != null) {
@@ -376,7 +377,7 @@ namespace AnyRPG {
                 }
             }
             if (frozen) {
-                //Debug.Log($"{gameObject.name}.UnitMotor.Move(" + moveDirection + "): frozen and doing nothing!!!");
+                Debug.Log($"{unitController.gameObject.name}.UnitMotor.Move({moveDirection}: frozen and doing nothing!!!");
                 return;
             }
 
@@ -392,7 +393,7 @@ namespace AnyRPG {
                 //float currentYVelocity = moveDirection.y != 0 ? moveDirection.y : unitController.MyRigidBody.velocity.y;
                 //Debug.Log("characterUnit.yVelocity is " + currentYVelocity);
                 //Vector3 newMoveDirection = new Vector3(moveDirection.x, currentYVelocity, moveDirection.z);
-                //Debug.Log($"{unitController.gameObject.name}.UnitMotor.Move() newMoveDirection: " + moveDirection + "; unitController.MyRigidBody.constraints: " + unitController.RigidBody.constraints);
+                //Debug.Log($"{unitController.gameObject.name}.UnitMotor.Move() newMoveDirection: {moveDirection}; constraints: {unitController.RigidBody.constraints}");
                 unitController.RigidBody.linearVelocity = moveDirection;
                 //unitController.MyRigidBody.MovePosition(transform.position + moveDirection);
                 //unitController.MyRigidBody.AddForce(moveDirection, ForceMode.VelocityChange);

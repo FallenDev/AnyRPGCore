@@ -47961,6 +47961,100 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!1001 &1183110228
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1549510949}
+    m_Modifications:
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 176.07591
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.000017166138
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 20.331192
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.70710653
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.70710707
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3481425691641389535, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: unitProfileNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3481425691641389535, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: 'unitProfileNames.Array.data[0]'
+      value: Spawn Characters NPC
+      objectReference: {fileID: 0}
+    - target: {fileID: 6390993854296471015, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_Name
+      value: SpawnCharactersNPCUnitSpawnNode
+      objectReference: {fileID: 0}
+    - target: {fileID: 6390993854296471015, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7ff64ca283808244380f334a006b354f, type: 3}
+--- !u!4 &1183110229 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2775317982054893304, guid: 7ff64ca283808244380f334a006b354f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1183110228}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1185238630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48108,255 +48202,6 @@ Transform:
   - {fileID: 1609908331}
   m_Father: {fileID: 1256078276}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1186535121
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1549510949}
-    m_Modifications:
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 176.07591
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000017166138
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 20.331192
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.70710653
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.70710707
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047708, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_Name
-      value: SpawnCharactersNPCUnitTemplate
-      objectReference: {fileID: 0}
-    - target: {fileID: 3544550570938047708, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: unitSpawnControllerProps.unitProfileNames.Array.size
-      value: 29
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: unitSpawnControllerProps.unitSpawnNodeList.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[0]'
-      value: Red Warrior
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[1]'
-      value: Red Knight
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[2]'
-      value: Red Blood Knight
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[3]'
-      value: Red Priest
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[4]'
-      value: Red Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[5]'
-      value: Red Ice Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[6]'
-      value: Red Fire Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[7]'
-      value: Red Necromancer
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[8]'
-      value: Red Archer
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[9]'
-      value: Red Ranger
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[10]'
-      value: Red Marksman
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[11]'
-      value: Red Thief
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[12]'
-      value: Red Fighter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[13]'
-      value: Red Boss
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[14]'
-      value: Blue Warrior
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[15]'
-      value: Blue Knight
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[16]'
-      value: Blue Blood Knight
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[17]'
-      value: Blue Priest
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[18]'
-      value: Blue Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[19]'
-      value: Blue Ice Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[20]'
-      value: Blue Fire Mage
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[21]'
-      value: Blue Necromancer
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[22]'
-      value: Blue Archer
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[23]'
-      value: Blue Ranger
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[24]'
-      value: Blue Marksman
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[25]'
-      value: Blue Thief
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[26]'
-      value: Blue Fighter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[27]'
-      value: Blue Boss
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitProfileNames.Array.data[28]'
-      value: Dragon
-      objectReference: {fileID: 0}
-    - target: {fileID: 4002980402007364223, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: 'unitSpawnControllerProps.unitSpawnNodeList.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1812886432}
-    - target: {fileID: 8841309910310167734, guid: 8c54d1fd144385b4d82be245ec64219d,
-        type: 3}
-      propertyPath: m_UUID
-      value: e7f980da-d34b-44ef-a121-b2bf434893d5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 8c54d1fd144385b4d82be245ec64219d, type: 3}
---- !u!4 &1186535122 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3544550570938047697, guid: 8c54d1fd144385b4d82be245ec64219d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1186535121}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1186641569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -58760,7 +58605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 2c9183b2-e492-4248-949d-77e7702f108d
+  m_UUID: cf5800c7-cef8-471f-9c51-2ae9e88ea8ca
   forceUpdateUUID: 0
 --- !u!54 &1448223535
 Rigidbody:
@@ -64351,7 +64196,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 354776455}
-  - {fileID: 1186535122}
+  - {fileID: 1183110229}
   - {fileID: 2144082087}
   - {fileID: 441526195}
   - {fileID: 872555733}
@@ -74500,18 +74345,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1812886430}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1812886432 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3481425691641389535, guid: 7ff64ca283808244380f334a006b354f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1812886430}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 420a76187a901c342b41ace39e7d8f17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1813795256
 GameObject:
   m_ObjectHideFlags: 0
@@ -74577,7 +74410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ff920aaeff32c47b919cdd7f10e67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UUID: 6b7283ec-6dae-41f4-9ec5-c8395eb58809
+  m_UUID: 3d3c15fb-90d9-4491-a7ab-8e45258d37f8
   forceUpdateUUID: 0
 --- !u!54 &1813795260
 Rigidbody:

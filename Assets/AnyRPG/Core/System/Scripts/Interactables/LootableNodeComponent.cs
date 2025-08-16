@@ -25,7 +25,14 @@ namespace AnyRPG {
         // game manager references
         protected LootManager lootManager = null;
 
-        public override bool BlockTooltip => Props.SpawnObject.activeSelf == false;
+        public override bool BlockTooltip {
+            get {
+                if (Props.SpawnObject == null) {
+                    return false;
+                }
+                return (Props.SpawnObject.activeSelf == false);
+            }
+        }
 
         public override bool PrerequisitesMet(UnitController sourceUnitController) {
             bool returnResult = base.PrerequisitesMet(sourceUnitController);

@@ -489,7 +489,7 @@ namespace AnyRPG {
 
         // scene name is just the name of the current scene being loaded
         IEnumerator LoadAsynchronously(string sceneName) {
-            //Debug.Log($"LevelManager.LoadAsynchronously({sceneName})");
+            Debug.Log($"LevelManager.LoadAsynchronously({sceneName})");
 
             NotifyOnBeginLoadingLevel(sceneName);
 

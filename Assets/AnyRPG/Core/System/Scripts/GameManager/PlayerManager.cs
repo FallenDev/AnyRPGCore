@@ -375,7 +375,7 @@ namespace AnyRPG {
         }
 
         public void HandleTargetReady() {
-            //Debug.Log($"PlayerManager.HandleTargetReady()");
+            Debug.Log($"PlayerManager.HandleTargetReady()");
 
             waitForPlayerReadyCoroutine = StartCoroutine(WaitForPlayerReady());
         }
@@ -405,7 +405,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPlayerUnit(int accountId) {
-            //Debug.Log($"PlayerManager.SpawnPlayerUnit({accountId})");
+            Debug.Log($"PlayerManager.RequestSpawnPlayerUnit({accountId})");
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 networkManagerClient.RequestSpawnPlayerUnit(SceneManager.GetActiveScene().name);
@@ -415,7 +415,7 @@ namespace AnyRPG {
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {
-            //Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
+            Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
 
             //if (OwnPlayer(unitController, characterRequestData) == true) {
                 //SetUnitController(unitController);

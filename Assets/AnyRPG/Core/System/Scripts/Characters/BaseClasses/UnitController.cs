@@ -956,7 +956,7 @@ namespace AnyRPG {
         }
 
         public void Despawn(float delayTime = 0f, bool addSystemDefaultTime = true, bool forceDespawn = false) {
-            Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
+            //Debug.Log($"{gameObject.name}.UnitController.Despawn({delayTime}, {addSystemDefaultTime}, {forceDespawn})");
 
             if (initialized == false) {
                 return;
@@ -1379,6 +1379,7 @@ namespace AnyRPG {
 
         public void SetModelReady() {
             //Debug.Log($"{gameObject.name}.UnitController.SetModelReady()");
+
             unitMaterialController.PopulateOriginalMaterials();
             OnCameraTargetReady();
         }

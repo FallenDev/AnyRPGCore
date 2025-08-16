@@ -21,7 +21,7 @@ namespace AnyRPG.EditorTools {
 
         [MenuItem("Tools/AnyRPG/Wizard/FishNet/New Character Wizard")]
         public static void CreateWizard() {
-            ScriptableWizard.DisplayWizard<FishNetNewCharacterWizard>("New Character Wizard", "Create");
+            ScriptableWizard.DisplayWizard<FishNetNewCharacterWizard>("FishNet New Character Wizard", "Create");
         }
 
         public override void ModifyModelPrefab(GameObject modelPrefab) {

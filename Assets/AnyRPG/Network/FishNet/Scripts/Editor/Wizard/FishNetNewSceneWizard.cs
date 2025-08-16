@@ -15,7 +15,7 @@ namespace AnyRPG {
 
         [MenuItem("Tools/AnyRPG/Wizard/FishNet/New Scene Wizard")]
         public static void CreateWizard() {
-            ScriptableWizard.DisplayWizard<FishNetNewSceneWizard>("New Scene Wizard", "Create");
+            ScriptableWizard.DisplayWizard<FishNetNewSceneWizard>("FishNet New Scene Wizard", "Create");
         }
 
         public override void ModifyScene() {

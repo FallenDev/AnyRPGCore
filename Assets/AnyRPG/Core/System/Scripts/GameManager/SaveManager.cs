@@ -782,11 +782,24 @@ namespace AnyRPG {
         }
 
         public List<PersistentObjectSaveData> GetPersistentObjects(SceneNode sceneNode) {
-            if (playerManager.UnitController == null) {
+            if (playerManagerServer.PlayerCharacterMonitors.ContainsKey(0) == false) {
                 Debug.Log($"SaveManager.GetPersistentObjects({sceneNode.ResourceName}): playerManager.UnitController is null.  Returning empty list.");
                 return new List<PersistentObjectSaveData>();
             }
-            return playerManager.UnitController.CharacterSaveManager.GetSceneNodeSaveData(sceneNode).persistentObjects;
+            return GetSceneNodeSaveData(sceneNode).persistentObjects;
+        }
+
+        public SceneNodeSaveData GetSceneNodeSaveData(SceneNode sceneNode) {
+            AnyRPGSaveData anyRPGSaveData = playerManagerServer.PlayerCharacterMonitors[0].playerCharacterSaveData.SaveData;
+            foreach (SceneNodeSaveData sceneNodeSaveData in anyRPGSaveData.sceneNodeSaveData) {
+                if (sceneNodeSaveData.SceneName == sceneNode.ResourceName) {
+                    return sceneNodeSaveData;
+                }
+            }
+            SceneNodeSaveData saveData = new SceneNodeSaveData();
+            saveData.persistentObjects = new List<PersistentObjectSaveData>();
+            saveData.SceneName = sceneNode.ResourceName;
+            return saveData;
         }
 
         public void SavePersistentObject(string UUID, PersistentObjectSaveData persistentObjectSaveData, SceneNode sceneNode) {
@@ -809,7 +822,7 @@ namespace AnyRPG {
         }
 
         public PersistentObjectSaveData GetPersistentObject(string UUID, SceneNode sceneNode) {
-            foreach (PersistentObjectSaveData _persistentObjectSaveData in playerManager.UnitController.CharacterSaveManager.GetSceneNodeSaveData(sceneNode).persistentObjects) {
+            foreach (PersistentObjectSaveData _persistentObjectSaveData in GetSceneNodeSaveData(sceneNode).persistentObjects) {
                 if (_persistentObjectSaveData.UUID == UUID) {
                     return _persistentObjectSaveData;
                 }

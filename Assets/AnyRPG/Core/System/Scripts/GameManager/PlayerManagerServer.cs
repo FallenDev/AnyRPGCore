@@ -78,6 +78,7 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
             levelManager = systemGameManager.LevelManager;
             interactionManager = systemGameManager.InteractionManager;
+            playerManager = systemGameManager.PlayerManager;
             systemAchievementManager = systemGameManager.SystemAchievementManager;
             questGiverManager = systemGameManager.QuestGiverManager;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
@@ -122,7 +123,7 @@ namespace AnyRPG {
         }
 
         public void AddActivePlayer(int accountId, UnitController unitController) {
-            //Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
+            Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
 
             activePlayers.Add(accountId, unitController);
             activePlayerGameObjects.Add(unitController.gameObject, accountId);
@@ -516,6 +517,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPlayerUnit(int accountId, string sceneName) {
+            Debug.Log($"PlayerManagerServer.RequestSpawnPlayerUnit({accountId}, {sceneName})");
 
             SpawnPlayerRequest spawnPlayerRequest = GetSpawnPlayerRequest(accountId, sceneName);
 
@@ -528,7 +530,8 @@ namespace AnyRPG {
                     characterConfigurationRequest);
                 characterRequestData.isOwner = true;
                 characterRequestData.saveData = playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData;
-                characterManager.SpawnCharacterPrefab(characterRequestData, null, spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection);
+                UnitController unitController = characterManager.SpawnCharacterPrefab(characterRequestData, null, spawnPlayerRequest.spawnLocation, spawnPlayerRequest.spawnForwardDirection);
+                playerCharacterMonitors[accountId].SetUnitController(unitController);
             } else {
                 CharacterConfigurationRequest characterConfigurationRequest = new CharacterConfigurationRequest(systemDataFactory, playerCharacterMonitors[accountId].playerCharacterSaveData.SaveData);
                 characterConfigurationRequest.unitControllerMode = UnitControllerMode.Player;
@@ -573,7 +576,7 @@ namespace AnyRPG {
         }
 
         public void MonitorPlayerUnit(int accountId, UnitController unitController) {
-            //Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
+            Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
 
             if (playerCharacterMonitors.ContainsKey(accountId) == false) {
                 return;

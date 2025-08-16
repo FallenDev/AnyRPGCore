@@ -15,7 +15,7 @@ namespace AnyRPG {
 
         public List<StatusEffect> statusEffects = new List<StatusEffect>();
 
-        [MenuItem("Tools/AnyRPG/Wizard/Utility/Convert Status Effect Wizard")]
+        //[MenuItem("Tools/AnyRPG/Wizard/Utility/Convert Status Effect Wizard")]
         public static void CreateWizard() {
             ScriptableWizard.DisplayWizard<ConvertStatusEffectWizard>("New Convert Status Effect Wizard", "Create");
         }

@@ -73,7 +73,8 @@ namespace AnyRPG {
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {
-            Debug.Log($"MountEffectProperties.SetupScriptableObjects({describable.ResourceName})");
+            //Debug.Log($"MountEffectProperties.SetupScriptableObjects({describable.ResourceName})");
+
             base.SetupScriptableObjects(systemGameManager, describable);
 
             if (unitProfileName != null && unitProfileName != string.Empty) {

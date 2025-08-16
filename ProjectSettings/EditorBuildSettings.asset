@@ -103,14 +103,14 @@ EditorBuildSettings:
     guid: a847437ee17c7aa4f98c2d363f671f1d
   - enabled: 1
     path: Assets/Games/NewGame/Scenes/NewGame/NewGame.unity
-    guid: a631419d6a9aba14faef7f16d12eb76b
+    guid: 9003f090653987f4193d52e99f6d1c7f
   - enabled: 1
     path: Assets/Games/NewGame/Scenes/NewGameMainMenu/NewGameMainMenu.unity
-    guid: 4cb4a84fb9d37dc4fb8d59c19c06e0df
+    guid: f8db439389bb1b74f947a5d2b4829876
   - enabled: 1
     path: Assets/Games/NewGame/Scenes/NewScene/NewScene.unity
-    guid: 5cb6332c44008a242af75e5c81f7d361
-  - enabled: 1
+    guid: 9d8f78fe9a92ac74e964198cde1f1b28
+  - enabled: 0
     path: Assets/Games/NewGame/Scenes/NewScene2/NewScene2.unity
     guid: 69b85beba3848ad46b4ef27c514f711c
   m_configObjects: {}

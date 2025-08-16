@@ -49,6 +49,7 @@ MonoBehaviour:
   allowMount: 1
   suppressCharacterSpawn: 0
   suppressMainCamera: 0
+  isCutScene: 0
   autoPlayCutsceneName: 
   environmentStateNames: []
   sunRotationMode: 1
@@ -95,7 +96,7 @@ MonoBehaviour:
   noWeatherWeight: 10
   weatherWeights:
   - weather: Fog
-    weight: 10
+    weight: 0
   - weather: Rain
     weight: 10
   - weather: Snow

@@ -15,6 +15,8 @@ namespace AnyRPG {
         public AnyRPGSaveData saveData = null;
 
         public CharacterRequestData(ICharacterRequestor characterRequestor, GameMode requestMode, CharacterConfigurationRequest characterConfigurationRequest) {
+            //Debug.Log($"CharacterRequestData.CharacterRequestData({characterRequestor}, {requestMode})");
+
             this.characterRequestor = characterRequestor;
             this.requestMode = requestMode;
             //this.unitProfile = unitProfile;

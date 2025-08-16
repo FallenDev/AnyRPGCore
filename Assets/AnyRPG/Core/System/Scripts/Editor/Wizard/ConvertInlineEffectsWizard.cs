@@ -15,7 +15,7 @@ namespace AnyRPG {
         public List<Ability> abilities = new List<Ability>();
         //public List<GameObject> abilityObjects = new List<GameObject>();
 
-        [MenuItem("Tools/AnyRPG/Wizard/Utility/Convert Inline Effects Wizard")]
+        //[MenuItem("Tools/AnyRPG/Wizard/Utility/Convert Inline Effects Wizard")]
         public static void CreateWizard() {
             ScriptableWizard.DisplayWizard<ConvertInlineEffectsWizard>("New Convert InlineEffects Wizard", "Convert");
         }

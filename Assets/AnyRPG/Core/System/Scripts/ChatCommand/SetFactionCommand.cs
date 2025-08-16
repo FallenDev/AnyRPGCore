@@ -18,7 +18,7 @@ namespace AnyRPG {
         private Faction faction = null;
 
         public override void ExecuteCommand(string commandParameters, int accountId) {
-            //Debug.Log("SetFactionCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
+            //Debug.Log($"{ResourceName}.SetFactionCommand.ExecuteCommand({commandParameters}, {accountId})");
 
             // set the fixed faction
             if (fixedFaction == true && faction != null) {
@@ -31,7 +31,7 @@ namespace AnyRPG {
                 return;
             }
 
-            faction = systemDataFactory.GetResource<Faction>(factionName);
+            faction = systemDataFactory.GetResource<Faction>(commandParameters);
             if (faction == null) {
                 return;
             }
@@ -39,7 +39,8 @@ namespace AnyRPG {
         }
 
         private void SetFaction(Faction faction, int accountId) {
-            Debug.Log($"SetFactionCommand.SetFaction({accountId})");
+            //Debug.Log($"SetFactionCommand.SetFaction({faction.ResourceName}, {accountId})");
+
             playerManagerServer.SetPlayerFaction(faction, accountId);
         }
 

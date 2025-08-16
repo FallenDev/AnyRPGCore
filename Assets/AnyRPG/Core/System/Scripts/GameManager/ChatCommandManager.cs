@@ -32,6 +32,7 @@ namespace AnyRPG {
         }
 
         public void ParseChatCommand(string commandText, int accountId) {
+            //Debug.Log($"ChatCommandManager.ParseChatCommand({commandText}, {accountId})");
 
             if (commandText == string.Empty) {
                 Debug.Log("Empty Chat Message");

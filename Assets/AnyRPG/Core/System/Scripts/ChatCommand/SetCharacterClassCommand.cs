@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace AnyRPG {
-    [CreateAssetMenu(fileName = "New Set CharacterClass Command", menuName = "AnyRPG/Chat Commands/Set CharacterClass Command")]
+    [CreateAssetMenu(fileName = "New Set Character Class Command", menuName = "AnyRPG/Chat Commands/Set Character Class Command")]
     public class SetCharacterClassCommand : ChatCommand {
 
         [Header("Set Character Class Command")]
@@ -18,7 +18,7 @@ namespace AnyRPG {
         private CharacterClass characterClass = null;
 
         public override void ExecuteCommand(string commandParameters, int accountId) {
-            //Debug.Log("SetCharacterClassCommand.ExecuteCommand() Executing command " + DisplayName + " with parameters (" + commandParameters + ")");
+            //Debug.Log($"{ResouceName}SetCharacterClassCommand.ExecuteCommand({commandParameters}, {accountId})");
 
             // set the fixed characterClass
             if (fixedCharacterClass == true && characterClass != null) {
@@ -31,7 +31,7 @@ namespace AnyRPG {
                 return;
             }
 
-            characterClass = systemDataFactory.GetResource<CharacterClass>(characterClassName);
+            characterClass = systemDataFactory.GetResource<CharacterClass>(commandParameters);
             if (characterClass == null) {
                 return;
             }
@@ -39,7 +39,8 @@ namespace AnyRPG {
         }
 
         private void SetCharacterClass(CharacterClass characterClass, int accountId) {
-            Debug.Log($"SetCharacterClassCommand.SetCharacterClass({accountId})");
+            //Debug.Log($"SetCharacterClassCommand.SetCharacterClass({accountId})");
+
             playerManagerServer.SetPlayerCharacterClass(characterClass, accountId);
         }
 

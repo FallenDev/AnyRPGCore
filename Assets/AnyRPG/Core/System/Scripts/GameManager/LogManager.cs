@@ -75,6 +75,8 @@ namespace AnyRPG {
         }
 
         public void WriteChatMessageServer(int accountId, string newMessage) {
+            //Debug.Log($"LogManager.WriteChatMessageServer({accountId}, {newMessage})");
+
             if (newMessage.StartsWith("/") == true) {
                 chatCommandManager.ParseChatCommand(newMessage.Substring(1), accountId);
                 return;
@@ -88,6 +90,7 @@ namespace AnyRPG {
         }
 
         public void RequestChatMessageClient(string newMessage) {
+            //Debug.Log($"LogManager.RequestChatMessageClient({newMessage})");
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 networkManagerClient.SendSceneChatMessage(newMessage);

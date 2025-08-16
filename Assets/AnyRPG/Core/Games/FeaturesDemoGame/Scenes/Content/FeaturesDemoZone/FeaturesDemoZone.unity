@@ -74334,6 +74334,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UnitSpawnControlled
       objectReference: {fileID: 0}
+    - target: {fileID: 6390993854296471015, guid: 7ff64ca283808244380f334a006b354f,
+        type: 3}
+      propertyPath: m_TagString
+      value: UnitSpawn1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

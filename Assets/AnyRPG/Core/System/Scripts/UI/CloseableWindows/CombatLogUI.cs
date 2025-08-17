@@ -285,6 +285,8 @@ namespace AnyRPG {
             // the text isn't selected and the '/' doesn't get overwritten with the next keystroke
             textInput.text = "/";
             textInput.caretPosition = 1;
+            textInput.selectionAnchorPosition = 1;
+            textInput.selectionFocusPosition = 1;
         }
 
         public void HandleClearCombatMessages() {

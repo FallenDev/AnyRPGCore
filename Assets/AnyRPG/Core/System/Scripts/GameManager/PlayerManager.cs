@@ -284,7 +284,8 @@ namespace AnyRPG {
                 return;
             }
 
-            SpawnPlayerRequest spawnSettings = playerManagerServer.GetSpawnPlayerRequest(networkManagerClient.AccountId, SceneManager.GetActiveScene().name);
+            // only remove request if game type is network.  In local mode we need to save the spawn location
+            SpawnPlayerRequest spawnSettings = playerManagerServer.GetSpawnPlayerRequest(networkManagerClient.AccountId, SceneManager.GetActiveScene().name, systemGameManager.GameMode == GameMode.Local);
             if (spawnSettings.overrideSpawnLocation == false && systemGameManager.GameMode == GameMode.Network) {
                 // it is a network game, and we were loading the default location,
                 // so randomize the spawn position a bit so players don't all spawn in the same place
@@ -1038,6 +1039,8 @@ namespace AnyRPG {
         }
 
         public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            Debug.Log($"PlayerManager.RequestUpdatePlayerAppearance({unitProfileName})");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 //Debug.Log("PlayerManager.RequestUpdatePlayerAppearance() - local mode, updating appearance string");
                 playerManagerServer.UpdatePlayerAppearance(0, unitProfileName, appearanceString, swappableMeshSaveData);

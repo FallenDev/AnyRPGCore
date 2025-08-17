@@ -253,13 +253,17 @@ namespace AnyRPG {
         }
 
         public void SaveCharacter() {
-            //Debug.Log("CharacterCreatorPanel.SaveCharacter()");
+            Debug.Log("CharacterCreatorPanel.SaveCharacter()");
 
             if (characterCreatorManager.PreviewUnitController.UnitModelController != null) {
                 characterCreatorManager.PreviewUnitController.UnitModelController.SaveAppearanceSettings(playerManager.ActiveUnitController.CharacterSaveManager.SaveData);
             }
 
-            playerManager.RequestUpdatePlayerAppearance(unitProfile.ResourceName, playerManager.ActiveUnitController.CharacterSaveManager.SaveData.appearanceString, playerManager.ActiveUnitController.CharacterSaveManager.SaveData.swappableMeshSaveData);
+            // copy the the appearance settings so they don't get overwritten when the character despawns and saves
+            string appearanceString = String.Copy(playerManager.ActiveUnitController.CharacterSaveManager.SaveData.appearanceString);
+            List<SwappableMeshSaveData> swappableMeshSaveData = new List<SwappableMeshSaveData>(playerManager.ActiveUnitController.CharacterSaveManager.SaveData.swappableMeshSaveData);
+
+            playerManager.RequestUpdatePlayerAppearance(unitProfile.ResourceName, appearanceString, swappableMeshSaveData);
 
             characterCreatorInteractableManager.ConfirmAction(playerManager.UnitController);
         }

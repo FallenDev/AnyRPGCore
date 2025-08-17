@@ -610,7 +610,7 @@ namespace AnyRPG {
             return false;
         }
 
-        public override void SaveAppearanceSettings(/*ISaveDataOwner saveDataOwner,*/ AnyRPGSaveData saveData) {
+        public override void SaveAppearanceSettings(AnyRPGSaveData saveData) {
             //Debug.Log($"{unitController.gameObject.name}.UMAModelController.SaveAppearanceSettings()");
 
             if (dynamicCharacterAvatar == null) {

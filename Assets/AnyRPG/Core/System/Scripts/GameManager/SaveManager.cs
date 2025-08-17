@@ -802,14 +802,22 @@ namespace AnyRPG {
             return saveData;
         }
 
+        public void SaveSceneNodeSaveData(SceneNodeSaveData sceneNodeSaveData) {
+            //Debug.Log(DisplayName + ".SceneNode.SaveSceneNodeSaveData(" + sceneNodeSaveData.SceneName + ")");
+            AnyRPGSaveData anyRPGSaveData = playerManagerServer.PlayerCharacterMonitors[0].playerCharacterSaveData.SaveData;
+            foreach (SceneNodeSaveData _sceneNodeSaveData in anyRPGSaveData.sceneNodeSaveData) {
+                if (_sceneNodeSaveData.SceneName == sceneNodeSaveData.SceneName) {
+                    anyRPGSaveData.sceneNodeSaveData.Remove(_sceneNodeSaveData);
+                    break;
+                }
+            }
+            anyRPGSaveData.sceneNodeSaveData.Add(sceneNodeSaveData);
+        }
+
         public void SavePersistentObject(string UUID, PersistentObjectSaveData persistentObjectSaveData, SceneNode sceneNode) {
             //Debug.Log(DisplayName + ".SceneNode.SavePersistentObject(" + UUID + ")");
-            if (playerManager.UnitController == null) {
-                Debug.Log("SaveManager.SavePersistentObject(): playerManager.UnitController is null.  Returning.");
-                return;
-            }
 
-            SceneNodeSaveData saveData = playerManager.UnitController.CharacterSaveManager.GetSceneNodeSaveData(sceneNode);
+            SceneNodeSaveData saveData = GetSceneNodeSaveData(sceneNode);
             foreach (PersistentObjectSaveData _persistentObjectSaveData in saveData.persistentObjects) {
                 if (_persistentObjectSaveData.UUID == UUID) {
                     saveData.persistentObjects.Remove(_persistentObjectSaveData);
@@ -818,7 +826,7 @@ namespace AnyRPG {
                 }
             }
             saveData.persistentObjects.Add(persistentObjectSaveData);
-            playerManager.UnitController.CharacterSaveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
+            SaveSceneNodeSaveData(saveData);
         }
 
         public PersistentObjectSaveData GetPersistentObject(string UUID, SceneNode sceneNode) {

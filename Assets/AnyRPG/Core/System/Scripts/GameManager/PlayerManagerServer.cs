@@ -428,11 +428,16 @@ namespace AnyRPG {
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
-            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
 
             if (spawnRequests.ContainsKey(accountId)) {
+                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) replacing request");
+                // debug print the spawn location
+                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
                 spawnRequests[accountId] = loadSceneRequest;
             } else {
+                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) adding new request");
+                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
                 spawnRequests.Add(accountId, loadSceneRequest);
             }
             if (networkManagerServer.ServerModeActive == true && advertise == true) {
@@ -447,19 +452,21 @@ namespace AnyRPG {
 
             spawnRequests.Remove(accountId);
         }
-
-
         public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId, string sceneName) {
+            return GetSpawnPlayerRequest(accountId, sceneName, false);
+        }
+
+        public SpawnPlayerRequest GetSpawnPlayerRequest(int accountId, string sceneName, bool keepRequest) {
             //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName})");
 
             SpawnPlayerRequest inputLoadSceneRequest = null;
             SpawnPlayerRequest outputLoadSceneRequest = new SpawnPlayerRequest();
 
             if (spawnRequests.ContainsKey(accountId)) {
-                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
+                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
                 inputLoadSceneRequest = spawnRequests[accountId];
             } else {
-                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
+                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
                 inputLoadSceneRequest = new SpawnPlayerRequest();
             }
             outputLoadSceneRequest.overrideSpawnLocation = inputLoadSceneRequest.overrideSpawnLocation;
@@ -498,7 +505,12 @@ namespace AnyRPG {
                 outputLoadSceneRequest.spawnForwardDirection = inputLoadSceneRequest.spawnForwardDirection;
             }
 
-            RemoveSpawnRequest(accountId);
+            if (keepRequest == false) {
+                RemoveSpawnRequest(accountId);
+            }
+
+            // debug print the spawn location
+            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName}) spawn location: {outputLoadSceneRequest.spawnLocation}, forward direction: {outputLoadSceneRequest.spawnForwardDirection}");
 
             return outputLoadSceneRequest;
         }
@@ -654,6 +666,8 @@ namespace AnyRPG {
         }
 
         public void UpdatePlayerAppearance(int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            Debug.Log($"PlayerManagerServer.UpdatePlayerAppearance({accountId}, {unitProfileName},swappableMeshSaveData.Count: {swappableMeshSaveData?.Count})");
+
             // Always despawn units if their appearance changes.
             SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest() {
                 overrideSpawnDirection = true,
@@ -731,6 +745,8 @@ namespace AnyRPG {
                     overrideSpawnLocation = true,
                     spawnLocation = sourceUnitController.transform.position
                 };
+                // debug print the spawn location
+                Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {accountId}) spawn location: {spawnPlayerRequest.spawnLocation}, forward direction: {spawnPlayerRequest.spawnForwardDirection}");
                 DespawnPlayerUnit(accountId);
                 AddSpawnRequest(accountId, spawnPlayerRequest, true);
                 if (networkManagerServer.ServerModeActive) {

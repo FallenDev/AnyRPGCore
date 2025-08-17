@@ -74,7 +74,7 @@ namespace AnyRPG {
         }
 
         public override void SaveAppearanceSettings(AnyRPGSaveData saveData) {
-            Debug.Log($"{unitController.gameObject.name}.SwappableMeshModelController.SaveAppearanceSettings()");
+            //Debug.Log($"{unitController.gameObject.name}.SwappableMeshModelController.SaveAppearanceSettings()");
 
             saveData.swappableMeshSaveData.Clear();
             foreach (string groupName in optionGroupChoices.Keys) {

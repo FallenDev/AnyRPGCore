@@ -118,7 +118,7 @@ namespace AnyRPG {
 
         // use this to set camera position before player spawn so we aren't staring at some wierd spot of the level while player loads
         public void SetTargetPositionRaw(Vector3 rawTargetPosition, Vector3 forwardDirection) {
-            Debug.Log($"SetTargetPositionRaw({rawTargetPosition}, {forwardDirection})");
+            //Debug.Log($"SetTargetPositionRaw({rawTargetPosition}, {forwardDirection})");
 
             // reset the camera to directly behind the player at the previous zoom level
             currentXDegrees = 0f;

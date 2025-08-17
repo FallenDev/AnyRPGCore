@@ -235,7 +235,7 @@ namespace AnyRPG {
         public int GetEquipmentCount(string equipmentName, bool partialMatch = false) {
             int returnValue = 0;
             foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
-                if (equipmentInventorySlot != null) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null) {
                     if (SystemDataUtility.MatchResource(equipmentInventorySlot.InstantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
                         returnValue++;
                     }

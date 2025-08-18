@@ -693,7 +693,8 @@ namespace AnyRPG {
 
         private bool NewGameManagerEquipmentListContains(Equipment equipment) {
             foreach (EquipmentInventorySlot equipmentInventorySlot in newGameManager.EquipmentList.Values) {
-                if (equipmentInventorySlot.InstantiatedEquipment!= null && equipmentInventorySlot.InstantiatedEquipment.Equipment == equipment) {
+                if (equipmentInventorySlot.InstantiatedEquipment!= null
+                    && equipmentInventorySlot.InstantiatedEquipment.Equipment == equipment) {
                     return true;
                 }
             }

@@ -60,7 +60,8 @@ namespace AnyRPG {
         public void HandleCapabilityConsumerChange() {
             List<InstantiatedEquipment> equipmentToRemove = new List<InstantiatedEquipment>();
             foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
-                if (equipmentInventorySlot.InstantiatedEquipment != null && equipmentInventorySlot.InstantiatedEquipment.Equipment.CanEquip(equipmentInventorySlot.InstantiatedEquipment.GetItemLevel(unitController.CharacterStats.Level), unitController) == false) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null
+                    && equipmentInventorySlot.InstantiatedEquipment.Equipment.CanEquip(equipmentInventorySlot.InstantiatedEquipment.GetItemLevel(unitController.CharacterStats.Level), unitController) == false) {
                     equipmentToRemove.Add(equipmentInventorySlot.InstantiatedEquipment);
                 }
             }
@@ -73,7 +74,7 @@ namespace AnyRPG {
 
             // since all status effects were cancelled on the change, it is necessary to re-apply set bonuses
             foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
-                if (equipmentInventorySlot != null) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null) {
                     unitController.CharacterAbilityManager.UpdateEquipmentTraits(equipmentInventorySlot.InstantiatedEquipment);
                 }
             }
@@ -82,7 +83,8 @@ namespace AnyRPG {
         public float GetWeaponDamage() {
             float returnValue = 0f;
             foreach (EquipmentSlotProfile equipmentSlotProfile in CurrentEquipment.Keys) {
-                if (CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment is Weapon) {
+                if (CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment != null
+                    && CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment is Weapon) {
                     returnValue += (CurrentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment as Weapon).GetDamagePerSecond(unitController.CharacterStats.Level);
                 }
             }
@@ -301,7 +303,8 @@ namespace AnyRPG {
             //Debug.Log("EquipmentManager.HasAffinity(" + weaponAffinity.ToString() + ")");
             int weaponCount = 0;
             foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
-                if (equipmentInventorySlot.InstantiatedEquipment != null && equipmentInventorySlot.InstantiatedEquipment.Equipment is Weapon) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null
+                    && equipmentInventorySlot.InstantiatedEquipment.Equipment is Weapon) {
                     weaponCount++;
                     if (weaponAffinity == (equipmentInventorySlot.InstantiatedEquipment.Equipment as Weapon).WeaponSkill) {
                         return true;

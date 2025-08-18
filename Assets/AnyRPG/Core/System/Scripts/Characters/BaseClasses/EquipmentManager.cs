@@ -69,7 +69,8 @@ namespace AnyRPG {
                     foreach (EquipmentSlotType exclusiveSlotType in equipmentSlotType.ExclusiveSlotTypeList) {
                         //Debug.Log(baseCharacter.gameObject.name + ".CharacterEquipmentManager.UnequipExclusiveSlots(" + equipmentSlotType.DisplayName + "): exclusive slot type: " + exclusiveSlotType);
                         foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                            if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment.EquipmentSlotType == exclusiveSlotType) {
+                            if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null
+                                && currentEquipment[equipmentSlotProfile].InstantiatedEquipment.Equipment.EquipmentSlotType == exclusiveSlotType) {
                                 exclusiveSlotList.Add(equipmentSlotProfile);
                             }
                         }
@@ -198,7 +199,9 @@ namespace AnyRPG {
 
             if (equipmentSet != null) {
                 foreach (EquipmentInventorySlot tmpEquipmentInventorySlot in currentEquipment.Values) {
-                    if (tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet != null && tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet == equipmentSet) {
+                    if (tmpEquipmentInventorySlot.InstantiatedEquipment != null
+                        && tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet != null
+                        && tmpEquipmentInventorySlot.InstantiatedEquipment.Equipment.EquipmentSet == equipmentSet) {
                         equipmentCount++;
                     }
                 }
@@ -214,7 +217,8 @@ namespace AnyRPG {
         /// <returns></returns>
         public EquipmentSlotProfile FindEquipmentSlotForEquipment(InstantiatedEquipment instantiatedEquipment) {
             foreach (EquipmentSlotProfile equipmentSlotProfile in currentEquipment.Keys) {
-                if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null && currentEquipment[equipmentSlotProfile].InstantiatedEquipment == instantiatedEquipment) {
+                if (currentEquipment[equipmentSlotProfile].InstantiatedEquipment != null
+                    && currentEquipment[equipmentSlotProfile].InstantiatedEquipment == instantiatedEquipment) {
                     return equipmentSlotProfile;
                 }
             }
@@ -223,7 +227,7 @@ namespace AnyRPG {
 
         public bool HasEquipment(string equipmentName, bool partialMatch = false) {
             foreach (EquipmentInventorySlot equipmentInventorySlot in currentEquipment.Values) {
-                if (equipmentInventorySlot != null) {
+                if (equipmentInventorySlot.InstantiatedEquipment != null) {
                     if (SystemDataUtility.MatchResource(equipmentInventorySlot.InstantiatedEquipment.Equipment.ResourceName, equipmentName, partialMatch)) {
                         return true;
                     }

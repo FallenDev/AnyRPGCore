@@ -406,7 +406,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPlayerUnit(int accountId) {
-            Debug.Log($"PlayerManager.RequestSpawnPlayerUnit({accountId})");
+            //Debug.Log($"PlayerManager.RequestSpawnPlayerUnit({accountId})");
 
             if (systemGameManager.GameMode == GameMode.Network) {
                 networkManagerClient.RequestSpawnPlayerUnit(SceneManager.GetActiveScene().name);

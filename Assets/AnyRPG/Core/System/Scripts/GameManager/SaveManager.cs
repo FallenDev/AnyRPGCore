@@ -345,7 +345,7 @@ namespace AnyRPG {
        
     
         public void NewGame(PlayerCharacterSaveData playerCharacterSaveData) {
-            Debug.Log("Savemanager.NewGame()");
+            //Debug.Log("Savemanager.NewGame()");
 
             ClearSystemManagedSaveData();
 
@@ -746,8 +746,10 @@ namespace AnyRPG {
         }
 
         public void DeleteGame(AnyRPGSaveData anyRPGSaveData) {
+            //Debug.Log("Savemanager.DeleteGame()");
+
             File.Delete(Application.persistentDataPath + "/" + makeSaveDirectoryName() + "/" + anyRPGSaveData.DataFileName);
-            SystemEventManager.TriggerEvent("OnDeleteSaveData", new EventParamProperties());
+            //SystemEventManager.TriggerEvent("OnDeleteSaveData", new EventParamProperties());
         }
 
         public void CopyGame(AnyRPGSaveData anyRPGSaveData) {

@@ -105,6 +105,8 @@ namespace AnyRPG {
         }
 
         public void DeleteGame() {
+            //Debug.Log("LoadGameManager.DeleteGame()");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 saveManager.DeleteGame(playerCharacterSaveData.SaveData);
                 OnDeleteGame();

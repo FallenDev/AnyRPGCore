@@ -293,7 +293,7 @@ namespace AnyRPG {
         }
 
         public void CheckPrerequisites(UnitController sourceUnitController) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.CheckPrerequisites()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.CheckPrerequisites()");
 
             if (PrerequisitesMet(sourceUnitController) && !triggerBased) {
                 SpawnWithDelay();
@@ -367,13 +367,13 @@ namespace AnyRPG {
         }
 
         public void ManualSpawn(int unitLevel, int extraLevels, bool dynamicLevel, UnitProfile unitProfile, UnitToughness toughness) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.ManualSpawn({unitLevel}, {extraLevels}, {dynamicLevel}, {unitProfile.ResourceName})");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.ManualSpawn({unitLevel}, {extraLevels}, {dynamicLevel}, {unitProfile.ResourceName})");
 
             CommonSpawn(unitLevel, extraLevels, dynamicLevel, unitProfile, toughness);
         }
 
         public void Spawn() {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): {GetMaxUnits()}");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): {GetMaxUnits()}");
 
             if (unitProfiles.Count == 0) {
                 return;
@@ -387,7 +387,7 @@ namespace AnyRPG {
         }
 
         public void CommonSpawn(int unitLevel, int extraLevels, bool dynamicLevel, UnitProfile unitProfile, UnitToughness toughness = null) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn({unitLevel}, {extraLevels}, {dynamicLevel}, {unitProfile.ResourceName})");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn({unitLevel}, {extraLevels}, {dynamicLevel}, {unitProfile.ResourceName})");
 
             // prevent a coroutine that finished during a level load from spawning a character
             if (disabled == true) {
@@ -511,10 +511,10 @@ namespace AnyRPG {
         /// spawn a unit if the trigger conditions are met, then start the countdown for the next spawn
         /// </summary>
         private void SpawnWithDelay() {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay()");
 
             if (suppressAutoSpawn) {
-                Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay(): suppressAutoSpawn is true, not spawning.");
+                //Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay(): suppressAutoSpawn is true, not spawning.");
                 return;
             }
             if (unitProfiles.Count == 0) {
@@ -553,7 +553,7 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         private IEnumerator StartSpawnDelayCountDown() {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnDelayCountDown()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnDelayCountDown()");
 
             float currentDelayTimer = spawnDelay;
             while (currentDelayTimer > 0) {

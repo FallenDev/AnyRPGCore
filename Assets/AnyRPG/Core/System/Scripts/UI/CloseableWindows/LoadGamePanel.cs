@@ -1,5 +1,6 @@
 using AnyRPG;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -18,7 +19,10 @@ namespace AnyRPG {
         private GameObject buttonPrefab = null;
 
         [SerializeField]
-        private GameObject buttonArea = null;
+        private ScrollRect scrollRect = null;
+
+        [SerializeField]
+        private RectTransform buttonArea = null;
 
         
         [SerializeField]
@@ -173,7 +177,7 @@ namespace AnyRPG {
                 }
             }
             loadGameButtons.Clear();
-            uINavigationControllers[0].ClearActiveButtons();
+            uINavigationControllers[0].ClearActiveButtons(true);
             selectedLoadGameButton = null;
             loadGameButton.Button.interactable = false;
             copyGameButton.Button.interactable = false;
@@ -184,7 +188,8 @@ namespace AnyRPG {
 
 
         public void ShowLoadButtonsCommon() {
-            //Debug.Log("LoadGamePanel.ShowLoadButtonsCommon()");
+            //Debug.Log($"LoadGamePanel.ShowLoadButtonsCommon() buttonArea height: {buttonArea.sizeDelta.y}");
+
             ClearLoadButtons();
             characterPreviewPanel.ClearPreviewTarget();
             int count = 0;
@@ -194,12 +199,35 @@ namespace AnyRPG {
                 count++;
             }
             uINavigationControllers[1].UpdateNavigationList();
+            /*
+            Debug.Log($"LoadGamePanel.ShowLoadButtonsCommon() buttonArea height after adds: {buttonArea.sizeDelta.y}");
+            Canvas.ForceUpdateCanvases();
+            Debug.Log($"LoadGamePanel.ShowLoadButtonsCommon() buttonArea height after recalculate 1: {buttonArea.sizeDelta.y}");
+            LayoutRebuilder.ForceRebuildLayoutImmediate(buttonArea);
+            Debug.Log($"LoadGamePanel.ShowLoadButtonsCommon() buttonArea height after recalculate 2: {buttonArea.sizeDelta.y}");
+            LayoutRebuilder.MarkLayoutForRebuild(buttonArea);
+            Debug.Log($"LoadGamePanel.ShowLoadButtonsCommon() buttonArea height after recalculate 3: {buttonArea.sizeDelta.y}");
+            */
+
             if (loadGameButtons.Count > 0) {
                 SetNavigationController(uINavigationControllers[0]);
             } else {
                 SetNavigationController(uINavigationControllers[1]);
             }
             //SetPreviewTarget();
+            StartCoroutine(RefreshContentLayout());
+            //scrollRect.Rebuild(CanvasUpdate.PostLayout);
+        }
+
+        /// <summary>
+        /// This is some janky **** here but Unity's layout system is not cooperating and no matter what you do,
+        /// it doesn't want to update the scroll rect content size properly on the first frame. 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator RefreshContentLayout() {
+            //Debug.Log($"LoadGamePanel.RefreshContentLayout() buttonArea height first frame: {buttonArea.sizeDelta.y}");
+            yield return null;
+            scrollRect.Rebuild(CanvasUpdate.PostLayout);
         }
 
         private void AddLoadButton(PlayerCharacterSaveData playerCharacterSaveData) {
@@ -276,7 +304,10 @@ namespace AnyRPG {
         }
 
         public void HandleDeleteGame() {
-            ShowLoadButtonsCommon();
+            //Debug.Log("LoadGamePanel.HandleDeleteGame()");
+
+            loadGameManager.LoadCharacterList();
+            //ShowLoadButtonsCommon();
         }
 
         public void CopyGame() {
@@ -287,8 +318,8 @@ namespace AnyRPG {
 
         public void HandleCopyGame() {
             uIManager.copyGameMenuWindow.CloseWindow();
-            //ShowLoadButtonsCommon(SelectedLoadGameButton.SaveData.SaveData.DataFileName);
-            ShowLoadButtonsCommon();
+            loadGameManager.LoadCharacterList();
+            //ShowLoadButtonsCommon();
         }
 
         public void Logout() {

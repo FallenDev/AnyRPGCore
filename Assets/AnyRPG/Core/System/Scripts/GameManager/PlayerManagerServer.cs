@@ -123,7 +123,7 @@ namespace AnyRPG {
         }
 
         public void AddActivePlayer(int accountId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.AddActivePlayer({accountId}, {unitController.gameObject.name})");
 
             activePlayers.Add(accountId, unitController);
             activePlayerGameObjects.Add(unitController.gameObject, accountId);
@@ -428,16 +428,13 @@ namespace AnyRPG {
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
-            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
 
             if (spawnRequests.ContainsKey(accountId)) {
-                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) replacing request");
-                // debug print the spawn location
-                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
+                //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) replacing request spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
                 spawnRequests[accountId] = loadSceneRequest;
             } else {
-                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) adding new request");
-                Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
+                //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) adding new request spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");
                 spawnRequests.Add(accountId, loadSceneRequest);
             }
             if (networkManagerServer.ServerModeActive == true && advertise == true) {
@@ -463,10 +460,10 @@ namespace AnyRPG {
             SpawnPlayerRequest outputLoadSceneRequest = new SpawnPlayerRequest();
 
             if (spawnRequests.ContainsKey(accountId)) {
-                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
+                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) found request");
                 inputLoadSceneRequest = spawnRequests[accountId];
             } else {
-                Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
+                //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}) making new request");
                 inputLoadSceneRequest = new SpawnPlayerRequest();
             }
             outputLoadSceneRequest.overrideSpawnLocation = inputLoadSceneRequest.overrideSpawnLocation;
@@ -510,7 +507,7 @@ namespace AnyRPG {
             }
 
             // debug print the spawn location
-            Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName}) spawn location: {outputLoadSceneRequest.spawnLocation}, forward direction: {outputLoadSceneRequest.spawnForwardDirection}");
+            //Debug.Log($"PlayerManagerServer.GetSpawnPlayerRequest({accountId}, {sceneName}) spawn location: {outputLoadSceneRequest.spawnLocation}, forward direction: {outputLoadSceneRequest.spawnForwardDirection}");
 
             return outputLoadSceneRequest;
         }
@@ -529,7 +526,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPlayerUnit(int accountId, string sceneName) {
-            Debug.Log($"PlayerManagerServer.RequestSpawnPlayerUnit({accountId}, {sceneName})");
+            //Debug.Log($"PlayerManagerServer.RequestSpawnPlayerUnit({accountId}, {sceneName})");
 
             SpawnPlayerRequest spawnPlayerRequest = GetSpawnPlayerRequest(accountId, sceneName);
 

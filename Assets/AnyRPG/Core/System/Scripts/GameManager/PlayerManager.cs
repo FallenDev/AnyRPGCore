@@ -376,7 +376,7 @@ namespace AnyRPG {
         }
 
         public void HandleTargetReady() {
-            Debug.Log($"PlayerManager.HandleTargetReady()");
+            //Debug.Log($"PlayerManager.HandleTargetReady()");
 
             waitForPlayerReadyCoroutine = StartCoroutine(WaitForPlayerReady());
         }
@@ -416,7 +416,7 @@ namespace AnyRPG {
         }
 
         public void ConfigureSpawnedCharacter(UnitController unitController) {
-            Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
+            //Debug.Log($"PlayerManager.ConfigureSpawnedCharacter({unitController.gameObject.name})");
 
             //if (OwnPlayer(unitController, characterRequestData) == true) {
                 //SetUnitController(unitController);
@@ -567,7 +567,7 @@ namespace AnyRPG {
         }
 
         public void SpawnPlayerConnectionObject() {
-            Debug.Log("PlayerManager.SpawnPlayerConnectionObject()");
+            //Debug.Log("PlayerManager.SpawnPlayerConnectionObject()");
 
             if (playerConnectionObject != null) {
                 //Debug.Log("PlayerManager.SpawnPlayerConnection(): The Player Connection is not null.  exiting.");

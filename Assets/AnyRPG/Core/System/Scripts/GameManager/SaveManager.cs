@@ -821,7 +821,6 @@ namespace AnyRPG {
             foreach (PersistentObjectSaveData _persistentObjectSaveData in saveData.persistentObjects) {
                 if (_persistentObjectSaveData.UUID == UUID) {
                     saveData.persistentObjects.Remove(_persistentObjectSaveData);
-                    playerManager.UnitController.CharacterSaveManager.SceneNodeSaveDataDictionary[saveData.SceneName] = saveData;
                     break;
                 }
             }

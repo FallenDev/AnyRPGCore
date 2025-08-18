@@ -128,13 +128,6 @@ namespace AnyRPG {
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
         public bool PrerequisitesMet(UnitController sourceUnitController) {
-            // disabled next bit because it interferes with spawning in cutscenes
-            /*
-            if (playerManager.MyPlayerUnitSpawned == false) {
-                //Debug.Log($"{gameObject.name}.PrerequisitesMet: returning false because player isn't spawned");
-                return false;
-            }
-            */
             foreach (PrerequisiteConditions prerequisiteCondition in prerequisiteConditions) {
                 if (!prerequisiteCondition.IsMet(sourceUnitController)) {
                     return false;
@@ -157,7 +150,7 @@ namespace AnyRPG {
 
             base.Configure(systemGameManager);
             bool isCutscene = false;
-            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+            if (networkManagerServer.ServerModeActive == false) {
                 isCutscene = levelManager.IsCutscene();
             }
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isCutscene == false) {
@@ -166,17 +159,19 @@ namespace AnyRPG {
             }
             SetupScriptableObjects();
 
+            /*
             if (!triggerBased) {
                 SpawnWithDelay();
             }
-            if (systemGameManager.GameMode == GameMode.Local || isCutscene) {
+            */
+            if (systemGameManager.GameMode == GameMode.Local) {
                 CreateEventSubscriptions();
             } else if (networkManagerServer.ServerModeActive) {
                 CreateServerEventSubscriptions();
             }
 
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive || isCutscene == true) {
+            if (networkManagerServer.ServerModeActive || isCutscene == true) {
                 // server does not respond to player spawn
                 CheckPrerequisites(null);
             }
@@ -298,7 +293,7 @@ namespace AnyRPG {
         }
 
         public void CheckPrerequisites(UnitController sourceUnitController) {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.CheckPrerequisites()");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.CheckPrerequisites()");
 
             if (PrerequisitesMet(sourceUnitController) && !triggerBased) {
                 SpawnWithDelay();
@@ -378,7 +373,7 @@ namespace AnyRPG {
         }
 
         public void Spawn() {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): {GetMaxUnits()}");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.Spawn(): GetMaxUnits(): {GetMaxUnits()}");
 
             if (unitProfiles.Count == 0) {
                 return;
@@ -392,7 +387,7 @@ namespace AnyRPG {
         }
 
         public void CommonSpawn(int unitLevel, int extraLevels, bool dynamicLevel, UnitProfile unitProfile, UnitToughness toughness = null) {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn()");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.CommonSpawn({unitLevel}, {extraLevels}, {dynamicLevel}, {unitProfile.ResourceName})");
 
             // prevent a coroutine that finished during a level load from spawning a character
             if (disabled == true) {
@@ -401,9 +396,11 @@ namespace AnyRPG {
             if (unitProfile == null ) {
                 return;
             }
+            /*
             if (playerManager.UnitController == null && systemGameManager.GameMode == GameMode.Local && levelManager.IsCutscene() == false) {
                 return;
             }
+            */
 
             int _unitLevel = unitLevel;
             if (systemGameManager.GameMode == GameMode.Local && levelManager.IsCutscene() == false) {
@@ -514,9 +511,10 @@ namespace AnyRPG {
         /// spawn a unit if the trigger conditions are met, then start the countdown for the next spawn
         /// </summary>
         private void SpawnWithDelay() {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay()");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay()");
 
             if (suppressAutoSpawn) {
+                Debug.Log($"{gameObject.name}.UnitSpawnNode.SpawnWithDelay(): suppressAutoSpawn is true, not spawning.");
                 return;
             }
             if (unitProfiles.Count == 0) {
@@ -555,7 +553,7 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         private IEnumerator StartSpawnDelayCountDown() {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnDelayCountDown()");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnDelayCountDown()");
 
             float currentDelayTimer = spawnDelay;
             while (currentDelayTimer > 0) {
@@ -595,7 +593,7 @@ namespace AnyRPG {
         /// <param name="countdownTime"></param>
         /// <returns></returns>
         private IEnumerator StartSpawnCountdown(int countdownTime) {
-            //Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
+            Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
 
             float currentTimer = countdownTime;
 

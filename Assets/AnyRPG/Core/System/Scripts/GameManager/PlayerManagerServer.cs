@@ -428,7 +428,7 @@ namespace AnyRPG {
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
-            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
 
             if (spawnRequests.ContainsKey(accountId)) {
                 //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) replacing request spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");

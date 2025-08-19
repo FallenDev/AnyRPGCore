@@ -580,7 +580,8 @@ namespace AnyRPG {
                 );
                 playerCharacterMonitors.Add(accountId, playerCharacterMonitor);
 
-                AddSpawnRequest(accountId, new SpawnPlayerRequest());
+                // this should not be needed.  Check for breakage before deleting.
+                //AddSpawnRequest(accountId, new SpawnPlayerRequest());
             }
         }
 
@@ -734,6 +735,8 @@ namespace AnyRPG {
         }
 
         public void LoadCutscene(Cutscene cutscene, UnitController sourceUnitController) {
+            Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {sourceUnitController?.gameObject.name})");
+
             if (activePlayerLookup.ContainsKey(sourceUnitController)) {
                 int accountId = activePlayerLookup[sourceUnitController];
                 SpawnPlayerRequest spawnPlayerRequest = new SpawnPlayerRequest() {

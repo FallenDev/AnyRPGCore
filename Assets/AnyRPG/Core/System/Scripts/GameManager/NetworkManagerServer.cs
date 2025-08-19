@@ -1018,6 +1018,8 @@ namespace AnyRPG {
 
 
         public void Logout(int accountId) {
+            Debug.Log($"NetworkManagerServer.Logout({accountId})");
+
             playerManagerServer.StopMonitoringPlayerUnit(accountId);
             KickPlayer(accountId);
             ProcessClientLogout(accountId);

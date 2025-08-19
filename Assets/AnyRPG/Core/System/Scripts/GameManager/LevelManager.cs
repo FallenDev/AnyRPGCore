@@ -398,7 +398,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="levelName"></param>
         public void LoadLevel(string levelName) {
-            //Debug.Log("LevelManager.LoadLevel(" + levelName + ")");
+            Debug.Log($"LevelManager.LoadLevel({levelName})");
 
             if (levelName == null || levelName == string.Empty) {
                 return;
@@ -407,6 +407,12 @@ namespace AnyRPG {
             ProcessBeforeLevelUnload();
 
             loadingSceneNode = systemDataFactory.GetResource<SceneNode>(levelName);
+
+            if (loadingSceneNode != null && IsInitializationScene() == false && IsMainMenu(loadingSceneNode.SceneFile) == true) {
+                // since this isn't the initialization scene, we need to process the exit to main menu functionality
+                playerManager.ProcessExitToMainMenu();
+            }
+
             if (loadingSceneNode != null) {
                 StartLoadAsync(loadingSceneNode);
             } else {
@@ -460,11 +466,14 @@ namespace AnyRPG {
         }
 
         public void LoadMainMenu(bool isInitializationScene) {
+            Debug.Log($"LevelManager.LoadMainMenu({isInitializationScene})");
+
+            /*
             if (isInitializationScene == false) {
                 // since this isn't the initialization scene, we need to process the exit to main menu functionality
-                SystemEventManager.TriggerEvent("OnExitGame", new EventParamProperties());
                 playerManager.ProcessExitToMainMenu();
             }
+            */
             if (systemConfigurationManager.MainMenuSceneNode != null) {
                 LoadLevel(systemConfigurationManager.MainMenuSceneNode.ResourceName);
             } else {

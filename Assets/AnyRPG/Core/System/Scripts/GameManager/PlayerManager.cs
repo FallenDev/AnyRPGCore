@@ -200,7 +200,8 @@ namespace AnyRPG {
         */
 
         public void ProcessExitToMainMenu() {
-            //Debug.Log("PlayerManager.ProcessExitToMainMenu()");
+            Debug.Log("PlayerManager.ProcessExitToMainMenu()");
+
             if (unitController != null) {
                 // we need to check here because the exit to main menu could have come from a network disconnection
                 // that occured before the player unit was spawned
@@ -589,6 +590,11 @@ namespace AnyRPG {
         }
 
         public void DespawnPlayerConnection() {
+            Debug.Log("PlayerManager.DespawnPlayerConnection()");
+
+            // this only runs on the client, so is safe to call here
+            playerManagerServer.StopMonitoringPlayerUnit(networkManagerClient.AccountId);
+
             if (playerConnectionObject == null) {
                 //Debug.Log("PlayerManager.SpawnPlayerConnection(): The Player Connection is null.  exiting.");
                 return;

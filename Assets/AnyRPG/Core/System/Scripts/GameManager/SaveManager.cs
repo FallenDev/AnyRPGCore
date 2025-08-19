@@ -40,7 +40,8 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
 
             //CreateEventSubscriptions();
-            GetSaveDataList();
+            // this is done on load game window opening anyway,
+            //GetSaveDataList();
         }
 
         public override void SetGameManagerReferences() {
@@ -84,7 +85,7 @@ namespace AnyRPG {
         }
 
         public AnyRPGSaveData LoadSaveDataFromString(string fileContents) {
-            Debug.Log($"SaveManager.LoadSaveDataFromString({fileContents})");
+            //Debug.Log($"SaveManager.LoadSaveDataFromString({fileContents})");
 
             AnyRPGSaveData anyRPGSaveData = JsonUtility.FromJson<AnyRPGSaveData>(fileContents);
 
@@ -368,7 +369,7 @@ namespace AnyRPG {
         }
 
         private void CreateLocalGame(PlayerCharacterSaveData playerCharacterSaveData) {
-            Debug.Log($"Savemanager.CreateLocalGame()");
+            Debug.Log($"Savemanager.CreateLocalGame(player name: {playerCharacterSaveData.SaveData.playerName})");
 
             SaveDataFile(playerCharacterSaveData.SaveData);
             PlayerPrefs.SetString("LastSaveDataFileName", playerCharacterSaveData.SaveData.DataFileName);
@@ -532,7 +533,7 @@ namespace AnyRPG {
 
 
         public void LoadGame(PlayerCharacterSaveData playerCharacterSaveData) {
-            Debug.Log($"Savemanager.LoadGame()");
+            Debug.Log($"Savemanager.LoadGame(playerName: {playerCharacterSaveData.SaveData.playerName})");
 
             ClearSharedData();
 

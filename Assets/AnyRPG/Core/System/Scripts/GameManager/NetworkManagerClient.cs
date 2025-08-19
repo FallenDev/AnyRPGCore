@@ -173,6 +173,7 @@ namespace AnyRPG {
 
         public void ProcessStopConnection() {
             Debug.Log($"NetworkManagerClient.ProcessStopConnection()");
+
             systemGameManager.SetGameMode(GameMode.Local);
             if (levelManager.GetActiveSceneNode() != systemConfigurationManager.MainMenuSceneNode) {
                 if (isLoggingInOrOut == false) {

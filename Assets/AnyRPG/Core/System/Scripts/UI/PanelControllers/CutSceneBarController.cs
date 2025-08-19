@@ -89,11 +89,12 @@ namespace AnyRPG {
 
         // ensure that a cutscene can be considered active even if it loads late in the scene load order
         public void AssignCutScene(Cutscene cutscene) {
+            Debug.Log($"CutSceneBarController.AssignCutScene({cutscene.ResourceName})");
             currentCutscene = cutscene;
         }
 
         public void StartCutScene(Cutscene cutscene) {
-            Debug.Log($"CutSceneBarController.StartCutScene({cutscene.DisplayName})");
+            Debug.Log($"CutSceneBarController.StartCutScene({cutscene.ResourceName})");
 
             if (cutscene.TimelineName != null
                 && cutscene.TimelineName != string.Empty

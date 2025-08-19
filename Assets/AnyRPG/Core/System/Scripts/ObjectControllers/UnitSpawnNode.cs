@@ -593,7 +593,7 @@ namespace AnyRPG {
         /// <param name="countdownTime"></param>
         /// <returns></returns>
         private IEnumerator StartSpawnCountdown(int countdownTime) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.StartSpawnCountdown({countdownTime})");
 
             float currentTimer = countdownTime;
 

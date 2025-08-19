@@ -161,7 +161,7 @@ namespace AnyRPG {
         }
 
         public virtual bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex}) : {this.GetType()}");
+            //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex}) : {this.GetType()}");
 
             //source.CancelMountEffects();
             if (sourceUnitController != null) {
@@ -330,16 +330,16 @@ namespace AnyRPG {
         }
 
         public int GetSwitchOptionIndex(UnitController sourceUnitController) {
-            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex(): {this.GetType()}");
+            //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex(): {this.GetType()}");
 
             Dictionary<int, InteractableOptionComponent> allOptions = interactable.GetSwitchInteractables(sourceUnitController);
             foreach (int optionIndex in allOptions.Keys) {
-                Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : checking option {optionIndex} : {allOptions[optionIndex].GetType()}");
+                //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : checking option {optionIndex} : {allOptions[optionIndex].GetType()}");
                 if (allOptions[optionIndex] == this) {
                     return optionIndex;
                 }
             }
-            Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : no match found return -1");
+            //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.GetSwitchOptionIndex() : no match found return -1");
             return -1;
         }
 

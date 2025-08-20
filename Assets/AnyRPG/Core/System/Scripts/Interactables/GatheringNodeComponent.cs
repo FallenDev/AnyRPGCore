@@ -52,9 +52,10 @@ namespace AnyRPG {
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + ")");
+            Debug.Log($"{interactable.gameObject.name}.GatheringNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             if (Props.LootTables == null) {
-                //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
+                Debug.Log($"{interactable.gameObject.name}.GatheringNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex}) loot table was null");
                 return true;
             }
             // base.Interact() will drop loot automatically so we will intentionally not call it because the loot drop in this class is activated by the gatherability
@@ -65,18 +66,20 @@ namespace AnyRPG {
                 sourceUnitController.CharacterAbilityManager.BeginAbility(GatheringNodeProps.BaseAbility.AbilityProperties, interactable);
             }
             return true;
-            //return PickUp();
+        }
+
+        public override void ProcessClientNotifications(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            // do not send to base class, we'll do this later
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
-            uIManager.interactionWindow.CloseWindow();
-
         }
 
         public void Gather(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
-            //Debug.Log($"{gameObject.name}.GatheringNode.DropLoot()");
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            Debug.Log($"{interactable.gameObject.name}.GatheringNode.Gather({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessClientNotifications(sourceUnitController, componentIndex, choiceIndex);
         }
 
         /*

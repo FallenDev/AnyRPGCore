@@ -171,7 +171,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 112
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 18398312226742260052
+  <AssetPathHash>k__BackingField: 12553364219892189180
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

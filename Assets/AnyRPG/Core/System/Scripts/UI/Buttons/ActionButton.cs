@@ -279,7 +279,7 @@ namespace AnyRPG {
         }
 
         private void HandleActivateAutoAttack() {
-            Debug.Log($"{gameObject.name}.ActionButton.HandleActivateAutoAttack()");
+            //Debug.Log($"{gameObject.name}.ActionButton.HandleActivateAutoAttack()");
 
             if (monitorCoroutine == null && gameObject.activeInHierarchy == true) {
                 monitorCoroutine = StartCoroutine(MonitorAutoAttack());

@@ -40,7 +40,7 @@ namespace AnyRPG {
         }
 
         public void AddBag(InstantiatedBag instantiatedBag) {
-            Debug.Log("BagNode.AddBag()");
+            //Debug.Log("BagNode.AddBag()");
 
             this.instantiatedBag = instantiatedBag;
             //inventorySlots = bagPanel.AddSlots(bag.Slots);

@@ -50,17 +50,17 @@ namespace AnyRPG {
         }
 
         public override InventorySlotSaveData GetSlotSaveData() {
-            Debug.Log($"InstantiatedCurrencyItem.GetSlotSaveData()");
+            //Debug.Log($"InstantiatedCurrencyItem.GetSlotSaveData()");
 
             InventorySlotSaveData saveData = base.GetSlotSaveData();
             saveData.gainCurrencyName = gainCurrencyName;
             saveData.gainCurrencyAmount = gainCurrencyAmount;
-            Debug.Log($"InstantiatedCurrencyItem.GetSlotSaveData(): gainCurrencyName = {gainCurrencyName}, gainCurrencyAmount = {gainCurrencyAmount}");
+            //Debug.Log($"InstantiatedCurrencyItem.GetSlotSaveData(): gainCurrencyName = {gainCurrencyName}, gainCurrencyAmount = {gainCurrencyAmount}");
             return saveData;
         }
 
         public override void LoadSaveData(InventorySlotSaveData inventorySlotSaveData) {
-            Debug.Log($"InstantiatedCurrencyItem.LoadSaveData({inventorySlotSaveData.ItemName}) name: {inventorySlotSaveData.gainCurrencyName} amount: {inventorySlotSaveData.gainCurrencyAmount}");
+            //Debug.Log($"InstantiatedCurrencyItem.LoadSaveData({inventorySlotSaveData.ItemName}) name: {inventorySlotSaveData.gainCurrencyName} amount: {inventorySlotSaveData.gainCurrencyAmount}");
 
             base.LoadSaveData(inventorySlotSaveData);
             OverrideCurrency(inventorySlotSaveData.gainCurrencyName, inventorySlotSaveData.gainCurrencyAmount);

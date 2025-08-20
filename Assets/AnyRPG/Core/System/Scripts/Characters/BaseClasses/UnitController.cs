@@ -235,7 +235,7 @@ namespace AnyRPG {
         public bool Levitated { get => levitated; set => levitated = value; }
         public bool ControlLocked {
             get {
-                //Debug.Log($"{gameObject.name}.BaseController.MyControlLocked: frozen: " + MyFrozen + "; stunned: "  + MyStunned + "; mylevitated: " + MyLevitated);
+                //Debug.Log($"{gameObject.name}.UnitController.MyControlLocked: frozen: " + MyFrozen + "; stunned: "  + MyStunned + "; mylevitated: " + MyLevitated);
                 return (Frozen || Stunned || Levitated);
             }
         }
@@ -2018,7 +2018,8 @@ namespace AnyRPG {
         }
 
         public void FreezeCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.FreezeCharacter(): ");
+            Debug.Log($"{gameObject.name}.UnitController.FreezeCharacter(): ");
+
             ApplyControlLock();
             frozen = true;
             FreezePositionXZ();
@@ -2031,11 +2032,13 @@ namespace AnyRPG {
         }
 
         public void UnFreezeCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.UnFreezeCharacter(): ");
+            Debug.Log($"{gameObject.name}.UnitController.UnFreezeCharacter()");
+
             frozen = false;
             FreezeRotation();
             if (unitAnimator != null) {
                 UnitAnimator.Animator.enabled = true;
+                UnitAnimator.Animator.Rebind();
             }
             if (unitMotor != null) {
                 unitMotor.UnFreezeCharacter();
@@ -2043,7 +2046,7 @@ namespace AnyRPG {
         }
 
         public void StunCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.StunCharacter(): ");
+            //Debug.Log($"{gameObject.name}.UnitController.StunCharacter(): ");
             if (stunned == true) {
                 // testing -- avoid triggering stun animation multiple times
                 return;
@@ -2054,17 +2057,17 @@ namespace AnyRPG {
             if (UnitAnimator != null) {
                 UnitAnimator.HandleStunned();
             } else {
-                //Debug.Log($"{gameObject.name}.BaseController.StunCharacter(): characteranimator was null");
+                //Debug.Log($"{gameObject.name}.UnitController.StunCharacter(): characteranimator was null");
             }
             if (UnitMotor != null) {
                 UnitMotor.FreezeCharacter();
             } else {
-                //Debug.Log($"{gameObject.name}.BaseController.StunCharacter(): charactermotor was null");
+                //Debug.Log($"{gameObject.name}.UnitController.StunCharacter(): charactermotor was null");
             }
         }
 
         public void UnStunCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.UnStunCharacter(): ");
+            //Debug.Log($"{gameObject.name}.UnitController.UnStunCharacter(): ");
             stunned = false;
             FreezeRotation();
             if (UnitAnimator != null) {
@@ -2076,7 +2079,7 @@ namespace AnyRPG {
         }
 
         public void LevitateCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.LevitateCharacter(): ");
+            //Debug.Log($"{gameObject.name}.UnitController.LevitateCharacter(): ");
             ApplyControlLock();
             levitated = true;
             FreezePositionXZ();
@@ -2089,7 +2092,7 @@ namespace AnyRPG {
         }
 
         public void UnLevitateCharacter() {
-            //Debug.Log($"{gameObject.name}.BaseController.UnLevitateCharacter(): ");
+            //Debug.Log($"{gameObject.name}.UnitController.UnLevitateCharacter(): ");
             levitated = false;
             FreezeRotation();
             if (UnitAnimator != null) {
@@ -2156,14 +2159,14 @@ namespace AnyRPG {
         }
 
         private Vector3 GetHitBoxCenter() {
-            //Debug.Log($"{gameObject.name}.BaseController.GetHitBoxCenter()");
+            //Debug.Log($"{gameObject.name}.UnitController.GetHitBoxCenter()");
             if (characterUnit == null) {
                 //Debug.Log($"{gameObject.name}BaseController.GetHitBoxCenter(): characterUnit.BaseCharacter.MyCharacterUnit is null!");
                 return myCollider.bounds.center;
             }
             Vector3 returnValue = myCollider.bounds.center + (transform.forward * (characterUnit.HitBoxSize / 2f));
             //Vector3 returnValue = transform.TransformPoint(myCollider.bounds.center) + (transform.forward * (characterUnit.HitBoxSize / 2f));
-            //Debug.Log($"{gameObject.name}.BaseController.GetHitBoxCenter() Capsule Collider Center is:" + characterUnit.BaseCharacter.MyCharacterUnit.transform.TransformPoint(characterUnit.BaseCharacter.MyCharacterUnit.gameObject.GetComponent<CapsuleCollider>().center));
+            //Debug.Log($"{gameObject.name}.UnitController.GetHitBoxCenter() Capsule Collider Center is:" + characterUnit.BaseCharacter.MyCharacterUnit.transform.TransformPoint(characterUnit.BaseCharacter.MyCharacterUnit.gameObject.GetComponent<CapsuleCollider>().center));
             return returnValue;
         }
 

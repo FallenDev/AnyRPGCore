@@ -85,11 +85,6 @@ namespace AnyRPG {
         public event System.Action OnInitializeAnimator = delegate { };
         public event System.Action<string> OnAnimatorSetTrigger = delegate { };
         public event System.Action<string> OnAnimatorResetTrigger = delegate { };
-        public event System.Action OnAnimatorStartLevitated = delegate { };
-        public event System.Action<bool> OnAnimatorEndLevitated = delegate { };
-        public event System.Action OnAnimatorStartStunned = delegate { };
-        public event System.Action<bool> OnAnimatorEndStunned = delegate { };
-        public event System.Action OnAnimatorDeath = delegate { };
         public event System.Action<string, AnimationClip> OnSetAnimationClipOverride = delegate { };
         public event System.Action<AnimatedAction> OnPerformAnimatedActionAnimation = delegate { };
         public event System.Action<AbilityProperties, int> OnPerformAbilityCastAnimation = delegate { };
@@ -526,28 +521,6 @@ namespace AnyRPG {
 
         public void NotifyOnAnimatorResetTrigger(string triggerName) {
             OnAnimatorResetTrigger(triggerName);
-        }
-
-        public void NotifyOnAnimatorStartLevitated() {
-            OnAnimatorStartLevitated();
-        }
-
-        public void NotifyOnAnimatorEndLevitated(bool swapAnimator) {
-            OnAnimatorEndLevitated(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorStartStunned() {
-            OnAnimatorStartStunned();
-        }
-
-        public void NotifyOnAnimatorEndStunned(bool swapAnimator) {
-            OnAnimatorEndStunned(swapAnimator);
-        }
-
-        public void NotifyOnAnimatorDeath() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnAnimatorDeath()");
-
-            OnAnimatorDeath();
         }
 
         public void NotifyOnSetAnimationClipOverride(string originalClipName, AnimationClip newAnimationClip) {

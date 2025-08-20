@@ -114,7 +114,7 @@ namespace AnyRPG {
         }
 
         public override void ReceiveClosedWindowNotification() {
-            Debug.Log("LootUI.ReceiveClosedWindowNotification()");
+            //Debug.Log("LootUI.ReceiveClosedWindowNotification()");
 
             base.ReceiveClosedWindowNotification();
             foreach (LootButton lootButton in lootButtons) {
@@ -127,7 +127,7 @@ namespace AnyRPG {
         }
 
         public override void ProcessOpenWindowNotification() {
-            Debug.Log("LootUI.ProcessOpenWindowNotification()");
+            //Debug.Log("LootUI.ProcessOpenWindowNotification()");
 
             base.ProcessOpenWindowNotification();
             SetBackGroundColor(new Color32(0, 0, 0, (byte)(int)(PlayerPrefs.GetFloat("PopupWindowOpacity") * 255)));
@@ -151,7 +151,7 @@ namespace AnyRPG {
         */
 
         public void HandleTakeLoot() {
-            Debug.Log("LootUI.HandleTakeLoot()");
+            //Debug.Log("LootUI.HandleTakeLoot()");
 
             ClearButtons();
             PopulatePages();
@@ -160,7 +160,7 @@ namespace AnyRPG {
         }
 
         public void HandleAvailableLootAdded() {
-            Debug.Log("LootUI.HandleAvailableLootAdded()");
+            //Debug.Log("LootUI.HandleAvailableLootAdded()");
 
             CreatePages();
             BroadcastPageCountUpdate();

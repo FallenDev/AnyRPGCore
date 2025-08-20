@@ -137,7 +137,7 @@ namespace AnyRPG {
 
 
         public virtual bool Use(UnitController sourceUnitController) {
-            Debug.Log($"{ResourceName}.InstantiatedItem.Use({sourceUnitController.gameObject.name})");
+            //Debug.Log($"{ResourceName}.InstantiatedItem.Use({sourceUnitController.gameObject.name})");
 
             if (!item.CharacterClassRequirementIsMet(sourceUnitController.BaseCharacter)) {
                 messageFeedManager.WriteMessage(sourceUnitController, "You are not the right character class to use " + DisplayName);
@@ -153,7 +153,7 @@ namespace AnyRPG {
         }
 
         public bool ActionButtonUse(UnitController sourceUnitController) {
-            Debug.Log($"{ResourceName}.InstantiatedItem.ActionButtonUse({sourceUnitController.gameObject.name})");
+            //Debug.Log($"{ResourceName}.InstantiatedItem.ActionButtonUse({sourceUnitController.gameObject.name})");
 
             List<InstantiatedItem> itemList = sourceUnitController.CharacterInventoryManager?.GetItems(ResourceName, 1);
             if (itemList == null || itemList.Count == 0) {

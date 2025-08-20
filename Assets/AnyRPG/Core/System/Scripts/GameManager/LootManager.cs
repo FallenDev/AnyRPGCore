@@ -62,7 +62,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(UnitController sourceUnitController, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
+            //Debug.Log($"LootManager.AddAvailableLoot({sourceUnitController.gameObject.name}, count: {items.Count})");
 
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController)) {
                 AddAvailableLoot(playerManagerServer.ActivePlayerLookup[sourceUnitController], items);
@@ -70,7 +70,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int accountId, List<int> lootDropIds) {
-            Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {lootDropIds.Count})");
+            //Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {lootDropIds.Count})");
 
             List<LootDrop> lootDrops = new List<LootDrop>();
             foreach (int lootDropId in lootDropIds) {
@@ -82,7 +82,7 @@ namespace AnyRPG {
         }
 
         public void AddAvailableLoot(int accountId, List<LootDrop> items) {
-            Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {items.Count})");
+            //Debug.Log($"LootManager.AddAvailableLoot({accountId}, count: {items.Count})");
 
             if (availableDroppedLoot.ContainsKey(accountId)) {
                 availableDroppedLoot[accountId] = items;
@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public void RequestTakeLoot(LootDrop lootDrop, UnitController sourceUnitController) {
-            Debug.Log($"LootManager.RequestTakeLoot({lootDrop.LootDropId}, {sourceUnitController.gameObject.name})");
+            //Debug.Log($"LootManager.RequestTakeLoot({lootDrop.LootDropId}, {sourceUnitController.gameObject.name})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 lootDrop.TakeLoot(playerManager.UnitController);
@@ -121,7 +121,7 @@ namespace AnyRPG {
         }
 
         public void TakeLoot(int accountId, int lootDropId) {
-            Debug.Log($"LootManager.TakeLoot({accountId}, {lootDropId})");
+            //Debug.Log($"LootManager.TakeLoot({accountId}, {lootDropId})");
 
             if (lootDropIndex.ContainsKey(lootDropId) == false) {
                 return;
@@ -131,7 +131,7 @@ namespace AnyRPG {
         }
 
         public void TakeLoot(int accountId, LootDrop lootDrop) {
-            Debug.Log($"LootManager.TakeLoot({accountId}, {lootDrop.DisplayName}) lootDropId: {lootDrop.LootDropId})");
+            //Debug.Log($"LootManager.TakeLoot({accountId}, {lootDrop.DisplayName}) lootDropId: {lootDrop.LootDropId})");
 
             RemoveLootTableStateIndex(lootDrop.LootDropId);
             RemoveFromAvailableDroppedItems(accountId, lootDrop);
@@ -153,7 +153,7 @@ namespace AnyRPG {
         }
 
         public void TakeAllLoot(UnitController sourceUnitController) {
-            Debug.Log($"LootManager.TakeAllLoot({sourceUnitController.gameObject.name})");
+            //Debug.Log($"LootManager.TakeAllLoot({sourceUnitController.gameObject.name})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 TakeAllLootInternal(0, sourceUnitController);
@@ -182,7 +182,7 @@ namespace AnyRPG {
         }
 
         public void AddLootTableState(LootTableState lootTableState) {
-            Debug.Log("LootManager.AddLootTableState()");
+            //Debug.Log("LootManager.AddLootTableState()");
 
             if (lootTableStates.Contains(lootTableState) == false) {
                 lootTableStates.Add(lootTableState);
@@ -240,7 +240,7 @@ namespace AnyRPG {
         }
 
         public void AddLootDropToIndex(UnitController sourceUnitController, LootDrop lootDrop) {
-            Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
+            //Debug.Log($"LootManager.AddLootDropToIndex({sourceUnitController.gameObject.name}, {lootDrop.LootDropId})");
             
             lootDropIndex.Add(lootDrop.LootDropId, lootDrop);
             if (networkManagerServer.ServerModeActive == true) {
@@ -249,7 +249,7 @@ namespace AnyRPG {
         }
 
         public void AddNetworkLootDrop(int lootDropId, int itemId) {
-            Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
+            //Debug.Log($"LootManager.AddNetworkLootDrop({lootDropId}, {itemId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemId) == false) {
                 return;

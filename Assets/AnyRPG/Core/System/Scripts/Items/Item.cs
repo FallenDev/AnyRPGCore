@@ -297,13 +297,13 @@ namespace AnyRPG {
                     }
 
                     instantiatedItem.ItemQuality = validItemQualities[usedIndex];
-                    Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting itemQuality: {instantiatedItem.ItemQuality.ResourceName}");
+                    //Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting itemQuality: {instantiatedItem.ItemQuality.ResourceName}");
 
 
                     if (instantiatedItem.ItemQuality.RandomQualityPrefix != null && instantiatedItem.ItemQuality.RandomQualityPrefix != string.Empty) {
-                        Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting displayName: {instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}");
+                        //Debug.Log($"{ResourceName}.Item.InitializeNewItem() setting displayName: {instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}");
                         instantiatedItem.DisplayName = $"{instantiatedItem.ItemQuality.RandomQualityPrefix} {DisplayName}";
-                        Debug.Log($"Item.InitializeNewItem() setting displayName: {instantiatedItem.DisplayName}");
+                        //Debug.Log($"Item.InitializeNewItem() setting displayName: {instantiatedItem.DisplayName}");
                     }
                 }
             }

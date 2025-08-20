@@ -44,7 +44,7 @@ namespace AnyRPG {
         }
 
         public List<LootDrop> GetLoot(UnitController sourceUnitController, LootTable lootTable, bool rollLoot) {
-            Debug.Log($"LootHolder.GetLoot({sourceUnitController?.gameObject.name}, {rollLoot})");
+            //Debug.Log($"LootHolder.GetLoot({sourceUnitController?.gameObject.name}, {rollLoot})");
 
             if (playerManagerServer.ActivePlayerLookup.ContainsKey(sourceUnitController) == false) {
                 return new List<LootDrop>();
@@ -66,13 +66,14 @@ namespace AnyRPG {
         }
 
         private void HandleInitializeItem(InstantiatedItem item) {
-            Debug.Log($"LootHolder.HandleInitializeItem({item.ResourceName})");
+            //Debug.Log($"LootHolder.HandleInitializeItem({item.ResourceName})");
 
             OnInitializeItem(item);
         }
 
         public void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
-            Debug.Log($"LootHolder.HandleRemoveDroppedItem({lootDrop.InstantiatedItem.ResourceName}, {accountId})");
+            //Debug.Log($"LootHolder.HandleRemoveDroppedItem({lootDrop.InstantiatedItem.ResourceName}, {accountId})");
+
             OnRemoveDroppedItem(lootDrop, accountId);
         }
     }

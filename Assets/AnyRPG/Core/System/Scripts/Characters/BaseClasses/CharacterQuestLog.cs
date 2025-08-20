@@ -152,7 +152,7 @@ namespace AnyRPG {
         }
 
         public void ShowQuestGiverDescription(Quest quest, IQuestGiver questGiver) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.ShowQuestGiverDescription({quest.name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.ShowQuestGiverDescription({quest.name})");
 
             OnShowQuestGiverDescription(quest, questGiver);
         }

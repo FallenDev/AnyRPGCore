@@ -252,8 +252,11 @@ namespace AnyRPG {
         }
 
         public void EnableAnimator() {
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.EnableAnimator()");
+
             if (animator != null) {
                 animator.enabled = true;
+                //animator.Rebind();
             }
         }
 
@@ -536,7 +539,7 @@ namespace AnyRPG {
 
             //if (unitController.IsOwner) {
                 if (baseAbility.GetAbilityCastingTime(unitController) > 0f) {
-                    SetCasting(true, true, (baseAbility.UseSpeedMultipliers == true ? (unitController.CharacterStats.GetSpeedModifiers() / 100f) : 1f));
+                    SetCasting(true, (baseAbility.UseSpeedMultipliers == true ? (unitController.CharacterStats.GetSpeedModifiers() / 100f) : 1f));
                 }
             //}
         }
@@ -553,7 +556,7 @@ namespace AnyRPG {
             unitController.UnitEventController.NotifyOnPerformAnimatedActionAnimation(animatedAction);
 
             //if (unitController.IsOwner) {
-                SetActing(true, true);
+                SetActing(true);
             //}
         }
 
@@ -608,14 +611,11 @@ namespace AnyRPG {
         }
 
         public void HandleDie() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
-
-            // not subscribed to
-            //unitController.UnitEventController.NotifyOnAnimatorDeath();
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
             // add these to prevent characters from dying floating or upright
-            HandleUnLevitated(false);
-            HandleUnStunned(false);
+            HandleUnLevitated();
+            HandleUnStunned();
 
             SetAnimationSpeed(1);
 
@@ -627,7 +627,7 @@ namespace AnyRPG {
         }
 
         public void ResetTrigger(string triggerName) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetTrigger({triggerName})");
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.ResetTrigger({triggerName})");
 
             if (animator != null && ParameterExists(triggerName)) {
                 animator.ResetTrigger(triggerName);
@@ -670,29 +670,25 @@ namespace AnyRPG {
 
         public void HandleLevitated() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleDeath()");
-            unitController.UnitEventController.NotifyOnAnimatorStartLevitated();
             SetTrigger("LevitateTrigger");
             SetBool("Levitated", true);
         }
-        public void HandleUnLevitated(bool swapAnimator = true) {
+        public void HandleUnLevitated() {
             SetBool("Levitated", false);
-            unitController.UnitEventController.NotifyOnAnimatorEndLevitated(swapAnimator);
         }
 
         public void HandleStunned() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleStunned()");
-            unitController.UnitEventController.NotifyOnAnimatorStartStunned();
             SetTrigger("StunTrigger");
             SetBool("Stunned", true);
         }
 
-        public void HandleUnStunned(bool swapAnimator = true) {
+        public void HandleUnStunned() {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.HandleUnStunned()");
             SetBool("Stunned", false);
-            unitController.UnitEventController.NotifyOnAnimatorEndStunned(swapAnimator);
         }
 
-        public void SetCasting(bool varValue, bool swapAnimator = true, float castingSpeed = 1f) {
+        public void SetCasting(bool varValue, float castingSpeed = 1f) {
             //Debug.Log($"{gameObject.name}.CharacterAnimator.SetCasting(" + varValue + ")");
             if (animator == null) {
                 return;
@@ -713,7 +709,7 @@ namespace AnyRPG {
 
         }
 
-        public void SetActing(bool varValue, bool swapAnimator = true, float animationSpeed = 1f) {
+        public void SetActing(bool varValue, float animationSpeed = 1f) {
             //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetActing(" + varValue + ")");
 
             if (animator == null) {
@@ -1036,7 +1032,7 @@ namespace AnyRPG {
         }
 
         public void SetTrigger(string varName) {
-            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetTrigger({varName})");
+            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.SetTrigger({varName})");
 
             if (animator != null && ParameterExists(varName)) {
                 ResetTrigger(varName);

@@ -531,6 +531,7 @@ namespace AnyRPG {
 
         public void ApplyControlEffects(UnitController unitController) {
             //Debug.Log(DisplayName + ".StatusEffect.ApplyControlEffects(" + (targetCharacter == null ? "null" : targetCharacter.CharacterName) + ")");
+
             if (unitController == null) {
                 //Debug.Log(DisplayName + ".StatusEffect.ApplyControlEffects() targetCharacter is null");
                 return;
@@ -559,18 +560,20 @@ namespace AnyRPG {
             }
         }
 
-        public void RemoveControlEffects(UnitController targetCharacter) {
-            if (targetCharacter == null) {
+        public void RemoveControlEffects(UnitController unitController) {
+            //Debug.Log($"{ResourceName}.StatusEffect.RemoveControlEffects({(unitController == null ? "null" : unitController.gameObject.name)})");
+
+            if (unitController == null) {
                 return;
             }
             if (DisableAnimator == true) {
-                targetCharacter.UnFreezeCharacter();
+                unitController.UnFreezeCharacter();
             }
             if (Stun == true) {
-                targetCharacter.UnStunCharacter();
+                unitController.UnStunCharacter();
             }
             if (Levitate == true) {
-                targetCharacter.UnLevitateCharacter();
+                unitController.UnLevitateCharacter();
             }
             /*
             if (stealth == true) {

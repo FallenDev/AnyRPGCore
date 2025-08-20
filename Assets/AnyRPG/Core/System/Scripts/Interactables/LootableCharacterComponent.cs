@@ -161,7 +161,7 @@ namespace AnyRPG {
         }
 
         public void HandleBeforeDie(UnitController sourceUnitController) {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.HandleBeforeDie({sourceUnitController.gameObject.name})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacter.HandleBeforeDie({sourceUnitController.gameObject.name})");
 
             int lootCount = 0;
 
@@ -184,14 +184,14 @@ namespace AnyRPG {
             lootCalculated = true;
             if (lootCount > 0 && systemConfigurationManager.LootSparkleEffect != null) {
                 interactable.InteractableEventController.NotifyOnDropLoot(lootDropIdLookup);
-                Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleBeforeDie(): casting loot sparkle effect; loot count = {lootCount}");
+                //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleBeforeDie(): casting loot sparkle effect; loot count = {lootCount}");
                 systemConfigurationManager.LootSparkleEffect.AbilityEffectProperties.Cast(systemAbilityController, interactable, interactable, new AbilityEffectContext());
             }
             TryToDespawn();
         }
 
         public void TryToDespawn() {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.TryToDespawn()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.TryToDespawn()");
 
             if (characterUnit.UnitController.CharacterStats.IsAlive == true) {
                 //Debug.Log("LootableCharacter.TryToDespawn(): Character is alive.  Returning and doing nothing.");
@@ -225,7 +225,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseLootComplete() {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.AdvertiseLootComplete()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.AdvertiseLootComplete()");
 
             if (interactable != null) {
                 UnitController unitController = interactable.gameObject.GetComponent<UnitController>();
@@ -256,7 +256,7 @@ namespace AnyRPG {
         }
 
         public List<LootDrop> DropLoot(UnitController sourceUnitController) {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.DropLoot({sourceUnitController.gameObject.name})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacter.DropLoot({sourceUnitController.gameObject.name})");
 
             List<LootDrop> droppedItems = new List<LootDrop>();
 
@@ -291,7 +291,7 @@ namespace AnyRPG {
                 }
             }
 
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.DropLoot({sourceUnitController.gameObject.name}): returning loot count: {droppedItems.Count}");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacter.DropLoot({sourceUnitController.gameObject.name}): returning loot count: {droppedItems.Count}");
             return droppedItems;
         }
 
@@ -317,7 +317,7 @@ namespace AnyRPG {
                 lootCount = lootDropIdLookup[accountId].Count;
             }
 
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacter.GetLootCount({sourceUnitController.gameObject.name}): returning loot count: {lootCount}");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacter.GetLootCount({sourceUnitController.gameObject.name}): returning loot count: {lootCount}");
             return lootCount;
         }
 
@@ -347,7 +347,7 @@ namespace AnyRPG {
                 }
             }
             */
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount(): returning loot count: {lootCount}");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.GetExistingLootCount(): returning loot count: {lootCount}");
             return lootCount;
         }
 
@@ -400,7 +400,7 @@ namespace AnyRPG {
         */
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             if (!characterUnit.UnitController.CharacterStats.IsAlive) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): Character is dead.  Showing Loot Window on interaction");
@@ -462,7 +462,8 @@ namespace AnyRPG {
                 drops.AddRange(itemDrops);
 
                 if (drops.Count > 0) {
-                    Debug.Log($"{interactable.gameObject.name}.LootableCharacter.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex}) drop count : {drops.Count}");
+                    //Debug.Log($"{interactable.gameObject.name}.LootableCharacter.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex}) drop count : {drops.Count}");
+
                     //lootManager.CreatePages(drops);
                     lootManager.AddAvailableLoot(sourceUnitController, drops);
                     //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): about to open window");
@@ -500,7 +501,7 @@ namespace AnyRPG {
         }
 
         public void Despawn() {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Despawn()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Despawn()");
 
             //gameObject.SetActive(false);
             //ResetLootTableStates();
@@ -544,7 +545,7 @@ namespace AnyRPG {
 
 
         private void HandleRemoveDroppedItem(LootDrop lootDrop, int accountId) {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleRemoveDroppedItem({lootDrop.LootDropId}, {accountId})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleRemoveDroppedItem({lootDrop.LootDropId}, {accountId})");
 
             if (lootDropIdLookup.ContainsKey(accountId)) {
                 lootDropIdLookup[accountId].Remove(lootDrop.LootDropId);
@@ -554,7 +555,7 @@ namespace AnyRPG {
         }
 
         private void HandleInitializeItem(InstantiatedItem item) {
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName})");
             
             if (item.Item.ResourceName != lootManager.CurrencyLootItem.ResourceName) {
                 return;
@@ -569,7 +570,7 @@ namespace AnyRPG {
             }
             item.DisplayName = $"{gainCurrencyAmount} {systemConfigurationManager.KillCurrency.DisplayName}";
             currencyItem.OverrideCurrency(systemConfigurationManager.KillCurrency.ResourceName, gainCurrencyAmount);
-            Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName}) name: {currencyItem.GainCurrencyName} amount: {currencyItem.GainCurrencyAmount}");
+            //Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.HandleInitializeItem({item.Item.ResourceName}) name: {currencyItem.GainCurrencyName} amount: {currencyItem.GainCurrencyAmount}");
         }
 
 

@@ -215,7 +215,7 @@ namespace AnyRPG {
             //Debug.Log($"CameraManager.EnableCutsceneCamera() frame: {Time.frameCount}");
 
             if (currentCutsceneCameraController != null) {
-                Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
+                //Debug.Log("CameraManager.EnableCutsceneCamera(): enabling");
                 currentCutsceneCameraController.gameObject.SetActive(true);
             } else {
                 Debug.LogWarning("CameraManager.EnableCutsceneCamera(): currentCutsceneCameraController is null");

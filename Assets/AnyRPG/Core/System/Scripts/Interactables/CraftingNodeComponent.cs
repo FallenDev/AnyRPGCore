@@ -63,7 +63,7 @@ namespace AnyRPG {
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
-            Debug.Log($"{interactable.gameObject.name}.GatheringNode.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            Debug.Log($"{interactable.gameObject.name}.CraftingNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
@@ -71,12 +71,12 @@ namespace AnyRPG {
                 Debug.Log("Props is null");
             }
             sourceUnitController.CharacterCraftingManager.SetCraftAbility(Props.Ability);
-            //source.MyCharacter.MyCharacterAbilityManager.BeginAbility(ability);
             return true;
-            //return PickUp();
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{interactable.gameObject.name}.CraftingNodeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.craftingWindow.OpenWindow();
         }

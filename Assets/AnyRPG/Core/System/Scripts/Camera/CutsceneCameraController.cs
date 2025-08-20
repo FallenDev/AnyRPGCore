@@ -34,7 +34,7 @@ namespace AnyRPG {
         }
 
         public void EndCutScene() {
-            Debug.Log("CutsceneCameraController.EndCutScene()");
+            //Debug.Log("CutsceneCameraController.EndCutScene()");
 
             if (uIManager != null && uIManager.CutSceneBarController != null) {
                 uIManager.CutSceneBarController.EndCutScene();

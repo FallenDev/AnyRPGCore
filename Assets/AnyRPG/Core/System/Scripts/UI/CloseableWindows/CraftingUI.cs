@@ -101,7 +101,6 @@ namespace AnyRPG {
                 inputIcon.SetToolTipTransform(rectTransform);
             }
             outputIcon.SetToolTipTransform(rectTransform);
-            
         }
 
         public override void SetGameManagerReferences() {
@@ -136,6 +135,9 @@ namespace AnyRPG {
 
         public void HandleSetCraftAbility(UnitController sourceUnitController, CraftAbilityProperties craftAbility) {
             this.craftAbility = craftAbility;
+            if (uIManager.craftingWindow.IsOpen == false) {
+                return;
+            }
             ResetWindow();
             ShowRecipes(craftAbility);
         }
@@ -276,7 +278,7 @@ namespace AnyRPG {
             //Debug.Log("craftingUI.OnCloseWindow(): nulling recipe script");
             craftingManager.OnSelectRecipe -= SelectRecipe;
             systemEventManager.OnCraftItem -= HandleCraftItem;
-            systemEventManager.OnSetCraftAbility -= HandleSetCraftAbility;
+            //systemEventManager.OnSetCraftAbility -= HandleSetCraftAbility;
             selectedRecipeScript = null;
             craftingManager.ClearSelectedRecipe();
         }
@@ -297,6 +299,15 @@ namespace AnyRPG {
             }
             craftingManager.OnSelectRecipe += SelectRecipe;
             systemEventManager.OnCraftItem += HandleCraftItem;
+
+            ResetWindow();
+            ShowRecipes(craftAbility);
+        }
+
+        protected override void ProcessCreateEventSubscriptions() {
+            Debug.Log("CraftingUI.ProcessCreateEventSubscriptions()");
+
+            base.ProcessCreateEventSubscriptions();
             systemEventManager.OnSetCraftAbility += HandleSetCraftAbility;
         }
 
@@ -313,7 +324,7 @@ namespace AnyRPG {
         }
 
         public void CraftAll() {
-            Debug.Log("CraftingUI.CraftAll()");
+            //Debug.Log("CraftingUI.CraftAll()");
 
             if (selectedRecipeScript != null) {
                 craftAmount = playerManager.UnitController.CharacterCraftingManager.GetMaxCraftAmount(selectedRecipeScript.Recipe);
@@ -325,7 +336,7 @@ namespace AnyRPG {
         }
 
         public void BeginCrafting() {
-            Debug.Log("CraftingUI.BeginCrafting()");
+            //Debug.Log("CraftingUI.BeginCrafting()");
 
             if (selectedRecipeScript != null) {
                 craftingManager.RequestBeginCrafting(playerManager.UnitController, selectedRecipeScript.Recipe, craftAmount);

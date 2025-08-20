@@ -130,7 +130,7 @@ namespace AnyRPG {
         }
 
         public void BuyItemFromVendor(UnitController sourceUnitController, int componentIndex, VendorItem vendorItem, int collectionIndex, int itemIndex) {
-            Debug.Log($"VendorComponent.BuyItemFromVendor({sourceUnitController.gameObject.name}, {componentIndex}, {vendorItem.Item.resourceName}, {collectionIndex}, {itemIndex})");
+            //Debug.Log($"VendorComponent.BuyItemFromVendor({sourceUnitController.gameObject.name}, {componentIndex}, {vendorItem.Item.resourceName}, {collectionIndex}, {itemIndex})");
 
             if (vendorItem.BuyPrice(sourceUnitController) == 0
                                         || vendorItem.Item.Currency == null
@@ -160,7 +160,7 @@ namespace AnyRPG {
         }
 
         private void SellItemToPlayer(UnitController sourceUnitController, int componentIndex, VendorItem vendorItem, int collectionIndex, int itemIndex) {
-            Debug.Log($"VendorComponent.SellItemToPlayer({sourceUnitController.gameObject.name}, {componentIndex}, {vendorItem.Item.ResourceName}, {collectionIndex}, {itemIndex})");
+            //Debug.Log($"VendorComponent.SellItemToPlayer({sourceUnitController.gameObject.name}, {componentIndex}, {vendorItem.Item.ResourceName}, {collectionIndex}, {itemIndex})");
 
             string priceString = string.Empty;
             if (vendorItem.BuyPrice(sourceUnitController) == 0 || vendorItem.Item.Currency == null) {

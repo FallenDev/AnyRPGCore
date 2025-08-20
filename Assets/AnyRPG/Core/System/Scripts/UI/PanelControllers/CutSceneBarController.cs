@@ -89,17 +89,18 @@ namespace AnyRPG {
 
         // ensure that a cutscene can be considered active even if it loads late in the scene load order
         public void AssignCutScene(Cutscene cutscene) {
-            Debug.Log($"CutSceneBarController.AssignCutScene({cutscene.ResourceName})");
+            //Debug.Log($"CutSceneBarController.AssignCutScene({cutscene.ResourceName})");
+
             currentCutscene = cutscene;
         }
 
         public void StartCutScene(Cutscene cutscene) {
-            Debug.Log($"CutSceneBarController.StartCutScene({cutscene.ResourceName})");
+            //Debug.Log($"CutSceneBarController.StartCutScene({cutscene.ResourceName})");
 
             if (cutscene.TimelineName != null
                 && cutscene.TimelineName != string.Empty
                 && systemPlayableDirectorManager.PlayableDirectorDictionary.ContainsKey(cutscene.TimelineName)) {
-                Debug.Log($"CutSceneBarController.StartCutScene(): playing cutscene timeline: {cutscene.TimelineName}");
+                //Debug.Log($"CutSceneBarController.StartCutScene(): playing cutscene timeline: {cutscene.TimelineName}");
                 systemPlayableDirectorManager.PlayableDirectorDictionary[cutscene.TimelineName].Play();
             }
 
@@ -129,7 +130,7 @@ namespace AnyRPG {
         }
 
         public void EndCutScene() {
-            Debug.Log("CutSceneBarController.EndCutScene()");
+            //Debug.Log("CutSceneBarController.EndCutScene()");
 
             if (currentCutscene != null
                 && currentCutscene.TimelineName != null

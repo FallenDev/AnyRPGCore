@@ -33,7 +33,7 @@ namespace AnyRPG {
         }
 
         public void RequestBeginCrafting(UnitController sourceUnitController, Recipe recipe, int craftAmount) {
-            Debug.Log($"CraftingManager.RequestBeginCrafting({sourceUnitController.gameObject.name}, {recipe.DisplayName}, {craftAmount})");
+            //Debug.Log($"CraftingManager.RequestBeginCrafting({sourceUnitController.gameObject.name}, {recipe.DisplayName}, {craftAmount})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 BeginCrafting(sourceUnitController, recipe, craftAmount);
@@ -43,7 +43,7 @@ namespace AnyRPG {
         }
 
         public void BeginCrafting(UnitController sourceUnitController, Recipe recipe, int craftAmount) {
-            Debug.Log($"CraftingManager.BeginCrafting({sourceUnitController.gameObject.name}, {recipe.DisplayName}, {craftAmount})");
+            //Debug.Log($"CraftingManager.BeginCrafting({sourceUnitController.gameObject.name}, {recipe.DisplayName}, {craftAmount})");
 
             sourceUnitController.CharacterCraftingManager.BeginCrafting(recipe, craftAmount);
         }

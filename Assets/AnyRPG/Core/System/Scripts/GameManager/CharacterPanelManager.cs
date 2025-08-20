@@ -126,13 +126,13 @@ namespace AnyRPG {
 
 
         public void HandleAddEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
-            Debug.Log($"CharacterPanel.HandleAddEquipment({profile.ResourceName}, {equipment.ResourceName})");
+            //Debug.Log($"CharacterPanel.HandleAddEquipment({profile.ResourceName}, {equipment.ResourceName})");
 
             unitController.UnitModelController.RebuildModelAppearance();
         }
 
         public void HandleRemoveEquipment(EquipmentSlotProfile profile, InstantiatedEquipment equipment) {
-            Debug.Log($"CharacterPanel.HandleRemoveEquipment({profile.ResourceName}, {equipment.ResourceName})");
+            //Debug.Log($"CharacterPanel.HandleRemoveEquipment({profile.ResourceName}, {equipment.ResourceName})");
 
             unitController.UnitModelController.RebuildModelAppearance();
         }

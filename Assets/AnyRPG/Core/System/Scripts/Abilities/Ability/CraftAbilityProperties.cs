@@ -18,7 +18,7 @@ namespace AnyRPG {
         }
 
         public override List<AbilityAttachmentNode> GetHoldableObjectList(IAbilityCaster abilityCaster) {
-            Debug.Log($"CraftAbilityProperties.GetHoldableObjectList({abilityCaster.gameObject.name})");
+            //Debug.Log($"CraftAbilityProperties.GetHoldableObjectList({abilityCaster.gameObject.name})");
 
             if (abilityCaster.AbilityManager.GetCharacterUnit().UnitController.CharacterCraftingManager.CraftingQueue.Count > 0) {
                 List<AbilityAttachmentNode> returnList = new List<AbilityAttachmentNode>();
@@ -34,7 +34,8 @@ namespace AnyRPG {
         }
 
         public override bool Cast(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
-            Debug.Log($"CraftAbility.Cast({source.gameObject.name}, {(target ? target.name : "null")})");
+            //Debug.Log($"CraftAbility.Cast({source.gameObject.name}, {(target ? target.name : "null")})");
+
             bool returnResult = base.Cast(source, target, abilityEffectContext);
             if (returnResult == true) {
                 source.AbilityManager.GetCharacterUnit().UnitController.CharacterCraftingManager.CraftNextItemWait();

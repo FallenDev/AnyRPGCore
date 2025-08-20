@@ -488,7 +488,7 @@ namespace AnyRPG {
         }
 
         public bool AddInventoryItem(InstantiatedItem instantiatedItem, int slotIndex) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventoryItem({instantiatedItem.ResourceName}, {slotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.AddInventoryItem({instantiatedItem.ResourceName}, {slotIndex})");
 
             if (inventorySlots.Count > slotIndex) {
                 return inventorySlots[slotIndex].AddItem(instantiatedItem);
@@ -725,7 +725,7 @@ namespace AnyRPG {
         }
 
         public InstantiatedItem GetNewInstantiatedItemFromSaveData(InventorySlotSaveData inventorySlotSaveData) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({inventorySlotSaveData.ItemName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData({inventorySlotSaveData.ItemName})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(inventorySlotSaveData.itemInstanceId)) {
                 //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData() item already exists in instantiated items");
@@ -856,7 +856,7 @@ namespace AnyRPG {
         }
 
         public void RequestDropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot, bool fromSlotIsInventory, bool toSlotIsInventory) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestDropItemFromInventorySlot()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.RequestDropItemFromInventorySlot()");
 
             unitController.UnitEventController.NotifyOnRequestDropItemFromInventorySlot(fromSlot, toSlot, fromSlotIsInventory, toSlotIsInventory);
             if (systemGameManager.GameMode == GameMode.Local) {
@@ -865,7 +865,8 @@ namespace AnyRPG {
         }
 
         public void DropItemFromInventorySlot(int fromslotIndex, int toSlotIndex, bool fromSlotIsInventory, bool toSlotIsInventory) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot({fromslotIndex}, {toSlotIndex})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot({fromslotIndex}, {toSlotIndex})");
+
             if (fromSlotIsInventory) {
                 if (inventorySlots.Count <= fromslotIndex) {
                     return;
@@ -900,7 +901,7 @@ namespace AnyRPG {
         }
 
         public void DropItemFromInventorySlot(InventorySlot fromSlot, InventorySlot toSlot) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterInventoryManager.DropItemFromInventorySlot()");
 
             if (toSlot.MergeItems(fromSlot)) {
                 return;

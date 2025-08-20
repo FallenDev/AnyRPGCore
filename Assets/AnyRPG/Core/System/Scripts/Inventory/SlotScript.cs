@@ -100,7 +100,7 @@ namespace AnyRPG {
         }
 
         public void DropItemFromInventorySlot() {
-            Debug.Log("SlotScript.DropItemFromInventorySlot()");
+            //Debug.Log("SlotScript.DropItemFromInventorySlot()");
 
             //Debug.Log("Dropping an item from an inventory slot");
             playerManager.UnitController.CharacterInventoryManager.RequestDropItemFromInventorySlot(playerManager.UnitController.CharacterInventoryManager.FromSlot.InventorySlot, inventorySlot, playerManager.UnitController.CharacterInventoryManager.FromSlot.BagPanel is InventoryPanel, BagPanel is InventoryPanel);

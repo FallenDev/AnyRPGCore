@@ -181,7 +181,7 @@ namespace AnyRPG {
         }
 
         private void HandleEnterInteractableTrigger(UnitController unitController, Interactable interactable) {
-            Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
 
             if (networkManagerServer.ServerModeActive || systemGameManager.GameMode == GameMode.Local) {
                 interactionManager.InteractWithTrigger(unitController, interactable);
@@ -189,7 +189,7 @@ namespace AnyRPG {
         }
 
         private void HandleExitInteractableTrigger(UnitController unitController, Interactable interactable) {
-            Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.HandleEnterInteractableTrigger({unitController.gameObject.name})");
 
             if (networkManagerServer.ServerModeActive || systemGameManager.GameMode == GameMode.Local) {
                 interactionManager.InteractWithTrigger(unitController, interactable);
@@ -266,7 +266,7 @@ namespace AnyRPG {
         }
 
         public void LoadScene(string sceneName, UnitController sourceUnitController) {
-            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {sourceUnitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {sourceUnitController.gameObject.name})");
 
             if (activePlayerLookup.ContainsKey(sourceUnitController)) {
                 LoadScene(sceneName, activePlayerLookup[sourceUnitController]);
@@ -274,7 +274,7 @@ namespace AnyRPG {
         }
 
         public void LoadScene(string sceneName, int accountId) {
-            Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {accountId})");
+            //Debug.Log($"PlayerManagerServer.LoadScene({sceneName}, {accountId})");
             
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;

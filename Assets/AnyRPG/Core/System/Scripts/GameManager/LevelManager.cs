@@ -354,7 +354,7 @@ namespace AnyRPG {
         }
 
         public void EndCutscene(Cutscene cutscene) {
-            Debug.Log("LevelManager.EndCutscene()");
+            //Debug.Log("LevelManager.EndCutscene()");
 
             if (cutscene != null && cutscene.UnloadSceneOnEnd == true) {
                 //Debug.Log("Levelmanager.ActivateSceneCamera(): activating cutscene bars");

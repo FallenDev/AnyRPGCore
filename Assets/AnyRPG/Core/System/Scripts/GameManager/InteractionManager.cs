@@ -133,7 +133,7 @@ namespace AnyRPG {
         }
 
         public void InteractWithTrigger(UnitController unitController, Interactable triggerInteractable) {
-            Debug.Log($"InteractionManager.InteractionWithTrigger({unitController.gameObject.name}, {triggerInteractable.gameObject.name})");
+            //Debug.Log($"InteractionManager.InteractionWithTrigger({unitController.gameObject.name}, {triggerInteractable.gameObject.name})");
 
             // no range check for triggers since the unit walked into it so we know its in range
             Dictionary<int, InteractableOptionComponent> validInteractables = triggerInteractable.GetCurrentInteractables(unitController);
@@ -152,7 +152,7 @@ namespace AnyRPG {
         }
 
         public void InteractWithOptionServer(UnitController sourceUnitController, Interactable targetInteractable, int componentIndex, int choiceIndex) {
-            Debug.Log($"InteractionManager.InteractWithOptionServer({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"InteractionManager.InteractWithOptionServer({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             Dictionary<int, InteractableOptionComponent> interactionOptions = targetInteractable.GetCurrentInteractables(sourceUnitController);
             if (interactionOptions.ContainsKey(componentIndex)) {
@@ -161,7 +161,7 @@ namespace AnyRPG {
         }
 
         public void InteractWithOptionInternal(UnitController sourceUnitController, Interactable targetInteractable, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
-            Debug.Log($"InteractionManager.InteractWithOptionInternal({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"InteractionManager.InteractWithOptionInternal({sourceUnitController.gameObject.name}, {targetInteractable.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             interactableOptionComponent.Interact(sourceUnitController, componentIndex, choiceIndex);
         }

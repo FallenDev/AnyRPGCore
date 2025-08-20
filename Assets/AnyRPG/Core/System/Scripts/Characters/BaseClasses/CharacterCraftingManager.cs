@@ -31,7 +31,7 @@ namespace AnyRPG {
         }
 
         public void SetCraftAbility(CraftAbilityProperties craftAbility) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.SetAbility({craftAbility.DisplayName})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.SetCraftAbility({craftAbility.DisplayName})");
 
             this.craftAbility = craftAbility;
             ClearCraftingQueue();

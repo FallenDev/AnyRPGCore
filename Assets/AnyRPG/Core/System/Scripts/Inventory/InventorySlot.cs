@@ -105,7 +105,7 @@ namespace AnyRPG {
         }
 
         public bool AddItems(List<InstantiatedItem> newInstantiatedItems) {
-            Debug.Log($"InventorySlot.AddItems({newInstantiatedItems.Count})");
+            //Debug.Log($"InventorySlot.AddItems({newInstantiatedItems.Count})");
 
             if (IsEmpty || SystemDataUtility.MatchResource(newInstantiatedItems[0].Item.ResourceName, InstantiatedItem.Item.ResourceName)) {
                 int count = newInstantiatedItems.Count;
@@ -123,7 +123,8 @@ namespace AnyRPG {
         }
 
         public void RemoveAllItems() {
-            Debug.Log($"InventorySlot.RemoveAllItems()");
+            //Debug.Log($"InventorySlot.RemoveAllItems()");
+
             while (InstantiatedItems.Count > 0) {
                 RemoveItem(InstantiatedItems[0]);
             }
@@ -201,7 +202,7 @@ namespace AnyRPG {
         /// Uses the item if it is useable
         /// </summary>
         public void UseItem(UnitController sourceUnitController) {
-            Debug.Log($"InventorySlot.UseItem({sourceUnitController.gameObject.name})");
+            //Debug.Log($"InventorySlot.UseItem({sourceUnitController.gameObject.name})");
 
             if (InstantiatedItem != null) {
                 InstantiatedItem.Use(sourceUnitController);

@@ -10,9 +10,9 @@ namespace AnyRPG {
             interactionPanelTitle = "Bank";
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.Bank.Interact(" + (source == null ? "null" : source.name) +")");
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 

@@ -23,9 +23,9 @@ namespace AnyRPG {
             characterCreatorInteractableManager = systemGameManager.CharacterCreatorInteractableManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             // was there a reason why we didn't have base.Interact here before or just an oversight?
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             
             return true;
         }

@@ -399,12 +399,12 @@ namespace AnyRPG {
         }
         */
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.LootableCharacterComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             if (!characterUnit.UnitController.CharacterStats.IsAlive) {
                 //Debug.Log($"{gameObject.name}.LootableCharacter.Interact(): Character is dead.  Showing Loot Window on interaction");
-                base.Interact(sourceUnitController, componentIndex, choiceIndex);
+                base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
                 // keep track of currency drops for combining after
                 //CurrencyLootDrop droppedCurrencies = new CurrencyLootDrop(systemGameManager);
 

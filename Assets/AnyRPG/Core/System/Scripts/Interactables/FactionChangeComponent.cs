@@ -43,10 +43,10 @@ namespace AnyRPG {
             HandleOptionStateChange();
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log(interactable.gameObject.name + ".FactionChangeInteractable.Interact()");
 
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
             return true;
         }

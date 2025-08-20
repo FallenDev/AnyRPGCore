@@ -39,13 +39,13 @@ namespace AnyRPG {
             }
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(" + (source == null ? "null" : source.name) +")");
             //if (coroutine != null) {
                 //Debug.Log($"{gameObject.name}.AnimatedObject.Interact(): coroutine is not null, exiting");
                 //return false;
             //}
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
             // loop through the animatedobjects prefabobjects
             // check their state (open / closed)

@@ -105,8 +105,10 @@ namespace AnyRPG {
             saveData.isDead = !unitController.CharacterStats.IsAlive;
             //saveData.isMounted = unitController.IsMounted;
             if (unitController.BaseCharacter.Faction != null) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData() faction: {unitController.BaseCharacter.Faction.ResourceName}");
                 saveData.playerFaction = unitController.BaseCharacter.Faction.ResourceName;
             } else {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.SaveGameData() no faction");
                 saveData.playerFaction = string.Empty;
             }
             if (unitController.BaseCharacter.CharacterClass != null) {
@@ -333,6 +335,8 @@ namespace AnyRPG {
         }
 
         private void HandleFactionChange(Faction newFaction, Faction oldFaction) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSaveManager.HandleFactionChange(new: {newFaction?.ResourceName}, old: {oldFaction?.ResourceName})");
+
             if (newFaction != null) {
                 saveData.playerFaction = newFaction.ResourceName;
             } else {

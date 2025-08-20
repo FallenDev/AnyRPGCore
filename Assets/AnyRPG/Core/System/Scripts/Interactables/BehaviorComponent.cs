@@ -32,7 +32,7 @@ namespace AnyRPG {
         }
 
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{unitController.gameObject.name}.BehaviorInteractable.Interact()");
 
             List<BehaviorProfile> currentList = GetCurrentOptionList(sourceUnitController);
@@ -43,7 +43,7 @@ namespace AnyRPG {
                 if (unitController != null) {
                     unitController.BehaviorController.TryPlayBehavior(currentList[choiceIndex], this, sourceUnitController);
                 }
-                base.Interact(sourceUnitController, componentIndex, choiceIndex);
+                base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             }/* else {
 
                 interactable.OpenInteractionWindow();

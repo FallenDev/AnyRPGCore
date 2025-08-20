@@ -62,10 +62,10 @@ namespace AnyRPG {
             return ((sourceUnitController.CharacterAbilityManager.HasAbility(Props.Ability) == true) ? 1 : 0);
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.GatheringNode.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
             if (Props == null || Props.Ability == null) {
                 Debug.Log("Props is null");

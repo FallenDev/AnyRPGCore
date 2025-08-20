@@ -111,9 +111,9 @@ namespace AnyRPG {
             */
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".QuestGiver.Interact()");
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             //interactionManager.InteractWithQuestGiver(this, optionIndex, sourceUnitController);
             
             return true;

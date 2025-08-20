@@ -533,7 +533,7 @@ namespace AnyRPG {
 
 
         public void LoadGame(PlayerCharacterSaveData playerCharacterSaveData) {
-            Debug.Log($"Savemanager.LoadGame(playerName: {playerCharacterSaveData.SaveData.playerName})");
+            //Debug.Log($"Savemanager.LoadGame(playerName: {playerCharacterSaveData.SaveData.playerName})");
 
             ClearSharedData();
 
@@ -561,15 +561,15 @@ namespace AnyRPG {
             if (playerCharacterSaveData.SaveData.OverrideLocation == true) {
                 loadSceneRequest.overrideSpawnLocation = true;
                 loadSceneRequest.spawnLocation = playerLocation;
-                Debug.Log($"Savemanager.LoadGame() overrideSpawnLocation: {loadSceneRequest.overrideSpawnLocation} location: {loadSceneRequest.spawnLocation}");
+                //Debug.Log($"Savemanager.LoadGame() overrideSpawnLocation: {loadSceneRequest.overrideSpawnLocation} location: {loadSceneRequest.spawnLocation}");
             }
             if (playerCharacterSaveData.SaveData.OverrideRotation == true) {
                 loadSceneRequest.overrideSpawnDirection = true;
                 loadSceneRequest.spawnForwardDirection = playerRotation;
-                Debug.Log($"Savemanager.LoadGame() overrideRotation: {loadSceneRequest.overrideSpawnDirection} location: {loadSceneRequest.spawnForwardDirection}");
+                //Debug.Log($"Savemanager.LoadGame() overrideRotation: {loadSceneRequest.overrideSpawnDirection} location: {loadSceneRequest.spawnForwardDirection}");
             }
             // debug print the location and rotation
-            Debug.Log($"Savemanager.LoadGame(): Spawning player at {loadSceneRequest.spawnLocation} with rotation {loadSceneRequest.spawnForwardDirection}");
+            //Debug.Log($"Savemanager.LoadGame(): Spawning player at {loadSceneRequest.spawnLocation} with rotation {loadSceneRequest.spawnForwardDirection}");
             playerManagerServer.AddSpawnRequest(networkManagerClient.AccountId, loadSceneRequest);
             //levelManager.LoadLevel(anyRPGSaveData.CurrentScene, playerLocation, playerRotation);
             // load the proper level now that everything should be setup

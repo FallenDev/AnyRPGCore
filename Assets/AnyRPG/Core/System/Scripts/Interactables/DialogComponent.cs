@@ -64,10 +64,10 @@ namespace AnyRPG {
             return currentList;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.DialogComponent.Interact({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             List<Dialog> currentList = GetCurrentOptionList(sourceUnitController);
             if (currentList.Count == 0) {
                 return false;

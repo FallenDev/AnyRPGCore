@@ -27,9 +27,9 @@ namespace AnyRPG {
             skillTrainerManager = systemGameManager.SkillTrainerManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.SkillTrainer.Interact(" + source + ")");
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
             //interactionManager.InteractWithSkillTrainerComponent(sourceUnitController, this, optionIndex);
 

@@ -51,24 +51,13 @@ namespace AnyRPG {
             return (GatheringNodeProps.BaseAbility != null ? GatheringNodeProps.BaseAbility.DisplayName : base.GetInteractionButtonText(sourceUnitController, componentIndex, choiceIndex));
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + ")");
             if (Props.LootTables == null) {
                 //Debug.Log($"{gameObject.name}.GatheringNode.Interact(" + source.name + "): lootTable was null!");
                 return true;
             }
             // base.Interact() will drop loot automatically so we will intentionally not call it because the loot drop in this class is activated by the gatherability
-            /*
-            int lootCount = 0;
-            base.Interact(source);
-
-            foreach (LootTable lootTable in lootTables) {
-                if (lootTable.MyDroppedItems.Count > 0) {
-                    lootCount += lootTable.MyDroppedItems.Count;
-                }
-            }
-            */
-            //if (lootCount > 0) {
             if (lootDropped == true) {
                 // this call is safe, it will internally check if loot is already dropped and just pickup instead
                 Gather(sourceUnitController, componentIndex);

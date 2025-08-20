@@ -76,11 +76,11 @@ namespace AnyRPG {
             return false;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".CharacterUnit.Interact(" + source.DisplayName + ")");
 
             if (CanInteract(sourceUnitController, false, false, true)) {
-                base.Interact(sourceUnitController, componentIndex, choiceIndex);
+                base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
                 // attempt to put the caster in combat so it can unsheath bows, wands, etc
                 sourceUnitController.CharacterCombat.Attack(unitController, true);

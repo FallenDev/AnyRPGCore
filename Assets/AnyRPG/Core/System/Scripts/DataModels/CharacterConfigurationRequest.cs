@@ -34,6 +34,8 @@ namespace AnyRPG {
         }
 
         public CharacterConfigurationRequest(SystemDataFactory systemDataFactory, AnyRPGSaveData saveData) {
+            //Debug.Log($"CharacterConfigurationRequest.CharacterConfigurationRequest() faction: {saveData.playerFaction}");
+
             SetUnitProfileProperties(systemDataFactory.GetResource<UnitProfile>(saveData.unitProfileName));
             characterName = saveData.playerName;
             characterClass = systemDataFactory.GetResource<CharacterClass>(saveData.characterClass);

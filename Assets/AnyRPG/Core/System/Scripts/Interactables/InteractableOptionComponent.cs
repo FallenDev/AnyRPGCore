@@ -160,17 +160,27 @@ namespace AnyRPG {
             return returnValue;
         }
 
-        public virtual bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+        public bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex}) : {this.GetType()}");
 
             //source.CancelMountEffects();
             if (sourceUnitController != null) {
                 // this could have come from a trigger, so we can't make the assumption there is a source UnitController
                 systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
-                sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, componentIndex, choiceIndex);
                 interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
             }
+            bool returnValue = ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
+            if (sourceUnitController != null) {
+                // this could have come from a trigger, so we can't make the assumption there is a source UnitController
+                systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
+                interactable.NotifyOnInteractionWithOptionStarted(sourceUnitController, componentIndex, choiceIndex);
+                sourceUnitController.UnitEventController.NotifyOnStartInteractWithOption(this, componentIndex, choiceIndex);
+            }
             //interactable.InteractableEventController.NotifyOnInteractionWithOptionStarted(sourceUnitController, optionIndex);
+            return returnValue;
+        }
+
+        public virtual bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             return true;
         }
 

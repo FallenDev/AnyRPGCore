@@ -26,8 +26,8 @@ namespace AnyRPG {
             networkManagerClient = systemGameManager.NetworkManagerClient;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             if (CanLoadCutScene() == true) {
                 if (Props.Cutscene.RequirePlayerUnitSpawn == false || (Props.Cutscene.RequirePlayerUnitSpawn == true && playerManager.PlayerUnitSpawned == true)) {
                     if (Props.Cutscene.LoadScene != null) {

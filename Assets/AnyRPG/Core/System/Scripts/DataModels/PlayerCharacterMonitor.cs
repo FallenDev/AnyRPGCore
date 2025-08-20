@@ -33,9 +33,8 @@ namespace AnyRPG {
         }
 
         public void ProcessBeforeDespawn() {
-            Debug.Log($"PlayerCharacterMonitor.ProcessBeforeDespawn() for account {accountId}");
+            //Debug.Log($"PlayerCharacterMonitor.ProcessBeforeDespawn() for account {accountId}");
 
-            //StopMonitoring();
             unitController.CharacterSaveManager.SaveGameData();
             unitController = null;
         }

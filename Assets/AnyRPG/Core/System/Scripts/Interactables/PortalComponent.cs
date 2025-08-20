@@ -21,10 +21,10 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             Debug.Log($"{interactable.gameObject.name}.PortalComponent.Interact({sourceUnitController.gameObject.name})");
 
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): about to close interaction window");
             //Debug.Log($"{gameObject.name}.PortalInteractable.Interact(): window should now be closed!!!!!!!!!!!!!!!!!");
             SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();

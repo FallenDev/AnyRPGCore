@@ -398,7 +398,7 @@ namespace AnyRPG {
         /// </summary>
         /// <param name="levelName"></param>
         public void LoadLevel(string levelName) {
-            Debug.Log($"LevelManager.LoadLevel({levelName})");
+            //Debug.Log($"LevelManager.LoadLevel({levelName})");
 
             if (levelName == null || levelName == string.Empty) {
                 return;
@@ -466,7 +466,7 @@ namespace AnyRPG {
         }
 
         public void LoadMainMenu(bool isInitializationScene) {
-            Debug.Log($"LevelManager.LoadMainMenu({isInitializationScene})");
+            //Debug.Log($"LevelManager.LoadMainMenu({isInitializationScene})");
 
             /*
             if (isInitializationScene == false) {

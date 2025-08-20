@@ -42,9 +42,9 @@ namespace AnyRPG {
             HandlePrerequisiteUpdates(sourceUnitController);
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log($"{gameObject.name}.ClassChangeInteractable.Interact()");
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
 
             //interactionManager.InteractWithClassChangeComponent(sourceUnitController, this, optionIndex);
 

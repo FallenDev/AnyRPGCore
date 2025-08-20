@@ -301,11 +301,12 @@ namespace AnyRPG {
         }
 
         private void TeleportInternal(UnitController unitController, TeleportEffectProperties teleportEffectProperties) {
-            Debug.Log($"PlayerManagerServer.TeleportInternal({unitController.gameObject.name}, {teleportEffectProperties.levelName})");
+            //Debug.Log($"PlayerManagerServer.TeleportInternal({unitController.gameObject.name}, {teleportEffectProperties.levelName})");
 
             if (activePlayerLookup.ContainsKey(unitController) == false) {
                 return;
             }
+            int accountId = activePlayerLookup[unitController];
 
             SpawnPlayerRequest loadSceneRequest = new SpawnPlayerRequest();
             if (teleportEffectProperties.overrideSpawnDirection == true) {
@@ -319,29 +320,30 @@ namespace AnyRPG {
             if (teleportEffectProperties.locationTag != null && teleportEffectProperties.locationTag != string.Empty) {
                 loadSceneRequest.locationTag = teleportEffectProperties.locationTag;
             }
-            AddSpawnRequest(activePlayerLookup[unitController], loadSceneRequest);
+            AddSpawnRequest(accountId, loadSceneRequest);
 
             // if the scene is already loaded, then just respawn the player
             if (unitController.gameObject.scene.name == teleportEffectProperties.levelName) {
                 Debug.Log($"PlayerManagerServer.TeleportInternal({unitController.gameObject.name}, {teleportEffectProperties.levelName}) - already in scene, respawning");
 
-                RespawnPlayerUnit(activePlayerLookup[unitController]);
+                RespawnPlayerUnit(accountId);
                 return;
             }
 
             if (networkManagerServer.ServerModeActive == true) {
-                networkManagerServer.AdvertiseTeleport(activePlayerLookup[unitController], teleportEffectProperties);
+                networkManagerServer.AdvertiseTeleport(accountId, teleportEffectProperties);
                 return;
             }
 
             // local mode active, continue with teleport
             if (teleportEffectProperties.levelName != null) {
+                DespawnPlayerUnit(accountId);
                 levelManager.LoadLevel(teleportEffectProperties.levelName);
             }
         }
 
         public void DespawnPlayerUnit(int accountId) {
-            Debug.Log($"PlayerManagerServer.DespawnPlayerUnit({accountId})");
+            //Debug.Log($"PlayerManagerServer.DespawnPlayerUnit({accountId})");
 
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;
@@ -428,7 +430,7 @@ namespace AnyRPG {
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest, bool advertise) {
-            Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
+            //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise})");
 
             if (spawnRequests.ContainsKey(accountId)) {
                 //Debug.Log($"PlayerManagerServer.AddSpawnRequest({accountId}, {advertise}) replacing request spawn location: {loadSceneRequest.spawnLocation}, forward direction: {loadSceneRequest.spawnForwardDirection}");

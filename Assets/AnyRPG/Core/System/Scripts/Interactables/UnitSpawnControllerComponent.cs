@@ -26,8 +26,8 @@ namespace AnyRPG {
             unitSpawnManager = systemGameManager.UnitSpawnManager;
         }
 
-        public override bool Interact(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            base.Interact(sourceUnitController, componentIndex, choiceIndex);
+        public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             return true;
         }
 

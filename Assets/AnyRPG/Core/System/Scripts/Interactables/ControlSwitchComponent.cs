@@ -21,7 +21,7 @@ namespace AnyRPG {
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{interactable.gameObject.name}.ControlSwitchComponent.Interact({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{interactable.gameObject.name}.ControlSwitchComponent.Interact({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
 
             if (Props.ActivationLimit > 0 && activationCount >= Props.ActivationLimit) {
                 // this has already been activated the number of allowed times

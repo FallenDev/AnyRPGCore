@@ -164,9 +164,6 @@ namespace AnyRPG {
 
         public void HandleAddIndicator(Interactable interactable) {
             //Debug.Log($"MiniMapController.HandleAddIndicator({interactable.gameObject.name} ({interactable.gameObject.GetInstanceID()}))");
-            if (interactable is InanimateUnit) {
-                Debug.Log($"MiniMapController.HandleAddIndicator({interactable.gameObject.name} ({interactable.gameObject.GetInstanceID()})) inanimate unit added");
-            }
 
             if (mapIndicatorControllers.ContainsKey(interactable) == false) {
                 GameObject mapIndicator = objectPooler.GetPooledObject(miniMapIndicatorPrefab, (mapGraphic.transform));
@@ -188,9 +185,6 @@ namespace AnyRPG {
 
         public void HandleRemoveIndicator(Interactable interactable) {
             //Debug.Log($"MiniMapController.HandleRemoveIndicator({interactable.gameObject.name} ({interactable.gameObject.GetInstanceID()}))");
-            if (interactable is InanimateUnit) {
-                Debug.Log($"MiniMapController.HandleRemoveIndicator({interactable.gameObject.name} ({interactable.gameObject.GetInstanceID()})) inanimate unit removed");
-            }
 
             if (mapIndicatorControllers.ContainsKey(interactable)) {
                 mapIndicatorControllers[interactable].ResetSettings();

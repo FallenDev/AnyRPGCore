@@ -556,7 +556,7 @@ namespace AnyRPG {
         /// </summary>
         /// <returns></returns>
         public virtual bool Interact() {
-            Debug.Log($"{gameObject.name}.Interactable.Interact()");
+            //Debug.Log($"{gameObject.name}.Interactable.Interact()");
 
             if (notInteractable == true) {
                 return false;
@@ -987,7 +987,7 @@ namespace AnyRPG {
         }
 
         public virtual void ResetSettings() {
-            Debug.Log($"{gameObject.name}.Interactable.ResetSettings()");
+            //Debug.Log($"{gameObject.name}.Interactable.ResetSettings()");
 
             foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
                 //Debug.Log($"{gameObject.name}.Interactable.Awake(): Found InteractableOptionComponent: " + interactable.ToString());
@@ -1041,7 +1041,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCreateEventSubscriptions() {
-            Debug.Log($"{gameObject.name}.Interactable.ProcessCreateEventSubscriptions()");
+            //Debug.Log($"{gameObject.name}.Interactable.ProcessCreateEventSubscriptions()");
 
             systemEventManager.OnLevelUnload += HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
@@ -1050,13 +1050,14 @@ namespace AnyRPG {
         }
 
         private void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
-            Debug.Log($"{gameObject.name}.Interactable.HandlePlayerUnitSpawn({sourceUnitController?.gameObject.name})");
+            //Debug.Log($"{gameObject.name}.Interactable.HandlePlayerUnitSpawn({sourceUnitController?.gameObject.name})");
 
             ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public void CleanupEventSubscriptions() {
-            Debug.Log($"{gameObject.name}.Interactable.CleanupEventSubscriptions()");
+            //Debug.Log($"{gameObject.name}.Interactable.CleanupEventSubscriptions()");
+
             if (!eventSubscriptionsInitialized) {
                 return;
             }
@@ -1065,7 +1066,7 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupEventSubscriptions() {
-            Debug.Log($"{gameObject.name}.Interactable.ProcessCleanupEventSubscriptions()");
+            //Debug.Log($"{gameObject.name}.Interactable.ProcessCleanupEventSubscriptions()");
 
             systemEventManager.OnLevelUnload -= HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {

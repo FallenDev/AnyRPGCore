@@ -126,7 +126,7 @@ namespace AnyRPG {
         }
 
         public void RemoveQuest(Quest oldQuest) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest()");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest({oldQuest.ResourceName})");
 
             if (quests.ContainsKey(oldQuest.ResourceName)) {
                 quests.Remove(oldQuest.ResourceName);
@@ -234,7 +234,9 @@ namespace AnyRPG {
             QuestSaveData saveData;
             if (achievementSaveDataDictionary.ContainsKey(quest.ResourceName)) {
                 saveData = achievementSaveDataDictionary[quest.ResourceName];
+                //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.GetAchievementSaveData({quest.ResourceName}) - using existing achievement save data");
             } else {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.GetAchievementSaveData({quest.ResourceName}) - creating new achievement save data");
                 saveData = new QuestSaveData();
                 saveData.QuestName = quest.ResourceName;
                 achievementSaveDataDictionary.Add(quest.ResourceName, saveData);
@@ -293,7 +295,7 @@ namespace AnyRPG {
             return GetObjectiveSaveData(questObjectiveSaveDataDictionary, questName, objectiveType, objectiveName);
         }
 
-        public void AcceptAchievement(QuestSaveData questSaveData) {
+        public void LoadAchievement(QuestSaveData questSaveData) {
 
             Achievement achievement = systemDataFactory.GetResource<Achievement>(questSaveData.QuestName);
             if (achievement == null) {
@@ -303,7 +305,26 @@ namespace AnyRPG {
                 return;
             }
 
-            AcceptAchievement(achievement);
+            LoadAchievement(achievement, questSaveData);
+        }
+
+        public void LoadAchievement(Achievement achievement, QuestSaveData questSaveData) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.LoadAchievement({achievement.ResourceName})");
+
+            if (achievements.ContainsKey(achievement.ResourceName)) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.LoadAchievement({achievement.ResourceName}) already in log");
+                return;
+            }
+            achievements[achievement.ResourceName] = achievement;
+            if (questSaveData.markedComplete == true) {
+                //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.LoadAchievement({achievement.ResourceName}): already marked complete");
+                achievementSaveDataDictionary[achievement.ResourceName] = questSaveData;
+                return;
+            }
+            // change to new subscription method in quest to avoid duplicated out of date code not tracking newer objective types
+            achievement.AcceptQuest(unitController, false, false);
+            // gotta check here because kills and ability use are not automatically checked on accept because under normal circumstances those amounts must start at 0
+            achievement.CheckCompletion(unitController, true, false);
         }
 
         public void AcceptAchievement(Achievement achievement) {

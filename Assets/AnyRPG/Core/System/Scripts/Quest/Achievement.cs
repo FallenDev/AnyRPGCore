@@ -68,6 +68,12 @@ namespace AnyRPG {
         public override void NotifyOnAcceptQuest(UnitController sourceUnitController) {
             sourceUnitController.UnitEventController.NotifyOnAcceptAchievement(this);
         }
+
+        public override void RemoveQuest(UnitController sourceUnitController, bool resetQuestStep = true) {
+            base.RemoveQuest(sourceUnitController, resetQuestStep);
+
+            base.NotifyOnQuestBaseStatusUpdated(sourceUnitController);
+        }
     }
 
 }

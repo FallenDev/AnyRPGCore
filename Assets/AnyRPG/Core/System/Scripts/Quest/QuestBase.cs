@@ -121,9 +121,10 @@ namespace AnyRPG {
             if (resetQuestStep == true) {
                 SetCurrentStep(sourceUnitController, 0);
             }
-            SetMarkedComplete(sourceUnitController, false);
+        }
 
-            //sourceUnitController.UnitEventController.NotifyOnRemoveQuest(this);
+        protected virtual void NotifyOnQuestBaseStatusUpdated(UnitController sourceUnitController) {
+            //Debug.Log($"{ResourceName}.QuestBase.NotifyOnQuestBaseStatusUpdated({sourceUnitController.gameObject.name})");
             OnQuestBaseStatusUpdated(sourceUnitController);
         }
 
@@ -132,6 +133,8 @@ namespace AnyRPG {
         }
 
         public virtual void MarkComplete(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
+            Debug.Log($"{ResourceName}.QuestBase.MarkComplete({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
+
             if (MarkedComplete(sourceUnitController) == true) {
                 return;
             }
@@ -257,6 +260,8 @@ namespace AnyRPG {
         }
 
         public virtual void AcceptQuest(UnitController sourceUnitController, bool printMessages = true, bool resetStep = true) {
+            Debug.Log($"{ResourceName}.QuestBase.AcceptQuest({sourceUnitController.gameObject.name}, {printMessages}, {resetStep})");
+
             QuestSaveData questSaveData = GetSaveData(sourceUnitController);
             if (resetStep == true) {
                 questSaveData.questStep = 0;
@@ -284,7 +289,8 @@ namespace AnyRPG {
         }
 
         public virtual void CheckCompletion(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
-            //Debug.Log("QuestLog.CheckCompletion()");
+            Debug.Log($"{ResourceName}.QuestBase.CheckCompletion({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
+
             if (MarkedComplete(sourceUnitController)) {
                 // no need to waste cycles checking, we are already done
                 return;

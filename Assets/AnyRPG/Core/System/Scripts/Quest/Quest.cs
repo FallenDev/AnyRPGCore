@@ -255,6 +255,15 @@ namespace AnyRPG {
             sourceUnitController.UnitEventController.NotifyOnAcceptQuest(this);
         }
 
+        public override void RemoveQuest(UnitController sourceUnitController, bool resetQuestStep = true) {
+            base.RemoveQuest(sourceUnitController, resetQuestStep);
+
+            SetMarkedComplete(sourceUnitController, false);
+
+            NotifyOnQuestBaseStatusUpdated(sourceUnitController);
+
+        }
+
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             //Debug.Log(DisplayName + ".Quest.SetupScriptableObjects(" + (systemGameManager == null ? "null" : systemGameManager.gameObject.name) + "): ID: " + GetInstanceID());
 

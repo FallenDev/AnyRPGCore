@@ -576,7 +576,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnDespawnActionObjects() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnActionObjects()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnActionObjects()");
 
             OnDespawnActionObjects();
         }
@@ -586,13 +586,13 @@ namespace AnyRPG {
         }
 
         public void NotifyOnEnterInteractableTrigger(Interactable interactable) {
-            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnEnterInteractableTrigger({interactable.gameObject.name})");
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnEnterInteractableTrigger({interactable.gameObject.name})");
 
             OnEnterInteractableTrigger(unitController, interactable);
         }
 
         public void NotifyOnExitInteractableTrigger(Interactable interactable) {
-            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnExitInteractableTrigger({interactable.gameObject.name})");
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnExitInteractableTrigger({interactable.gameObject.name})");
 
             OnExitInteractableTrigger(unitController, interactable);
         }
@@ -623,6 +623,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnMarkAchievementComplete(Achievement achievement) {
+            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnMarkAchievementComplete({achievement.ResourceName})");
+
             OnMarkAchievementComplete(unitController, achievement);
         }
 

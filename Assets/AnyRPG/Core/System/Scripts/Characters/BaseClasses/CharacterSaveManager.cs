@@ -552,7 +552,8 @@ namespace AnyRPG {
         }
 
         public void LoadAchievementData(AnyRPGSaveData anyRPGSaveData) {
-            //Debug.Log("Savemanager.LoadAchievementData()");
+            //Debug.Log($"{unitController.gameObject.name}.Savemanager.LoadAchievementData()");
+
             unitController.CharacterQuestLog.AchievementSaveDataDictionary.Clear();
             unitController.CharacterQuestLog.AchievementObjectiveSaveDataDictionary.Clear();
             foreach (QuestSaveData achievementSaveData in anyRPGSaveData.achievementSaveData) {
@@ -581,7 +582,7 @@ namespace AnyRPG {
 
             foreach (QuestSaveData questSaveData in anyRPGSaveData.achievementSaveData) {
                 //Debug.Log("Savemanager.LoadQuestData(): loading questsavedata");
-                unitController.CharacterQuestLog.AcceptAchievement(questSaveData);
+                unitController.CharacterQuestLog.LoadAchievement(questSaveData);
             }
         }
         public void LoadResourcePowerData(AnyRPGSaveData anyRPGSaveData) {
@@ -864,7 +865,7 @@ namespace AnyRPG {
         }
 
         public void SaveAchievementData() {
-            //Debug.Log("Savemanager.SaveAchievementData()");
+            //Debug.Log("CharacterSavemanager.SaveAchievementData()");
 
             saveData.achievementSaveData.Clear();
             foreach (QuestSaveData achievementSaveData in unitController.CharacterQuestLog.AchievementSaveDataDictionary.Values) {
@@ -882,6 +883,8 @@ namespace AnyRPG {
                     finalSaveData.questObjectives = achievementObjectiveSaveDataList;
                 }
                 finalSaveData.inLog = unitController.CharacterQuestLog.HasAchievement(achievementSaveData.QuestName);
+                // print if finalsavadata complete and turnedin are true
+                //Debug.Log($"CharacterSavemanager.SaveAchievementData(): Saving achievement {finalSaveData.QuestName} complete: {finalSaveData.markedComplete} turnedIn: {finalSaveData.turnedIn}");
                 saveData.achievementSaveData.Add(finalSaveData);
             }
         }

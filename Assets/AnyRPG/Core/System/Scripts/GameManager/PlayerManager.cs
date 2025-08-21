@@ -562,7 +562,7 @@ namespace AnyRPG {
         }
 
         public void SpawnPlayerConnection() {
-            Debug.Log("PlayerManager.SpawnPlayerConnection()");
+            //Debug.Log("PlayerManager.SpawnPlayerConnection()");
 
             SpawnPlayerConnectionObject();
         }

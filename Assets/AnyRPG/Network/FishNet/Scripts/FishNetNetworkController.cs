@@ -122,7 +122,7 @@ namespace AnyRPG {
                 //Debug.Log("FishNetNetworkController.OnClientConnectionState() Connection Successful. Setting mode to network");
                 systemGameManager.SetGameMode(GameMode.Network);
             } else if (clientState == LocalConnectionState.Stopping) {
-                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
+                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
             } else if (clientState == LocalConnectionState.Stopped) {
                 Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Setting mode to local");
                 systemGameManager.NetworkManagerClient.ProcessStopConnection();

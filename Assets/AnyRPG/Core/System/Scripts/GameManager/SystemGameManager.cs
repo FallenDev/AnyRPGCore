@@ -368,11 +368,13 @@ namespace AnyRPG {
 
             this.gameMode = gameMode;
             // set physics simulation off for network mode
+            /*
             if (gameMode == GameMode.Network) {
                 Physics.simulationMode = SimulationMode.Script;
             } else {
                 Physics.simulationMode = SimulationMode.FixedUpdate;
             }
+            */
             networkManagerServer.OnSetGameMode(gameMode);
         }
 

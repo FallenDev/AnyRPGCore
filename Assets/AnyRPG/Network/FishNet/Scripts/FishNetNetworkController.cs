@@ -42,7 +42,7 @@ namespace AnyRPG {
             base.Configure(systemGameManager);
             fishNetNetworkManager = InstanceFinder.NetworkManager;
             if (fishNetNetworkManager != null) {
-                Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
+                //Debug.Log("FishNetNetworkController.Configure() Found FishNet NetworkManager");
 
                 fishNetNetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
                 //fishNetNetworkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
@@ -55,7 +55,7 @@ namespace AnyRPG {
                 fishNetNetworkManager.SceneManager.OnQueueEnd += HandleQueueEnd;
 
             } else {
-                Debug.Log("FishNetNetworkController.Configure() Could not find FishNet NetworkManager");
+                //Debug.Log("FishNetNetworkController.Configure() Could not find FishNet NetworkManager");
             }
         }
 

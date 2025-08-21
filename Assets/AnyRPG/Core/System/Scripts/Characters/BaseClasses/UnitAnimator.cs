@@ -611,7 +611,7 @@ namespace AnyRPG {
         }
 
         public void HandleDie() {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.HandleDie()");
 
             // add these to prevent characters from dying floating or upright
             HandleUnLevitated();
@@ -644,17 +644,17 @@ namespace AnyRPG {
         }
 
         public float GetReviveAnimationLength() {
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength()");
 
             if (systemAnimations == null) {
-                Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): systemAnimationProfile is null");
+                //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): systemAnimationProfile is null");
                 return 0f;
             }
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): revive clip name: {systemAnimations.ReviveClip.name}");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): revive clip name: {systemAnimations.ReviveClip.name}");
             if (overrideController[systemAnimations.ReviveClip.name] != null) {
                 return overrideController[systemAnimations.ReviveClip.name].length + 2;
             }
-            Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): no revive clip found in override controller, returning 0");
+            //Debug.Log($"{unitController.gameObject.name}.UnitAnimator.GetReviveAnimationLength(): no revive clip found in override controller, returning 0");
             return 0f;
         }
 

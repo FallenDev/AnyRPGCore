@@ -8,8 +8,8 @@ namespace AnyRPG {
         // ##################
 
 
-        //[SerializeField]
-        //private Rigidbody rigidbodyComponent = null;
+        [SerializeField]
+        private Rigidbody rigidbodyComponent = null;
 
         // game manager references
         protected NetworkManagerServer networkManagerServer = null;
@@ -18,11 +18,11 @@ namespace AnyRPG {
             Debug.Log($"{gameObject.name}.FishNetRigidbody.Configure()");
 
             base.Configure(systemGameManager);
-            /*
+            
             if (rigidbodyComponent != null && systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
                 rigidbodyComponent.isKinematic = true;
             }
-            */
+            
         }
 
         public override void SetGameManagerReferences() {

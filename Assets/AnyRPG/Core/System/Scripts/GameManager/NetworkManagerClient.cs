@@ -421,7 +421,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseLoadSceneClient(string sceneName) {
-            Debug.Log($"NetworkManagerClient.AdvertiseLoadSceneClient({sceneName})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseLoadSceneClient({sceneName})");
 
             levelManager.ProcessBeforeLevelUnload();
         }

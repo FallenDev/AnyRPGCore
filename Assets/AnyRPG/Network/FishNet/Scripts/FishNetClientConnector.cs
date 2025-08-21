@@ -72,7 +72,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         private void RequestSpawnRequest(NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetClientConnector.RequestSpawnRequest()");
+            //Debug.Log($"FishNetClientConnector.RequestSpawnRequest()");
 
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 return;

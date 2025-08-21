@@ -5,21 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/AnyRPG/Network/FishNet/Games/AnyMMODemo/Scenes/AnyMMODemo/AnyMMODemo.unity
-    guid: b7fb33761beeeed4788e336cf62749ff
-  - enabled: 1
-    path: Assets/AnyRPG/Network/FishNet/Games/AnyMMODemo/Scenes/AnyMMODemoMainMenu/AnyMMODemoMainMenu.unity
-    guid: 6ed45b86da4feb242b6078edb8b27494
-  - enabled: 1
-    path: Assets/AnyRPG/Network/FishNet/Games/AnyMMODemo/Scenes/AnyMMODemoZone/AnyMMODemoZone.unity
-    guid: a4e25a50af95a074d9e4de888405899c
-  - enabled: 1
-    path: Assets/AnyRPG/Network/FishNet/Games/AnyMMODemo/Scenes/AnyMMODemoCutsceneZone/AnyMMODemoCutsceneZone.unity
-    guid: 2bf73607b2e28c14bbd71bf11f391ef1
-  - enabled: 1
-    path: Assets/AnyRPG/Network/FishNet/Games/AnyMMODemo/Scenes/AnyMMODemoDungeon/AnyMMODemoDungeon.unity
-    guid: 920aa2cbf156e4544bbd39d771dc0be9
   - enabled: 0
     path: Assets/ALostSoul/Games/ALostSoulStoryDemo/Scenes/Game/ALostSoulStoryDemoGame/ALostSoulStoryDemoGame.unity
     guid: 0a6a387f1a640604ab86081d60dd1ead
@@ -78,21 +63,6 @@ EditorBuildSettings:
     path: Assets/AnyRPG/Engine/Games/ContentDemo/Scenes/Content/ContentDemoScene/ContentDemoScene.unity
     guid: 79ec306d7083e084bb061eebd6e5f62f
   - enabled: 0
-    path: Assets/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Game/FeaturesDemoGame/FeaturesDemoGame.unity
-    guid: a98b1f451adf75f4899466b9a4746144
-  - enabled: 0
-    path: Assets/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Game/FeaturesDemoMainMenu/FeaturesDemoMainMenu.unity
-    guid: 3c050ae184863104d94d1c6a206d4a84
-  - enabled: 0
-    path: Assets/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Content/FeaturesDemoZone/FeaturesDemoZone.unity
-    guid: c5448959a7d351845969586d6f5ce056
-  - enabled: 0
-    path: Assets/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Content/FeaturesDemoDungeon/FeaturesDemoDungeon.unity
-    guid: c094c26c9175d674fafcb14b9282a864
-  - enabled: 0
-    path: Assets/AnyRPG/Core/Games/FeaturesDemoGame/Scenes/Content/FeaturesDemoCutsceneZone/FeaturesDemoCutsceneZone.unity
-    guid: b9ce6cec24f88e343bdd24c31d295b8a
-  - enabled: 0
     path: Assets/AnyRPG/Core/Games/MovementTestGame/Scenes/Game/MovementTestGame/MovementTestGame.unity
     guid: 677b052e3cf6eba4a87f60626ff3a923
   - enabled: 0
@@ -101,17 +71,5 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/AnyRPG/Core/Games/MovementTestGame/Scenes/Content/MovementTestZone/MovementTestZone.unity
     guid: a847437ee17c7aa4f98c2d363f671f1d
-  - enabled: 1
-    path: Assets/Games/NewGame/Scenes/NewGame/NewGame.unity
-    guid: 9003f090653987f4193d52e99f6d1c7f
-  - enabled: 1
-    path: Assets/Games/NewGame/Scenes/NewGameMainMenu/NewGameMainMenu.unity
-    guid: f8db439389bb1b74f947a5d2b4829876
-  - enabled: 1
-    path: Assets/Games/NewGame/Scenes/NewScene/NewScene.unity
-    guid: 9d8f78fe9a92ac74e964198cde1f1b28
-  - enabled: 0
-    path: Assets/Games/NewGame/Scenes/NewScene2/NewScene2.unity
-    guid: 69b85beba3848ad46b4ef27c514f711c
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

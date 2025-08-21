@@ -700,7 +700,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnPet(int accountId, UnitProfile unitProfile) {
-            Debug.Log($"PlayerManagerServer.RequestSpawnPet({accountId}, {unitProfile.ResourceName})");
+            //Debug.Log($"PlayerManagerServer.RequestSpawnPet({accountId}, {unitProfile.ResourceName})");
 
             if (!playerCharacterMonitors.ContainsKey(accountId)) {
                 //Debug.LogError($"NetworkManagerServer.PostInit: activePlayerCharacters does not contain accountId {characterRequestData.accountId}");
@@ -710,7 +710,7 @@ namespace AnyRPG {
         }
 
         public void SpawnPet(UnitController unitController, UnitProfile unitProfile) {
-            Debug.Log($"PlayerManagerServer.SpawnPet({unitController.gameObject.name}, {unitProfile.ResourceName})");
+            //Debug.Log($"PlayerManagerServer.SpawnPet({unitController.gameObject.name}, {unitProfile.ResourceName})");
 
             unitController.CharacterPetManager.SpawnPet(unitProfile);
         }
@@ -729,7 +729,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnRequest(int accountId) {
-            Debug.Log($"PlayerManagerServer.RequestSpawnRequest({accountId})");
+            //Debug.Log($"PlayerManagerServer.RequestSpawnRequest({accountId})");
 
             if (spawnRequests.ContainsKey(accountId)) {
                 networkManagerServer.AdvertiseAddSpawnRequest(accountId, spawnRequests[accountId]);
@@ -737,7 +737,7 @@ namespace AnyRPG {
         }
 
         public void LoadCutscene(Cutscene cutscene, UnitController sourceUnitController) {
-            Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {sourceUnitController?.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {sourceUnitController?.gameObject.name})");
 
             if (activePlayerLookup.ContainsKey(sourceUnitController)) {
                 int accountId = activePlayerLookup[sourceUnitController];
@@ -748,7 +748,7 @@ namespace AnyRPG {
                     spawnLocation = sourceUnitController.transform.position
                 };
                 // debug print the spawn location
-                Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {accountId}) spawn location: {spawnPlayerRequest.spawnLocation}, forward direction: {spawnPlayerRequest.spawnForwardDirection}");
+                //Debug.Log($"PlayerManagerServer.LoadCutscene({cutscene.ResourceName}, {accountId}) spawn location: {spawnPlayerRequest.spawnLocation}, forward direction: {spawnPlayerRequest.spawnForwardDirection}");
                 DespawnPlayerUnit(accountId);
                 AddSpawnRequest(accountId, spawnPlayerRequest, true);
                 if (networkManagerServer.ServerModeActive) {

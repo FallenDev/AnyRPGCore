@@ -22,7 +22,7 @@ namespace AnyRPG {
         }
 
         public void SetDisplayClass(CharacterClass characterClass, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
-            Debug.Log("ClassChangeManager.SetDisplayClass(" + characterClass + ")");
+            //Debug.Log($"ClassChangeManager.SetDisplayClass({characterClass})");
 
             this.characterClass = characterClass;
 

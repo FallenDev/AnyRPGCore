@@ -31,7 +31,7 @@ namespace AnyRPG {
         }
 
         public void SetCraftAbility(CraftAbilityProperties craftAbility) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.SetCraftAbility({craftAbility.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.SetCraftAbility({craftAbility.DisplayName})");
 
             this.craftAbility = craftAbility;
             ClearCraftingQueue();
@@ -39,7 +39,7 @@ namespace AnyRPG {
         }
 
         public List<Recipe> GetRecipes() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.GetRecipes()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.GetRecipes()");
 
             List<Recipe> returnList = new List<Recipe>();
             foreach (Recipe recipe in unitController.CharacterRecipeManager.RecipeList.Values) {
@@ -67,7 +67,8 @@ namespace AnyRPG {
         }
 
         public void ClearCraftingQueue() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.ClearCraftingQueue()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCraftingManager.ClearCraftingQueue()");
+
             craftingQueue.Clear();
             unitController.UnitEventController.NotifyOnClearCraftingQueue();
         }

@@ -214,6 +214,10 @@ namespace AnyRPG {
         // attempt to remove them before the level load to avoid this
         public override void ProcessLevelUnload() {
             base.ProcessLevelUnload();
+            ProcessNamePlateLevelUnload();
+        }
+
+        public virtual void ProcessNamePlateLevelUnload() {
             RemoveNamePlate();
         }
 

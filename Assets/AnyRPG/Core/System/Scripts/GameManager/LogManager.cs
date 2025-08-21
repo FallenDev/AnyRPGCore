@@ -108,6 +108,8 @@ namespace AnyRPG {
         }
 
         public void WriteSystemMessage(UnitController sourceUnitController, string message) {
+            Debug.Log($"LogManager.WriteSystemMessage({sourceUnitController.gameObject.name}, {message})");
+
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 WriteSystemMessage(message);
             } else {
@@ -116,6 +118,8 @@ namespace AnyRPG {
         }
 
         public void WriteSystemMessage(string newMessage) {
+            Debug.Log($"LogManager.WriteSystemMessage({newMessage})");
+
             OnWriteSystemMessage(newMessage);
         }
 

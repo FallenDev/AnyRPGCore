@@ -113,7 +113,7 @@ namespace AnyRPG {
         }
 
         public virtual void RemoveQuest(UnitController sourceUnitController, bool resetQuestStep = true) {
-            //Debug.Log("Quest.RemoveQuest(): " + DisplayName + " calling OnQuestStatusUpdated()");
+            //Debug.Log($"{ResourceName}.QuestBase.RemoveQuest({sourceUnitController.gameObject.name}, {resetQuestStep})");
 
             OnAbandonQuest(sourceUnitController);
 

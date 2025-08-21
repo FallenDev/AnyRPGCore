@@ -76,7 +76,7 @@ namespace AnyRPG {
         }
 
         public void AcceptQuest(Quest newQuest) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptQuest({newQuest.name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptQuest({newQuest.name})");
 
             if (quests.Count >= systemConfigurationManager.QuestLogSize) {
                 // quest log is full. we can't accept the quest
@@ -135,17 +135,34 @@ namespace AnyRPG {
             ResetQuestObjectiveSaveData(oldQuest.ResourceName);
         }
 
-        // currently unused
         public void ClearQuestLog() {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.ClearQuestLog()");
+
             List<Quest> removeList = new List<Quest>();
             foreach (Quest quest in Quests.Values) {
                 removeList.Add(quest);
             }
             foreach (Quest oldQuest in removeList) {
-                AbandonQuest(oldQuest, false);
+                RemoveQuest(oldQuest);
+                oldQuest.RemoveQuest(unitController, false);
             }
             Quests.Clear();
         }
+
+        public void ClearAchievementLog() {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.ClearAchievementLog()");
+
+            List<Achievement> removeList = new List<Achievement>();
+            foreach (Achievement achievement in achievements.Values) {
+                removeList.Add(achievement);
+            }
+            foreach (Achievement oldAchievement in removeList) {
+                oldAchievement.RemoveQuest(unitController, false);
+                ResetAchievementObjectiveSaveData(oldAchievement.ResourceName);
+            }
+            achievements.Clear();
+        }
+
 
         public void ShowQuestLogDescription(Quest quest) {
             OnShowQuestLogDescription(quest);
@@ -312,19 +329,6 @@ namespace AnyRPG {
             return false;
         }
 
-        // currently unused
-        public void ClearAchievementLog() {
-            List<Achievement> removeList = new List<Achievement>();
-            foreach (Achievement achievement in achievements.Values) {
-                removeList.Add(achievement);
-            }
-            foreach (Achievement oldAchievement in removeList) {
-                oldAchievement.RemoveQuest(unitController, false);
-                ResetAchievementObjectiveSaveData(oldAchievement.ResourceName);
-            }
-            achievements.Clear();
-        }
-
         public void SetQuestObjectiveCurrentAmount(string questName, string objectiveType, string objectiveName, int amount) {
             QuestObjectiveSaveData saveData = GetQuestObjectiveSaveData(questName, objectiveType, objectiveName);
             saveData.Amount = amount;
@@ -355,6 +359,10 @@ namespace AnyRPG {
             achievement.MarkComplete(unitController, true, false);
         }
 
+        public void HandleCharacterUnitDespawn() {
+            ClearQuestLog();
+            ClearAchievementLog();
+        }
     }
 
 }

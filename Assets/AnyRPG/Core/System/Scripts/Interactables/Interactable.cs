@@ -221,7 +221,7 @@ namespace AnyRPG {
         public bool Initialized { get => initialized; }
 
         public override void Configure(SystemGameManager systemGameManager) {
-            //Debug.Log($"{gameObject.name}.Spawnable.Configure()");
+            //Debug.Log($"{gameObject.name}.Interactable.Configure()");
 
             base.Configure(systemGameManager);
 
@@ -238,7 +238,7 @@ namespace AnyRPG {
         }
 
         public virtual void Init() {
-            //Debug.Log($"{gameObject.name}.Spawnable.Init()");
+            //Debug.Log($"{gameObject.name}.Interactable.Init()");
 
             if (initialized == true) {
                 return;
@@ -247,10 +247,10 @@ namespace AnyRPG {
 
             // moved here from CreateEventSubscriptions.  Init should have time to occur before processing this
             if (playerManager.PlayerUnitSpawned) {
-                //Debug.Log($"{gameObject.name}.Spawnable.CreateEventSubscriptions(): Player Unit is spawned.  Handling immediate spawn!");
+                //Debug.Log($"{gameObject.name}.Interactable.CreateEventSubscriptions(): Player Unit is spawned.  Handling immediate spawn!");
                 ProcessPlayerUnitSpawn(playerManager.UnitController);
             } else {
-                //Debug.Log($"{gameObject.name}.Spawnable.CreateEventSubscriptions(): Player Unit is not spawned. Added Handle Spawn listener");
+                //Debug.Log($"{gameObject.name}.Interactable.CreateEventSubscriptions(): Player Unit is not spawned. Added Handle Spawn listener");
             }
             startHasRun = true;
             initialized = true;
@@ -982,10 +982,13 @@ namespace AnyRPG {
 
 
         public virtual void ProcessLevelUnload() {
-            // nothing here
+            // this is meant to not be called from child classes as they will call ResetSettings() during Despawn()
+            ResetSettings();
         }
 
         public virtual void ResetSettings() {
+            Debug.Log($"{gameObject.name}.Interactable.ResetSettings()");
+
             foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
                 //Debug.Log($"{gameObject.name}.Interactable.Awake(): Found InteractableOptionComponent: " + interactable.ToString());
                 if (interactableOptionComponent != null) {
@@ -1029,7 +1032,7 @@ namespace AnyRPG {
         }
 
         public void CreateEventSubscriptions() {
-            //Debug.Log($"{gameObject.name}.Spawnable.CreateEventSubscriptions()");
+            //Debug.Log($"{gameObject.name}.Interactable.CreateEventSubscriptions()");
             if (eventSubscriptionsInitialized) {
                 return;
             }
@@ -1038,6 +1041,8 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCreateEventSubscriptions() {
+            Debug.Log($"{gameObject.name}.Interactable.ProcessCreateEventSubscriptions()");
+
             systemEventManager.OnLevelUnload += HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 systemEventManager.OnPlayerUnitSpawn += HandlePlayerUnitSpawn;
@@ -1045,11 +1050,13 @@ namespace AnyRPG {
         }
 
         private void HandlePlayerUnitSpawn(UnitController sourceUnitController) {
+            Debug.Log($"{gameObject.name}.Interactable.HandlePlayerUnitSpawn({sourceUnitController?.gameObject.name})");
+
             ProcessPlayerUnitSpawn(sourceUnitController);
         }
 
         public void CleanupEventSubscriptions() {
-            //Debug.Log($"{gameObject.name}Spawnable.CleanupEventSubscriptions()");
+            Debug.Log($"{gameObject.name}.Interactable.CleanupEventSubscriptions()");
             if (!eventSubscriptionsInitialized) {
                 return;
             }
@@ -1058,6 +1065,8 @@ namespace AnyRPG {
         }
 
         public virtual void ProcessCleanupEventSubscriptions() {
+            Debug.Log($"{gameObject.name}.Interactable.ProcessCleanupEventSubscriptions()");
+
             systemEventManager.OnLevelUnload -= HandleLevelUnload;
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 systemEventManager.OnPlayerUnitSpawn -= HandlePlayerUnitSpawn;

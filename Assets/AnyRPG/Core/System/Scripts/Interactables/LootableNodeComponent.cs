@@ -161,7 +161,7 @@ namespace AnyRPG {
 
         public void CleanupWindowEventSubscriptions() {
             //Debug.Log($"{gameObject.name}.LootableNode.CleanupWindowEventSubscriptions()");
-            systemEventManager.OnTakeLoot += HandleTakeLoot;
+            systemEventManager.OnTakeLoot -= HandleTakeLoot;
             if (uIManager?.lootWindow?.CloseableWindowContents != null) {
                 uIManager.lootWindow.CloseableWindowContents.OnCloseWindow -= ClearTakeLootHandler;
             }

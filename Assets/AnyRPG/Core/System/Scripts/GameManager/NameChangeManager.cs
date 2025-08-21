@@ -20,7 +20,7 @@ namespace AnyRPG {
         }
 
         public void RequestChangePlayerName(string newName) {
-            Debug.Log($"NameChangeManager.RequestChangePlayerName({newName})");
+            //Debug.Log($"NameChangeManager.RequestChangePlayerName({newName})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 playerManagerServer.SetPlayerName(playerManager.UnitController, newName);

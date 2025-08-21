@@ -238,7 +238,9 @@ namespace AnyRPG {
 
         public virtual bool SetMiniMapText(TextMeshProUGUI text) {
             //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.SetMiniMapText()");
-
+            if (playerManager.UnitController == null) {
+                return false;
+            }
             return (GetCurrentOptionCount(playerManager.UnitController) > 0);
         }
 

@@ -285,6 +285,7 @@ namespace AnyRPG {
 
         public override void ProcessOpenWindowNotification() {
             //Debug.Log("CraftingUI.ProcessOpenWindowNotification()");
+
             base.ProcessOpenWindowNotification();
             SetBackGroundColor(new Color32(0, 0, 0, (byte)(int)(PlayerPrefs.GetFloat("PopupWindowOpacity") * 255)));
 
@@ -305,7 +306,7 @@ namespace AnyRPG {
         }
 
         protected override void ProcessCreateEventSubscriptions() {
-            Debug.Log("CraftingUI.ProcessCreateEventSubscriptions()");
+            //Debug.Log("CraftingUI.ProcessCreateEventSubscriptions()");
 
             base.ProcessCreateEventSubscriptions();
             systemEventManager.OnSetCraftAbility += HandleSetCraftAbility;

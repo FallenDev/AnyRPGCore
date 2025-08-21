@@ -50,7 +50,8 @@ namespace AnyRPG {
         }
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
-            //Debug.Log("UseInteractableObjective.OnAcceptQuest()");
+            //Debug.Log($"VisitZoneObjective.OnAcceptQuest({sourceUnitController.gameObject.name}, {quest.ResourceName}, {printMessages})");
+
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
 
             objectiveSceneNode = null;
@@ -63,14 +64,15 @@ namespace AnyRPG {
             // disabled for now.  this should be an active objective, and not able to be completed if a zone was previously visited
             // this allows creating quests where you have to travel back to a zone you've already been to and perform a new task
             //UpdateCompletionCount(printMessages);
-            objectiveSceneNode.OnVisitZone += AddCompletionAmount;
+            //objectiveSceneNode.OnVisitZone += AddCompletionAmount;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
-            //Debug.Log("UseInteractableObjective.OnAbandonQuest()");
+            //Debug.Log($"VisitZoneObjective.OnAbandonQuest({sourceUnitController.gameObject.name})");
+
             base.OnAbandonQuest(sourceUnitController);
-            objectiveSceneNode.OnVisitZone -= AddCompletionAmount;
+            //objectiveSceneNode.OnVisitZone -= AddCompletionAmount;
         }
 
     }

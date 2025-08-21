@@ -1016,6 +1016,7 @@ namespace AnyRPG {
             characterAbilityManager.HandleCharacterUnitDespawn();
             characterCombat.HandleCharacterUnitDespawn();
             characterPetManager.HandleCharacterUnitDespawn();
+            characterQuestLog.HandleCharacterUnitDespawn();
 
             unitActionManager.HandleCharacterUnitDespawn();
 
@@ -1960,7 +1961,7 @@ namespace AnyRPG {
                 return;
             }
 
-            base.ProcessLevelUnload();
+            base.ProcessNamePlateLevelUnload();
             Despawn(0f, false, true);
         }
 

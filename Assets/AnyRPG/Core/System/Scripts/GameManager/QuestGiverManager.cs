@@ -40,7 +40,8 @@ namespace AnyRPG {
         }
 
         public void AcceptQuestClient(UnitController sourceUnitController, Quest quest) {
-            Debug.Log($"QuestGiverManager.AcceptQuestClient({sourceUnitController.gameObject.name}, {quest.ResourceName})");
+            //Debug.Log($"QuestGiverManager.AcceptQuestClient({sourceUnitController.gameObject.name}, {quest.ResourceName})");
+
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
                 AcceptQuestInternal(sourceUnitController, quest);
             } else {
@@ -49,7 +50,7 @@ namespace AnyRPG {
         }
 
         public void AcceptQuestInternal(UnitController sourceUnitController, Quest quest) {
-            Debug.Log($"QuestGiverManager.AcceptQuestInternal({sourceUnitController.gameObject.name}, {quest.ResourceName})");
+            //Debug.Log($"QuestGiverManager.AcceptQuestInternal({sourceUnitController.gameObject.name}, {quest.ResourceName})");
 
             sourceUnitController.CharacterQuestLog.AcceptQuest(quest);
 

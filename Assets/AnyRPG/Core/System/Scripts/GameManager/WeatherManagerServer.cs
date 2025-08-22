@@ -44,13 +44,13 @@ namespace AnyRPG {
         }
 
         private void HandleRemoveLoadedScene(int sceneHandle, string sceneName) {
-            Debug.Log($"WeatherManagerServer.HandleRemoveLoadedScene({sceneHandle}, {sceneName})");
+            //Debug.Log($"WeatherManagerServer.HandleRemoveLoadedScene({sceneHandle}, {sceneName})");
 
             ProcessRemoveLoadedScene(sceneHandle, sceneName);
         }
 
         private void HandleAddLoadedScene(int sceneHandle, string sceneName) {
-            Debug.Log($"WeatherManagerServer.HandleAddLoadedScene({sceneHandle}, {sceneName})");
+            //Debug.Log($"WeatherManagerServer.HandleAddLoadedScene({sceneHandle}, {sceneName})");
 
             if (levelManager.SceneDictionary.ContainsKey(sceneName) == true) {
                 ProcessAddLoadedScene(sceneHandle, levelManager.SceneDictionary[sceneName]);

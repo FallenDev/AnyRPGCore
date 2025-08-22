@@ -588,7 +588,7 @@ namespace AnyRPG {
         }
 
         public void MonitorPlayerUnit(int accountId, UnitController unitController) {
-            Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
+            //Debug.Log($"PlayerManagerServer.MonitorPlayerUnit({accountId}, {unitController.gameObject.name})");
 
             if (playerCharacterMonitors.ContainsKey(accountId) == false) {
                 return;
@@ -608,7 +608,7 @@ namespace AnyRPG {
         */
 
         public void StopMonitoringPlayerUnit(int accountId) {
-            Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({accountId})");
+            //Debug.Log($"PlayerManagerServer.StopMonitoringPlayerUnit({accountId})");
 
             if (playerCharacterMonitors.ContainsKey(accountId)) {
                 PauseMonitoringPlayerUnit(accountId);
@@ -619,7 +619,7 @@ namespace AnyRPG {
         }
 
         public void ProcessDisconnect(int accountId) {
-            Debug.Log($"PlayerManagerServer.ProcessDisconnect({accountId})");
+            //Debug.Log($"PlayerManagerServer.ProcessDisconnect({accountId})");
 
             if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
                 playerCharacterMonitors[accountId].SetDisconnected();
@@ -628,7 +628,7 @@ namespace AnyRPG {
         }
 
         public void PauseMonitoringPlayerUnit(int accountId) {
-            Debug.Log($"PlayerManagerServer.PauseMonitoringPlayerUnit({accountId})");
+            //Debug.Log($"PlayerManagerServer.PauseMonitoringPlayerUnit({accountId})");
 
             //if (playerCharacterMonitors.ContainsKey(accountId) && playerCharacterMonitors[accountId].unitController != null) {
                 RemoveActivePlayer(accountId);

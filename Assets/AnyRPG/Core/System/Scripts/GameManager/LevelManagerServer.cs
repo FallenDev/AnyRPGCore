@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace AnyRPG {
     public class LevelManagerServer : ConfiguredMonoBehaviour {
@@ -53,7 +50,8 @@ namespace AnyRPG {
         }
 
         public void AddLoadedScene(Scene scene) {
-            Debug.Log($"LevelManagerServer.AddLoadedScene({scene.name})");
+            //Debug.Log($"LevelManagerServer.AddLoadedScene({scene.name})");
+
             if (loadedScenes.ContainsKey(scene.name) == false) {
                 loadedScenes.Add(scene.name, new Dictionary<int, Scene>());
             }
@@ -62,7 +60,7 @@ namespace AnyRPG {
         }
 
         public void RemoveLoadedScene(int sceneHandle, string sceneName) {
-            Debug.Log($"LevelManagerServer.RemoveLoadedScene({sceneHandle}, {sceneName})");
+            //Debug.Log($"LevelManagerServer.RemoveLoadedScene({sceneHandle}, {sceneName})");
 
             if (loadedScenes.ContainsKey(sceneName) == false) {
                 //Debug.LogError($"LevelManagerServer.RemoveLoadedScene() - scene {sceneName} not found in loaded scenes");
@@ -74,7 +72,7 @@ namespace AnyRPG {
         }
 
         public void ProcessLevelLoad(Scene loadedScene)  {
-            Debug.Log($"LevelManagerServer.ProcessLevelLoad({loadedScene.name}({loadedScene.handle}))");
+            //Debug.Log($"LevelManagerServer.ProcessLevelLoad({loadedScene.name}({loadedScene.handle}))");
 
             cameraManager.ActivateMainCamera();
             systemGameManager.AutoConfigureMonoBehaviours(loadedScene);

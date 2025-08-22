@@ -751,7 +751,8 @@ namespace AnyRPG {
         */
 
         public void HandleSceneLoadEnd(Scene scene, int loadRequestHashCode) {
-            Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name}, {loadRequestHashCode})");
+            //Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name}, {loadRequestHashCode})");
+
             if (lobbyGameLoadRequestHashCodes.ContainsKey(loadRequestHashCode) == true) {
                 //Debug.Log($"NetworkManagerServer.HandleSceneLoadEnd({scene.name}, {loadRequestHashCode}) - lobby game load request");
                 AddLobbyGameSceneHandle(lobbyGameLoadRequestHashCodes[loadRequestHashCode], scene);

@@ -54,7 +54,7 @@ namespace AnyRPG {
 
         [ServerRpc(RequireOwnership = false)]
         private void RequestServerTime(NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetClientConnector.RequestServerTime()");
+            //Debug.Log($"FishNetClientConnector.RequestServerTime()");
 
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
                 return;

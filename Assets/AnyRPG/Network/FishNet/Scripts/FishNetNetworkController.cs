@@ -529,13 +529,13 @@ namespace AnyRPG {
         #region server functions
 
         private void HandleSceneLoadEndServer(SceneLoadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleLoadEndServer() skipped: {obj.SkippedSceneNames.Length}; loaded: {obj.LoadedScenes.Length} options hashcode: {obj.QueueData.SceneLoadData.GetHashCode()}");
+            //Debug.Log($"FishNetNetworkController.HandleLoadEndServer() skipped: {obj.SkippedSceneNames.Length}; loaded: {obj.LoadedScenes.Length} options hashcode: {obj.QueueData.SceneLoadData.GetHashCode()}");
 
             if (obj.SkippedSceneNames.Length > 0 && obj.LoadedScenes.Length == 0) {
                 return;
             }
             foreach (Scene scene in obj.LoadedScenes) {
-                Debug.Log($"FishNetNetworkController.HandleSceneLoadEndServer() loaded: {scene.name} handle: {scene.handle}");
+                //Debug.Log($"FishNetNetworkController.HandleSceneLoadEndServer() loaded: {scene.name} handle: {scene.handle}");
                 networkManagerServer.HandleSceneLoadEnd(scene, obj.QueueData.SceneLoadData.GetHashCode());
             }
             //Debug.Log($"FishNetNetworkController.HandleLoadEnd() skipped: {string.Join(',', obj.SkippedSceneNames.ToList())}");

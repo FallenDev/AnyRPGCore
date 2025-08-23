@@ -1264,7 +1264,7 @@ namespace AnyRPG {
         }
 
         public bool RecoverResource(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int amount, IAbilityCaster source, CombatMagnitude combatMagnitude = CombatMagnitude.normal) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.RecoverResource({powerResource.ResourceName}, {amount})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.RecoverResource({powerResource.ResourceName}, {amount})");
 
             bool returnValue = AddResourceAmount(powerResource.ResourceName, amount);
             if (returnValue == false) {

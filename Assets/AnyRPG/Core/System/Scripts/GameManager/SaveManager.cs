@@ -369,7 +369,7 @@ namespace AnyRPG {
         }
 
         private void CreateLocalGame(PlayerCharacterSaveData playerCharacterSaveData) {
-            Debug.Log($"Savemanager.CreateLocalGame(player name: {playerCharacterSaveData.SaveData.playerName})");
+            //Debug.Log($"Savemanager.CreateLocalGame(player name: {playerCharacterSaveData.SaveData.playerName})");
 
             SaveDataFile(playerCharacterSaveData.SaveData);
             PlayerPrefs.SetString("LastSaveDataFileName", playerCharacterSaveData.SaveData.DataFileName);

@@ -2017,11 +2017,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 349439365473122481, guid: 4dd1a86132e2b214fb216a9711c60a8b,
-        type: 3}
-      propertyPath: _physicsMode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5662131881724070493, guid: 4dd1a86132e2b214fb216a9711c60a8b,
         type: 3}
       propertyPath: _scenePathHash

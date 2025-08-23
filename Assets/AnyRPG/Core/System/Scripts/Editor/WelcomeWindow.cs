@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEditor.Build.Profile;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -146,6 +147,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + storyDemoGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("A Lost Soul Story Demo Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/A Lost Soul Story Demo.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + storyDemoGameScenePath);
                 }
                 EditorGUILayout.HelpBox("The first 2 chapters of the game, 'A Lost Soul', re-created using the open source assets included in AnyRPG", MessageType.None);
@@ -156,6 +161,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + characterDemoGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("A Lost Soul Character Demo Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/A Lost Soul Character Demo.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + characterDemoGameScenePath);
                 }
                 EditorGUILayout.HelpBox("Explore the game world of A Lost Soul by starting as any character model and faction included in the game", MessageType.None);
@@ -166,6 +175,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + contentDemoGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("Content Demo Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/Content Demo Game.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + contentDemoGameScenePath);
                 }
                 EditorGUILayout.HelpBox("A simple demo of all 3d and audio content including\n -Clothing\n -Characters\n -Buildings\n -Props\n -Weapons", MessageType.None);
@@ -176,6 +189,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + featuresDemoGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("Features Demo Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/Features Demo Game.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + featuresDemoGameScenePath);
                 }
                 EditorGUILayout.HelpBox("A simple 2 level game that provides examples of the most common features and interactables included in AnyRPG for quick reference when implementing them in your own game", MessageType.None);
@@ -186,6 +203,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + zeroConfigModeGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("Empty (Zero Config Mode) Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/Empty Game.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + zeroConfigModeGameScenePath);
                 }
                 EditorGUILayout.HelpBox("A bare bones single scene with no main menu that demonstrates how to use AnyRPG in Zero Config (Controller Only) mode by including an unconfigured " +
@@ -197,6 +218,10 @@ namespace AnyRPG {
             if (System.IO.File.Exists(Application.dataPath + mmoDemoGameScenePath)) {
                 GUILayout.BeginVertical("box");
                 if (GUILayout.Button("AnyMMO FishNet Demo Game")) {
+                    BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/AnyMMO Demo Game.asset");
+                    if (buildProfile != null) {
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                    }
                     EditorSceneManager.OpenScene("Assets" + mmoDemoGameScenePath);
                 }
                 EditorGUILayout.HelpBox("A copy of the Features Demo Game designed for play over the network with multiple players.", MessageType.None);

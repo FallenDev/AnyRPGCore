@@ -1,12 +1,7 @@
-using AnyRPG;
 using UnityEngine;
 using UnityEngine.Serialization;
-using System.Collections.Generic;
-using TMPro;
 using UMA.CharacterSystem;
 using UMA;
-using UMA.CharacterSystem.Examples;
-using UnityEngine.UI;
 
 namespace AnyRPG {
     public class ColorSelectionController : ConfiguredMonoBehaviour {

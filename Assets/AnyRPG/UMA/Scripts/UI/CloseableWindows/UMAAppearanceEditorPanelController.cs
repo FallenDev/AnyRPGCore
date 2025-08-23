@@ -1,13 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UMA;
 using UMA.CharacterSystem;
-using UMA.CharacterSystem.Examples;
 
 namespace AnyRPG {
 

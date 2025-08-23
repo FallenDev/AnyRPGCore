@@ -159,4 +159,4 @@ MonoBehaviour:
   _maximumFrameTicks: 3
   _tickRate: 30
   _pingInterval: 1
-  _physicsMode: 1
+  _physicsMode: 0

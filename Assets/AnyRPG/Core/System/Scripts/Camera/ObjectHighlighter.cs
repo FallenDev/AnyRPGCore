@@ -49,12 +49,16 @@ namespace AnyRPG {
         public void RemoveOutlinedObject(Interactable interactable) {
             Debug.Log($"ObjectHighlighter.RemoveOutlinedObject({interactable.gameObject.name})");
 
+			if (meshRenderers == null) {
+				return;
+			}
             // restore original rendering layers
-			for (int i = 0; i < meshRenderers.Length; i++) {
-				if (i < originalRenderingLayers.Count) {
-					meshRenderers[i].renderingLayerMask = originalRenderingLayers[i];
-				}
+            for (int i = 0; i < meshRenderers.Length; i++) {
+                if (i < originalRenderingLayers.Count) {
+                    meshRenderers[i].renderingLayerMask = originalRenderingLayers[i];
+                }
             }
+
             originalRenderingLayers.Clear();
 
 			meshRenderers = null;

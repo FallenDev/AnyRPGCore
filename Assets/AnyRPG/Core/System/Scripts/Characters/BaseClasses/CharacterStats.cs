@@ -1108,6 +1108,7 @@ namespace AnyRPG {
 
             unitController.CharacterSkillManager.UpdateSkillList(currentLevel);
             unitController.CharacterAbilityManager.UpdateAbilityList(currentLevel);
+            unitController.CharacterAbilityManager.UpdateTraitList(currentLevel);
             unitController.CharacterRecipeManager.UpdateRecipeList(currentLevel);
             unitController.CharacterPetManager.UpdatePetList(currentLevel);
 

@@ -924,7 +924,7 @@ namespace AnyRPG {
                 return;
             }
             foreach (StatusEffect statusEffect in statusEffects) {
-                if (unitController.CharacterStats.HasStatusEffect(statusEffect.AbilityEffectProperties.DisplayName) == false) {
+                if (unitController.CharacterStats.HasStatusEffect(statusEffect.AbilityEffectProperties.ResourceName) == false) {
                     ApplyStatusEffect(statusEffect.AbilityEffectProperties);
                 }
             }
@@ -1121,6 +1121,15 @@ namespace AnyRPG {
             targetingModeActive = false;
             groundTargetAbility = null;
             castTargettingManager.DisableProjector();
+        }
+
+        public void UpdateTraitList(int newLevel) {
+            //Debug.Log(baseCharacter.gameObject.name + ".CharacterAbilityManager.UpdateAbilityList(). length: " + abilityList.Count);
+
+            CapabilityConsumerSnapshot capabilityConsumerSnapshot = new CapabilityConsumerSnapshot(unitController.BaseCharacter, systemGameManager);
+
+            ApplyCapabilityProviderTraits(capabilityConsumerSnapshot.GetTraitList());
+
         }
 
         public void UpdateAbilityList(int newLevel) {

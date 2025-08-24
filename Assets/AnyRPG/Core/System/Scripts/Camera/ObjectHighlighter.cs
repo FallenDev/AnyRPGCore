@@ -26,7 +26,7 @@ namespace AnyRPG {
 		}
 
 		public void AddOutlinedObject(Interactable interactable, Color outlineColor, Renderer[] meshRenderers) {
-			Debug.Log($"ObjectHighlighter.AddOutlinedObject({interactable.gameObject.name}, {outlineColor})");
+			//Debug.Log($"ObjectHighlighter.AddOutlinedObject({interactable.gameObject.name}, {outlineColor})");
 
 			this.outlineColor = outlineColor;
 			this.meshRenderers = meshRenderers;
@@ -47,7 +47,7 @@ namespace AnyRPG {
         }
 
         public void RemoveOutlinedObject(Interactable interactable) {
-            Debug.Log($"ObjectHighlighter.RemoveOutlinedObject({interactable.gameObject.name})");
+            //Debug.Log($"ObjectHighlighter.RemoveOutlinedObject({interactable.gameObject.name})");
 
 			if (meshRenderers == null) {
 				return;

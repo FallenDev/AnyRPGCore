@@ -52,7 +52,7 @@ namespace AnyRPG {
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{interactable.gameObject.name}.GatheringNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{interactable.gameObject.name}.GatheringNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             if (Props.LootTables == null) {
                 Debug.Log($"{interactable.gameObject.name}.GatheringNode.ProcessInteract({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex}) loot table was null");
@@ -77,7 +77,8 @@ namespace AnyRPG {
         }
 
         public void Gather(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
-            Debug.Log($"{interactable.gameObject.name}.GatheringNode.Gather({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{interactable.gameObject.name}.GatheringNode.Gather({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             base.ProcessClientNotifications(sourceUnitController, componentIndex, choiceIndex);
         }

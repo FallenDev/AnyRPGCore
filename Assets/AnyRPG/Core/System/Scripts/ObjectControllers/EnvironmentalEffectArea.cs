@@ -107,7 +107,7 @@ namespace AnyRPG {
                 if (collider == null) {
                     continue;
                 }
-                Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
+                //Debug.Log($"{gameObject.name}.EnvironmentalEffectArea.GetValidTargets() hit: " + collider.gameObject.name + "; layer: " + collider.gameObject.layer);
 
                 bool canAdd = true;
                 Interactable interactable = collider.gameObject.GetComponent<Interactable>();

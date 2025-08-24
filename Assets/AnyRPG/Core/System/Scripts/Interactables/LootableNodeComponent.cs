@@ -85,7 +85,7 @@ namespace AnyRPG {
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             uIManager.interactionWindow.CloseWindow();
@@ -121,7 +121,7 @@ namespace AnyRPG {
         }
 
         public virtual void DropLoot(UnitController sourceUnitController) {
-            Debug.Log($"{interactable.gameObject.name}.LootableNode.DropLoot()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNode.DropLoot()");
 
             // is the below code necessary?  it was causing stuff that was already dropped but not picked up to not pop a window again and just remain unlootable
             /*
@@ -141,7 +141,7 @@ namespace AnyRPG {
         }
 
         public void OpenLootWindow() {
-            Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.OpenLootWindow()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNodeComponent.OpenLootWindow()");
 
             CreateWindowEventSubscriptions();
             uIManager.lootWindow.CloseableWindowContents.OnCloseWindow += ClearTakeLootHandler;
@@ -174,7 +174,7 @@ namespace AnyRPG {
         }
 
         public void HandleTakeLoot(int accountId) {
-            Debug.Log($"{interactable.gameObject.name}.LootableNode.HandleTakeLoot({accountId})");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNode.HandleTakeLoot({accountId})");
 
             CheckDropListSize();
         }
@@ -184,7 +184,7 @@ namespace AnyRPG {
         }
 
         public void CheckDropListSize() {
-            Debug.Log($"{interactable.gameObject.name}.LootableNode.CheckDropListSize()");
+            //Debug.Log($"{interactable.gameObject.name}.LootableNode.CheckDropListSize()");
 
             int lootCount = 0;
             foreach (Dictionary<int, LootTableState> lootTableStateDict in lootHolder.LootTableStates.Values) {

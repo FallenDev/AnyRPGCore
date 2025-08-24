@@ -989,6 +989,10 @@ namespace AnyRPG {
         public virtual void ResetSettings() {
             //Debug.Log($"{gameObject.name}.Interactable.ResetSettings()");
 
+            if (glowOnMouseOver) {
+                outlineController.TurnOffOutline();
+            }
+
             foreach (InteractableOptionComponent interactableOptionComponent in interactables.Values) {
                 //Debug.Log($"{gameObject.name}.Interactable.Awake(): Found InteractableOptionComponent: " + interactable.ToString());
                 if (interactableOptionComponent != null) {

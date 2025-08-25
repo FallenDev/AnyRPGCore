@@ -19,7 +19,6 @@ namespace AnyRPG {
         UnitController unitController = null;
 
         // game manager references
-        protected NetworkManagerServer networkManagerServer = null;
         protected InteractionManager interactionManager = null;
         protected UIManager uIManager = null;
         protected DialogManager dialogManager = null;
@@ -49,7 +48,6 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            networkManagerServer = systemGameManager.NetworkManagerServer;
             interactionManager = systemGameManager.InteractionManager;
             uIManager = systemGameManager.UIManager;
             dialogManager = systemGameManager.DialogManager;

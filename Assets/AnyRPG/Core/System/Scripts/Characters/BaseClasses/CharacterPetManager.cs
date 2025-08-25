@@ -21,7 +21,6 @@ namespace AnyRPG {
 
         // game manager references
         protected CharacterManager characterManager = null;
-        protected NetworkManagerServer networkManagerServer = null;
         protected LevelManager levelManager = null;
 
         public List<UnitProfile> UnitProfiles { get => unitProfiles; set => unitProfiles = value; }
@@ -37,7 +36,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             characterManager = systemGameManager.CharacterManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
             levelManager = systemGameManager.LevelManager;
         }
 
@@ -51,7 +49,7 @@ namespace AnyRPG {
         }
 
         public void AddActivePet(UnitProfile unitProfile, UnitController petUnitController) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddActivePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddActivePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
 
             if (petUnitController == null) {
                 return;
@@ -66,7 +64,7 @@ namespace AnyRPG {
         }
 
         public void CapturePet(UnitProfile unitProfile, UnitController petUnitController) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.CapturePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.CapturePet({unitProfile.DisplayName}, {petUnitController.gameObject.name})");
 
             if (petUnitController == null) {
                 return;
@@ -78,7 +76,7 @@ namespace AnyRPG {
         }
 
         public virtual void AddPet(UnitProfile unitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfile.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfile.DisplayName})");
 
             // need more logic in here about whether this class or spec is allowed to capture this type of pet
             if (unitProfiles != null && unitProfiles.Contains(unitProfile) == false && unitProfile.IsPet == true) {
@@ -88,7 +86,7 @@ namespace AnyRPG {
         }
 
         public virtual void AddPet(string unitProfileName) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfileName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.AddPet({unitProfileName})");
 
             UnitProfile unitProfile = systemDataFactory.GetResource<UnitProfile>(unitProfileName);
             if (unitProfile != null) {
@@ -99,7 +97,7 @@ namespace AnyRPG {
         }
 
         public virtual void DespawnPet(UnitProfile unitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.DespawnPet({unitProfile.DisplayName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.DespawnPet({unitProfile.DisplayName})");
 
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 if (activeUnitProfiles[unitProfile] != null) {
@@ -111,6 +109,7 @@ namespace AnyRPG {
 
         public void DespawnAllPets() {
             //Debug.Log(baseCharacter.gameObject.name + ".CharacterPetManager.DespawnAllPets()");
+
             foreach (UnitProfile unitProfile in activeUnitProfiles.Keys.ToArray()) {
                 // check that the controller is not null.  It may have already been destroyed somehow
                 if (activeUnitProfiles[unitProfile] != null) {
@@ -121,7 +120,7 @@ namespace AnyRPG {
         }
 
         public virtual void HandleUnitDestroy(UnitProfile unitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.HandleUnitDestroy({unitProfile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.HandleUnitDestroy({unitProfile.ResourceName})");
 
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 activeUnitProfiles[unitProfile].UnitEventController.OnUnitDestroy -= HandleUnitDestroy;
@@ -131,7 +130,7 @@ namespace AnyRPG {
         }
 
         public virtual void SpawnPet(UnitProfile unitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.SpawnPet({unitProfile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterPetManager.SpawnPet({unitProfile.ResourceName})");
 
             if (activeUnitProfiles.ContainsKey(unitProfile)) {
                 // can't add the same dictionary key twice

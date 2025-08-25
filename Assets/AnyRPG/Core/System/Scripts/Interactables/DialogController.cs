@@ -23,7 +23,6 @@ namespace AnyRPG {
         // game manager references
         private PlayerManager playerManager = null;
         private LogManager logManager = null;
-        private NetworkManagerServer networkManagerServer = null;
 
         public int DialogIndex { get => shownNodeCount; }
 
@@ -36,7 +35,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
             logManager = systemGameManager.LogManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void Cleanup() {

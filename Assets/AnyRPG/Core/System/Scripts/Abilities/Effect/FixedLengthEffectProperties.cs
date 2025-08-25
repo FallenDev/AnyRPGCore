@@ -101,7 +101,7 @@ namespace AnyRPG {
 
             //Dictionary<PrefabProfile, List<GameObject>> prefabObjects = base.Cast(source, target, originalTarget, abilityEffectInput);
 
-            if (target is IAbilityCaster) {
+            if (networkManagerServer.ServerModeActive == true && ((source is UnitController) == false) && target is IAbilityCaster) {
                 // effects cast by environmental areas will spawn on network clients this way
                 return (target as IAbilityCaster).AbilityManager.SpawnAbilityEffectPrefabs(target, originalTarget, this, abilityEffectInput);
             } else {

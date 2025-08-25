@@ -14,7 +14,6 @@ namespace AnyRPG {
 
         // game manager references
         private SaveManager saveManager = null;
-        private NetworkManagerServer networkManagerServer = null;
 
         public PlayerCharacterMonitor(SystemGameManager systemGameManager, int accountId, PlayerCharacterSaveData playerCharacterSaveData, UnitController unitController) {
             Configure(systemGameManager);
@@ -29,7 +28,6 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             saveManager = systemGameManager.SaveManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void ProcessBeforeDespawn() {

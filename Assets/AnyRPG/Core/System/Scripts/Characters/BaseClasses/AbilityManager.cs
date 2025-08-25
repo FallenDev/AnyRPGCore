@@ -22,7 +22,6 @@ namespace AnyRPG {
 
         // game manager references
         protected ObjectPooler objectPooler = null;
-        protected NetworkManagerServer networkManagerServer = null;
         protected LevelManager levelManager = null;
 
         public virtual bool ControlLocked {
@@ -84,7 +83,6 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
             levelManager = systemGameManager.LevelManager;
         }
 

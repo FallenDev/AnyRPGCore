@@ -97,7 +97,7 @@ namespace AnyRPG {
         }
 
         protected virtual List<AOETargetNode> GetValidTargets(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext, List<AbilityEffectProperties> abilityEffectList) {
-            //Debug.Log(DisplayName + ".AOEEffect.GetValidTargets()");
+            //Debug.Log($"{ResourceName}.AOEEffect.GetValidTargets({source.gameObject.name}, {(target == null ? "null" : target.gameObject.name)})");
 
             Vector3 aoeSpawnCenter = Vector3.zero;
             Quaternion aoeSpawnRotation = source.AbilityManager.UnitGameObject.transform.rotation;
@@ -120,6 +120,7 @@ namespace AnyRPG {
             } else {
                 //Debug.Log("AOEEffect.Cast(): Setting AOE center to vector3.zero!!! was prefab spawn location not set or target despawned?");
             }
+            //Debug.Log($"{ResourceName}.AOEEffect.GetValidTargets() aoeSpawnCenter: {aoeSpawnCenter}, extents: {aoeProperties.AoeExtents} rotation: {aoeSpawnRotation}");
             //aoeSpawnCenter += source.AbilityManager.UnitGameObject.transform.TransformDirection(aoeCenter);
             Collider[] colliders = new Collider[100];
             int playerMask = 1 << LayerMask.NameToLayer("Player");

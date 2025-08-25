@@ -18,10 +18,6 @@ namespace AnyRPG {
         // keep track of holdable objects to be used during weapon attacks such as arrows, glowing hand effects, weapon trails, etc
         private List<AbilityAttachmentNode> weaponAbilityObjects = new List<AbilityAttachmentNode>();
 
-        // game manager references
-        SystemItemManager systemItemManager = null;
-        NetworkManagerServer networkManagerServer = null;
-
         //public Dictionary<EquipmentSlotProfile, Equipment> CurrentEquipment { get => equipmentManager.CurrentEquipment; set => equipmentManager.CurrentEquipment = value; }
         public List<AbilityAttachmentNode> WeaponAbilityAnimationObjects { get => weaponAbilityAnimationObjects; }
         public List<AbilityAttachmentNode> WeaponAbilityObjects { get => weaponAbilityObjects; }
@@ -30,12 +26,6 @@ namespace AnyRPG {
         public CharacterEquipmentManager(UnitController unitController, SystemGameManager systemGameManager) : base(systemGameManager) {
             this.unitController = unitController;
             CreateSubscriptions();
-        }
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            systemItemManager = systemGameManager.SystemItemManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void ClearSubscriptions() {

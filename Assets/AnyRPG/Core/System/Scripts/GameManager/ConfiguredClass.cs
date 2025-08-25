@@ -1,4 +1,3 @@
-using AnyRPG;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -7,6 +6,7 @@ namespace AnyRPG {
         protected SystemGameManager systemGameManager = null;
         protected SystemConfigurationManager systemConfigurationManager = null;
         protected SystemDataFactory systemDataFactory = null;
+        protected NetworkManagerServer networkManagerServer = null;
 
         public virtual void Configure(SystemGameManager systemGameManager) {
             //Debug.Log("ConfiguredClass.Configure(" + (systemGameManager == null ? "null" : systemGameManager.gameObject.name) + ")");
@@ -18,6 +18,7 @@ namespace AnyRPG {
             //Debug.Log("ConfiguredClass.SetGameManagerReferences() systemGameManager = " + (systemGameManager == null ? "null" : systemGameManager.gameObject.name));
             systemConfigurationManager = systemGameManager.SystemConfigurationManager;
             systemDataFactory = systemGameManager.SystemDataFactory;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
     }

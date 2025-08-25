@@ -15,19 +15,11 @@ namespace AnyRPG {
 
         private Coroutine waitCoroutine = null;
 
-        // game manager references
-        private NetworkManagerServer networkManagerServer = null;
-
         public List<Recipe> CraftingQueue { get => craftingQueue; set => craftingQueue = value; }
 
         public CharacterCraftingManager(UnitController unitController, SystemGameManager systemGameManager) {
             this.unitController = unitController;
             Configure(systemGameManager);
-        }
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void SetCraftAbility(CraftAbilityProperties craftAbility) {

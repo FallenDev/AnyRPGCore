@@ -28,8 +28,6 @@ namespace AnyRPG {
         // game manager references
         private AudioManager audioManager = null;
         private LevelManager levelManager = null;
-        private NetworkManagerServer networkManagerServer = null;
-        private PlayerManager playerManager = null;
 
         public int BehaviorIndex { get => behaviorIndex; }
         public bool BehaviorPlaying { get => behaviorPlaying; set => behaviorPlaying = value; }
@@ -50,8 +48,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             audioManager = systemGameManager.AudioManager;
             levelManager = systemGameManager.LevelManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
-            playerManager = systemGameManager.PlayerManager;
         }
 
         // this should be run after the unit profile is set
@@ -65,7 +61,7 @@ namespace AnyRPG {
 
 
         public void Cleanup() {
-            //Debug.Log("PlayerManager.OnDisable()");
+            //Debug.Log("BehaviourController.Cleanup()");
             CleanupBehavior();
             CleanupScriptableObjects();
         }

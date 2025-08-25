@@ -22,7 +22,6 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private PlayerManagerServer playerManagerServer = null;
         private CharacterManager characterManager = null;
-        private NetworkManagerServer networkManagerServer = null;
 
         public UnitController MountUnitController { get => mountUnitController; }
 
@@ -35,7 +34,6 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
             characterManager = systemGameManager.CharacterManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
             playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 

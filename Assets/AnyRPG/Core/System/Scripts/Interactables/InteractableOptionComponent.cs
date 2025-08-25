@@ -19,7 +19,6 @@ namespace AnyRPG {
         protected SystemEventManager systemEventManager = null;
         protected PlayerManager playerManager = null;
         protected PlayerManagerServer playerManagerServer = null;
-        protected NetworkManagerServer networkManagerServer = null;
         protected UIManager uIManager = null;
         protected InteractionManager interactionManager = null;
 
@@ -68,7 +67,6 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             playerManagerServer = systemGameManager.PlayerManagerServer;
             interactionManager = systemGameManager.InteractionManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         /*

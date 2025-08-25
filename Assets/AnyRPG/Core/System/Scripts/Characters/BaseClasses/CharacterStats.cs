@@ -59,7 +59,6 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected PlayerManager playerManager = null;
         protected CombatTextManager combatTextManager = null;
-        protected NetworkManagerServer networkManagerServer = null;
 
         public float WalkSpeed { get => walkSpeed; }
         public float RunSpeed { get => currentRunSpeed; }
@@ -185,7 +184,6 @@ namespace AnyRPG {
             levelManager = systemGameManager.LevelManager;
             playerManager = systemGameManager.PlayerManager;
             combatTextManager = systemGameManager.UIManager.CombatTextManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         /*

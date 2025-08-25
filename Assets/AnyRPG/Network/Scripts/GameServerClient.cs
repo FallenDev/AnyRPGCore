@@ -22,16 +22,9 @@ namespace AnyRPG {
 
         private string serverAddress = string.Empty;
 
-        private NetworkManagerServer networkManagerServer = null;
-
         public GameServerClient(SystemGameManager systemGameManager, string serverAddress) {
             this.serverAddress = serverAddress;
             Configure(systemGameManager);
-        }
-
-        public override void SetGameManagerReferences() {
-            base.SetGameManagerReferences();
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void Login(int clientId, string username, string password) {

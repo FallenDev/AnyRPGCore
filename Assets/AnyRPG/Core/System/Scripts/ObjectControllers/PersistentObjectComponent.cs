@@ -35,7 +35,6 @@ namespace AnyRPG {
 
         // game manager references
         protected LevelManager levelManager = null;
-        protected NetworkManagerServer networkManagerServer = null;
         protected SystemEventManager systemEventManager = null;
 
 		public bool MoveOnStart { get => moveOnStart; set => moveOnStart = value; }
@@ -49,7 +48,6 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             levelManager = systemGameManager.LevelManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
 		}
 

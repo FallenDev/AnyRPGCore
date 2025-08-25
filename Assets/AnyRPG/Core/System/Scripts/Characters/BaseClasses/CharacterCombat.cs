@@ -54,7 +54,6 @@ namespace AnyRPG {
         protected PlayerManager playerManager = null;
         protected UIManager uIManager = null;
         protected SystemEventManager systemEventManager = null;
-        protected NetworkManagerServer networkManagerServer = null;
 
         public AggroTable AggroTable {
             get {
@@ -81,7 +80,6 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             uIManager = systemGameManager.UIManager;
             systemEventManager = systemGameManager.SystemEventManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         public void HandleAutoAttack() {

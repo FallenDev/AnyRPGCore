@@ -33,9 +33,6 @@ namespace AnyRPG {
 
         // game manager references
         private ObjectPooler objectPooler = null;
-        private UIManager uIManager = null;
-        private NetworkManagerServer networkManagerServer = null;
-        private PlayerManager playerManager = null;
         private CharacterManager characterManager = null;
 
         public ModelAppearanceController ModelAppearanceController { get => modelAppearanceController; }
@@ -55,9 +52,6 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
-            uIManager = systemGameManager.UIManager;
-            networkManagerServer = systemGameManager.NetworkManagerServer;
-            playerManager = systemGameManager.PlayerManager;
             characterManager = systemGameManager.CharacterManager;
         }
 

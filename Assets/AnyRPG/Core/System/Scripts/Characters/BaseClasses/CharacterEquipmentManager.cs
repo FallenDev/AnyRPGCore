@@ -301,6 +301,7 @@ namespace AnyRPG {
 
         public bool HasAffinity(WeaponSkill weaponAffinity) {
             //Debug.Log("EquipmentManager.HasAffinity(" + weaponAffinity.ToString() + ")");
+
             int weaponCount = 0;
             foreach (EquipmentInventorySlot equipmentInventorySlot in CurrentEquipment.Values) {
                 if (equipmentInventorySlot.InstantiatedEquipment != null
@@ -322,7 +323,7 @@ namespace AnyRPG {
         }
 
         public void RequestSwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestSwapInventoryEquipment()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestSwapInventoryEquipment()");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 SwapInventoryEquipment(oldEquipment, newEquipment);
@@ -331,7 +332,7 @@ namespace AnyRPG {
         }
 
         public void SwapInventoryEquipment(InstantiatedEquipment oldEquipment, InstantiatedEquipment newEquipment) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.SwapInventoryEquipment()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.SwapInventoryEquipment()");
 
             EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(oldEquipment);
             if (equipmentSlotProfile != null) {
@@ -343,7 +344,8 @@ namespace AnyRPG {
         }
 
         public void RequestUnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestUnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.RequestUnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+
             if (systemGameManager.GameMode == GameMode.Local) {
                 UnequipToSlot(instantiatedEquipment, inventorySlotId);
             }
@@ -351,7 +353,7 @@ namespace AnyRPG {
         }
 
         public void UnequipToSlot(InstantiatedEquipment instantiatedEquipment, int inventorySlotId) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterEquipmentManager.UnequipToSlot({instantiatedEquipment.ResourceName}, {inventorySlotId})");
 
             EquipmentSlotProfile equipmentSlotProfile = FindEquipmentSlotForEquipment(instantiatedEquipment);
             if (equipmentSlotProfile != null) {

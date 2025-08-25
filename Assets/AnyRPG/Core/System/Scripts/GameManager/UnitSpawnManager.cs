@@ -31,7 +31,7 @@ namespace AnyRPG {
         }
 
         public void RequestSpawnUnit(int unitLevel, int extraLevels, bool useDynamicLevel, UnitProfile unitProfile, UnitToughness unitToughness) {
-            Debug.Log("UnitSpawnManager.RequestSpawnUnit()");
+            //Debug.Log("UnitSpawnManager.RequestSpawnUnit()");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 unitSpawnControllerComponent.SpawnUnit(playerManager.UnitController, unitLevel, extraLevels, useDynamicLevel, unitProfile, unitToughness);

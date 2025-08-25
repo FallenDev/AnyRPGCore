@@ -56,6 +56,10 @@ namespace AnyRPG {
             return returnObjects;
         }
 
+        protected override void CheckDestroyObjects(Dictionary<PrefabProfile, List<GameObject>> abilityEffectObjects, IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectInput) {
+            // intentionally not calling base to avoid pool recycled projectiles getting despawned mid-flight
+        }
+
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {
             base.SetupScriptableObjects(systemGameManager, describable);
 

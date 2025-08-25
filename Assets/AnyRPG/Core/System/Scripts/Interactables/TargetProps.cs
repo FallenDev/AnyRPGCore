@@ -126,8 +126,6 @@ namespace AnyRPG {
                         sourceCharacter.AbilityManager.ReceiveCombatMessage(targetable.DisplayName + " cannot be cast on self!");
                     }
                     return false;
-                } else {
-                    return true;
                 }
             }
 
@@ -139,7 +137,7 @@ namespace AnyRPG {
                 // the target is another unit, but this ability cannot be cast on others
                 // this check moved to inside character unit checks because others is really only meant for abilities that target characters
                 // if crafting or gathering, just checking requires target should be enough and the ability will take care of any other checks
-                if (targetable.GetTargetOptions(sourceCharacter).CanCastOnOthers == false) {
+                if (targetable.GetTargetOptions(sourceCharacter).CanCastOnOthers == false && targetIsSelf == false) {
                     if (playerInitiated && !targetable.GetTargetOptions(sourceCharacter).CanCastOnSelf && !targetable.GetTargetOptions(sourceCharacter).AutoSelfCast) {
                         sourceCharacter.AbilityManager.ReceiveCombatMessage(targetable.DisplayName + " cannot be cast on others");
                     }
@@ -160,7 +158,7 @@ namespace AnyRPG {
                     return false;
                 }
 
-                if (!sourceCharacter.AbilityManager.PerformFactionCheck(targetable, targetCharacterUnit, targetIsSelf)) {
+                if (targetIsSelf == false && !sourceCharacter.AbilityManager.PerformFactionCheck(targetable, targetCharacterUnit, targetIsSelf)) {
                     if (playerInitiated && !targetable.GetTargetOptions(sourceCharacter).CanCastOnSelf && !targetable.GetTargetOptions(sourceCharacter).AutoSelfCast) {
                         sourceCharacter.AbilityManager.ReceiveCombatMessage("Cannot cast " + targetable.DisplayName + " on target. Faction reputation requirement not met!");
                     }
@@ -200,9 +198,9 @@ namespace AnyRPG {
             }
 
             // if we made it this far we passed liveness and relationship checks.
-            // since the target is not ourself, and it is valid, we should perform a range check
+            // if the target is not ourself, we should perform a range check
 
-            if (performRangeCheck == true && !sourceCharacter.AbilityManager.IsTargetInRange(target, targetable, abilityEffectContext)) {
+            if (targetIsSelf == false && performRangeCheck == true && !sourceCharacter.AbilityManager.IsTargetInRange(target, targetable, abilityEffectContext)) {
                 if (playerInitiated && !targetable.GetTargetOptions(sourceCharacter).CanCastOnSelf && !targetable.GetTargetOptions(sourceCharacter).AutoSelfCast) {
                     sourceCharacter.AbilityManager.ReceiveCombatMessage("Cannot cast " + targetable.DisplayName + ". target is not in range!");
                 }

@@ -10,7 +10,6 @@ namespace AnyRPG {
         protected Coroutine globalCoolDownCoroutine = null;
         protected Coroutine currentCastCoroutine = null;
         protected Coroutine abilityHitDelayCoroutine = null;
-        protected Coroutine destroyAbilityEffectObjectCoroutine = null;
         protected List<Coroutine> destroyAbilityEffectObjectCoroutines = new List<Coroutine>();
 
         protected bool eventSubscriptionsInitialized = false;
@@ -73,7 +72,6 @@ namespace AnyRPG {
         }
 
         public List<GameObject> AbilityEffectGameObjects { get => abilityEffectGameObjects; set => abilityEffectGameObjects = value; }
-        public Coroutine DestroyAbilityEffectObjectCoroutine { get => destroyAbilityEffectObjectCoroutine; set => destroyAbilityEffectObjectCoroutine = value; }
         public List<Coroutine> DestroyAbilityEffectObjectCoroutines { get => destroyAbilityEffectObjectCoroutines; set => destroyAbilityEffectObjectCoroutines = value; }
         public AbilityProperties CurrentCastAbility { get => currentCastAbility; }
 
@@ -276,11 +274,10 @@ namespace AnyRPG {
                 abilityCasterMonoBehaviour.StopCoroutine(abilityHitDelayCoroutine);
                 abilityHitDelayCoroutine = null;
             }
-
-            if (destroyAbilityEffectObjectCoroutine != null) {
-                abilityCasterMonoBehaviour.StopCoroutine(destroyAbilityEffectObjectCoroutine);
-                destroyAbilityEffectObjectCoroutine = null;
+            foreach (Coroutine coroutine in destroyAbilityEffectObjectCoroutines) {
+                abilityCasterMonoBehaviour.StopCoroutine(coroutine);
             }
+            destroyAbilityEffectObjectCoroutines.Clear();
             CleanupCoolDownRoutines();
 
             if (globalCoolDownCoroutine != null) {
@@ -590,13 +587,14 @@ namespace AnyRPG {
                         if (projectileScript != null) {
                             //Debug.Log(DisplayName + ".ProjectileEffect.Cast(): found gameobject: " + go.name + " and it has projectile script");
                             abilityEffectContext = projectileEffectProperties.ApplyInputMultiplier(abilityEffectContext);
-                            projectileScript.Initialize(projectileEffectProperties, abilityCaster, target, new Vector3(0, 1, 0), go, abilityEffectContext);
+                            projectileScript.Initialize(systemGameManager, projectileEffectProperties, abilityCaster, target, new Vector3(0, 1, 0), go, abilityEffectContext);
                             if (networkManagerServer.ServerModeActive == false) { 
                                 if (projectileEffectProperties.FlightAudioProfiles != null && projectileEffectProperties.FlightAudioProfiles.Count > 0) {
                                     projectileScript.PlayFlightAudio(projectileEffectProperties.FlightAudioProfiles, projectileEffectProperties.RandomFlightAudioProfiles);
                                 }
                             }
                             projectileScript.OnCollission += HandleProjectileCollision;
+                            projectileScript.OnFlightTimeout += HandleFlightTimeout;
                         }
                     }
                 }
@@ -660,7 +658,15 @@ namespace AnyRPG {
                 projectileScript.ProjectileEffectProperties.PerformAbilityHit(source, target, abilityEffectInput);
             }
             projectileScript.OnCollission -= HandleProjectileCollision;
+            projectileScript.OnFlightTimeout -= HandleFlightTimeout;
             objectPooler.ReturnObjectToPool(abilityEffectObject);
+        }
+
+        public void HandleFlightTimeout(ProjectileScript projectileScript) {
+            //Debug.Log($"{abilityCaster.gameObject.name}.AbilityManager.HandleFlightTimeout({projectileScript.gameObject.name})");
+
+            projectileScript.OnFlightTimeout -= HandleFlightTimeout;
+            projectileScript.OnCollission -= HandleProjectileCollision;
         }
 
         public virtual void ReceiveCombatTextEvent(UnitController unitController, int damage, CombatTextType combatTextType, CombatMagnitude combatMagnitude, AbilityEffectContext abilityEffectContext) {

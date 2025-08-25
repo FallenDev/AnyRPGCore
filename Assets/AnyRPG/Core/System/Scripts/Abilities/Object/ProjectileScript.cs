@@ -1,12 +1,14 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRPG {
-    public class ProjectileScript : MonoBehaviour {
+    public class ProjectileScript : ConfiguredMonoBehaviour {
 
         public event System.Action<IAbilityCaster, Interactable, GameObject, AbilityEffectContext, ProjectileScript> OnCollission = delegate { };
+        public event System.Action<ProjectileScript> OnFlightTimeout = delegate { };
 
         [SerializeField]
         private AudioSource audioSource = null;
@@ -26,20 +28,43 @@ namespace AnyRPG {
 
         private bool initialized = false;
 
+        private DateTime flightStartTime;
+
         private ProjectileEffectProperties projectileEffectProperties = null;
 
         private AbilityEffectContext abilityEffectContext = null;
+
+        // game manager references
+        private ObjectPooler objectPooler = null;
 
         public ProjectileEffectProperties ProjectileEffectProperties { get => projectileEffectProperties; }
 
         private void Update() {
             //Debug.Log($"{gameObject.name}.ProjectileScript.Update()");
+            if (initialized == false) {
+                return;
+            }
+
             MoveTowardTarget();
+            CheckTimer();
         }
 
-        public void Initialize(ProjectileEffectProperties projectileEffectProperties, IAbilityCaster source, Interactable target, Vector3 positionOffset, GameObject go, AbilityEffectContext abilityEffectContext) {
+        private void CheckTimer() {
+            if (projectileEffectProperties != null) {
+                TimeSpan timeSpan = DateTime.Now - flightStartTime;
+                if (timeSpan.TotalSeconds >= projectileEffectProperties.defaultPrefabLifetime) {
+                    //Debug.Log($"{gameObject.name}.ProjectileScript.CheckTimer(): lifetime exceeded, destroying projectile");
+                    OnFlightTimeout(this);
+                    objectPooler.ReturnObjectToPool(projectileGameObject);
+
+                }
+            }
+        }
+
+        public void Initialize(SystemGameManager systemGameManager, ProjectileEffectProperties projectileEffectProperties, IAbilityCaster source, Interactable target, Vector3 positionOffset, GameObject go, AbilityEffectContext abilityEffectContext) {
             //Debug.Log($"{gameObject.name}.ProjectileScript.Initialize({projectileEffectProperties.ResourceName}, {source.AbilityManager.Name}, {(target == null ? "null" : target.name)}, {positionOffset}, {go.name})");
 
+            Configure(systemGameManager);
             projectileGameObject = go;
             this.source = source;
             this.projectileEffectProperties = projectileEffectProperties;
@@ -47,7 +72,13 @@ namespace AnyRPG {
             this.target = target;
             this.positionOffset = positionOffset;
             this.abilityEffectContext = abilityEffectContext;
+            flightStartTime = DateTime.Now;
             initialized = true;
+        }
+
+        public override void SetGameManagerReferences() {
+            base.SetGameManagerReferences();
+            objectPooler = systemGameManager.ObjectPooler;
         }
 
         public void PlayFlightAudio(List<AudioProfile> audioProfiles, bool randomAudioProfiles = false) {
@@ -81,21 +112,20 @@ namespace AnyRPG {
 
         private void MoveTowardTarget() {
             //Debug.Log("ProjectileScript.MoveTowardTarget()");
-            if (initialized) {
-                UpdateTargetPosition();
-                if (target != null) {
-                    projectileGameObject.transform.forward = (targetPosition - projectileGameObject.transform.position).normalized;
-                } else {
-                    //transform.forward = Vector3.down;
-                }
-
-                //Debug.Log("ProjectileScript.MoveTowardTarget(): transform.forward: " + transform.forward);
-                projectileGameObject.transform.position += (projectileGameObject.transform.forward * (Time.deltaTime * velocity));
+            UpdateTargetPosition();
+            if (target != null) {
+                projectileGameObject.transform.forward = (targetPosition - projectileGameObject.transform.position).normalized;
+            } else {
+                //transform.forward = Vector3.down;
             }
+
+            //Debug.Log("ProjectileScript.MoveTowardTarget(): transform.forward: " + transform.forward);
+            projectileGameObject.transform.position += (projectileGameObject.transform.forward * (Time.deltaTime * velocity));
         }
 
         private void OnTriggerEnter(Collider other) {
-            //Debug.Log($"{gameObject.name}.ProjectileScript.OnTriggerEnter(" + other.name + ")");
+            //Debug.Log($"{gameObject.name}.ProjectileScript.OnTriggerEnter({other.name})");
+
             if (!initialized) {
                 // could potentially respawn from pool on top of old target
                 return;
@@ -109,7 +139,8 @@ namespace AnyRPG {
         }
 
         private void OnDisable() {
-            //Debug.Log($"{gameObject.name} " + gameObject.GetInstanceID() + ".ProjectileScript.OnDisable()");
+            //Debug.Log($"{gameObject.name}.ProjectileScript.OnDisable() instance: {gameObject.GetInstanceID()}");
+
             if (SystemGameManager.IsShuttingDown) {
                 return;
             }

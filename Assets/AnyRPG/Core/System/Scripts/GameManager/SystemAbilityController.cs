@@ -53,8 +53,20 @@ namespace AnyRPG {
         }
 
         public IEnumerator DestroyAbilityEffectObject(Dictionary<PrefabProfile, List<GameObject>> abilityEffectObjects, IAbilityCaster source, Interactable target, float timer, AbilityEffectContext abilityEffectInput, FixedLengthEffectProperties fixedLengthEffect) {
-            //Debug.Log("SystemAbilityController.DestroyAbilityEffectObject(" + (source == null ? "null" : source.AbilityManager.Name) + ", " + (target == null ? "null" : target.name) + ", " + timer + ")");
+            //Debug.Log($"SystemAbilityController.DestroyAbilityEffectObject(objectCount: {abilityEffectObjects.Count}, {(source == null ? "null" : source.AbilityManager.Name)}, {(target == null ? "null" : target.gameObject.name)}, {timer}, {fixedLengthEffect.ResourceName})");
+
             float timeRemaining = timer;
+            // debug print instance ids of the objects we are about to destroy
+            /*
+            foreach (List<GameObject> gameObjectList in abilityEffectObjects.Values) {
+                foreach (GameObject go in gameObjectList) {
+                    if (go != null) {
+                        Debug.Log($"SystemAbilityController.DestroyAbilityEffectObject(): starting timer for {go.name} {go.GetInstanceID()}");
+                    }
+                }
+            }
+            Debug.Log($"SystemAbilityController.DestroyAbilityEffectObject(): fixedLengthEffect: {(fixedLengthEffect == null ? "null" : fixedLengthEffect.ResourceName)}");
+            */
 
             // keep track of temporary elapsed time between ticks
             float elapsedTime = 0f;
@@ -112,13 +124,12 @@ namespace AnyRPG {
                         abilityManager.AbilityEffectGameObjects.Remove(go);
                     }
                     if (go != null) {
+                        //Debug.Log($"SystemAbilityController.DestroyAbilityEffectObject(objectCount: {abilityEffectObjects.Count}, {(source == null ? "null" : source.AbilityManager.Name)}, {(target == null ? "null" : target.gameObject.name)}, {timer}, {fixedLengthEffect.ResourceName}) DESTROYING AT END OF TIMER : {go.name} ({go.GetInstanceID()})");
                         objectPooler.ReturnObjectToPool(go, fixedLengthEffect.PrefabDestroyDelay);
                     }
                 }
             }
             abilityEffectObjects.Clear();
-
-            abilityManager.DestroyAbilityEffectObjectCoroutine = null;
         }
 
         public static string GetTimeText(float durationSeconds) {

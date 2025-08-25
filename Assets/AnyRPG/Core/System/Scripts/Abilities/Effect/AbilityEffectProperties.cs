@@ -140,7 +140,10 @@ namespace AnyRPG {
                 if (GetTargetOptions(sourceCharacter).CanCastOnSelf && GetTargetOptions(sourceCharacter).AutoSelfCast) {
                     target = sourceCharacter.AbilityManager.UnitGameObject.GetComponent<Interactable>();
                     //Debug.Log(DisplayName + ".BaseAbility.ReturnTarget(): returning target as sourcecharacter: " + target.name);
-                    return target;
+                    if (CanUseOn(target, sourceCharacter, abilityEffectContext) == true) {
+                        return target;
+                    }
+                    return null;
                 } else {
                     //Debug.Log(DisplayName + ".BaseAbility.ReturnTarget(): returning null");
                     return null;

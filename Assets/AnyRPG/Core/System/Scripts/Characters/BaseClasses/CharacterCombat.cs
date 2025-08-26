@@ -211,7 +211,7 @@ namespace AnyRPG {
         }
 
         public void ProcessTakeDamage(AbilityEffectContext abilityEffectContext, PowerResource powerResource, int damage, IAbilityCaster sourceCaster, CombatMagnitude combatMagnitude, AbilityEffectProperties abilityEffect) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.ProcessTakeDamage(" + damage + ", " + (target == null ? "null" : target.AbilityManager.UnitGameObject.name) + ", " + combatMagnitude.ToString() + ", " + abilityEffect.DisplayName);
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.ProcessTakeDamage({powerResource.ResourceName}, {damage}, {combatMagnitude.ToString()}, {abilityEffect.ResourceName}");
             /*
             if (abilityEffectContext == null) {
                 abilityEffectContext = new AbilityEffectContext();
@@ -726,6 +726,8 @@ namespace AnyRPG {
         }
 
         public virtual void AddDefaultHitEffects(List<AbilityEffectProperties> abilityEffectProperties) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.AddDefaultHitEffects({abilityEffectProperties.Count})");
+
             defaultHitEffects.AddRange(abilityEffectProperties);
         }
 
@@ -738,6 +740,8 @@ namespace AnyRPG {
         }
 
         public virtual void RemoveDefaultHitEffect(AbilityEffectProperties abilityEffect) {
+            //Debug.Log($"{unitController.gameObject.name}.CharacterCombat.RemoveDefaultHitEffect({abilityEffect.ResourceName})");
+
             if (defaultHitEffects.Contains(abilityEffect)) {
                 //Debug.Log(baseCharacter.gameObject.name + ".CharacterCombat.HandleEquipmentChanged(): olditem (" + oldItem.DisplayName + ") was weapon and removing hit effect: " + abilityEffect.DisplayName);
                 defaultHitEffects.Remove(abilityEffect);

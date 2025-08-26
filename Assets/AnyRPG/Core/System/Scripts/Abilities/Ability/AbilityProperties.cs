@@ -751,12 +751,15 @@ namespace AnyRPG {
         }
 
         public virtual List<AbilityEffectProperties> GetActionEndEffects(IAbilityCaster abilityCaster) {
+            /*
+            // disabled because default hit effects should only happen on action hit, not action end
             if (isAutoAttack) {
                 List<AbilityEffectProperties> weaponAbilityList = abilityCaster.AbilityManager.GetDefaultHitEffects();
                 if (weaponAbilityList != null && weaponAbilityList.Count > 0) {
                     return weaponAbilityList;
                 }
             }
+            */
             return actionEndAbilityEffects;
         }
 
@@ -1046,6 +1049,9 @@ namespace AnyRPG {
 
         public void HandleAbilityEndHit(IAbilityCaster source, Interactable target, AbilityEffectContext abilityEffectContext) {
             List<AbilityEffectProperties> abilityEffectProperties = GetActionEndEffects(source);
+            if (abilityEffectProperties.Count == 0) {
+                return;
+            }
             HandleAbilityHitCommon(source, target, abilityEffectContext, abilityEffectProperties);
         }
 
@@ -1339,7 +1345,7 @@ namespace AnyRPG {
                     if (tmpWeaponSkill != null) {
                         weaponAffinityList.Add(tmpWeaponSkill);
                     } else {
-                        Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find weapon skill: " + weaponAffinityName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find weapon skill: {weaponAffinityName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1354,7 +1360,7 @@ namespace AnyRPG {
                 if (audioProfile != null) {
                     castingAudioProfile = audioProfile;
                 } else {
-                    Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find audio profile: " + castingAudioProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find audio profile: {castingAudioProfileName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -1364,14 +1370,14 @@ namespace AnyRPG {
                 if (audioProfile != null) {
                     animationHitAudioProfile = audioProfile;
                 } else {
-                    Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find audio profile: " + animationHitAudioProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find audio profile: {animationHitAudioProfileName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
             if (animationProfileName != null && animationProfileName != string.Empty) {
                 animationProfile = systemDataFactory.GetResource<AnimationProfile>(animationProfileName);
                 if (animationProfile == null) {
-                    Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find animation profile: " + animationProfileName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find animation profile: {animationProfileName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
             if (animationProfile == null) {
@@ -1388,7 +1394,7 @@ namespace AnyRPG {
                 if (tmpPowerResource != null) {
                     powerResource = tmpPowerResource;
                 } else {
-                    Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find power resource: " + powerResourceName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find power resource: {powerResourceName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -1398,7 +1404,7 @@ namespace AnyRPG {
                 if (tmpPowerResource != null) {
                     generatePowerResource = tmpPowerResource;
                 } else {
-                    Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find power resource: " + powerResourceName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                    Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find power resource: {powerResourceName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                 }
             }
 
@@ -1418,7 +1424,7 @@ namespace AnyRPG {
                     if (abilityEffect != null) {
                         channeledAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find ability effect: {abilityEffectName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1442,7 +1448,7 @@ namespace AnyRPG {
                     if (abilityEffect != null) {
                         castEndAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
                     } else {
-                        Debug.LogError("BaseAbility.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find ability effect: {abilityEffectName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1454,7 +1460,7 @@ namespace AnyRPG {
                     if (abilityEffect != null) {
                         actionHitAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find ability effect: {abilityEffectName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1466,7 +1472,7 @@ namespace AnyRPG {
                     if (abilityEffect != null) {
                         actionEndAbilityEffects.Add(abilityEffect.AbilityEffectProperties);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find ability effect: " + abilityEffectName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find ability effect: {abilityEffectName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1479,7 +1485,7 @@ namespace AnyRPG {
                     if (tmpCharacterClass != null) {
                         characterClassRequirementList.Add(tmpCharacterClass);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find character class : " + characterClassName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find character class : {characterClassName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }
@@ -1490,7 +1496,7 @@ namespace AnyRPG {
                     if (tmpClassSpecialization != null) {
                         classSpecializationRequirementList.Add(tmpClassSpecialization);
                     } else {
-                        Debug.LogError("SystemAbilityManager.SetupScriptableObjects(): Could not find class specialization : " + classSpecializationName + " while inititalizing " + ResourceName + ".  CHECK INSPECTOR");
+                        Debug.LogError($"AbilityProperties.SetupScriptableObjects(): Could not find class specialization : {classSpecializationName} while inititalizing {ResourceName}.  CHECK INSPECTOR");
                     }
                 }
             }

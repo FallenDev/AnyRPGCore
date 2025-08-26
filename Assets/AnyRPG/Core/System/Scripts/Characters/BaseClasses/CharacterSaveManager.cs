@@ -174,7 +174,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddPet(UnitProfile profile) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleAddPet({profile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterSavemanager.HandleAddPet({profile.ResourceName})");
 
             SavePetData();
         }

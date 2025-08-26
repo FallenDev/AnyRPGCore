@@ -1481,7 +1481,7 @@ namespace AnyRPG {
                 if (playerInitiated) {
                     //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 }
-                Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
+                //Debug.Log($"{unitController.gameObject.name}.CharacterAbilityManager.BeginAbilityInternal({ability.ResourceName}, {(target != null ? target.name : "null")}) cannot cast");
                 return false;
             }
 

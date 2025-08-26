@@ -29,7 +29,6 @@ MonoBehaviour:
     abilityPrefabSource: 0
     animatorCreatePrefabs: 1
     prefabDestroyDelay: 0
-    animationClip: {fileID: 0}
     animationProfileName: 
     useUnitCastAnimations: 0
     isAutoAttack: 1
@@ -85,13 +84,8 @@ MonoBehaviour:
       groundTargetColor: {r: 1, g: 1, b: 1, a: 1}
       groundTargetRadius: 0
     tickRate: 1
-    inlineChannelingEffects: []
     channeledAbilityEffectnames: []
-    inlineAbilityEffects: []
     castEndAbilityEffectNames: []
     actionHitAbilityEffectNames:
     - Attack
     actionEndAbilityEffectNames: []
-  references:
-    version: 2
-    RefIds: []

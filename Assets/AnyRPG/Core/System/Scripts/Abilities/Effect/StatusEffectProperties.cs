@@ -556,7 +556,7 @@ namespace AnyRPG {
                 unitController.CanGlideOverride = true;
             }
             if (stealth == true) {
-                unitController.CharacterStats.ActivateStealth();
+                unitController.ActivateStealth();
             }
         }
 

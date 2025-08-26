@@ -431,17 +431,19 @@ namespace AnyRPG {
         // meant to be overwritten on characters
         public virtual void EnableInteraction() {
             //Debug.Log($"{gameObject.name}.Interactable.EnableInteraction()");
+
             EnableCollider();
         }
 
         // meant to be overwritten on characters
         public virtual void DisableInteraction() {
             //Debug.Log($"{gameObject.name}.Interactable.DisableInteraction()");
+
             DisableCollider();
         }
 
         public void EnableCollider() {
-            Debug.Log($"{gameObject.name}.UnitController.EnableCollider()");
+            //Debug.Log($"{gameObject.name}.UnitController.EnableCollider()");
 
             if (myCollider != null) {
                 myCollider.enabled = true;
@@ -449,7 +451,7 @@ namespace AnyRPG {
         }
 
         public void DisableCollider() {
-            Debug.Log($"{gameObject.name}.UnitController.DisableCollider()");
+            //Debug.Log($"{gameObject.name}.UnitController.DisableCollider()");
 
             if (myCollider != null) {
                 myCollider.enabled = false;
@@ -693,6 +695,10 @@ namespace AnyRPG {
             return false;
         }
 
+        public virtual bool IsMouseOverBlocked() {
+            return false;
+        }
+
         /// <summary>
         /// called manually after mouse enters nameplate or interactable
         /// </summary>
@@ -720,6 +726,10 @@ namespace AnyRPG {
             }
 
             if (notInteractable == true) {
+                return;
+            }
+
+            if (IsMouseOverBlocked()) {
                 return;
             }
 
@@ -799,6 +809,10 @@ namespace AnyRPG {
 
             // prevent moving mouse from unit to namePlate from stopping glow or hiding tooltip
             if (isMouseOverNameplate || isMouseOverUnit) {
+                return;
+            }
+
+            if (IsMouseOverBlocked()) {
                 return;
             }
 

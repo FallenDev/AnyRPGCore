@@ -1031,7 +1031,7 @@ namespace AnyRPG {
 
             if (statusEffect.Stealth == true) {
                 if (IsStealthed == false) {
-                    DeactivateStealth();
+                    unitController.DeactivateStealth();
                 }
             }
 
@@ -1299,22 +1299,6 @@ namespace AnyRPG {
             }
         }
 
-        public void ActivateStealth() {
-            unitController.UnitMaterialController.ActivateStealth();
-            unitController.UnitEventController.NotifyOnEnterStealth();
-        }
-
-        public void DeactivateStealth() {
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterStats.DeactivateStealth()");
-
-            unitController.UnitMaterialController.DeactivateStealth();
-            unitController.UnitEventController.NotifyOnLeaveStealth();
-
-            // to ensure the character gets agrod if close to enemies, the collider must be cycled
-            unitController.DisableCollider();
-            unitController.EnableCollider();
-        }
-
         public void StatChangedNotificationHandler() {
             unitController.UnitEventController.NotifyOnStatChanged();
         }
@@ -1421,7 +1405,7 @@ namespace AnyRPG {
         }
 
         public void Revive() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.Revive()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.Revive()");
 
             if (isReviving) {
                 //Debug.Log(BaseCharacter.MyCharacterName + " is already reviving.  Doing nothing");
@@ -1461,7 +1445,7 @@ namespace AnyRPG {
 
 
         public void ReviveComplete() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveComplete()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveComplete()");
 
             if (systemGameManager.GameMode == GameMode.Local
                 || unitController.IsOwner
@@ -1488,7 +1472,7 @@ namespace AnyRPG {
         }
 
         public void ReviveRaw() {
-            Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveRaw()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.ReviveRaw()");
 
             unitController.DisableCollider();
             unitController.EnableCollider();

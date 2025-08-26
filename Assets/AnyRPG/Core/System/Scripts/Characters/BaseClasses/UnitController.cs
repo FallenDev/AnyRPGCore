@@ -110,6 +110,7 @@ namespace AnyRPG {
         private bool inWater = false;
         private bool swimming = false;
         private bool flying = false;
+        private bool isStealth = false;
 
         private List<WaterBody> currentWater = new List<WaterBody>();
 
@@ -2401,6 +2402,36 @@ namespace AnyRPG {
                 monoBehaviour.enabled = true;
             }
         }
+
+        public void ActivateStealth() {
+
+            isStealth = true;
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
+                namePlateController.RemoveNamePlate();
+            }
+            unitMaterialController.ActivateStealth();
+            unitEventController.NotifyOnEnterStealth();
+        }
+
+        public void DeactivateStealth() {
+            //Debug.Log(baseCharacter.gameObject.name + "CharacterStats.DeactivateStealth()");
+
+            isStealth = false;
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
+                namePlateController.AddNamePlate();
+            }
+            unitMaterialController.DeactivateStealth();
+            unitEventController.NotifyOnLeaveStealth();
+
+            // to ensure the character gets agrod if close to enemies, the collider must be cycled
+            DisableCollider();
+            EnableCollider();
+        }
+
+        public override bool IsMouseOverBlocked() {
+            return isStealth;
+        }
+
 
         #region MessagePassthroughs
 

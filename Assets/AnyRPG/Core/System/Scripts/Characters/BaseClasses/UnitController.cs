@@ -2410,6 +2410,7 @@ namespace AnyRPG {
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
                 characterStats.ClearStatusEffectPrefabs();
                 namePlateController.RemoveNamePlate();
+                CleanupMiniMapIndicator();
             }
             unitMaterialController.ActivateStealth();
             unitEventController.NotifyOnEnterStealth();
@@ -2424,6 +2425,7 @@ namespace AnyRPG {
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
                 namePlateController.AddNamePlate();
                 characterStats.SpawnStatusEffectPrefabs();
+                InstantiateMiniMapIndicator();
             }
             unitEventController.NotifyOnLeaveStealth();
 

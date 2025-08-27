@@ -519,7 +519,8 @@ namespace AnyRPG {
             //mainMapManager.RemoveIndicator(this);
             mainMapManager.RemoveIndicator(this);
             //}
-
+            // re added this since both places it's called should set it false
+            miniMapIndicatorReady = false;
         }
 
         /*

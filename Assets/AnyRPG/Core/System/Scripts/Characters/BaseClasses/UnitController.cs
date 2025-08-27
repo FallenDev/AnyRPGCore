@@ -477,6 +477,7 @@ namespace AnyRPG {
         public bool EnableLeashing { get => enableLeashing; set => enableLeashing = value; }
         public UnitController RiderUnitController { get => riderUnitController; set => riderUnitController = value; }
         public bool IsDisconnected { get => isDisconnected; set => isDisconnected = value; }
+        public bool IsStealth { get => isStealth; set => isStealth = value; }
 
         public override void AutoConfigure(SystemGameManager systemGameManager) {
             // don't do anything here.  Unitcontrollers should never be autoconfigured
@@ -536,13 +537,13 @@ namespace AnyRPG {
 
         public override void ProcessCreateEventSubscriptions() {
             base.ProcessCreateEventSubscriptions();
-            SystemEventManager.StartListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange += HandleReputationChange;
             //systemEventManager.OnLevelLoad += HandleLevelLoad;
         }
 
         public override void ProcessCleanupEventSubscriptions() {
             base.ProcessCleanupEventSubscriptions();
-            SystemEventManager.StopListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange -= HandleReputationChange;
             //systemEventManager.OnLevelLoad -= HandleLevelLoad;
         }
 
@@ -664,7 +665,7 @@ namespace AnyRPG {
             unitEventController.NotifyOnStopInteractWithOption(interactableOptionComponent);
         }
 
-        public void HandleReputationChange(string eventName, EventParamProperties eventParamProperties) {
+        public void HandleReputationChange(UnitController targetUnitController) {
             // minimap indicator can change color if reputation changed
             if (unitControllerMode == UnitControllerMode.Preview) {
                 return;
@@ -1382,7 +1383,7 @@ namespace AnyRPG {
         public void SetModelReady() {
             //Debug.Log($"{gameObject.name}.UnitController.SetModelReady()");
 
-            unitMaterialController.PopulateOriginalMaterials();
+            unitMaterialController.ProcessSetModelReady();
             OnCameraTargetReady();
         }
 
@@ -2407,20 +2408,23 @@ namespace AnyRPG {
 
             isStealth = true;
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
+                characterStats.ClearStatusEffectPrefabs();
                 namePlateController.RemoveNamePlate();
             }
             unitMaterialController.ActivateStealth();
             unitEventController.NotifyOnEnterStealth();
+            NotifyOnInteractableDisable();
         }
 
         public void DeactivateStealth() {
-            //Debug.Log(baseCharacter.gameObject.name + "CharacterStats.DeactivateStealth()");
+            Debug.Log($"{gameObject.name}.UnitController.DeactivateStealth()");
 
             isStealth = false;
+            unitMaterialController.DeactivateStealth();
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isOwner == false) {
                 namePlateController.AddNamePlate();
+                characterStats.SpawnStatusEffectPrefabs();
             }
-            unitMaterialController.DeactivateStealth();
             unitEventController.NotifyOnLeaveStealth();
 
             // to ensure the character gets agrod if close to enemies, the collider must be cycled

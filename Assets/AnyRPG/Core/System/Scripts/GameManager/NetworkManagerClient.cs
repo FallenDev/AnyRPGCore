@@ -172,7 +172,7 @@ namespace AnyRPG {
         }
 
         public void ProcessStopConnection() {
-            Debug.Log($"NetworkManagerClient.ProcessStopConnection()");
+            //Debug.Log($"NetworkManagerClient.ProcessStopConnection()");
 
             systemGameManager.SetGameMode(GameMode.Local);
             if (levelManager.GetActiveSceneNode() != systemConfigurationManager.MainMenuSceneNode) {
@@ -372,7 +372,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseJoinLobbyGameInProgress(int gameId) {
-            Debug.Log($"NetworkManagerClient.AdvertiseJoinLobbyGameInProgress({gameId})");
+            //Debug.Log($"NetworkManagerClient.AdvertiseJoinLobbyGameInProgress({gameId})");
 
             if (lobbyGames.ContainsKey(gameId) == false) {
                 // lobby game does not exist

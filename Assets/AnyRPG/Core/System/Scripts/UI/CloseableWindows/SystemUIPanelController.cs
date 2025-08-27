@@ -108,6 +108,8 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private SaveManager saveManager = null;
         private SystemUIConfiguration uiConfiguration = null;
+        private SystemEventManager systemEventManager = null;
+        private PlayerManager playerManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -125,6 +127,8 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             saveManager = systemGameManager.SaveManager;
             uiConfiguration = systemConfigurationManager.UIConfiguration;
+            systemEventManager = systemGameManager.SystemEventManager;
+            playerManager = systemGameManager.PlayerManager;
         }
 
         public void ResetWindowPositions() {
@@ -939,7 +943,7 @@ namespace AnyRPG {
                 showPlayerNameButton.SetOff();
             }
             // not really reputation, but it will trigger the right check
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            systemEventManager.NotifyOnReputationChange(playerManager.UnitController);
         }
 
         public void ToggleShowPlayerFactionButton() {
@@ -956,7 +960,7 @@ namespace AnyRPG {
                 showPlayerFactionButton.SetOff();
             }
             // not really reputation, but it will trigger the right check
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            systemEventManager.NotifyOnReputationChange(playerManager.UnitController);
         }
 
         public void ToggleHideFullHealthBarButton() {
@@ -971,7 +975,7 @@ namespace AnyRPG {
                 hideFullHealthBarButton.SetOff();
             }
             // not really reputation, but it will trigger the right check
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            systemEventManager.NotifyOnReputationChange(playerManager.UnitController);
         }
 
         public void ToggleLockUIButton() {

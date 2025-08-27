@@ -389,6 +389,11 @@ namespace AnyRPG {
                 return;
             }
 
+            // on non authoritative network clients, do not spawn visual effect when stealthed
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && unitController.IsStealth == true) {
+                return;
+            }
+
             Dictionary<PrefabProfile, List<GameObject>> returnObjects = unitController.CharacterAbilityManager.SpawnStatusEffectPrefabs(unitController, statusEffect, abilityEffectContext);
             if (returnObjects != null) {
                 // pass in the ability effect object so we can independently destroy it and let it last as long as the status effect (which could be refreshed).

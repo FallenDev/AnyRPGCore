@@ -603,6 +603,10 @@ namespace AnyRPG {
                 playerManager.UnitController.ClearTarget();
             } else if (mouseOverInteractable != null) {
                 //playerManager.UnitController.SetTarget(mouseOverInteractable);
+                if (mouseOverInteractable.IsMouseOverBlocked() == true) {
+                    //Debug.Log("PlayerController.HandleLeftMouseClick(): mouseover blocked");
+                    return;
+                }
                 playerManager.UnitController.SetTarget(mouseOverInteractable.CharacterTarget);
             }
             //}
@@ -695,17 +699,18 @@ namespace AnyRPG {
                 if (hitCollider == null || hitCollider.gameObject == playerManager.UnitController.gameObject) {
                     continue;
                 }
-                Interactable targetCharacterUnit = hitCollider.gameObject.GetComponent<Interactable>();
-                if (targetCharacterUnit != null
-                    && targetCharacterUnit != oldTarget
+                Interactable targetInteractable = hitCollider.gameObject.GetComponent<Interactable>();
+                if (targetInteractable != null
+                    && targetInteractable != oldTarget
+                    && targetInteractable.IsMouseOverBlocked() == false
                     //&& (includeFriendly == true || ValidEnemyTarget(targetCharacterUnit))) {
-                    && (includeFriendly == true || ValidEnemyTarget(targetCharacterUnit.CharacterTarget))) {
+                    && (includeFriendly == true || ValidEnemyTarget(targetInteractable.CharacterTarget))) {
 
                     // check if the unit is actually in front of our character.
                     // not doing any cone or angles for now, anywhere in front will do.  might adjust this a bit later to prevent targetting units nearly adjacent to us and far away
-                    Vector3 transformedPosition = playerManager.ActiveUnitController.transform.InverseTransformPoint(targetCharacterUnit.transform.position);
+                    Vector3 transformedPosition = playerManager.ActiveUnitController.transform.InverseTransformPoint(targetInteractable.transform.position);
                     if (transformedPosition.z > 0f) {
-                        allTabTargets.Add(targetCharacterUnit.CharacterTarget);
+                        allTabTargets.Add(targetInteractable.CharacterTarget);
 
                     }
                 }
@@ -885,6 +890,11 @@ namespace AnyRPG {
 
         public void InterActWithTarget(Interactable interactable, bool resetTarget = true) {
             //Debug.Log($"{gameObject.name}.InterActWithTarget(" + interactable.gameObject.name + ")");
+
+            if (interactable.IsMouseOverBlocked() == true) {
+                //Debug.Log("PlayerController.InterActWithTarget(): mouseover blocked");
+                return;
+            }
 
             if (playerManager.UnitController.Target != interactable && resetTarget == true) {
                 playerManager.UnitController.ClearTarget();

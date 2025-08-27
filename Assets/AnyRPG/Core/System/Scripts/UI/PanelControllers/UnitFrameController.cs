@@ -114,6 +114,7 @@ namespace AnyRPG {
 
         // game manager references
         protected PlayerManager playerManager = null;
+        protected SystemEventManager systemEventManager = null;
 
         public BaseNamePlateController UnitNamePlateController { get => namePlateController; set => namePlateController = value; }
 
@@ -137,6 +138,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void InitializeController() {
@@ -283,6 +285,9 @@ namespace AnyRPG {
             if (namePlateController.Interactable.CharacterUnit != null) {
                 castBarController.SetTarget(namePlateController as UnitNamePlateController);
                 statusEffectPanelController.SetTarget((namePlateController as UnitNamePlateController).UnitController);
+                if (namePlateController.Interactable.CharacterUnit != playerManager.UnitController?.CharacterUnit) {
+                    systemEventManager.OnReputationChange += HandleReputationChange;
+                }
             }
 
             if (isActiveAndEnabled) {
@@ -363,6 +368,9 @@ namespace AnyRPG {
                 (namePlateController as UnitNamePlateController).UnitController.UnitEventController.OnLevelChanged -= HandleLevelChanged;
                 (namePlateController as UnitNamePlateController).UnitController.UnitEventController.OnReviveComplete -= HandleReviveComplete;
                 (namePlateController as UnitNamePlateController).UnitController.UnitEventController.OnReputationChange -= HandleReputationChange;
+                if (namePlateController.Interactable.CharacterUnit != playerManager.UnitController?.CharacterUnit) {
+                    systemEventManager.OnReputationChange += HandleReputationChange;
+                }
             }
             namePlateController = null;
             targetInitialized = false;

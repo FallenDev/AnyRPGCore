@@ -356,13 +356,16 @@ namespace AnyRPG {
         public void HandleCharacterUnitSpawn() {
             //Debug.Log($"{unitController.gameObject.name}.CharacterStats.HandleCharacterUnitSpawn()");
 
+            SpawnStatusEffectPrefabs();
+        }
+
+        public void SpawnStatusEffectPrefabs() {
             foreach (StatusEffectNode statusEffectNode in StatusEffects.Values) {
                 if (statusEffectNode.StatusEffect.StatusEffectObjectList.Count > 0
                     && (statusEffectNode.PrefabObjects == null || statusEffectNode.PrefabObjects.Count == 0)) {
                     unitController.UnitModelController.ProcessAddStatusEffect(statusEffectNode, statusEffectNode.StatusEffect, statusEffectNode.AbilityEffectContext);
                 }
             }
-            
         }
 
         public void HandleUpdateStatProviders() {
@@ -992,7 +995,7 @@ namespace AnyRPG {
         }
 
         public void ProcessStatusEffectChanges(StatusEffectProperties statusEffect) {
-            //Debug.Log(baseCharacter.gameObject.name + ".CharacterStats.HandleChangedNotifications(" + (statusEffect == null ? "null" : statusEffect.DisplayName) + ")");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterStats.ProcessStatusEffectChanges({statusEffect.ResourceName})");
 
             //statusEffect.StatBuffTypeNames
             if (statusEffect.StatBuffTypeNames.Count > 0) {

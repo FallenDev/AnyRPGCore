@@ -1000,6 +1000,11 @@ namespace AnyRPG {
             ResetSettings();
         }
 
+        public void NotifyOnInteractableDisable() {
+            // although we are not technically disabled, this event is used to notify other systems that the interactable is no longer a target
+            OnInteractableDisable();
+        }
+
         public virtual void ResetSettings() {
             //Debug.Log($"{gameObject.name}.Interactable.ResetSettings()");
 
@@ -1015,7 +1020,7 @@ namespace AnyRPG {
                 }
             }
             CleanupMiniMapIndicator();
-            OnInteractableDisable();
+            NotifyOnInteractableDisable();
 
             interactables = new Dictionary<int, InteractableOptionComponent>();
             interactableOptionCount = 0;

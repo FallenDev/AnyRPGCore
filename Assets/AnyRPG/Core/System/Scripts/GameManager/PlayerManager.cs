@@ -200,7 +200,7 @@ namespace AnyRPG {
         */
 
         public void ProcessExitToMainMenu() {
-            Debug.Log("PlayerManager.ProcessExitToMainMenu()");
+            //Debug.Log("PlayerManager.ProcessExitToMainMenu()");
 
             if (unitController != null) {
                 // we need to check here because the exit to main menu could have come from a network disconnection
@@ -590,7 +590,7 @@ namespace AnyRPG {
         }
 
         public void DespawnPlayerConnection() {
-            Debug.Log("PlayerManager.DespawnPlayerConnection()");
+            //Debug.Log("PlayerManager.DespawnPlayerConnection()");
 
             // this only runs on the client, so is safe to call here
             playerManagerServer.StopMonitoringPlayerUnit(networkManagerClient.AccountId);
@@ -797,7 +797,7 @@ namespace AnyRPG {
         }
 
         public void HandleFactionChange(Faction newFaction, Faction oldFaction) {
-            SystemEventManager.TriggerEvent("OnReputationChange", new EventParamProperties());
+            systemEventManager.NotifyOnReputationChange(unitController);
         }
 
         public void HandleAddBag(InstantiatedBag bag, BagNode node) {

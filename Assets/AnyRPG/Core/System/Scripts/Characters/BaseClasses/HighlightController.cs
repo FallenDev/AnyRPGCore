@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,13 +13,17 @@ namespace AnyRPG {
 
         UnitController unitController = null;
 
+        private bool subscriptionsInitialized = false;
+
         private Dictionary<string, ProjectorColorMapNode> colorDictionary = new Dictionary<string, ProjectorColorMapNode>();
 
         private Dictionary<string, ProjectorColorMapNode> colorOverrideDictionary = new Dictionary<string, ProjectorColorMapNode>();
 
         private float circleRadius = 0f;
 
+        // game manager references
         private PlayerManager playerManager = null;
+        private SystemEventManager systemEventManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -28,6 +33,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             playerManager = systemGameManager.PlayerManager;
+            systemEventManager = systemGameManager.SystemEventManager;
         }
 
         public void SetupController() {
@@ -70,12 +76,34 @@ namespace AnyRPG {
 
             // multiply by 2 to account for circles only being half the width of the plane, and then 2 again
             SetCircleRadius(unitController.CharacterUnit.HitBoxSize * 2f);
+
+            SubscribeToEvents();
         }
+
+        private void HandlReputationChange(UnitController controller) {
+            UpdateColors();
+        }
+
 
         public void HandleUnTargeted() {
             //Debug.Log("FocusTargettingController.HandleClearTarget()");
             if (meshRenderer != null) {
                 meshRenderer.enabled = false;
+            }
+            UnsubscribeFromEvents();
+        }
+
+        private void SubscribeToEvents() {
+            if (subscriptionsInitialized == false) {
+                systemEventManager.OnReputationChange += HandlReputationChange;
+                subscriptionsInitialized = true;
+            }
+        }
+
+        private void UnsubscribeFromEvents() {
+            if (subscriptionsInitialized == true) {
+                systemEventManager.OnReputationChange -= HandlReputationChange;
+                subscriptionsInitialized = false;
             }
         }
 

@@ -1,4 +1,5 @@
 using AnyRPG;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace AnyRPG {
         }
 
         public void ActivateStealth() {
-            //Debug.Log($"{unitController.gameObject.name}.UnitMaterialController.ActivateStealth()");
+            Debug.Log($"{unitController.gameObject.name}.UnitMaterialController.ActivateStealth()");
 
             if (meshRenderers == null) {
                 //Debug.Log($"{gameObject.name}.MaterialChangeController.PerformMaterialChange(): meshRender is null.  This shouldn't happen because we checked before instantiating this!");
@@ -76,17 +77,6 @@ namespace AnyRPG {
 
             // 5. Render Queue (optional—URP often handles this automatically)
             material.renderQueue = (int)RenderQueue.Transparent;
-            /*
-            // old build-in pipeline settings
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_ZWrite", 0);
-            material.DisableKeyword("_ALPHATEST_ON");
-            material.EnableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-            */
         }
 
         public void ApplyTemporaryMaterialChange(Material temporaryMaterial) {
@@ -137,6 +127,17 @@ namespace AnyRPG {
 
         }
 
+        public void ProcessSetModelReady() {
+            //Debug.Log($"{unitController.gameObject.name}.UnitMaterialController.ProcessSetModelReady()");
+
+            if (unitController.IsStealth) {
+                DeactivateStealth();
+                PopulateOriginalMaterials();
+                ActivateStealth();
+            } else {
+                PopulateOriginalMaterials();
+            }
+        }
     }
 
 }

@@ -1091,7 +1091,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AddItemToInventorySlotClient(int slotIndex, int itemInstanceId) {
-            Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
+            //Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.AddItemToInventorySlotClient({slotIndex}, {itemInstanceId})");
 
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId)) {
                 unitController.CharacterInventoryManager.AddInventoryItem(systemItemManager.InstantiatedItems[itemInstanceId], slotIndex);
@@ -1385,7 +1385,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleGetNewInstantiatedItemClient(int itemInstanceId, InventorySlotSaveData inventorySlotSaveData) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleGetNewInstantiatedItemClient{itemInstanceId}, {inventorySlotSaveData.ItemName}");
             
             unitController.CharacterInventoryManager.GetNewInstantiatedItemFromSaveData(inventorySlotSaveData);
         }

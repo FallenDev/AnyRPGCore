@@ -131,7 +131,7 @@ namespace AnyRPG {
             if (playerEventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StartListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange += HandleReputationChange;
             playerEventSubscriptionsInitialized = true;
         }
 
@@ -139,7 +139,7 @@ namespace AnyRPG {
             if (!playerEventSubscriptionsInitialized) {
                 return;
             }
-            SystemEventManager.StopListening("OnReputationChange", HandleReputationChange);
+            systemEventManager.OnReputationChange -= HandleReputationChange;
             playerEventSubscriptionsInitialized = false;
         }
 
@@ -163,7 +163,7 @@ namespace AnyRPG {
             SetFactionColor();
         }
 
-        public void HandleReputationChange(string eventName, EventParamProperties eventParam) {
+        public void HandleReputationChange(UnitController targetUnitController) {
             //Debug.Log($"{unitNamePlateController.UnitDisplayName}.NamePlateController.HandleReputationChange()");
 
             SetFactionColor();

@@ -936,19 +936,13 @@ namespace AnyRPG {
 
         private bool InteractionWithOptionSucceeded(InteractableOptionComponent interactableOption, int componentIndex, int choiceIndex) {
             //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded()");
-            //if (IsTargetInHitBox(target)) {
             if (interactableOption.Interact(playerManager.ActiveUnitController, componentIndex, choiceIndex)) {
                 //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): Interaction Succeeded.  Setting interactable to null");
-                systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController, playerManager.UnitController.Target.DisplayName);
-                systemEventManager.NotifyOnInteractionWithOptionStarted(playerManager.UnitController, interactableOption);
-                // no longer needed since targeting is changed and we don't want to lose target in the middle of attacking
-                //playerManager.ActiveUnitController.SetTarget(null);
+                //systemEventManager.NotifyOnInteractionStarted(playerManager.UnitController, playerManager.UnitController.Target.DisplayName);
                 return true;
             }
             //Debug.Log($"{gameObject.name}.PlayerController.InteractionSucceeded(): returning false");
             return false;
-            //}
-            //return false;
         }
 
         private void HandleCancelButtonPressed() {

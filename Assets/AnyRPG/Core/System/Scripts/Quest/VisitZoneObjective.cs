@@ -58,7 +58,7 @@ namespace AnyRPG {
             if (zoneName != null && zoneName != string.Empty) {
                 objectiveSceneNode = systemDataFactory.GetResource<SceneNode>(zoneName);
             } else {
-                Debug.LogError("VisitZoneObjective.OnAcceptQuest(): Could not find scene node : " + zoneName + " while inititalizing a visit zone objective.  CHECK INSPECTOR");
+                Debug.LogError($"VisitZoneObjective.OnAcceptQuest(): Could not find scene node : {zoneName} while inititalizing a visit zone objective.  CHECK INSPECTOR");
                 return;
             }
             // disabled for now.  this should be an active objective, and not able to be completed if a zone was previously visited

@@ -51,15 +51,20 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            questObjective.OnQuestBaseStatusUpdated += HandleQuestStatusUpdated;
+            sourceUnitController.UnitEventController.OnTurnInQuest += HandleTurnInQuest;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            questObjective.OnQuestBaseStatusUpdated -= HandleQuestStatusUpdated;
+            sourceUnitController.UnitEventController.OnTurnInQuest -= HandleTurnInQuest;
         }
 
+        private void HandleTurnInQuest(UnitController sourceUnitController, Quest quest) {
+            if (quest == questObjective) {
+                UpdateCompletionCount(sourceUnitController, true);
+            }
+        }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {
             //Debug.Log("QuestQuestObjective.SetupScriptableObjects()");

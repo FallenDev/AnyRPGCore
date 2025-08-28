@@ -633,7 +633,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnItemCountChanged(Item item) {
-            systemEventManager.NotifyOnItemCountChanged(unitController, item);
+            unitController.UnitEventController.NotifyOnItemCountChanged(item);
         }
 
         public int GetItemCount(string type, bool partialMatch = false) {

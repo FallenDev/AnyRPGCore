@@ -61,8 +61,6 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            //systemEventManager.OnLearnSkill += UpdateCompletionCount;
-            //systemEventManager.OnUnLearnSkill += UpdateCompletionCount;
             sourceUnitController.UnitEventController.OnLearnSkill += UpdateCompletionCount;
             sourceUnitController.UnitEventController.OnUnLearnSkill += UpdateCompletionCount;
             UpdateCompletionCount(sourceUnitController, printMessages);
@@ -72,8 +70,6 @@ namespace AnyRPG {
             base.OnAbandonQuest(sourceUnitController);
             sourceUnitController.UnitEventController.OnLearnSkill -= UpdateCompletionCount;
             sourceUnitController.UnitEventController.OnUnLearnSkill -= UpdateCompletionCount;
-            //systemEventManager.OnLearnSkill -= UpdateCompletionCount;
-            //systemEventManager.OnUnLearnSkill -= UpdateCompletionCount;
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, QuestBase quest) {

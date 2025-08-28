@@ -32,7 +32,7 @@ namespace AnyRPG {
         public event System.Action<string> OnNameChange = delegate { };
         public event System.Action<string> OnTitleChange = delegate { };
         public event System.Action<PowerResource, int, int> OnResourceAmountChanged = delegate { };
-        public event System.Action<StatusEffectNode> OnStatusEffectAdd = delegate { };
+        public event System.Action<UnitController, StatusEffectNode> OnStatusEffectAdd = delegate { };
         public event System.Action<string> OnAddStatusEffectStack = delegate { };
         public event System.Action<StatusEffectProperties> OnRequestCancelStatusEffect = delegate { };
         public event System.Action<StatusEffectProperties> OnCancelStatusEffect = delegate { };
@@ -79,7 +79,7 @@ namespace AnyRPG {
         public event System.Action<AbilityProperties> OnCombatCheckFail = delegate { };
         public event System.Action<AbilityProperties> OnStealthCheckFail = delegate { };
         public event System.Action<AbilityProperties, IAbilityCaster> OnPowerResourceCheckFail = delegate { };
-        public event System.Action<AbilityProperties> OnPerformAbility = delegate { };
+        public event System.Action<UnitController, AbilityProperties> OnPerformAbility = delegate { };
         public event System.Action<UnitController> OnDespawn = delegate { };
         public event System.Action<string> OnBeginChatMessage = delegate { };
         public event System.Action OnInitializeAnimator = delegate { };
@@ -179,6 +179,8 @@ namespace AnyRPG {
         public event System.Action OnMountUnitSpawn = delegate { };
         public event System.Action OnDespawnMountUnit = delegate { };
         public event System.Action<string> OnWriteMessageFeedMessage = delegate { };
+        public event System.Action<UnitController, Item> OnItemCountChanged = delegate { };
+        public event System.Action<UnitController, Dialog> OnDialogCompleted = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -200,7 +202,7 @@ namespace AnyRPG {
         }
 
         public void NotifyOnPerformAbility(AbilityProperties abilityProperties) {
-            OnPerformAbility(abilityProperties);
+            OnPerformAbility(unitController, abilityProperties);
         }
 
         public void NotifyOnPowerResourceCheckFail(AbilityProperties abilityProperties, IAbilityCaster abilityCaster) {
@@ -474,7 +476,7 @@ namespace AnyRPG {
         public void NotifyOnStatusEffectAdd(StatusEffectNode statusEffectNode) {
             //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnStatusEffectAdd({statusEffectNode.StatusEffect.DisplayName})");
 
-            OnStatusEffectAdd(statusEffectNode);
+            OnStatusEffectAdd(unitController, statusEffectNode);
         }
 
         public void NotifyOnAddStatusEffectStack(string resourceName) {
@@ -968,6 +970,14 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnWriteMessageFeedMessage({messageText})");
 
             OnWriteMessageFeedMessage(messageText);
+        }
+
+        public void NotifyOnItemCountChanged(Item item) {
+            OnItemCountChanged(unitController, item);
+        }
+
+        public void NotifyOnDialogCompleted(Dialog dialog) {
+            OnDialogCompleted(unitController, dialog);
         }
 
         #endregion

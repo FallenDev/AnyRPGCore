@@ -653,7 +653,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCombatCheckFail += HandleCombatCheckFail;
             unitController.UnitEventController.OnStealthCheckFail += HandleStealthCheckFail;
             unitController.UnitEventController.OnAbilityActionCheckFail += HandleAbilityActionCheckFail;
-            unitController.UnitEventController.OnPerformAbility += HandlePerformAbility;
             unitController.UnitEventController.OnBeginAbilityCoolDown += HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail += HandleTargetInAbilityRangeFail;
             unitController.UnitEventController.OnReputationChange += HandleReputationChange;
@@ -686,6 +685,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveActivePet += HandleRemoveActivePet;
             unitController.UnitEventController.OnMarkAchievementComplete += HandleMarkAchievementComplete;
             unitController.UnitEventController.OnWriteMessageFeedMessage += HandleWriteMessageFeedMessage;
+            unitController.UnitEventController.OnItemCountChanged += HandleItemCountChanged;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -713,7 +713,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnCombatCheckFail -= HandleCombatCheckFail;
             unitController.UnitEventController.OnStealthCheckFail -= HandleStealthCheckFail;
             unitController.UnitEventController.OnAbilityActionCheckFail -= HandleAbilityActionCheckFail;
-            unitController.UnitEventController.OnPerformAbility -= HandlePerformAbility;
             unitController.UnitEventController.OnBeginAbilityCoolDown -= HandleBeginAbilityCoolDown;
             //unitController.UnitEventController.OnTargetInAbilityRangeFail -= HandleTargetInAbilityRangeFail;
             unitController.UnitEventController.OnReputationChange -= HandleReputationChange;
@@ -746,6 +745,11 @@ namespace AnyRPG {
             unitController.UnitEventController.OnRemoveActivePet -= HandleRemoveActivePet;
             unitController.UnitEventController.OnMarkAchievementComplete -= HandleMarkAchievementComplete;
             unitController.UnitEventController.OnWriteMessageFeedMessage -= HandleWriteMessageFeedMessage;
+            unitController.UnitEventController.OnItemCountChanged -= HandleItemCountChanged;
+        }
+
+        private void HandleItemCountChanged(UnitController controller, Item item) {
+            systemEventManager.NotifyOnItemCountChanged(unitController, item);
         }
 
         private void HandleWriteMessageFeedMessage(string messageText) {
@@ -951,11 +955,6 @@ namespace AnyRPG {
             }
         }
 
-        public void HandlePerformAbility(AbilityProperties ability) {
-            systemEventManager.NotifyOnAbilityUsed(unitController, ability);
-            ability.NotifyOnAbilityUsed(unitController);
-        }
-
         public void HandleCombatCheckFail(AbilityProperties ability) {
             logManager.WriteCombatMessage("The ability " + ability.DisplayName + " can only be cast while out of combat");
         }
@@ -991,7 +990,7 @@ namespace AnyRPG {
             actionBarManager.UpdateVisuals();
         }
 
-        public void HandleStatusEffectAdd(StatusEffectNode statusEffectNode) {
+        public void HandleStatusEffectAdd(UnitController sourceUnitController, StatusEffectNode statusEffectNode) {
             //Debug.Log("PlayerManager.HandleStatusEffectAdd()");
 
             if (statusEffectNode == null) {
@@ -1006,7 +1005,6 @@ namespace AnyRPG {
                 }
             }
 
-            statusEffectNode.StatusEffect.NotifyOnApply(unitController);
         }
 
         public void HandleGainXP(UnitController unitController, int gainedXP, int currentXP) {

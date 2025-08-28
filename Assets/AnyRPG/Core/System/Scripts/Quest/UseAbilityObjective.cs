@@ -23,6 +23,8 @@ namespace AnyRPG {
 
         private AbilityProperties baseAbility;
 
+
+
         public void UpdateCastCount(UnitController sourceUnitController) {
             bool completeBefore = IsComplete(sourceUnitController);
             SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
@@ -35,14 +37,20 @@ namespace AnyRPG {
             questBase.CheckCompletion(sourceUnitController);
         }
 
+        private void HandlePerformAbility(UnitController sourceUnitController, AbilityProperties properties) {
+            if (properties == baseAbility) {
+                UpdateCastCount(sourceUnitController);
+            }
+        }
+
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            baseAbility.OnAbilityUsed += UpdateCastCount;
+            sourceUnitController.UnitEventController.OnPerformAbility += HandlePerformAbility;
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            baseAbility.OnAbilityUsed -= UpdateCastCount;
+            sourceUnitController.UnitEventController.OnPerformAbility -= HandlePerformAbility;
         }
 
         public override string GetUnformattedStatus(UnitController sourceUnitController) {

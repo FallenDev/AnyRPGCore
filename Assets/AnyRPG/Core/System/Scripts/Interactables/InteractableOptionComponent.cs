@@ -162,11 +162,6 @@ namespace AnyRPG {
             //Debug.Log($"{interactable.gameObject.name}.InteractableOptionComponent.Interact({sourceUnitController?.gameObject.name}, {componentIndex}, {choiceIndex}) : {this.GetType()}");
 
             //source.CancelMountEffects();
-            if (sourceUnitController != null) {
-                // this could have come from a trigger, so we can't make the assumption there is a source UnitController
-                // trigger quest objective notification
-                systemEventManager.NotifyOnInteractionWithOptionStarted(sourceUnitController, this);
-            }
             bool returnValue = ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
             ProcessClientNotifications(sourceUnitController, componentIndex, choiceIndex);
             return returnValue;

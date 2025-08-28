@@ -11,17 +11,14 @@ namespace AnyRPG {
 
         public event System.Action<UnitController> OnPlayerUnitSpawn = delegate { };
         public event System.Action<UnitController> OnPlayerUnitDespawn = delegate { };
-        public event System.Action<UnitController, AbilityProperties> OnAbilityUsed = delegate { };
         public event System.Action<UnitController, AbilityProperties> OnAbilityListChanged = delegate { };
         public event System.Action<UnitController, int> OnLevelChanged = delegate { };
         public event System.Action<UnitController, CharacterClass, CharacterClass> OnClassChange = delegate { };
         public event System.Action<UnitController, ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
-        public event System.Action<UnitController, string> OnInteractionStarted = delegate { };
-        public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionStarted = delegate { };
+        //public event System.Action<UnitController, string> OnInteractionStarted = delegate { };
         public event System.Action<UnitController, Interactable> OnInteractionCompleted = delegate { };
         public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionCompleted = delegate { };
         public event System.Action<UnitController, Item> OnItemCountChanged = delegate { };
-        public event System.Action<UnitController, Dialog> OnDialogCompleted = delegate { };
         public event System.Action<IAbilityCaster, UnitController, int, string> OnTakeDamage = delegate { };
         public event System.Action<UnitController> OnReputationChange = delegate { };
         public event System.Action<UnitController, QuestBase> OnAcceptQuest = delegate { };
@@ -129,20 +126,12 @@ namespace AnyRPG {
             OnTakeDamage(source, target, damage, abilityName);
         }
 
-        public void NotifyOnDialogCompleted(UnitController sourceUnitController, Dialog dialog) {
-            OnDialogCompleted(sourceUnitController, dialog);
-            //OnPrerequisiteUpdated();
-        }
-
+        /*
         public void NotifyOnInteractionStarted(UnitController sourceUnitController, string interactableName) {
             //Debug.Log("SystemEventManager.NotifyOnInteractionStarted(" + interactableName + ")");
             OnInteractionStarted(sourceUnitController, interactableName);
         }
-
-        public void NotifyOnInteractionWithOptionStarted(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
-            //Debug.Log("SystemEventManager.NotifyOnInteractionWithOptionStarted(" + interactableOption.DisplayName + ")");
-            OnInteractionWithOptionStarted(sourceUnitController, interactableOption);
-        }
+        */
 
         public void NotifyOnInteractionCompleted(UnitController sourceUnitController, Interactable interactable) {
             OnInteractionCompleted(sourceUnitController, interactable);
@@ -164,12 +153,6 @@ namespace AnyRPG {
             //OnPrerequisiteUpdated();
         }
         
-
-        public void NotifyOnAbilityUsed(UnitController sourceUnitController, AbilityProperties ability) {
-            //Debug.Log("SystemEventManager.NotifyAbilityused(" + ability.DisplayName + ")");
-            OnAbilityUsed(sourceUnitController, ability);
-        }
-
         public void NotifyOnItemCountChanged(UnitController sourceUnitController, Item item) {
             OnItemCountChanged(sourceUnitController, item);
         }

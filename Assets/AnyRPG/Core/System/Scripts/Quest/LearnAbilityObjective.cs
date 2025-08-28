@@ -24,7 +24,7 @@ namespace AnyRPG {
         private AbilityProperties baseAbility;
 
         // for learning
-        public void UpdateCompletionCount(UnitController sourceUnitController) {
+        public void UpdateLearnedCompletionCount(UnitController sourceUnitController) {
             //Debug.Log("AbilityObjective.UpdateCompletionCount(" + (baseAbility == null ? "null" : baseAbility.DisplayName) + ")");
             bool completeBefore = IsComplete(sourceUnitController);
             if (completeBefore) {
@@ -61,13 +61,19 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase questBase, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, questBase, printMessages);
-            baseAbility.OnAbilityLearn += UpdateCompletionCount;
+            sourceUnitController.UnitEventController.OnLearnAbility += HandleLearnAbility;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            baseAbility.OnAbilityLearn -= UpdateCompletionCount;
+            sourceUnitController.UnitEventController.OnLearnAbility -= HandleLearnAbility;
+        }
+
+        private void HandleLearnAbility(UnitController sourceUnitController, AbilityProperties properties) {
+            if (properties == baseAbility) {
+                UpdateLearnedCompletionCount(sourceUnitController);
+            }
         }
 
         public override string GetUnformattedStatus(UnitController sourceUnitController) {

@@ -11,7 +11,6 @@ namespace AnyRPG {
     public class AbilityProperties : ConfiguredClass, IRewardable, IDescribable, IUseable, IMoveable, ITargetable, ILearnable {
 
         public event System.Action<UnitController> OnAbilityLearn = delegate { };
-        public event System.Action<UnitController> OnAbilityUsed = delegate { };
 
         [Header("Casting Requirements")]
 
@@ -1275,10 +1274,6 @@ namespace AnyRPG {
 
         public void NotifyOnLearn(UnitController unitController) {
             OnAbilityLearn(unitController);
-        }
-
-        public void NotifyOnAbilityUsed(UnitController unitController) {
-            OnAbilityUsed(unitController);
         }
 
         /// <summary>

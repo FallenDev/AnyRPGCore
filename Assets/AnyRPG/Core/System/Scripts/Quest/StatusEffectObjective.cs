@@ -23,8 +23,11 @@ namespace AnyRPG {
 
         private StatusEffectProperties statusEffect;
 
-        public void UpdateApplyCount(UnitController sourceUnitController) {
-            bool completeBefore = IsComplete(sourceUnitController);
+        public void UpdateApplyCount(UnitController sourceUnitController, StatusEffectNode statusEffectNode) {
+            if (statusEffectNode.StatusEffect != statusEffect) {
+                return;
+			}
+			bool completeBefore = IsComplete(sourceUnitController);
             SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
             if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
                 sourceUnitController.WriteMessageFeedMessage(string.Format("Apply {0}: {1}/{2}", statusEffect.DisplayName, CurrentAmount(sourceUnitController), Amount));
@@ -56,13 +59,13 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            statusEffect.OnApply += UpdateApplyCount;
+            sourceUnitController.UnitEventController.OnStatusEffectAdd += UpdateApplyCount;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            statusEffect.OnApply -= UpdateApplyCount;
+			sourceUnitController.UnitEventController.OnStatusEffectAdd -= UpdateApplyCount;
         }
 
         public override string GetUnformattedStatus(UnitController sourceUnitController) {

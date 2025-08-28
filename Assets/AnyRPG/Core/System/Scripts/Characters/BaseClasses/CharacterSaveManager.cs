@@ -187,7 +187,7 @@ namespace AnyRPG {
             SaveStatusEffectData();
         }
 
-        public void HandleStatusEffectAdd(StatusEffectNode node) {
+        public void HandleStatusEffectAdd(UnitController sourceUnitController, StatusEffectNode node) {
             SaveStatusEffectData();
         }
 

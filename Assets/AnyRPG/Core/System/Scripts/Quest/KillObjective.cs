@@ -30,7 +30,9 @@ namespace AnyRPG {
             }
 
             // INVESTIGATE IF STRING MATCH CAN BE REPLACED WITH TYPE.GETTYPE DIRECT MATCH
-            if (killedUnitController.GetType() == Type.GetType(targetName) || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.CharacterName, targetName) || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.Faction.ResourceName, targetName)) {
+            if (killedUnitController.GetType() == Type.GetType(targetName)
+                || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.CharacterName, targetName)
+                || SystemDataUtility.MatchResource(killedUnitController.BaseCharacter.Faction.ResourceName, targetName)) {
                 SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
                 if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && CurrentAmount(sourceUnitController) != 0) {
                     sourceUnitController.WriteMessageFeedMessage(string.Format("Kill {0}: {1}/{2}", DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));

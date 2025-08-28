@@ -1,8 +1,6 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -54,14 +52,14 @@ namespace AnyRPG {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
 
             // don't forget to remove these later
-            systemEventManager.OnDialogCompleted += CheckCompletionCount;
+            sourceUnitController.UnitEventController.OnDialogCompleted += CheckCompletionCount;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             //Debug.Log("UseInteractableObjective.OnAbandonQuest()");
             base.OnAbandonQuest(sourceUnitController);
-            systemEventManager.OnDialogCompleted -= CheckCompletionCount;
+            sourceUnitController.UnitEventController.OnDialogCompleted -= CheckCompletionCount;
         }
 
     }

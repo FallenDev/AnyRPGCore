@@ -945,7 +945,7 @@ namespace AnyRPG {
             unitController.CharacterStats.AddStatusEffectStack(statusEffect.StatusEffectProperties);
         }
 
-        public void HandleStatusEffectAddServer(StatusEffectNode statusEffectNode) {
+        public void HandleStatusEffectAddServer(UnitController sourceUnitController, StatusEffectNode statusEffectNode) {
             //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleStatusEffectAddServer({statusEffectNode.StatusEffect.ResourceName})");
 
             FishNetUnitController sourceNetworkCharacterUnit = statusEffectNode.AbilityEffectContext.AbilityCaster?.AbilityManager.UnitGameObject.GetComponent<FishNetUnitController>();

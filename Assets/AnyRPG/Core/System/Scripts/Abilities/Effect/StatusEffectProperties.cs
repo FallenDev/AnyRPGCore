@@ -8,8 +8,6 @@ namespace AnyRPG {
     [System.Serializable]
     public class StatusEffectProperties : LengthEffectProperties, ILearnable {
 
-        public event System.Action<UnitController> OnApply = delegate { };
-
         [Header("Status Effect")]
 
         [Tooltip("Prefabs to spawn when this effect is cast")]
@@ -581,10 +579,6 @@ namespace AnyRPG {
             }
             */
 
-        }
-
-        public void NotifyOnApply(UnitController sourceUnitController) {
-            OnApply(sourceUnitController);
         }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager, IDescribable describable) {

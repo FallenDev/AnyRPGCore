@@ -24,10 +24,12 @@ namespace AnyRPG {
         // if just interacting is not enough, but actually finishing using an interactable is required.
         public bool requireCompletion = false;
 
+        /*
         public void CheckInteractionStart(UnitController sourceUnitController, string interactableName) {
             //Debug.Log("UseInteractableObjective.CheckInteractableName()");
             CheckInteractableName(sourceUnitController, interactableName, false);
         }
+        */
 
         public void CheckInteractionComplete(UnitController sourceUnitController, Interactable interactable) {
             //Debug.Log("UseInteractableObjective.CheckInteractableName()");
@@ -39,7 +41,7 @@ namespace AnyRPG {
             CheckInteractableName(sourceUnitController, interactableOption.Interactable.DisplayName, true);
         }
 
-        public void CheckInteractionStart(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
+        public void CheckInteractionWithOptionStart(UnitController sourceUnitController, InteractableOptionComponent interactableOption, int optionIndex, int choiceIndex) {
             CheckInteractableName(sourceUnitController, interactableOption.DisplayName, false);
             CheckInteractableName(sourceUnitController, interactableOption.Interactable.DisplayName, false);
         }
@@ -76,8 +78,8 @@ namespace AnyRPG {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
 
             // don't forget to remove these later
-            systemEventManager.OnInteractionStarted += CheckInteractionStart;
-            systemEventManager.OnInteractionWithOptionStarted += CheckInteractionStart;
+            //systemEventManager.OnInteractionStarted += CheckInteractionStart;
+            sourceUnitController.UnitEventController.OnStartInteractWithOption += CheckInteractionWithOptionStart;
             systemEventManager.OnInteractionCompleted += CheckInteractionComplete;
             systemEventManager.OnInteractionWithOptionCompleted += CheckInteractionComplete;
         }
@@ -85,8 +87,8 @@ namespace AnyRPG {
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             //Debug.Log("UseInteractableObjective.OnAbandonQuest()");
             base.OnAbandonQuest(sourceUnitController);
-            systemEventManager.OnInteractionStarted -= CheckInteractionStart;
-            systemEventManager.OnInteractionWithOptionStarted -= CheckInteractionStart;
+            //systemEventManager.OnInteractionStarted -= CheckInteractionStart;
+            sourceUnitController.UnitEventController.OnStartInteractWithOption -= CheckInteractionWithOptionStart;
             systemEventManager.OnInteractionCompleted -= CheckInteractionComplete;
             systemEventManager.OnInteractionWithOptionCompleted -= CheckInteractionComplete;
         }

@@ -1,8 +1,6 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace AnyRPG {
@@ -29,7 +27,7 @@ namespace AnyRPG {
             }
         }
 
-        public void UpdateItemCount(UnitController sourceUnitController, Item item) {
+        public void HandleItemCountChanged(UnitController sourceUnitController, Item item) {
 
             // change this with check reference to item prefab in the future
             if (SystemDataUtility.MatchResource(item.ResourceName, itemName, partialMatch)) {
@@ -66,13 +64,13 @@ namespace AnyRPG {
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
-            systemEventManager.OnItemCountChanged += UpdateItemCount;
+            sourceUnitController.UnitEventController.OnItemCountChanged += HandleItemCountChanged;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
             base.OnAbandonQuest(sourceUnitController);
-            systemEventManager.OnItemCountChanged -= UpdateItemCount;
+            sourceUnitController.UnitEventController.OnItemCountChanged -= HandleItemCountChanged;
         }
 
         /*

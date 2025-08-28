@@ -39,7 +39,7 @@ namespace AnyRPG {
             return returnList;
         }
 
-        public void AcceptQuestClient(UnitController sourceUnitController, Quest quest) {
+        public void RequestAcceptQuestClient(UnitController sourceUnitController, Quest quest) {
             //Debug.Log($"QuestGiverManager.AcceptQuestClient({sourceUnitController.gameObject.name}, {quest.ResourceName})");
 
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
@@ -105,7 +105,7 @@ namespace AnyRPG {
             }
 
             if (!itemCountMatches || !abilityCountMatches || !factionCountMatches || !skillCountMatches) {
-                messageFeedManager.WriteMessage(sourceUnitController, "You must choose rewards before turning in this quest");
+                sourceUnitController.WriteMessageFeedMessage("You must choose rewards before turning in this quest");
                 return;
             }
 
@@ -122,7 +122,7 @@ namespace AnyRPG {
             // TO FIX: THIS CODE DOES NOT DEAL WITH PARTIAL STACKS AND WILL REQUEST ONE FULL SLOT FOR EVERY REWARD
             if (questRewardChoices.itemRewardIndexes.Count > 0) {
                 if (sourceUnitController.CharacterInventoryManager.EmptySlotCount() < questRewardChoices.itemRewardIndexes.Count) {
-                    messageFeedManager.WriteMessage(sourceUnitController, "Not enough room in inventory!");
+                    sourceUnitController.WriteMessageFeedMessage("Not enough room in inventory!");
                     return;
                 }
                 foreach (int rewardIndex in questRewardChoices.itemRewardIndexes) {

@@ -374,7 +374,7 @@ namespace AnyRPG {
         }
 
         public string GetAccountToken(int accountId) {
-            Debug.Log($"NetworkManagerServer.GetClientToken({accountId})");
+            //Debug.Log($"NetworkManagerServer.GetClientToken({accountId})");
 
             if (loggedInAccounts.ContainsKey(accountId)) {
                 return loggedInAccounts[accountId].token;
@@ -383,7 +383,7 @@ namespace AnyRPG {
         }
 
         public void ProcessClientDisconnect(int clientId) {
-            Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({clientId})");
+            //Debug.Log($"NetworkManagerServer.ProcessClientDisconnect({clientId})");
 
             if (loggedInAccountsByClient.ContainsKey(clientId) == false) {
                 return;
@@ -394,7 +394,7 @@ namespace AnyRPG {
         }
 
         public void ProcessClientLogout(int accountId) {
-            Debug.Log($"NetworkManagerServer.ProcessClientLogout({accountId})");
+            //Debug.Log($"NetworkManagerServer.ProcessClientLogout({accountId})");
 
             if (loggedInAccounts.ContainsKey(accountId) == false) {
                 return;
@@ -714,14 +714,14 @@ namespace AnyRPG {
         }
 
         public void AdvertiseTeleport(int accountId, TeleportEffectProperties teleportEffectProperties) {
-            Debug.Log($"NetworkManagerServer.AdvertiseTeleport({accountId}, {teleportEffectProperties.LevelName})");
+            //Debug.Log($"NetworkManagerServer.AdvertiseTeleport({accountId}, {teleportEffectProperties.LevelName})");
 
             DespawnPlayerUnit(accountId);
             networkController.AdvertiseLoadScene(teleportEffectProperties.LevelName, accountId);
         }
 
         public void ReturnObjectToPool(GameObject returnedObject) {
-            Debug.Log($"NetworkManagerServer.ReturnObjectToPool({returnedObject.name})");
+            //Debug.Log($"NetworkManagerServer.ReturnObjectToPool({returnedObject.name})");
 
             networkController.ReturnObjectToPool(returnedObject);
         }
@@ -775,7 +775,7 @@ namespace AnyRPG {
         }
 
         public void HandleSceneUnloadEnd(int sceneHandle, string sceneName) {
-            Debug.Log($"NetworkManagerServer.HandleSceneUnloadEnd({sceneName}, {sceneHandle})");
+            //Debug.Log($"NetworkManagerServer.HandleSceneUnloadEnd({sceneName}, {sceneHandle})");
 
             if (lobbyGameSceneHandleLookup.ContainsKey(sceneHandle) == true) {
                 //Debug.Log($"NetworkManagerServer.HandleSceneUnloadEnd({sceneName}, {sceneHandle}) - lobby game unload request");

@@ -91,7 +91,7 @@ namespace AnyRPG {
         }
 
         public void RemovePlayerFromList(int accountId) {
-            Debug.Log($"HostServerPanelController.RemovePlayerFromList({accountId})");
+            //Debug.Log($"HostServerPanelController.RemovePlayerFromList({accountId})");
 
             if (playerButtons.ContainsKey(accountId)) {
                 uINavigationControllers[1].ClearActiveButton(playerButtons[accountId].KickButton);

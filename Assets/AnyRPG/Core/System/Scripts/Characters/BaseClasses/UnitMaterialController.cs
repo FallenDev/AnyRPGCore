@@ -25,7 +25,7 @@ namespace AnyRPG {
         }
 
         public void ActivateStealth() {
-            Debug.Log($"{unitController.gameObject.name}.UnitMaterialController.ActivateStealth()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitMaterialController.ActivateStealth()");
 
             if (meshRenderers == null) {
                 //Debug.Log($"{gameObject.name}.MaterialChangeController.PerformMaterialChange(): meshRender is null.  This shouldn't happen because we checked before instantiating this!");

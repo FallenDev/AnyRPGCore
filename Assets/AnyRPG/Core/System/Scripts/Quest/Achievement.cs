@@ -23,7 +23,7 @@ namespace AnyRPG {
         protected override void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
             base.ProcessMarkComplete(sourceUnitController, printMessages);
             if (printMessages == true) {
-                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Achievement: {0} Complete!", DisplayName));
+                sourceUnitController.WriteMessageFeedMessage(string.Format("Achievement: {0} Complete!", DisplayName));
             }
 
             //sourceUnitController.CharacterQuestLog.ProcessMarkAchievementComplete();

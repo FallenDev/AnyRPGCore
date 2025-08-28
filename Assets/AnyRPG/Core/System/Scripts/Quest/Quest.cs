@@ -186,7 +186,7 @@ namespace AnyRPG {
         protected override void ProcessMarkComplete(UnitController sourceUnitController, bool printMessages) {
             base.ProcessMarkComplete(sourceUnitController, printMessages);
             if (printMessages == true) {
-                messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0} Complete!", DisplayName));
+                sourceUnitController.WriteMessageFeedMessage(string.Format("{0} Complete!", DisplayName));
             }
         }
 
@@ -227,8 +227,10 @@ namespace AnyRPG {
         }
 
         protected override void ProcessAcceptQuest(UnitController sourceUnitController) {
+            Debug.Log($"{ResourceName}.Quest.ProcessAcceptQuest({sourceUnitController.gameObject.name})");
+
             base.ProcessAcceptQuest(sourceUnitController);
-            messageFeedManager.WriteMessage(sourceUnitController, $"Quest Accepted: {DisplayName}");
+            sourceUnitController.WriteMessageFeedMessage($"Quest Accepted: {DisplayName}");
         }
 
         public override int GetObjectiveCurrentAmount(UnitController sourceUnitController, string objectiveTypeName, string objectiveName) {

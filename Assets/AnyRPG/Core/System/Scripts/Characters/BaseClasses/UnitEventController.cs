@@ -178,6 +178,7 @@ namespace AnyRPG {
         public event System.Action OnUnsetParent = delegate { };
         public event System.Action OnMountUnitSpawn = delegate { };
         public event System.Action OnDespawnMountUnit = delegate { };
+        public event System.Action<string> OnWriteMessageFeedMessage = delegate { };
 
         //public event System.Action<BaseAbilityProperties, Interactable> OnTargetInAbilityRangeFail = delegate { };
 
@@ -961,6 +962,12 @@ namespace AnyRPG {
             Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnMountUnit()");
 
             OnDespawnMountUnit();
+        }
+
+        public void NotifyOnWriteMessageFeedMessage(string messageText) {
+            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnWriteMessageFeedMessage({messageText})");
+
+            OnWriteMessageFeedMessage(messageText);
         }
 
         #endregion

@@ -2438,6 +2438,16 @@ namespace AnyRPG {
             return isStealth;
         }
 
+        public void WriteMessageFeedMessage(string messageText) {
+            Debug.Log($"{gameObject.name}.UnitController.WriteMessageFeedMessage({messageText})");
+
+            if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false) {
+                // in network client mode, all messages should come from the server.
+                return;
+            }
+            unitEventController.NotifyOnWriteMessageFeedMessage(messageText);
+        }
+
 
         #region MessagePassthroughs
 

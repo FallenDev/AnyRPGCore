@@ -39,6 +39,7 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
+        /*
         public void WriteMessage(UnitController sourceUnitController, string message) {
             if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
                 WriteMessage(message);
@@ -46,9 +47,11 @@ namespace AnyRPG {
                 networkManagerServer.AdvertiseMessageFeedMessage(sourceUnitController, message);
             }
         }
+        */
 
         public void WriteMessage(string message) {
-            //Debug.Log("MessageFeedManager.WriteMessage(" + message + ")");
+            Debug.Log($"MessageFeedManager.WriteMessage({message})");
+
             if (PlayerPrefs.GetInt("UseMessageFeed") == 0) {
                 return;
             }

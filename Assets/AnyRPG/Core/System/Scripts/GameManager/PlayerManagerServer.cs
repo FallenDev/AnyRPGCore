@@ -164,7 +164,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnKillEvent += HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger += HandleEnterInteractableTrigger;
             unitController.UnitEventController.OnExitInteractableTrigger += HandleExitInteractableTrigger;
-            unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
         }
 
         public void UnsubscribeFromPlayerEvents(UnitController unitController) {
@@ -173,11 +172,6 @@ namespace AnyRPG {
             unitController.UnitEventController.OnKillEvent -= HandleKillEvent;
             unitController.UnitEventController.OnEnterInteractableTrigger -= HandleEnterInteractableTrigger;
             unitController.UnitEventController.OnExitInteractableTrigger -= HandleExitInteractableTrigger;
-            unitController.UnitEventController.OnMessageFeedMessage += HandleMessageFeedMessage;
-        }
-
-        public void HandleMessageFeedMessage(UnitController unitController, string message) {
-            messageFeedManager.WriteMessage(unitController, message);
         }
 
         private void HandleEnterInteractableTrigger(UnitController unitController, Interactable interactable) {

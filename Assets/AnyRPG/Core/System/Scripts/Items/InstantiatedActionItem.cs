@@ -33,7 +33,7 @@ namespace AnyRPG {
                 return false;
             }
             if (sourceUnitController.AbilityManager.IsOnCoolDown(ResourceName)) {
-                messageFeedManager.WriteMessage(sourceUnitController, "Item is on cooldown");
+                sourceUnitController.WriteMessageFeedMessage("Item is on cooldown");
                 return false;
             }
 

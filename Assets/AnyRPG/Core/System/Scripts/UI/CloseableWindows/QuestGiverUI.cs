@@ -400,7 +400,7 @@ namespace AnyRPG {
                 // DO THIS HERE SO IT DOESN'T INSTA-CLOSE ANY AUTO-POPUP BACK TO HERE ON ACCEPT QUEST CAUSING STATUS CHANGE
                 uIManager.questGiverWindow.CloseWindow();
 
-                questGiverManager.AcceptQuestClient(playerManager.UnitController, currentQuest);
+                questGiverManager.RequestAcceptQuestClient(playerManager.UnitController, currentQuest);
 
                 if (questGiver != null) {
                     // notify a bag item so it can remove itself

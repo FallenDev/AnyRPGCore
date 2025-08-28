@@ -93,7 +93,7 @@ namespace AnyRPG {
             }
             UnsubscribeFromServerUnitEvents();
             if (unitController.CharacterConfigured == true) {
-                Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer() setting IsDisconnected = true");
+                //Debug.Log($"{gameObject.name}.FishNetUnitController.OnStopServer() setting IsDisconnected = true");
                 unitController.IsDisconnected = true;
             }
             systemGameManager.NetworkManagerServer.ProcessStopNetworkUnitServer(unitController);
@@ -285,6 +285,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetParent += HandleUnsetParent;
             //unitController.UnitEventController.OnMountUnitSpawn += HandleMountUnitSpawnServer;
             unitController.UnitEventController.OnDespawnMountUnit += HandleDespawnMountUnitServer;
+            unitController.UnitEventController.OnWriteMessageFeedMessage += HandleWriteMessageFeedMessageServer;
         }
 
 
@@ -383,6 +384,20 @@ namespace AnyRPG {
             unitController.UnitEventController.OnUnsetParent += HandleUnsetParent;
             //unitController.UnitEventController.OnMountUnitSpawn -= HandleMountUnitSpawnServer;
             unitController.UnitEventController.OnDespawnMountUnit -= HandleDespawnMountUnitServer;
+            unitController.UnitEventController.OnWriteMessageFeedMessage -= HandleWriteMessageFeedMessageServer;
+        }
+
+        private void HandleWriteMessageFeedMessageServer(string messageText) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleWriteMessageFeedMessageServer({messageText})");
+
+            HandleWriteMessageFeedMessageClient(messageText);
+        }
+
+        [ObserversRpc]
+        private void HandleWriteMessageFeedMessageClient(string messageText) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleWriteMessageFeedMessageClient({messageText})");
+
+            unitController.UnitEventController.NotifyOnWriteMessageFeedMessage(messageText);
         }
 
         private void HandleDespawnMountUnitServer() {
@@ -1484,7 +1499,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAcceptQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({questName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
@@ -1498,7 +1513,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAcceptAchievementClient(string resourceName) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({resourceName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAcceptQuestClient({resourceName})");
 
             Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
             if (achievement != null) {
@@ -1513,7 +1528,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAbandonQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAbandonQuestClient({questName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAbandonQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {
@@ -1527,7 +1542,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleTurnInQuestClient(string questName) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleTurnInQuestClient({questName})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleTurnInQuestClient({questName})");
 
             Quest quest = systemDataFactory.GetResource<Quest>(questName);
             if (quest != null) {

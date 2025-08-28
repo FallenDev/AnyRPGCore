@@ -296,7 +296,7 @@ namespace AnyRPG {
         */
 
         public void HandleInteractionWithOptionStarted(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
-            Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStarted({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
+            //Debug.Log($"{gameObject.name}.NetworkInteractable.HandleInteractionWithOptionStarted({(sourceUnitController == null ? "null" : sourceUnitController.gameObject.name)}, {componentIndex}, {choiceIndex})");
 
             FishNetUnitController targetNetworkCharacterUnit = null;
             if (sourceUnitController != null) {

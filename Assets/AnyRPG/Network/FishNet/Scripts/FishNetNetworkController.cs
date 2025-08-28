@@ -124,7 +124,7 @@ namespace AnyRPG {
             } else if (clientState == LocalConnectionState.Stopping) {
                 //Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Stopping");
             } else if (clientState == LocalConnectionState.Stopped) {
-                Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Setting mode to local");
+                //Debug.Log("FishNetNetworkController.OnClientConnectionState() Disconnected from server. Setting mode to local");
                 systemGameManager.NetworkManagerClient.ProcessStopConnection();
                 UnsubscribeFromClientEvents();
             }
@@ -257,16 +257,16 @@ namespace AnyRPG {
         }
 
         private void HandleUnloadEndServer(SceneUnloadEndEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleUnloadEndServer()");
+            //Debug.Log($"FishNetNetworkController.HandleUnloadEndServer()");
 
             foreach (UnloadedScene scene in obj.UnloadedScenesV2) {
-                Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.Name}");
+                //Debug.Log($"FishNetNetworkController.HandleUnloadEnd() {scene.Name}");
                 networkManagerServer.HandleSceneUnloadEnd(scene.Handle, scene.Name);
             }
         }
 
         private void HandleUnloadStart(SceneUnloadStartEventArgs obj) {
-            Debug.Log($"FishNetNetworkController.HandleUnloadStart({obj.QueueData.SceneUnloadData.SceneLookupDatas[0].Name})");
+            //Debug.Log($"FishNetNetworkController.HandleUnloadStart({obj.QueueData.SceneUnloadData.SceneLookupDatas[0].Name})");
 
             //foreach (SceneLookupData sceneLookupData in obj.QueueData.SceneUnloadData.SceneLookupDatas) {
             //    Debug.Log($"FishNetNetworkController.HandleUnloadStart() {sceneLookupData.Name}");

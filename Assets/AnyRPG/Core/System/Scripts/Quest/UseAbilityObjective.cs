@@ -27,10 +27,10 @@ namespace AnyRPG {
             bool completeBefore = IsComplete(sourceUnitController);
             SetCurrentAmount(sourceUnitController, CurrentAmount(sourceUnitController) + 1);
             if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages) {
-                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Use {0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
+                sourceUnitController.WriteMessageFeedMessage(string.Format("Use {0}: {1}/{2}", baseAbility.DisplayName, CurrentAmount(sourceUnitController), Amount));
             }
             if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages) {
-                messageFeedManager.WriteMessage(sourceUnitController, string.Format("Use {0}: Objective Complete", baseAbility.DisplayName));
+                sourceUnitController.WriteMessageFeedMessage(string.Format("Use {0}: Objective Complete", baseAbility.DisplayName));
             }
             questBase.CheckCompletion(sourceUnitController);
         }

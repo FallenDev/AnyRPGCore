@@ -177,7 +177,7 @@ namespace AnyRPG {
                 if (sourceUnitController.CharacterInventoryManager.EmptySlotCount() == 0) {
                     //Debug.Log("No space left in inventory");
                 }
-                messageFeedManager.WriteMessage(sourceUnitController, "Inventory is full!");
+                sourceUnitController.WriteMessageFeedMessage("Inventory is full!");
             }
         }
 

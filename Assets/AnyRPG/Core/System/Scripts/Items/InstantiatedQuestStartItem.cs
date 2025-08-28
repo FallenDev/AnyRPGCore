@@ -33,9 +33,9 @@ namespace AnyRPG {
             }
             if (questStartItem.QuestGiverProps.Quests != null) {
                 if (sourceUnitController.CharacterQuestLog.HasQuest(questStartItem.QuestGiverProps.Quests[0].Quest.ResourceName)) {
-                    messageFeedManager.WriteMessage(sourceUnitController, "You are already on that quest");
+                    sourceUnitController.WriteMessageFeedMessage("You are already on that quest");
                 } else if (questStartItem.QuestGiverProps.Quests[0].Quest.TurnedIn(sourceUnitController) == true && questStartItem.QuestGiverProps.Quests[0].Quest.RepeatableQuest == false) {
-                    messageFeedManager.WriteMessage(sourceUnitController, "You have already completed that quest");
+                    sourceUnitController.WriteMessageFeedMessage("You have already completed that quest");
                 } else {
                     //Debug.Log(DisplayName + ".QuestStartItem.Use(): showing quests");
                     //Debug.Log("QuestStartItem.Use(): opening questgiver window");

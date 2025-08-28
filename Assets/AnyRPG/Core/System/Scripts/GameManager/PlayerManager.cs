@@ -685,6 +685,7 @@ namespace AnyRPG {
             unitController.UnitEventController.OnNameChange += HandleNameChange;
             unitController.UnitEventController.OnRemoveActivePet += HandleRemoveActivePet;
             unitController.UnitEventController.OnMarkAchievementComplete += HandleMarkAchievementComplete;
+            unitController.UnitEventController.OnWriteMessageFeedMessage += HandleWriteMessageFeedMessage;
         }
 
         public void UnsubscribeFromPlayerEvents() {
@@ -744,6 +745,13 @@ namespace AnyRPG {
             unitController.UnitEventController.OnNameChange -= HandleNameChange;
             unitController.UnitEventController.OnRemoveActivePet -= HandleRemoveActivePet;
             unitController.UnitEventController.OnMarkAchievementComplete -= HandleMarkAchievementComplete;
+            unitController.UnitEventController.OnWriteMessageFeedMessage -= HandleWriteMessageFeedMessage;
+        }
+
+        private void HandleWriteMessageFeedMessage(string messageText) {
+            Debug.Log($"PlayerManager.HandleWriteMessageFeedMessage({messageText})");
+
+            messageFeedManager.WriteMessage(messageText);
         }
 
         public void HandleMarkAchievementComplete(UnitController targetUnitController, Achievement achievement) {

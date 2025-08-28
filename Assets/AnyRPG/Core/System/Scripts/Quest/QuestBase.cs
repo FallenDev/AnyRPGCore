@@ -133,7 +133,7 @@ namespace AnyRPG {
         }
 
         public virtual void MarkComplete(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
-            Debug.Log($"{ResourceName}.QuestBase.MarkComplete({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
+            //Debug.Log($"{ResourceName}.QuestBase.MarkComplete({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
 
             if (MarkedComplete(sourceUnitController) == true) {
                 return;
@@ -260,7 +260,7 @@ namespace AnyRPG {
         }
 
         public virtual void AcceptQuest(UnitController sourceUnitController, bool printMessages = true, bool resetStep = true) {
-            //Debug.Log($"{ResourceName}.QuestBase.AcceptQuest({sourceUnitController.gameObject.name}, {printMessages}, {resetStep})");
+            Debug.Log($"{ResourceName}.QuestBase.AcceptQuest({sourceUnitController.gameObject.name}, {printMessages}, {resetStep})");
 
             QuestSaveData questSaveData = GetSaveData(sourceUnitController);
             if (resetStep == true) {
@@ -278,10 +278,8 @@ namespace AnyRPG {
                 }
             }
 
-            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == false) {
-                if (printMessages == true) {
-                    ProcessAcceptQuest(sourceUnitController);
-                }
+            if (printMessages == true) {
+                ProcessAcceptQuest(sourceUnitController);
             }
 
             NotifyOnAcceptQuest(sourceUnitController);

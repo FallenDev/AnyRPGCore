@@ -39,10 +39,10 @@ namespace AnyRPG {
                 // i think that is supposed to be this instead to ask the quest that we are an objective for to check completion
                 //questObjective.CheckCompletion(true, printMessages);
                 if (CurrentAmount(sourceUnitController) <= Amount && questBase.PrintObjectiveCompletionMessages && printMessages == true && CurrentAmount(sourceUnitController) != 0) {
-                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
+                    sourceUnitController.WriteMessageFeedMessage(string.Format("{0}: {1}/{2}", questObjective.DisplayName, Mathf.Clamp(CurrentAmount(sourceUnitController), 0, Amount), Amount));
                 }
                 if (completeBefore == false && IsComplete(sourceUnitController) && questBase.PrintObjectiveCompletionMessages && printMessages == true) {
-                    messageFeedManager.WriteMessage(sourceUnitController, string.Format("Complete {1}: Objective Complete", CurrentAmount(sourceUnitController), questObjective.DisplayName));
+                    sourceUnitController.WriteMessageFeedMessage(string.Format("Complete {1}: Objective Complete", CurrentAmount(sourceUnitController), questObjective.DisplayName));
                 }
                 questBase.CheckCompletion(sourceUnitController, true, printMessages);
             }

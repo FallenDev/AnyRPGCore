@@ -50,10 +50,10 @@ namespace AnyRPG {
         protected LogManager logManager = null;
         protected DialogManager dialogManager = null;
         protected PlayerManager playerManager = null;
+        protected QuestGiverManager questGiverManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
-
         }
 
         public override void SetGameManagerReferences() {
@@ -62,6 +62,7 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             dialogManager = systemGameManager.DialogManager;
             playerManager = systemGameManager.PlayerManager;
+            questGiverManager = systemGameManager.QuestGiverManager;
         }
 
         public void CancelAction() {
@@ -125,7 +126,8 @@ namespace AnyRPG {
             // CLOSE THIS FIRST SO OTHER WINDOWS AREN'T BLOCKED FROM POPPING
             uIManager.dialogWindow.CloseWindow();
 
-            playerManager.UnitController.CharacterQuestLog.AcceptQuest(quest);
+            questGiverManager.RequestAcceptQuestClient(playerManager.UnitController, quest);
+
             //interactable.CheckForInteractableObjectives(MyQuest.DisplayName);
         }
 

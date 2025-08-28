@@ -23,14 +23,14 @@ namespace AnyRPG {
                 // learn recipe if the character has the right skill
                 if (sourceUnitController.CharacterAbilityManager.AbilityList.ContainsValue(recipeItem.Recipe.CraftAbility)) {
                     sourceUnitController.CharacterRecipeManager.LearnRecipe(recipeItem.Recipe);
-                    messageFeedManager.WriteMessage(sourceUnitController, "You learned the recipe " + recipeItem.Recipe.DisplayName);
+                    sourceUnitController.WriteMessageFeedMessage("You learned the recipe " + recipeItem.Recipe.DisplayName);
                     Remove();
                 } else {
-                    messageFeedManager.WriteMessage(sourceUnitController, "To learn this recipe, you must know " + recipeItem.Recipe.CraftAbility.DisplayName + "!");
+                    sourceUnitController.WriteMessageFeedMessage("To learn this recipe, you must know " + recipeItem.Recipe.CraftAbility.DisplayName + "!");
                 }
                 return returnValue;
             } else {
-                messageFeedManager.WriteMessage(sourceUnitController, "You already know this recipe!");
+                sourceUnitController.WriteMessageFeedMessage("You already know this recipe!");
                 return false;
             }
         }

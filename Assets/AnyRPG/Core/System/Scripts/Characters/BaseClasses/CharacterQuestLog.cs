@@ -74,7 +74,7 @@ namespace AnyRPG {
         }
 
         public void AcceptQuest(Quest newQuest) {
-            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptQuest({newQuest.name})");
+            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AcceptQuest({newQuest.ResourceName})");
 
             if (quests.Count >= systemConfigurationManager.QuestLogSize) {
                 // quest log is full. we can't accept the quest
@@ -103,7 +103,7 @@ namespace AnyRPG {
         }
 
         public void AbandonQuest(Quest oldQuest, bool resetQuestStep = true) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AbandonQuest({oldQuest.name})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.AbandonQuest({oldQuest.name})");
 
             RemoveQuest(oldQuest);
             // moved here instead of inside the above function so turnInQuest doesn't think a quest is available in the middle of turn-in
@@ -112,7 +112,7 @@ namespace AnyRPG {
         }
 
         public void TurnInQuest(Quest oldQuest) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.TurnInQuest()");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.TurnInQuest()");
 
             // REMOVE FIRST SO WHEN TURNEDIN TRIGGERS STATUSUPDATED CALL, QUEST DOES NOT EXIST IN LOG SO SUBSCRIBERS GET CORRECT STATUS
             RemoveQuest(oldQuest);
@@ -124,7 +124,7 @@ namespace AnyRPG {
         }
 
         public void RemoveQuest(Quest oldQuest) {
-            Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest({oldQuest.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.CharacterQuestLog.RemoveQuest({oldQuest.ResourceName})");
 
             if (quests.ContainsKey(oldQuest.ResourceName)) {
                 quests.Remove(oldQuest.ResourceName);

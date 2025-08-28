@@ -99,7 +99,7 @@ namespace AnyRPG {
 
         public bool SellItemToVendor(UnitController sourceUnitController, int componentIndex, InstantiatedItem instantiatedItem) {
             if (instantiatedItem.Item.BuyPrice(sourceUnitController) <= 0 || instantiatedItem.Item.GetSellPrice(instantiatedItem, sourceUnitController).Key == null) {
-                messageFeedManager.WriteMessage(sourceUnitController, $"The vendor does not want to buy the {instantiatedItem.DisplayName}");
+                sourceUnitController.WriteMessageFeedMessage($"The vendor does not want to buy the {instantiatedItem.DisplayName}");
                 return false;
             }
             KeyValuePair<Currency, int> sellAmount = instantiatedItem.Item.GetSellPrice(instantiatedItem, sourceUnitController);
@@ -109,7 +109,7 @@ namespace AnyRPG {
             instantiatedItem.Slot.RemoveItem(instantiatedItem);
 
             string priceString = currencyConverter.GetCombinedPriceString(sellAmount.Key, sellAmount.Value);
-            messageFeedManager.WriteMessage(sourceUnitController, $"Sold {instantiatedItem.DisplayName} for {priceString}");
+            sourceUnitController.WriteMessageFeedMessage($"Sold {instantiatedItem.DisplayName} for {priceString}");
 
             return true;
         }
@@ -155,7 +155,7 @@ namespace AnyRPG {
                     }
                 }
             } else {
-                messageFeedManager.WriteMessage(sourceUnitController, $"You cannot afford {vendorItem.Item.DisplayName}");
+                sourceUnitController.WriteMessageFeedMessage($"You cannot afford {vendorItem.Item.DisplayName}");
             }
         }
 
@@ -182,7 +182,7 @@ namespace AnyRPG {
                 networkManagerServer.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, vendorItem.Item.ResourceName, vendorItem.Quantity);
             }
 
-            messageFeedManager.WriteMessage(sourceUnitController, $"Purchased {vendorItem.Item.DisplayName} for {priceString}");
+            sourceUnitController.WriteMessageFeedMessage($"Purchased {vendorItem.Item.DisplayName} for {priceString}");
         }
 
         public void ProcessQuantityNotification(VendorItem vendorItem, int newQuantity) {

@@ -48,9 +48,9 @@ namespace AnyRPG {
         // game manager references
         protected UIManager uIManager = null;
         protected LogManager logManager = null;
-        protected DialogManager dialogManager = null;
+        protected DialogManagerClient dialogManagerClient = null;
         protected PlayerManager playerManager = null;
-        protected QuestGiverManager questGiverManager = null;
+        protected QuestGiverManagerClient questGiverManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -60,9 +60,9 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             uIManager = systemGameManager.UIManager;
             logManager = systemGameManager.LogManager;
-            dialogManager = systemGameManager.DialogManager;
+            dialogManagerClient = systemGameManager.DialogManagerClient;
             playerManager = systemGameManager.PlayerManager;
-            questGiverManager = systemGameManager.QuestGiverManager;
+            questGiverManager = systemGameManager.QuestGiverManagerClient;
         }
 
         public void CancelAction() {
@@ -73,17 +73,13 @@ namespace AnyRPG {
         public void ConfirmAction() {
             //Debug.Log("NewGameMenuController.ConfirmAction(): dialogIndex: " + dialogIndex + "; DialogNode Count: " + MyDialog.MyDialogNodes.Count);
             dialogIndex++;
-            if (dialogIndex >= dialogManager.Dialog.DialogNodes.Count) {
-                dialogManager.Dialog.SetTurnedIn(playerManager.UnitController, true);
-                if (dialogManager.Quest == null) {
-
-                    // next line is no longer true because onconfirmaction calls a prerequisiteupdate on the dialog controller
-                    // no one is currently subscribed so safe to set turnedIn at bottom because nothing here depends on it being set yet
-
-                    dialogManager.ConfirmAction(playerManager.UnitController);
+            if (dialogIndex >= dialogManagerClient.Dialog.DialogNodes.Count) {
+                if (dialogManagerClient.Quest == null) {
+                    dialogManagerClient.RequestTurnInDialog(playerManager.UnitController);
                     uIManager.dialogWindow.CloseWindow();
                 } else {
-                    if (!dialogManager.Quest.TurnedIn(playerManager.UnitController)) {
+                    dialogManagerClient.RequestTurnInQuestDialog(playerManager.UnitController);
+                    if (!dialogManagerClient.Quest.TurnedIn(playerManager.UnitController)) {
                         DisplayQuestText();
                         continueButton.gameObject.SetActive(false);
                         viewQuestButton.gameObject.SetActive(true);
@@ -108,50 +104,50 @@ namespace AnyRPG {
 
         public void DisplayQuestText() {
             //Debug.Log("DialogPanelController.DisplayQuestText()");
-            if (dialogManager.Quest != null) {
-                dialogText.text = dialogManager.Quest.GetObjectiveDescription(playerManager.UnitController);
+            if (dialogManagerClient.Quest != null) {
+                dialogText.text = dialogManagerClient.Quest.GetObjectiveDescription(playerManager.UnitController);
             }
         }
 
         public void ViewQuest() {
             uIManager.questGiverWindow.OpenWindow();
-            playerManager.UnitController.CharacterQuestLog.ShowQuestGiverDescription(dialogManager.Quest, null);
+            playerManager.UnitController.CharacterQuestLog.ShowQuestGiverDescription(dialogManagerClient.Quest, null);
             uIManager.dialogWindow.CloseWindow();
         }
 
         public void AcceptQuest() {
             //Debug.Log("DialogPanelController.AcceptQuest()");
-            Quest quest = dialogManager.Quest;
+            Quest quest = dialogManagerClient.Quest;
 
             // CLOSE THIS FIRST SO OTHER WINDOWS AREN'T BLOCKED FROM POPPING
             uIManager.dialogWindow.CloseWindow();
 
-            questGiverManager.RequestAcceptQuestClient(playerManager.UnitController, quest);
+            questGiverManager.RequestAcceptQuest(playerManager.UnitController, quest);
 
             //interactable.CheckForInteractableObjectives(MyQuest.DisplayName);
         }
 
         public void DisplayNodeText() {
-            if (dialogIndex > dialogManager.Dialog.DialogNodes.Count + 1) {
+            if (dialogIndex > dialogManagerClient.Dialog.DialogNodes.Count + 1) {
                 //Debug.Log("Past last node index.  will not display");
                 return;
             }
             if (characterNameText != null) {
-                characterNameText.text = dialogManager.Interactable.DisplayName;
+                characterNameText.text = dialogManagerClient.Interactable.DisplayName;
             }
             
             if (dialogText != null) {
-                dialogText.text = string.Format("<size={0}>{1}</size>", dialogFontSize, dialogManager.Dialog.DialogNodes[dialogIndex].Description);
+                dialogText.text = string.Format("<size={0}>{1}</size>", dialogFontSize, dialogManagerClient.Dialog.DialogNodes[dialogIndex].Description);
             }
 
-            logManager.WriteChatMessageClient(dialogManager.Dialog.DialogNodes[dialogIndex].Description);
-            if (dialogManager.Dialog.DialogNodes[dialogIndex].AudioClip != null) {
-                audioManager.PlayVoice(dialogManager.Dialog.DialogNodes[dialogIndex].AudioClip);
+            logManager.WriteChatMessageClient(dialogManagerClient.Dialog.DialogNodes[dialogIndex].Description);
+            if (dialogManagerClient.Dialog.DialogNodes[dialogIndex].AudioClip != null) {
+                audioManager.PlayVoice(dialogManagerClient.Dialog.DialogNodes[dialogIndex].AudioClip);
             }
 
             if (buttonText != null) {
-                if (dialogManager.Dialog.DialogNodes[dialogIndex].NextOption != string.Empty) {
-                    buttonText.text = dialogManager.Dialog.DialogNodes[dialogIndex].NextOption;
+                if (dialogManagerClient.Dialog.DialogNodes[dialogIndex].NextOption != string.Empty) {
+                    buttonText.text = dialogManagerClient.Dialog.DialogNodes[dialogIndex].NextOption;
                 } else {
                     buttonText.text = defaultNextText;
                 }
@@ -180,7 +176,7 @@ namespace AnyRPG {
             acceptQuestButton.gameObject.SetActive(false);
             continueButton.gameObject.SetActive(true);
             dialogIndex = 0;
-            uIManager.dialogWindow.SetWindowTitle(dialogManager.Interactable.DisplayName);
+            uIManager.dialogWindow.SetWindowTitle(dialogManagerClient.Interactable.DisplayName);
 
             SetNavigationController(uINavigationControllers[0]);
 
@@ -191,7 +187,7 @@ namespace AnyRPG {
         }
 
         private void TargetInitialization() {
-            dialogManager.Interactable.ConfigureDialogPanel(this);
+            dialogManagerClient.Interactable.ConfigureDialogPanel(this);
         }
 
         public void ConfigurePortrait(Sprite icon) {
@@ -216,7 +212,7 @@ namespace AnyRPG {
 
         public override void ReceiveClosedWindowNotification() {
             base.ReceiveClosedWindowNotification();
-            dialogManager.EndInteraction();
+            dialogManagerClient.EndInteraction();
 
             viewQuestButton.gameObject.SetActive(false);
             acceptQuestButton.gameObject.SetActive(false);

@@ -442,28 +442,28 @@ namespace AnyRPG {
             clientConnector.InteractWithOptionClient(sourceUnitController, targetInteractable, componentIndex, choiceIndex);
         }
 
-        public override void SetPlayerCharacterClass(string className) {
-            clientConnector.SetPlayerCharacterClass(className);
+        public override void RequestSetPlayerCharacterClass(Interactable interactable, int componentIndex) {
+            clientConnector.RequestSetPlayerCharacterClass(interactable, componentIndex);
         }
 
-        public override void SetPlayerCharacterSpecialization(string specializationName) {
-            clientConnector.SetPlayerCharacterSpecialization(specializationName);
+        public override void SetPlayerCharacterSpecialization(Interactable interactable, int componentIndex) {
+            clientConnector.RequestSetPlayerCharacterSpecialization(interactable, componentIndex);
         }
 
-        public override void SetPlayerFaction(string factionName) {
-            clientConnector.SetPlayerFaction(factionName);
+        public override void RequestSetPlayerFaction(Interactable interactable, int componentIndex) {
+            clientConnector.RequestSetPlayerFaction(interactable, componentIndex);
         }
 
-        public override void LearnSkill(string skillName) {
-            clientConnector.LearnSkill(skillName);
+        public override void RequestLearnSkill(Interactable interactable, int componentIndex, int skillId) {
+            clientConnector.RequestLearnSkill(interactable, componentIndex, skillId);
         }
 
-        public override void AcceptQuest(string questName) {
-            clientConnector.AcceptQuest(questName);
+        public override void RequestAcceptQuest(Interactable interactable, int componentIndex, Quest quest) {
+            clientConnector.RequestAcceptQuest(interactable, componentIndex, quest);
         }
 
-        public override void CompleteQuest(string questName, QuestRewardChoices questRewardChoices) {
-            clientConnector.CompleteQuest(questName, questRewardChoices);
+        public override void RequestCompleteQuest(Interactable interactable, int componentIndex, Quest quest, QuestRewardChoices questRewardChoices) {
+            clientConnector.RequestCompleteQuest(interactable, componentIndex, quest, questRewardChoices);
         }
 
         public override void SellVendorItem(Interactable interactable, int componentIndex, int itemInstanceId) {
@@ -474,6 +474,16 @@ namespace AnyRPG {
             Debug.Log($"FishNetNetworkController.RequestSpawnUnit({unitProfileName}) {interactable.gameObject.name} {componentIndex} {unitLevel} {extraLevels} {useDynamicLevel} {unitToughnessName}");
 
             clientConnector.RequestSpawnUnit(interactable, componentIndex, unitLevel, extraLevels, useDynamicLevel, unitProfileName, unitToughnessName);
+        }
+
+        public override void RequestTurnInDialog(Interactable interactable, int componentIndex, Dialog dialog) {
+            Debug.Log($"FishNetNetworkController.RequestTurnInDialog({dialog.ResourceName})");
+            clientConnector.RequestTurnInDialog(interactable, componentIndex, dialog);
+        }
+
+        public override void RequestTurnInQuestDialog(Dialog dialog) {
+            Debug.Log($"FishNetNetworkController.RequestTurnInQuestDialog({dialog.ResourceName})");
+            clientConnector.RequestTurnInQuestDialog(dialog);
         }
 
         public override void BuyItemFromVendor(Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName) {
@@ -500,14 +510,14 @@ namespace AnyRPG {
             clientConnector.RequestCancelCrafting();
         }
 
-        public override void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            clientConnector.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
+        public override void RequestUpdatePlayerAppearance(Interactable interactable, int componentIndex, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            clientConnector.RequestUpdatePlayerAppearance(interactable, componentIndex, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
-        public override void RequestChangePlayerName(string newName) {
+        public override void RequestChangePlayerName(Interactable interactable, int componentIndex, string newName) {
             Debug.Log($"FishNetNetworkController.RequestChangePlayerName({newName})");
 
-            clientConnector.RequestChangePlayerName(newName);
+            clientConnector.RequestChangePlayerName(interactable, componentIndex, newName);
         }
 
         public override void RequestSpawnPet(UnitProfile unitProfile) {

@@ -15,9 +15,6 @@ namespace AnyRPG {
         public event System.Action<UnitController, int> OnLevelChanged = delegate { };
         public event System.Action<UnitController, CharacterClass, CharacterClass> OnClassChange = delegate { };
         public event System.Action<UnitController, ClassSpecialization, ClassSpecialization> OnSpecializationChange = delegate { };
-        //public event System.Action<UnitController, string> OnInteractionStarted = delegate { };
-        public event System.Action<UnitController, Interactable> OnInteractionCompleted = delegate { };
-        public event System.Action<UnitController, InteractableOptionComponent> OnInteractionWithOptionCompleted = delegate { };
         public event System.Action<UnitController, Item> OnItemCountChanged = delegate { };
         public event System.Action<IAbilityCaster, UnitController, int, string> OnTakeDamage = delegate { };
         public event System.Action<UnitController> OnReputationChange = delegate { };
@@ -124,21 +121,6 @@ namespace AnyRPG {
 
         public void NotifyOnTakeDamage(IAbilityCaster source, UnitController target, int damage, string abilityName) {
             OnTakeDamage(source, target, damage, abilityName);
-        }
-
-        /*
-        public void NotifyOnInteractionStarted(UnitController sourceUnitController, string interactableName) {
-            //Debug.Log("SystemEventManager.NotifyOnInteractionStarted(" + interactableName + ")");
-            OnInteractionStarted(sourceUnitController, interactableName);
-        }
-        */
-
-        public void NotifyOnInteractionCompleted(UnitController sourceUnitController, Interactable interactable) {
-            OnInteractionCompleted(sourceUnitController, interactable);
-        }
-
-        public void NotifyOnInteractionWithOptionCompleted(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
-            OnInteractionWithOptionCompleted(sourceUnitController, interactableOption);
         }
 
         public void NotifyOnLevelChanged(UnitController sourceUnitController, int newLevel) {

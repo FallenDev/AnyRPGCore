@@ -78,9 +78,9 @@ namespace AnyRPG {
         private LogManager logManager = null;
         private SystemItemManager systemItemManager = null;
         private CurrencyConverter currencyConverter = null;
-        private DialogManager dialogManager = null;
+        private DialogManagerClient dialogManager = null;
         private SystemEventManager systemEventManager = null;
-        private QuestGiverManager questGiverManager = null;
+        private QuestGiverManagerClient questGiverManager = null;
 
         public QuestGiverQuestScript SelectedQuestGiverQuestScript { get => selectedQuestGiverQuestScript; set => selectedQuestGiverQuestScript = value; }
         //public Interactable MyInteractable { get => interactable; set => interactable = value; }
@@ -106,9 +106,9 @@ namespace AnyRPG {
             logManager = systemGameManager.LogManager;
             systemItemManager = systemGameManager.SystemItemManager;
             currencyConverter = systemGameManager.CurrencyConverter;
-            dialogManager = systemGameManager.DialogManager;
+            dialogManager = systemGameManager.DialogManagerClient;
             systemEventManager = systemGameManager.SystemEventManager;
-            questGiverManager = systemGameManager.QuestGiverManager;
+            questGiverManager = systemGameManager.QuestGiverManagerClient;
         }
 
         private void HandlePlayerUnitSpawn(UnitController unitController) {
@@ -400,7 +400,7 @@ namespace AnyRPG {
                 // DO THIS HERE SO IT DOESN'T INSTA-CLOSE ANY AUTO-POPUP BACK TO HERE ON ACCEPT QUEST CAUSING STATUS CHANGE
                 uIManager.questGiverWindow.CloseWindow();
 
-                questGiverManager.RequestAcceptQuestClient(playerManager.UnitController, currentQuest);
+                questGiverManager.RequestAcceptQuest(playerManager.UnitController, currentQuest);
 
                 if (questGiver != null) {
                     // notify a bag item so it can remove itself
@@ -511,7 +511,7 @@ namespace AnyRPG {
             // DO THIS HERE OR TURNING THE QUEST RESULTING IN THIS WINDOW RE-OPENING WOULD JUST INSTA-CLOSE IT INSTEAD
             uIManager.questGiverWindow.CloseWindow();
 
-            questGiverManager.CompleteQuest(playerManager.UnitController, currentQuest, questRewardChoices);
+            questGiverManager.RequestCompleteQuest(playerManager.UnitController, currentQuest, questRewardChoices);
             //playerManager.UnitController.CharacterQuestLog.TurnInQuest(currentQuest);
 
         }

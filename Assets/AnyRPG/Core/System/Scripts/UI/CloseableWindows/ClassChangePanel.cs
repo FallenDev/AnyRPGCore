@@ -41,7 +41,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
-        private ClassChangeManager classChangeManager = null;
+        private ClassChangeManagerClient classChangeManager = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -64,10 +64,10 @@ namespace AnyRPG {
 
             ClearTraitRewardIcons();
             // show trait rewards
-            CapabilityProps capabilityProps = classChangeManager.CharacterClass.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
+            CapabilityProps capabilityProps = classChangeManager.ClassChangeProps.CharacterClass.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
             if (playerManager.UnitController.BaseCharacter.Faction != null) {
                 CapabilityConsumerSnapshot capabilityConsumerSnapshot = new CapabilityConsumerSnapshot(playerManager.UnitController.BaseCharacter, systemGameManager);
-                capabilityConsumerSnapshot.CharacterClass = classChangeManager.CharacterClass;
+                capabilityConsumerSnapshot.CharacterClass = classChangeManager.ClassChangeProps.CharacterClass;
                 CapabilityProps capabilityPropsFaction = playerManager.UnitController.BaseCharacter.Faction.GetFilteredCapabilities(capabilityConsumerSnapshot, false);
                 capabilityProps = capabilityPropsFaction.Join(capabilityProps);
             }
@@ -101,10 +101,10 @@ namespace AnyRPG {
 
             ClearRewardIcons();
             // show ability rewards
-            CapabilityProps capabilityProps = classChangeManager.CharacterClass.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
+            CapabilityProps capabilityProps = classChangeManager.ClassChangeProps.CharacterClass.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
             if (playerManager.UnitController.BaseCharacter.Faction != null) {
                 CapabilityConsumerSnapshot capabilityConsumerSnapshot = new CapabilityConsumerSnapshot(playerManager.UnitController.BaseCharacter, systemGameManager);
-                capabilityConsumerSnapshot.CharacterClass = classChangeManager.CharacterClass;
+                capabilityConsumerSnapshot.CharacterClass = classChangeManager.ClassChangeProps.CharacterClass;
                 CapabilityProps capabilityPropsFaction = playerManager.UnitController.BaseCharacter.Faction.GetFilteredCapabilities(capabilityConsumerSnapshot, false);
                 capabilityProps = capabilityPropsFaction.Join(capabilityProps);
             }
@@ -158,7 +158,7 @@ namespace AnyRPG {
 
         public void ConfirmAction() {
             //Debug.Log("ClassChangePanelController.ConfirmAction()");
-            classChangeManager.ChangeCharacterClass();
+            classChangeManager.RequestChangeCharacterClass(playerManager.UnitController);
             uIManager.classChangeWindow.CloseWindow();
         }
 
@@ -166,8 +166,8 @@ namespace AnyRPG {
             //Debug.Log("ClassChangePanelController.OnOpenWindow()");
             base.ProcessOpenWindowNotification();
             
-            uIManager.classChangeWindow.SetWindowTitle(classChangeManager.CharacterClass.DisplayName);
-            characterClassButton.AddCharacterClass(classChangeManager.CharacterClass);
+            uIManager.classChangeWindow.SetWindowTitle(classChangeManager.ClassChangeProps.CharacterClass.DisplayName);
+            characterClassButton.AddCharacterClass(classChangeManager.ClassChangeProps.CharacterClass);
             ShowAbilityRewards();
             ShowTraitRewards();
 

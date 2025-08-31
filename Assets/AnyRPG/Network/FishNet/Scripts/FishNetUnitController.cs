@@ -286,6 +286,7 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnMountUnitSpawn += HandleMountUnitSpawnServer;
             unitController.UnitEventController.OnDespawnMountUnit += HandleDespawnMountUnitServer;
             unitController.UnitEventController.OnWriteMessageFeedMessage += HandleWriteMessageFeedMessageServer;
+            unitController.UnitEventController.OnDialogCompleted += HandleDialogCompletedServer;
         }
 
 
@@ -385,6 +386,20 @@ namespace AnyRPG {
             //unitController.UnitEventController.OnMountUnitSpawn -= HandleMountUnitSpawnServer;
             unitController.UnitEventController.OnDespawnMountUnit -= HandleDespawnMountUnitServer;
             unitController.UnitEventController.OnWriteMessageFeedMessage -= HandleWriteMessageFeedMessageServer;
+            unitController.UnitEventController.OnDialogCompleted -= HandleDialogCompletedServer;
+        }
+
+        private void HandleDialogCompletedServer(UnitController controller, Dialog dialog) {
+            HandleDialogCompletedClient(dialog.ResourceName);
+        }
+
+        [ObserversRpc]
+        private void HandleDialogCompletedClient(string dialogResourceName) {
+            Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogResourceName);
+            if (dialog == null) {
+                return;
+            }
+            unitController.CharacterDialogManager.TurnInDialog(dialog);
         }
 
         private void HandleWriteMessageFeedMessageServer(string messageText) {

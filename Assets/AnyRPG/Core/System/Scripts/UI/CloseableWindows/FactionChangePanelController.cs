@@ -35,7 +35,7 @@ namespace AnyRPG {
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
         private NewGameManager newGameManager = null;
-        private FactionChangeManager factionChangeManager = null;
+        private FactionChangeManagerClient factionChangeManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -50,7 +50,7 @@ namespace AnyRPG {
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
             newGameManager = systemGameManager.NewGameManager;
-            factionChangeManager = systemGameManager.FactionChangeManager;
+            factionChangeManagerClient = systemGameManager.FactionChangeManagerClient;
         }
 
         public void ShowAbilityRewards() {
@@ -59,7 +59,7 @@ namespace AnyRPG {
             ClearRewardIcons();
             // show ability rewards
             // new game manager ? isn't this only in-game ?
-            CapabilityProps capabilityProps = factionChangeManager.Faction.GetFilteredCapabilities(newGameManager);
+            CapabilityProps capabilityProps = factionChangeManagerClient.FactionChangeProps.Faction.GetFilteredCapabilities(newGameManager);
             if (capabilityProps.AbilityList.Count > 0) {
                 abilitiesArea.gameObject.SetActive(true);
             } else {
@@ -97,21 +97,22 @@ namespace AnyRPG {
 
         public void ConfirmAction() {
             //Debug.Log("FactionChangePanelController.ConfirmAction()");
-            factionChangeManager.ChangePlayerFaction();
+
+            factionChangeManagerClient.RequestChangeCharacterFaction(playerManager.UnitController);
             uIManager.factionChangeWindow.CloseWindow();
         }
 
         public override void ProcessOpenWindowNotification() {
             base.ProcessOpenWindowNotification();
-            uIManager.factionChangeWindow.SetWindowTitle(factionChangeManager.Faction.DisplayName);
-            factionButton.AddFaction(factionChangeManager.Faction);
+            uIManager.factionChangeWindow.SetWindowTitle(factionChangeManagerClient.FactionChangeProps.Faction.DisplayName);
+            factionButton.AddFaction(factionChangeManagerClient.FactionChangeProps.Faction);
             ShowAbilityRewards();
         }
 
         public override void ReceiveClosedWindowNotification() {
             //Debug.Log("FactionChangePanelController.OnCloseWindow()");
             base.ReceiveClosedWindowNotification();
-            factionChangeManager.EndInteraction();
+            factionChangeManagerClient.EndInteraction();
         }
     }
 

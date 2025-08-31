@@ -1,4 +1,3 @@
-using AnyRPG;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -138,37 +137,64 @@ namespace AnyRPG {
         private WeatherManagerServer weatherManagerServer = null;
 
         [SerializeField]
-        private DialogManager dialogManager = null;
+        private DialogManagerClient dialogManagerClient = null;
 
         [SerializeField]
-        private ClassChangeManager classChangeManager = null;
+        private DialogManagerServer dialogManagerServer = null;
 
         [SerializeField]
-        private FactionChangeManager factionChangeManager = null;
+        private ClassChangeManagerClient classChangeManagerClient = null;
 
         [SerializeField]
-        private SpecializationChangeManager specializationChangeManager = null;
+        private ClassChangeManagerServer classChangeManagerServer = null;
+
+        [SerializeField]
+        private FactionChangeManagerClient factionChangeManagerClient = null;
+
+        [SerializeField]
+        private FactionChangeManagerServer factionChangeManagerServer = null;
+
+        [SerializeField]
+        private SpecializationChangeManagerClient specializationChangeManagerClient = null;
+
+        [SerializeField]
+        private SpecializationChangeManagerServer specializationChangeManagerServer = null;
 
         [SerializeField]
         private MusicPlayerManager musicPlayerManager = null;
 
         [SerializeField]
-        private NameChangeManager nameChangeManager = null;
+        private NameChangeManagerClient nameChangeManagerClient = null;
 
         [SerializeField]
-        private SkillTrainerManager skillTrainerManager = null;
+        private NameChangeManagerServer nameChangeManagerServer = null;
 
         [SerializeField]
-        private QuestGiverManager questGiverManager = null;
+        private SkillTrainerManagerClient skillTrainerManagerClient = null;
+
+        [SerializeField]
+        private SkillTrainerManagerServer skillTrainerManagerServer = null;
+
+        [SerializeField]
+        private QuestGiverManagerClient questGiverManagerClient = null;
+
+        [SerializeField]
+        private QuestGiverManagerServer questGiverManagerServer = null;
 
         [SerializeField]
         private UnitSpawnManager unitSpawnManager = null;
 
         [SerializeField]
-        private VendorManager vendorManager = null;
+        private VendorManagerClient vendorManagerClient = null;
 
         [SerializeField]
-        private CharacterCreatorInteractableManager characterCreatorInteractableManager = null;
+        private VendorManagerServer vendorManagerServer = null;
+
+        [SerializeField]
+        private CharacterAppearanceManagerClient characterAppearanceManagerClient = null;
+
+        [SerializeField]
+        private CharacterAppearanceManagerServer characterAppearanceManagerServer = null;
 
         [SerializeField]
         private NetworkManagerClient networkManagerClient = null;
@@ -229,21 +255,30 @@ namespace AnyRPG {
         public TimeOfDayManagerServer TimeOfDayManagerServer { get => timeOfDayManagerServer; set => timeOfDayManagerServer = value; }
         public WeatherManagerClient WeatherManagerClient { get => weatherManagerClient; set => weatherManagerClient = value; }
         public WeatherManagerServer WeatherManagerServer { get => weatherManagerServer; set => weatherManagerServer = value; }
-        public DialogManager DialogManager { get => dialogManager; set => dialogManager = value; }
-        public ClassChangeManager ClassChangeManager { get => classChangeManager; set => classChangeManager = value; }
-        public FactionChangeManager FactionChangeManager { get => factionChangeManager; set => factionChangeManager = value; }
-        public SpecializationChangeManager SpecializationChangeManager { get => specializationChangeManager; set => specializationChangeManager = value; }
+        public DialogManagerClient DialogManagerClient { get => dialogManagerClient; set => dialogManagerClient = value; }
+        public DialogManagerServer DialogManagerServer { get => dialogManagerServer; set => dialogManagerServer = value; }
+        public ClassChangeManagerClient ClassChangeManager { get => classChangeManagerClient; set => classChangeManagerClient = value; }
+        public ClassChangeManagerServer ClassChangeManagerServer { get => classChangeManagerServer; set => classChangeManagerServer = value; }
+        public FactionChangeManagerClient FactionChangeManagerClient { get => factionChangeManagerClient; set => factionChangeManagerClient = value; }
+        public FactionChangeManagerServer FactionChangeManagerServer { get => factionChangeManagerServer; set => factionChangeManagerServer = value; }
+        public SpecializationChangeManagerClient SpecializationChangeManagerClient { get => specializationChangeManagerClient; set => specializationChangeManagerClient = value; }
+        public SpecializationChangeManagerServer SpecializationChangeManagerServer { get => specializationChangeManagerServer; set => specializationChangeManagerServer = value; }
         public MusicPlayerManager MusicPlayerManager { get => musicPlayerManager; set => musicPlayerManager = value; }
-        public NameChangeManager NameChangeManager { get => nameChangeManager; set => nameChangeManager = value; }
-        public SkillTrainerManager SkillTrainerManager { get => skillTrainerManager; set => skillTrainerManager = value; }
+        public NameChangeManagerClient NameChangeManagerClient { get => nameChangeManagerClient; set => nameChangeManagerClient = value; }
+        public NameChangeManagerServer NameChangeManagerServer { get => nameChangeManagerServer; set => nameChangeManagerServer = value; }
+        public SkillTrainerManagerClient SkillTrainerManagerClient { get => skillTrainerManagerClient; set => skillTrainerManagerClient = value; }
+        public SkillTrainerManagerServer SkillTrainerManagerServer { get => skillTrainerManagerServer; set => skillTrainerManagerServer = value; }
         public UnitSpawnManager UnitSpawnManager { get => unitSpawnManager; set => unitSpawnManager = value; }
-        public VendorManager VendorManager { get => vendorManager; set => vendorManager = value; }
-        public CharacterCreatorInteractableManager CharacterCreatorInteractableManager { get => characterCreatorInteractableManager; set => characterCreatorInteractableManager = value; }
+        public VendorManagerClient VendorManagerClient { get => vendorManagerClient; set => vendorManagerClient = value; }
+        public VendorManagerServer VendorManagerServer { get => vendorManagerServer; set => vendorManagerServer = value; }
+        public CharacterAppearanceManagerClient CharacterAppearanceManagerClient { get => characterAppearanceManagerClient; set => characterAppearanceManagerClient = value; }
+        public CharacterAppearanceManagerServer CharacterAppearanceManagerServer { get => characterAppearanceManagerServer; set => characterAppearanceManagerServer = value; }
         public NetworkManagerClient NetworkManagerClient { get => networkManagerClient; set => networkManagerClient = value; }
         public NetworkManagerServer NetworkManagerServer { get => networkManagerServer; set => networkManagerServer = value; }
         public CharacterManager CharacterManager { get => characterManager; set => characterManager = value; }
         public GameMode GameMode { get => gameMode; }
-        public QuestGiverManager QuestGiverManager { get => questGiverManager; set => questGiverManager = value; }
+        public QuestGiverManagerClient QuestGiverManagerClient { get => questGiverManagerClient; set => questGiverManagerClient = value; }
+        public QuestGiverManagerServer QuestGiverManagerServer { get => questGiverManagerServer; set => questGiverManagerServer = value; }
 
         private void Awake() {
             Init();
@@ -320,17 +355,25 @@ namespace AnyRPG {
             timeOfDayManagerClient.Configure(this);
             weatherManagerClient.Configure(this);
             weatherManagerServer.Configure(this);
-            dialogManager.Configure(this);
-            classChangeManager.Configure(this);
-            factionChangeManager.Configure(this);
-            specializationChangeManager.Configure(this);
+            dialogManagerClient.Configure(this);
+            dialogManagerServer.Configure(this);
+            classChangeManagerClient.Configure(this);
+            classChangeManagerServer.Configure(this);
+            factionChangeManagerClient.Configure(this);
+            factionChangeManagerServer.Configure(this);
+            specializationChangeManagerClient.Configure(this);
+            specializationChangeManagerServer.Configure(this);
             musicPlayerManager.Configure(this);
-            nameChangeManager.Configure(this);
-            skillTrainerManager.Configure(this);
-            questGiverManager.Configure(this);
+            nameChangeManagerClient.Configure(this);
+            nameChangeManagerServer.Configure(this);
+            skillTrainerManagerClient.Configure(this);
+            skillTrainerManagerServer.Configure(this);
+            questGiverManagerClient.Configure(this);
+            questGiverManagerServer.Configure(this);
             unitSpawnManager.Configure(this);
-            vendorManager.Configure(this);
-            characterCreatorInteractableManager.Configure(this);
+            vendorManagerClient.Configure(this);
+            vendorManagerServer.Configure(this);
+            characterAppearanceManagerClient.Configure(this);
             networkManagerClient.Configure(this);
             networkManagerServer.Configure(this);
             characterManager.Configure(this);

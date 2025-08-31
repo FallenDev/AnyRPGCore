@@ -82,7 +82,7 @@ namespace AnyRPG {
         protected LevelManager levelManager = null;
         protected CameraManager cameraManager = null;
         protected SystemAbilityController systemAbilityController = null;
-        protected ClassChangeManager classChangeManager = null;
+        protected ClassChangeManagerClient classChangeManager = null;
 
         protected LogManager logManager = null;
         protected CastTargettingManager castTargettingManager = null;
@@ -209,50 +209,6 @@ namespace AnyRPG {
             }
             DespawnPlayerConnection();
             saveManager.ClearSystemManagedSaveData();
-        }
-
-        public void SetPlayerCharacterClass(CharacterClass newCharacterClass) {
-            //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
-            if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerClient.SetPlayerCharacterClass(newCharacterClass.ResourceName);
-                return;
-            }
-            if (newCharacterClass != null) {
-                playerManagerServer.SetPlayerCharacterClass(newCharacterClass, 0);
-            }
-        }
-
-        public void SetPlayerCharacterSpecialization(ClassSpecialization newClassSpecialization) {
-            //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
-            if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerClient.SetPlayerCharacterSpecialization(newClassSpecialization.ResourceName);
-                return;
-            }
-            if (newClassSpecialization != null) {
-                playerManagerServer.SetPlayerCharacterSpecialization(newClassSpecialization, 0);
-            }
-        }
-
-        public void LearnSkill(Skill skill) {
-            //Debug.Log("PlayerManager.SetPlayerCharacterClass(" + characterClassName + ")");
-            if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerClient.LearnSkill(skill.ResourceName);
-                return;
-            }
-            if (skill != null) {
-                playerManagerServer.LearnSkill(skill, 0);
-            }
-        }
-
-        public void SetPlayerFaction(Faction newFaction) {
-            //Debug.Log("PlayerManager.SetPlayerFaction(" + factionName + ")");
-            if (systemGameManager.GameMode == GameMode.Network) {
-                networkManagerClient.SetPlayerFaction(newFaction.ResourceName);
-                return;
-            }
-            if (newFaction != null) {
-                playerManagerServer.SetPlayerFaction(newFaction, 0);
-            }
         }
 
         public void HandleLevelLoad() {
@@ -1048,18 +1004,6 @@ namespace AnyRPG {
 
         public void HandleImmuneToEffect(AbilityEffectContext abilityEffectContext) {
             combatTextManager.SpawnCombatText(activeUnitController, 0, CombatTextType.immune, CombatMagnitude.normal, abilityEffectContext);
-        }
-
-        public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            Debug.Log($"PlayerManager.RequestUpdatePlayerAppearance({unitProfileName})");
-
-            if (systemGameManager.GameMode == GameMode.Local) {
-                //Debug.Log("PlayerManager.RequestUpdatePlayerAppearance() - local mode, updating appearance string");
-                playerManagerServer.UpdatePlayerAppearance(0, unitProfileName, appearanceString, swappableMeshSaveData);
-            } else {
-                //Debug.Log("PlayerManager.RequestUpdatePlayerAppearance() - server mode, sending request to server");
-                networkManagerClient.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
-            }
         }
 
         public void RequestSpawnPet(UnitProfile unitProfile) {

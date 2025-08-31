@@ -36,7 +36,7 @@ namespace AnyRPG {
         // game manager references
         private ObjectPooler objectPooler = null;
         private UIManager uIManager = null;
-        private SkillTrainerManager skillTrainerManager = null;
+        private SkillTrainerManagerClient skillTrainerManagerClient = null;
         private PlayerManager playerManager = null;
         private SystemEventManager systemEventManager = null;
 
@@ -55,7 +55,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             uIManager = systemGameManager.UIManager;
-            skillTrainerManager = systemGameManager.SkillTrainerManager;
+            skillTrainerManagerClient = systemGameManager.SkillTrainerManagerClient;
             playerManager = systemGameManager.PlayerManager;
             systemEventManager = systemGameManager.SystemEventManager;
         }
@@ -77,15 +77,15 @@ namespace AnyRPG {
 
             SkillTrainerSkillScript firstAvailableSkill = null;
 
-            foreach (Skill skill in skillTrainerManager.GetAvailableSkillList(playerManager.UnitController)) {
+            foreach (KeyValuePair<int, Skill> skillPair in skillTrainerManagerClient.SkillTrainerComponent.GetAvailableSkillList(playerManager.UnitController)) {
                 GameObject go = objectPooler.GetPooledObject(skillPrefab, availableArea.transform);
                 SkillTrainerSkillScript qs = go.GetComponent<SkillTrainerSkillScript>();
                 qs.Configure(systemGameManager);
-                qs.Text.text = skill.DisplayName;
+                qs.Text.text = skillPair.Value.DisplayName;
                 qs.Text.color = Color.white;
-                qs.SetSkill(this, skill);
+                qs.SetSkill(this, skillPair);
                 skillScripts.Add(qs);
-                skills.Add(skill);
+                skills.Add(skillPair.Value);
                 uINavigationControllers[0].AddActiveButton(qs);
                 if (firstAvailableSkill == null) {
                     firstAvailableSkill = qs;
@@ -114,7 +114,7 @@ namespace AnyRPG {
         // Enable or disable learn and unlearn buttons based on what is selected
         private void UpdateButtons(Skill newSkill) {
             //Debug.Log("SkillTrainerUI.UpdateButtons(" + skillName + ")");
-            if (skillTrainerManager.SkillIsKnown(playerManager.UnitController, newSkill)) {
+            if (skillTrainerManagerClient.SkillIsKnown(playerManager.UnitController, newSkill)) {
                 learnButton.gameObject.SetActive(false);
                 learnButton.Button.enabled = false;
                 unlearnButton.gameObject.SetActive(true);
@@ -194,7 +194,7 @@ namespace AnyRPG {
         public void LearnSkill() {
             //Debug.Log("SkillTrainerUI.LearnSkill()");
             if (currentSkill != null) {
-                skillTrainerManager.LearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.Skill);
+                skillTrainerManagerClient.RequestLearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.SkillId);
                 selectedSkillTrainerSkillScript = null;
                 ClearDescription();
                 //ShowSkills();
@@ -204,7 +204,7 @@ namespace AnyRPG {
         public void UnlearnSkill() {
             //Debug.Log("SkillTrainerUI.UnlearnSkill()");
             if (selectedSkillTrainerSkillScript != null && selectedSkillTrainerSkillScript.Skill != null) {
-                skillTrainerManager.UnlearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.Skill);
+                skillTrainerManagerClient.UnlearnSkill(playerManager.UnitController, selectedSkillTrainerSkillScript.Skill);
                 UpdateButtons(selectedSkillTrainerSkillScript.Skill);
                 //ShowSkills();
             }
@@ -232,7 +232,7 @@ namespace AnyRPG {
             base.ReceiveClosedWindowNotification();
             DeactivateButtons();
             selectedSkillTrainerSkillScript = null;
-            skillTrainerManager.EndInteraction();
+            skillTrainerManagerClient.EndInteraction();
             systemEventManager.OnLearnSkill -= HandleLearnSkill;
             systemEventManager.OnUnLearnSkill -= HandleUnLearnSkill;
         }

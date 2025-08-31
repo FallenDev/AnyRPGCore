@@ -1,15 +1,14 @@
-using AnyRPG;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AnyRPG {
-    public class DialogManager : InteractableOptionManager {
+    public class DialogManagerClient : InteractableOptionManager {
 
         //public event System.Action OnClearSettings = delegate { };
 
+        private DialogComponent dialogComponent = null;
         private Interactable interactable = null;
         private Dialog dialog = null;
         private Quest quest = null;
@@ -27,12 +26,31 @@ namespace AnyRPG {
             BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex, false);
         }
 
-        public void SetDialog(Dialog dialog, Interactable interactable, InteractableOptionComponent interactableOptionComponent, int componentIndex, int choiceIndex) {
+        public void SetDialog(Dialog dialog, Interactable interactable, DialogComponent dialogComponent, int componentIndex, int choiceIndex) {
             //Debug.Log("DialogPanelController.Setup(" + dialog.DisplayName + ", " + interactable.DisplayName + ")");
             this.interactable = interactable;
             this.dialog = dialog;
+            this.dialogComponent = dialogComponent;
 
-            BeginInteraction(interactableOptionComponent, componentIndex, choiceIndex);
+            BeginInteraction(dialogComponent, componentIndex, choiceIndex);
+        }
+
+        public void RequestTurnInDialog(UnitController sourceUnitController) {
+            //Debug.Log("DialogPanelController.Setup(" + (quest == null ? "null" : quest.DisplayName) + ", " + (interactable == null ? "null" : interactable.DisplayName) + ")");
+            if (systemGameManager.GameMode == GameMode.Local) {
+                dialogComponent.TurnInDialog(sourceUnitController, dialog);
+            } else {
+                networkManagerClient.RequestTurnInDialog(dialogComponent.Interactable, componentIndex, dialog);
+            }
+        }
+
+        public void RequestTurnInQuestDialog(UnitController sourceUnitController) {
+            //Debug.Log("DialogPanelController.Setup(" + (quest == null ? "null" : quest.DisplayName) + ", " + (interactable == null ? "null" : interactable.DisplayName) + ")");
+            if (systemGameManager.GameMode == GameMode.Local) {
+                sourceUnitController.CharacterDialogManager.TurnInDialog(dialog);
+            } else {
+                networkManagerClient.RequestTurnInQuestDialog(dialog);
+            }
         }
 
         public override void EndInteraction() {

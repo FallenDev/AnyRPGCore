@@ -10,7 +10,7 @@ namespace AnyRPG {
     public class DialogComponent : InteractableOptionComponent {
 
         // game manager references
-        private DialogManager dialogManager = null;
+        private DialogManagerClient dialogManager = null;
 
         public DialogProps Props { get => interactableOptionProps as DialogProps; }
 
@@ -19,7 +19,7 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            dialogManager = systemGameManager.DialogManager;
+            dialogManager = systemGameManager.DialogManagerClient;
         }
 
         public override string GetInteractionButtonText(UnitController sourceUnitController, int componentIndex = 0, int choiceIndex = 0) {
@@ -139,6 +139,10 @@ namespace AnyRPG {
 
         }
 
+        public void TurnInDialog(UnitController sourceUnitController, Dialog dialog) {
+            sourceUnitController.CharacterDialogManager.TurnInDialog(dialog);
+            NotifyOnConfirmAction(sourceUnitController);
+        }
     }
 
 }

@@ -54,14 +54,8 @@ namespace AnyRPG {
             return sourceUnitController.CharacterSaveManager.GetDialogSaveData(this).turnedIn;
         }
 
-        public void SetTurnedIn(UnitController sourceUnitController, bool turnedIn) {
-            sourceUnitController.CharacterSaveManager.SetDialogTurnedIn(this, turnedIn);
-            if (turnedIn == true) {
-                //Debug.Log(DisplayName + ".Dialog.TurnedIn = true");
-                // these events are for things that need the dialog turned in as a prerequisite
-                sourceUnitController.UnitEventController.NotifyOnDialogCompleted(this);
-                OnDialogCompleted(sourceUnitController);
-            }
+        public void NotifyOnDialogCompleted(UnitController sourceUnitController) {
+            OnDialogCompleted(sourceUnitController);
         }
 
         public override void SetGameManagerReferences() {
@@ -113,22 +107,6 @@ namespace AnyRPG {
         public bool Automatic { get => automatic; set => automatic = value; }
         //public AudioProfile AudioProfile { get => audioProfile; set => audioProfile = value; }
         public bool Repeatable { get => repeatable; set => repeatable = value; }
-
-        /// <summary>
-        /// Set the shown value to false for all dialog Nodes and reset the turned in status
-        /// </summary>
-        public void ResetStatus(UnitController sourceUnitController) {
-            if (repeatable == false) {
-                return;
-            }
-            SetTurnedIn(sourceUnitController, false);
-            sourceUnitController.CharacterSaveManager.ResetDialogNodes(this);
-            /*
-            foreach (DialogNode dialogNode in dialogNodes) {
-                dialogNode.ResetStatus(sourceUnitController);
-            }
-            */
-        }
 
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             base.SetupScriptableObjects(systemGameManager);

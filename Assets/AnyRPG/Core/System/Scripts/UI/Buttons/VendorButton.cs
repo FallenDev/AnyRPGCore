@@ -48,7 +48,7 @@ namespace AnyRPG {
         protected MessageFeedManager messageFeedManager = null;
         protected CurrencyConverter currencyConverter = null;
         protected UIManager uIManager = null;
-        protected VendorManager vendorManager = null;
+        protected VendorManagerClient vendorManager = null;
 
         public bool BuyBackButton { get => buyBackButton; set => buyBackButton = value; }
 
@@ -67,7 +67,7 @@ namespace AnyRPG {
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             currencyConverter = systemGameManager.CurrencyConverter;
             uIManager = systemGameManager.UIManager;
-            vendorManager = systemGameManager.VendorManager;
+            vendorManager = systemGameManager.VendorManagerClient;
         }
 
         public override void SetController(UINavigationController uINavigationController) {
@@ -138,7 +138,7 @@ namespace AnyRPG {
         }
 
         public void ProcessMouseClick() {
-            vendorManager.BuyItemFromVendor(playerManager.UnitController, vendorItem, collectionIndex, itemIndex);
+            vendorManager.RequestBuyItemFromVendor(playerManager.UnitController, vendorItem, collectionIndex, itemIndex);
         }
 
         public override void OnPointerEnter(PointerEventData eventData) {

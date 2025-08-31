@@ -1,6 +1,7 @@
 using AnyRPG;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ namespace AnyRPG {
     public class CharacterCreatorComponent : InteractableOptionComponent {
 
         private CharacterCreatorManager characterCreatorManager = null;
-        private CharacterCreatorInteractableManager characterCreatorInteractableManager = null;
+        private CharacterAppearanceManagerClient characterCreatorInteractableManager = null;
 
         public CharacterCreatorProps Props { get => interactableOptionProps as CharacterCreatorProps; }
 
@@ -20,7 +21,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
 
             characterCreatorManager = systemGameManager.CharacterCreatorManager;
-            characterCreatorInteractableManager = systemGameManager.CharacterCreatorInteractableManager;
+            characterCreatorInteractableManager = systemGameManager.CharacterAppearanceManagerClient;
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
@@ -57,6 +58,12 @@ namespace AnyRPG {
             return GetValidOptionCount(sourceUnitController);
         }
 
+        public void UpdatePlayerAppearance(UnitController sourceUnitController, int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+
+            playerManagerServer.UpdatePlayerAppearance(accountId, unitProfileName, appearanceString, swappableMeshSaveData);
+            NotifyOnConfirmAction(sourceUnitController);
+
+        }
     }
 
 }

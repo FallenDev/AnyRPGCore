@@ -45,6 +45,7 @@ namespace AnyRPG {
         public event System.Action OnStartInteract = delegate { };
         public event System.Action OnStopInteract = delegate { };
         public event System.Action<UnitController, InteractableOptionComponent, int, int> OnStartInteractWithOption = delegate { };
+        public event System.Action<UnitController, InteractableOptionComponent> OnCompleteInteractWithOption = delegate { };
         public event System.Action<InteractableOptionComponent> OnStopInteractWithOption = delegate { };
         public event System.Action OnDropCombat = delegate { };
         public event System.Action<UnitController> OnBeginCastOnEnemy = delegate { };
@@ -978,6 +979,10 @@ namespace AnyRPG {
 
         public void NotifyOnDialogCompleted(Dialog dialog) {
             OnDialogCompleted(unitController, dialog);
+        }
+
+        public void NotifyOnCompleteInteractWithOption(InteractableOptionComponent interactableOptionComponent) {
+            OnCompleteInteractWithOption(unitController, interactableOptionComponent);
         }
 
         #endregion

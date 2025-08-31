@@ -9,7 +9,7 @@ namespace AnyRPG {
     public class ClassChangeComponent : InteractableOptionComponent {
 
         // game manager references
-        private ClassChangeManager classChangeManager = null;
+        private ClassChangeManagerClient classChangeManagerClient = null;
 
         public ClassChangeProps Props { get => interactableOptionProps as ClassChangeProps; }
 
@@ -22,7 +22,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
-            classChangeManager = systemGameManager.ClassChangeManager;
+            classChangeManagerClient = systemGameManager.ClassChangeManager;
         }
 
         public override void ProcessCreateEventSubscriptions() {
@@ -55,7 +55,7 @@ namespace AnyRPG {
             //Debug.Log($"{interactable.gameObject.name}.ClassChangeComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
 
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
-            classChangeManager.SetDisplayClass(Props.CharacterClass, this, componentIndex, choiceIndex);
+            classChangeManagerClient.SetProps(Props, this, componentIndex, choiceIndex);
 
             uIManager.classChangeWindow.OpenWindow();
         }
@@ -76,6 +76,11 @@ namespace AnyRPG {
                     return false;
                 }
                 return base.PrerequisitesMet(sourceUnitController);
+        }
+
+        public void ChangeCharacterClass(UnitController sourceUnitController) {
+            sourceUnitController.BaseCharacter.ChangeCharacterClass(Props.CharacterClass);
+            NotifyOnConfirmAction(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

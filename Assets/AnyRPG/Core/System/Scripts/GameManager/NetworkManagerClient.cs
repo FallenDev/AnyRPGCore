@@ -458,16 +458,16 @@ namespace AnyRPG {
         }
         */
 
-        public void SetPlayerCharacterClass(string className) {
-            networkController.SetPlayerCharacterClass(className);
+        public void RequestSetPlayerCharacterClass(Interactable interactable, int componentIndex) {
+            networkController.RequestSetPlayerCharacterClass(interactable, componentIndex);
         }
 
-        public void SetPlayerCharacterSpecialization(string specializationName) {
-            networkController.SetPlayerCharacterSpecialization(specializationName);
+        public void SetPlayerCharacterSpecialization(Interactable interactable, int componentIndex) {
+            networkController.SetPlayerCharacterSpecialization(interactable, componentIndex);
         }
 
-        public void SetPlayerFaction(string factionName) {
-            networkController.SetPlayerFaction(factionName);
+        public void RequestSetPlayerFaction(Interactable interactable, int componentIndex) {
+            networkController.RequestSetPlayerFaction(interactable, componentIndex);
         }
 
         /*
@@ -476,16 +476,16 @@ namespace AnyRPG {
         }
         */
 
-        public void LearnSkill(string skillName) {
-            networkController.LearnSkill(skillName);
+        public void RequestLearnSkill(Interactable interactable, int componentIndex, int skillId) {
+            networkController.RequestLearnSkill(interactable, componentIndex, skillId);
         }
 
-        public void AcceptQuest(Quest quest) {
-            networkController.AcceptQuest(quest.ResourceName);
+        public void RequestAcceptQuest(Interactable interactable, int componentIndex, Quest quest) {
+            networkController.RequestAcceptQuest(interactable, componentIndex, quest);
         }
 
-        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices) {
-            networkController.CompleteQuest(quest.ResourceName, questRewardChoices);
+        public void RequestCompleteQuest(Interactable interactable, int componentIndex, Quest quest, QuestRewardChoices questRewardChoices) {
+            networkController.RequestCompleteQuest(interactable, componentIndex, quest, questRewardChoices);
         }
 
         public void AdvertiseMessageFeedMessage(string message) {
@@ -582,12 +582,12 @@ namespace AnyRPG {
             networkController.RequestCancelCrafting();
         }
 
-        public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            networkController.RequestUpdatePlayerAppearance(unitProfileName, appearanceString, swappableMeshSaveData);
+        public void RequestUpdatePlayerAppearance(Interactable interactable, int componentIndex, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            networkController.RequestUpdatePlayerAppearance(interactable, componentIndex, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
-        public void RequestChangePlayerName(string newName) {
-            networkController.RequestChangePlayerName(newName);
+        public void RequestChangePlayerName(Interactable interactable, int componentIndex, string newName) {
+            networkController.RequestChangePlayerName(interactable, componentIndex, newName);
         }
 
         public void RequestSpawnPet(UnitProfile unitProfile) {
@@ -636,6 +636,14 @@ namespace AnyRPG {
         public void AdvertiseLoadCutscene(Cutscene cutscene) {
             levelManager.LoadCutSceneWithDelay(cutscene);
 
+        }
+
+        public void RequestTurnInDialog(Interactable interactable, int componentIndex, Dialog dialog) {
+            networkController.RequestTurnInDialog(interactable, componentIndex, dialog);
+        }
+
+        public void RequestTurnInQuestDialog(Dialog dialog) {
+            networkController.RequestTurnInQuestDialog(dialog);
         }
 
         /*

@@ -24,18 +24,6 @@ namespace AnyRPG {
         // if just interacting is not enough, but actually finishing using an interactable is required.
         public bool requireCompletion = false;
 
-        /*
-        public void CheckInteractionStart(UnitController sourceUnitController, string interactableName) {
-            //Debug.Log("UseInteractableObjective.CheckInteractableName()");
-            CheckInteractableName(sourceUnitController, interactableName, false);
-        }
-        */
-
-        public void CheckInteractionComplete(UnitController sourceUnitController, Interactable interactable) {
-            //Debug.Log("UseInteractableObjective.CheckInteractableName()");
-            CheckInteractableName(sourceUnitController, interactable.DisplayName, true);
-        }
-
         public void CheckInteractionComplete(UnitController sourceUnitController, InteractableOptionComponent interactableOption) {
             CheckInteractableName(sourceUnitController, interactableOption.DisplayName, true);
             CheckInteractableName(sourceUnitController, interactableOption.Interactable.DisplayName, true);
@@ -80,8 +68,7 @@ namespace AnyRPG {
             // don't forget to remove these later
             //systemEventManager.OnInteractionStarted += CheckInteractionStart;
             sourceUnitController.UnitEventController.OnStartInteractWithOption += CheckInteractionWithOptionStart;
-            systemEventManager.OnInteractionCompleted += CheckInteractionComplete;
-            systemEventManager.OnInteractionWithOptionCompleted += CheckInteractionComplete;
+            sourceUnitController.UnitEventController.OnCompleteInteractWithOption += CheckInteractionComplete;
         }
 
         public override void OnAbandonQuest(UnitController sourceUnitController) {
@@ -89,8 +76,7 @@ namespace AnyRPG {
             base.OnAbandonQuest(sourceUnitController);
             //systemEventManager.OnInteractionStarted -= CheckInteractionStart;
             sourceUnitController.UnitEventController.OnStartInteractWithOption -= CheckInteractionWithOptionStart;
-            systemEventManager.OnInteractionCompleted -= CheckInteractionComplete;
-            systemEventManager.OnInteractionWithOptionCompleted -= CheckInteractionComplete;
+            sourceUnitController.UnitEventController.OnCompleteInteractWithOption -= CheckInteractionComplete;
         }
 
     }

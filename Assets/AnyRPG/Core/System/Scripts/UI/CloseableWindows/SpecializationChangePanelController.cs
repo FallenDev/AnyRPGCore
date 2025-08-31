@@ -37,7 +37,7 @@ namespace AnyRPG {
         private UIManager uIManager = null;
         private PlayerManager playerManager = null;
         private ObjectPooler objectPooler = null;
-        private SpecializationChangeManager specializationChangeManager = null;
+        private SpecializationChangeManagerClient specializationChangeManagerClient = null;
 
         public override void Configure(SystemGameManager systemGameManager) {
             base.Configure(systemGameManager);
@@ -51,7 +51,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             playerManager = systemGameManager.PlayerManager;
             objectPooler = systemGameManager.ObjectPooler;
-            specializationChangeManager = systemGameManager.SpecializationChangeManager;
+            specializationChangeManagerClient = systemGameManager.SpecializationChangeManagerClient;
         }
 
         public void ShowTraitRewards() {
@@ -59,7 +59,7 @@ namespace AnyRPG {
 
             ClearTraitRewardIcons();
             // show trait rewards
-            CapabilityProps capabilityProps = specializationChangeManager.ClassSpecialization.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
+            CapabilityProps capabilityProps = specializationChangeManagerClient.SpecializationChangeProps.ClassSpecialization.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
             if (capabilityProps.TraitList.Count > 0) {
                 traitsArea.gameObject.SetActive(true);
             } else {
@@ -86,7 +86,7 @@ namespace AnyRPG {
 
             ClearRewardIcons();
             // show ability rewards
-            CapabilityProps capabilityProps = specializationChangeManager.ClassSpecialization.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
+            CapabilityProps capabilityProps = specializationChangeManagerClient.SpecializationChangeProps.ClassSpecialization.GetFilteredCapabilities(playerManager.UnitController.BaseCharacter);
             if (capabilityProps.AbilityList.Count > 0) {
                 abilitiesArea.gameObject.SetActive(true);
             } else {
@@ -133,15 +133,15 @@ namespace AnyRPG {
 
         public void ConfirmAction() {
             //Debug.Log("ClassChangePanelController.ConfirmAction()");
-            specializationChangeManager.ChangeClassSpecialization();
+            specializationChangeManagerClient.RequestChangeCharacterSpecialization(playerManager.UnitController);
             uIManager.specializationChangeWindow.CloseWindow();
         }
 
         public override void ProcessOpenWindowNotification() {
             //Debug.Log("ClassChangePanelController.OnOpenWindow()");
             base.ProcessOpenWindowNotification();
-            uIManager.specializationChangeWindow.SetWindowTitle(specializationChangeManager.ClassSpecialization.DisplayName);
-            classSpecializationButton.AddClassSpecialization(specializationChangeManager.ClassSpecialization);
+            uIManager.specializationChangeWindow.SetWindowTitle(specializationChangeManagerClient.SpecializationChangeProps.ClassSpecialization.DisplayName);
+            classSpecializationButton.AddClassSpecialization(specializationChangeManagerClient.SpecializationChangeProps.ClassSpecialization);
             ShowAbilityRewards();
             ShowTraitRewards();
 
@@ -153,7 +153,7 @@ namespace AnyRPG {
         public override void ReceiveClosedWindowNotification() {
             //Debug.Log("ClassChangePanelController.OnCloseWindow()");
             base.ReceiveClosedWindowNotification();
-            specializationChangeManager.EndInteraction();
+            specializationChangeManagerClient.EndInteraction();
         }
     }
 

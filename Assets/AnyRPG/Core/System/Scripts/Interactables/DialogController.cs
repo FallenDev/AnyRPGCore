@@ -102,7 +102,7 @@ namespace AnyRPG {
             DialogNode currentdialogNode = null;
 
             // this needs to be reset to allow for repeatable dialogs to replay
-            dialog.ResetStatus(sourceUnitController);
+            sourceUnitController.CharacterDialogManager.ResetDialogStatus(dialog);
 
             while (dialog.TurnedIn(sourceUnitController) == false) {
                 //Debug.Log($"{interactable.gameObject.name}.DialogController.PlayDialog({dialog.DisplayName}) begin loop");
@@ -119,7 +119,7 @@ namespace AnyRPG {
                     }
                 }
                 if (shownNodeCount >= dialog.DialogNodes.Count) {
-                    dialog.SetTurnedIn(sourceUnitController, true);
+                    sourceUnitController.CharacterDialogManager.TurnInDialog(dialog);
                     if (caller != null) {
                         caller.NotifyOnConfirmAction(sourceUnitController);
                     }

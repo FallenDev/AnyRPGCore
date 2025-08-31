@@ -9,7 +9,7 @@ namespace AnyRPG {
     public class SpecializationChangeComponent : InteractableOptionComponent {
 
         // game manager references
-        private SpecializationChangeManager specializationChangeManager = null;
+        private SpecializationChangeManagerClient specializationChangeManager = null;
 
         public SpecializationChangeProps Props { get => interactableOptionProps as SpecializationChangeProps; }
 
@@ -22,7 +22,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
-            specializationChangeManager = systemGameManager.SpecializationChangeManager;
+            specializationChangeManager = systemGameManager.SpecializationChangeManagerClient;
         }
 
         public override void ProcessCreateEventSubscriptions() {
@@ -54,7 +54,7 @@ namespace AnyRPG {
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
 
-            specializationChangeManager.SetDisplaySpecialization(Props.ClassSpecialization, this, componentIndex, choiceIndex);
+            specializationChangeManager.SetProps(Props, this, componentIndex, choiceIndex);
             uIManager.specializationChangeWindow.OpenWindow();
         }
 
@@ -85,6 +85,11 @@ namespace AnyRPG {
                     return false;
                 }
                 return base.PrerequisitesMet(sourceUnitController);
+        }
+
+        public void ChangeCharacterSpecialization(UnitController sourceUnitController) {
+            sourceUnitController.BaseCharacter.ChangeClassSpecialization(Props.ClassSpecialization);
+            NotifyOnConfirmAction(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

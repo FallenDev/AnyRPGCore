@@ -115,7 +115,8 @@ namespace AnyRPG {
         }
 
         public virtual void NotifyOnConfirmAction(UnitController sourceUnitController) {
-            systemEventManager.NotifyOnInteractionWithOptionCompleted(sourceUnitController, this);
+            //systemEventManager.NotifyOnInteractionWithOptionCompleted(sourceUnitController, this);
+            sourceUnitController.UnitEventController.NotifyOnCompleteInteractWithOption(this);
         }
 
         public virtual bool ProcessFactionValue(float factionValue) {

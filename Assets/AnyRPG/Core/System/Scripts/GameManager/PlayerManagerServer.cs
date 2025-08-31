@@ -48,7 +48,7 @@ namespace AnyRPG {
         protected InteractionManager interactionManager = null;
         protected PlayerManager playerManager = null;
         protected SystemAchievementManager systemAchievementManager = null;
-        protected QuestGiverManager questGiverManager = null;
+        protected QuestGiverManagerClient questGiverManager = null;
         protected MessageFeedManager messageFeedManager = null;
         protected CharacterManager characterManager = null;
         protected SystemEventManager systemEventManager = null;
@@ -80,7 +80,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             playerManager = systemGameManager.PlayerManager;
             systemAchievementManager = systemGameManager.SystemAchievementManager;
-            questGiverManager = systemGameManager.QuestGiverManager;
+            questGiverManager = systemGameManager.QuestGiverManagerClient;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             characterManager = systemGameManager.CharacterManager;
             systemEventManager = systemGameManager.SystemEventManager;
@@ -358,22 +358,6 @@ namespace AnyRPG {
             }
         }
 
-        public void SetPlayerName(string newName, int accountId) {
-            //Debug.Log("PlayerManager.SetPlayerName()");
-            if (activePlayers.ContainsKey(accountId) == false) {
-                return;
-            }
-            SetPlayerName(activePlayers[accountId], newName);
-        }
-
-        public void SetPlayerName(UnitController unitController, string newName) {
-            //Debug.Log("PlayerManager.SetPlayerName()");
-            if (newName != null && newName != string.Empty) {
-                unitController.BaseCharacter.ChangeCharacterName(newName);
-            }
-        }
-
-
         public void SetPlayerCharacterClass(CharacterClass characterClass, int accountId) {
             if (activePlayers.ContainsKey(accountId) == false) {
                 return;
@@ -401,20 +385,6 @@ namespace AnyRPG {
                 return;
             }
             activePlayers[accountId].CharacterSkillManager.LearnSkill(skill);
-        }
-
-        public void AcceptQuest(Quest quest, int accountId) {
-            if (activePlayers.ContainsKey(accountId) == false) {
-                return;
-            }
-            activePlayers[accountId].CharacterQuestLog.AcceptQuest(quest);
-        }
-
-        public void CompleteQuest(Quest quest, QuestRewardChoices questRewardChoices, int accountId) {
-            if (activePlayers.ContainsKey(accountId) == false) {
-                return;
-            }
-            questGiverManager.CompleteQuestInternal(ActivePlayers[accountId], quest, questRewardChoices);
         }
 
         public void AddSpawnRequest(int accountId, SpawnPlayerRequest loadSceneRequest) {

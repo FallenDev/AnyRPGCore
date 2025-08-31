@@ -11,7 +11,7 @@ namespace AnyRPG {
         private Dictionary<int, VendorCollection> buyBackCollection = new Dictionary<int, VendorCollection>();
 
         // game manager references
-        private VendorManager vendorManager = null;
+        private VendorManagerClient vendorManager = null;
         private MessageFeedManager messageFeedManager = null;
         private CurrencyConverter currencyConverter = null;
 
@@ -27,7 +27,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
-            vendorManager = systemGameManager.VendorManager;
+            vendorManager = systemGameManager.VendorManagerClient;
             messageFeedManager = systemGameManager.UIManager.MessageFeedManager;
             currencyConverter = systemGameManager.CurrencyConverter;
         }

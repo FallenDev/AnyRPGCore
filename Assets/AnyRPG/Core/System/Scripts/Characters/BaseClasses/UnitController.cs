@@ -79,6 +79,7 @@ namespace AnyRPG {
         private CharacterQuestLog characterQuestLog = null;
         private CharacterSaveManager characterSaveManager = null;
         private CharacterActionBarManager characterActionBarManager = null;
+        private CharacterDialogManager characterDialogManager = null;
 
 
         // control logic
@@ -468,6 +469,7 @@ namespace AnyRPG {
         public CharacterCraftingManager CharacterCraftingManager { get => characterCraftingManager; set => characterCraftingManager = value; }
         public CharacterCurrencyManager CharacterCurrencyManager { get => characterCurrencyManager; set => characterCurrencyManager = value; }
         public CharacterSaveManager CharacterSaveManager { get => characterSaveManager; }
+        public CharacterDialogManager CharacterDialogManager { get => characterDialogManager; }
         public bool IsOwner { get => isOwner; set => isOwner = value; }
         public bool IsServer { get => isServer; set => isServer = value; }
         public bool IsServerOwned { get => isServerOwned; set => isServerOwned = value; }
@@ -517,6 +519,7 @@ namespace AnyRPG {
             characterQuestLog = new CharacterQuestLog(this, systemGameManager);
             characterSaveManager = new CharacterSaveManager(this, systemGameManager);
             characterActionBarManager = new CharacterActionBarManager(this, systemGameManager);
+            characterDialogManager = new CharacterDialogManager(this, systemGameManager);
         }
 
         public override void SetGameManagerReferences() {
@@ -1086,6 +1089,7 @@ namespace AnyRPG {
             characterSaveManager = null;
             characterActionBarManager = null;
             characterQuestLog = null;
+            characterDialogManager = null;
 
             currentState = null;
             target = null;

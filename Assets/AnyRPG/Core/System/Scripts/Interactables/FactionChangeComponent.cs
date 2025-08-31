@@ -9,7 +9,7 @@ namespace AnyRPG {
     public class FactionChangeComponent : InteractableOptionComponent {
 
         // game manager references
-        private FactionChangeManager factionChangeManager = null;
+        private FactionChangeManagerClient factionChangeManager = null;
 
         public FactionChangeProps Props { get => interactableOptionProps as FactionChangeProps; }
 
@@ -22,7 +22,7 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
 
-            factionChangeManager = systemGameManager.FactionChangeManager;
+            factionChangeManager = systemGameManager.FactionChangeManagerClient;
         }
 
         public override void ProcessCreateEventSubscriptions() {
@@ -54,7 +54,7 @@ namespace AnyRPG {
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
 
-            factionChangeManager.SetDisplayFaction(Props.Faction, this, componentIndex, choiceIndex);
+            factionChangeManager.SetProps(Props, this, componentIndex, choiceIndex);
             uIManager.factionChangeWindow.OpenWindow();
         }
 
@@ -74,6 +74,11 @@ namespace AnyRPG {
                     return false;
                 }
                 return base.PrerequisitesMet(sourceUnitController);
+        }
+
+        public void ChangeCharacterFaction(UnitController sourceUnitController) {
+            sourceUnitController.BaseCharacter.ChangeCharacterFaction(Props.Faction);
+            NotifyOnConfirmAction(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

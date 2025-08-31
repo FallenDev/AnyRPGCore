@@ -99,7 +99,7 @@ namespace AnyRPG {
         private InteractionManager interactionManager = null;
         private LevelManagerServer levelManagerServer = null;
         private SystemDataFactory systemDataFactory = null;
-        private VendorManager vendorManager = null;
+        private VendorManagerServer vendorManagerServer = null;
         private SystemItemManager systemItemManager = null;
         private LootManager lootManager = null;
         private CraftingManager craftingManager = null;
@@ -108,6 +108,14 @@ namespace AnyRPG {
         private TimeOfDayManagerServer timeOfDayManagerServer = null;
         private SystemEventManager systemEventManager = null;
         private WeatherManagerServer weatherManagerServer = null;
+        private ClassChangeManagerServer classChangeManagerServer = null;
+        private FactionChangeManagerServer factionChangeManagerServer = null;
+        private SpecializationChangeManagerServer specializationChangeManagerServer = null;
+        private SkillTrainerManagerServer skillTrainerManagerServer = null;
+        private NameChangeManagerServer nameChangeManagerServer = null;
+        private QuestGiverManagerServer questGiverManagerServer = null;
+        private CharacterAppearanceManagerServer characterAppearanceManagerServer = null;
+        private DialogManagerServer dialogManagerServer = null;
 
         public bool ServerModeActive { get => serverModeActive; }
         public NetworkClientMode ClientMode { get => clientMode; set => clientMode = value; }
@@ -134,7 +142,7 @@ namespace AnyRPG {
             interactionManager = systemGameManager.InteractionManager;
             levelManagerServer = systemGameManager.LevelManagerServer;
             systemDataFactory = systemGameManager.SystemDataFactory;
-            vendorManager = systemGameManager.VendorManager;
+            vendorManagerServer = systemGameManager.VendorManagerServer;
             systemItemManager = systemGameManager.SystemItemManager;
             lootManager = systemGameManager.LootManager;
             craftingManager = systemGameManager.CraftingManager;
@@ -143,6 +151,13 @@ namespace AnyRPG {
             timeOfDayManagerServer = systemGameManager.TimeOfDayManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
             weatherManagerServer = systemGameManager.WeatherManagerServer;
+            classChangeManagerServer = systemGameManager.ClassChangeManagerServer;
+            factionChangeManagerServer = systemGameManager.FactionChangeManagerServer;
+            specializationChangeManagerServer = systemGameManager.SpecializationChangeManagerServer;
+            skillTrainerManagerServer = systemGameManager.SkillTrainerManagerServer;
+            nameChangeManagerServer = systemGameManager.NameChangeManagerServer;
+            characterAppearanceManagerServer = systemGameManager.CharacterAppearanceManagerServer;
+            dialogManagerServer = systemGameManager.DialogManagerServer;
         }
 
         public void AddLoggedInAccount(int clientId, int accountId, string token) {
@@ -798,52 +813,63 @@ namespace AnyRPG {
             return networkController.SpawnModelPrefabServer(spawnPrefab, parentTransform, position, forward);
         }
 
-        public void SetPlayerCharacterClass(string className, int accountId) {
-            CharacterClass characterClass = systemDataFactory.GetResource<CharacterClass>(className);
-            if (characterClass == null) {
+        public void TurnInDialog(Interactable interactable, int componentIndex, Dialog dialog, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.SetPlayerCharacterClass(characterClass, accountId);
+            dialogManagerServer.TurnInDialog(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, dialog);
         }
 
-        public void SetPlayerCharacterSpecialization(string specializationName, int accountId) {
-            ClassSpecialization classSpecialization = systemDataFactory.GetResource<ClassSpecialization>(specializationName);
-            if (classSpecialization == null) {
+        public void TurnInQuestDialog(Dialog dialog, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.SetPlayerCharacterSpecialization(classSpecialization, accountId);
+            playerManagerServer.ActivePlayers[accountId].CharacterDialogManager.TurnInDialog(dialog);
         }
 
-        public void SetPlayerFaction(string factionName, int accountId) {
-            Faction faction = systemDataFactory.GetResource<Faction>(factionName);
-            if (faction == null) {
+
+        public void SetPlayerCharacterClass(Interactable interactable, int componentIndex, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.SetPlayerFaction(faction, accountId);
+            classChangeManagerServer.ChangeCharacterClass(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex);
         }
 
-        public void LearnSkill(string skillName, int accountId) {
-            Skill skill = systemDataFactory.GetResource<Skill>(skillName);
-            if (skill == null) {
+        public void SetPlayerCharacterSpecialization(Interactable interactable, int componentIndex, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.LearnSkill(skill, accountId);
+            specializationChangeManagerServer.ChangeCharacterSpecialization(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex);
         }
 
-        public void AcceptQuest(string questName, int accountId) {
-            Quest quest = systemDataFactory.GetResource<Quest>(questName);
-            if (quest == null) {
+        public void SetPlayerFaction(Interactable interactable, int componentIndex, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.AcceptQuest(quest, accountId);
+            factionChangeManagerServer.ChangeCharacterFaction(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex);
         }
 
-        public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, int accountId) {
-            Quest quest = systemDataFactory.GetResource<Quest>(questName);
-            if (quest == null) {
+        public void LearnSkill(Interactable interactable, int componentIndex, int skillId, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            playerManagerServer.CompleteQuest(quest, questRewardChoices, accountId);
+            skillTrainerManagerServer.LearnSkill(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, skillId);
+        }
+
+        public void AcceptQuest(Interactable interactable, int componentIndex, Quest quest, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+
+            questGiverManagerServer.AcceptQuest(interactable, componentIndex, playerManagerServer.ActivePlayers[accountId], quest);
+        }
+
+        public void CompleteQuest(Interactable interactable, int componentIndex, Quest quest, QuestRewardChoices questRewardChoices, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+
+            questGiverManagerServer.CompleteQuest(interactable, componentIndex, playerManagerServer.ActivePlayers[accountId], quest, questRewardChoices);
         }
 
 
@@ -862,7 +888,7 @@ namespace AnyRPG {
             if (systemItemManager.InstantiatedItems.ContainsKey(itemInstanceId) == false) {
                 return;
             }
-            vendorManager.SellItemToVendorServer(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
+            vendorManagerServer.SellItemToVendor(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, systemItemManager.InstantiatedItems[itemInstanceId]);
         }
 
         public void RequestSpawnUnit(Interactable interactable, int componentIndex, int unitLevel, int extraLevels, bool useDynamicLevel, UnitProfile unitProfile, UnitToughness unitToughness, int accountId) {
@@ -888,7 +914,7 @@ namespace AnyRPG {
             if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
                 return;
             }
-            vendorManager.BuyItemFromVendorServer(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, collectionIndex, itemIndex, resourceName, accountId);
+            vendorManagerServer.BuyItemFromVendor(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, collectionIndex, itemIndex, resourceName, accountId);
         }
 
         public void TakeAllLoot(int accountId) {
@@ -992,12 +1018,19 @@ namespace AnyRPG {
             playerManagerServer.MonitorPlayerUnit(accountId, unitController);
         }
 
-        public void RequestUpdatePlayerAppearance(int accountId, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
-            playerManagerServer.UpdatePlayerAppearance(accountId, unitProfileName, appearanceString, swappableMeshSaveData);
+        public void RequestUpdatePlayerAppearance(int accountId, Interactable interactable, int componentIndex, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+
+            characterAppearanceManagerServer.UpdatePlayerAppearance(playerManagerServer.ActivePlayers[accountId], accountId, interactable, componentIndex, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
-        public void RequestChangePlayerName(int accountId, string newName) {
-            playerManagerServer.SetPlayerName(newName, accountId);
+        public void RequestChangePlayerName(Interactable interactable, int componentIndex, string newName, int accountId) {
+            if (playerManagerServer.ActivePlayers.ContainsKey(accountId) == false) {
+                return;
+            }
+            nameChangeManagerServer.SetPlayerName(playerManagerServer.ActivePlayers[accountId], interactable, componentIndex, newName);
         }
 
         public void RequestSpawnPet(int accountId, UnitProfile unitProfile) {

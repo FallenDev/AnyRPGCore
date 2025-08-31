@@ -36,7 +36,7 @@ namespace AnyRPG {
         protected UIManager uIManager = null;
         protected MessageFeedManager messageFeedManager = null;
         protected CurrencyConverter currencyConverter = null;
-        protected VendorManager vendorManager = null;
+        protected VendorManagerClient vendorManager = null;
         protected SystemEventManager systemEventManager = null;
 
         //protected List<CurrencyAmountController> currencyAmountControllers = new List<CurrencyAmountController>();
@@ -67,7 +67,7 @@ namespace AnyRPG {
             uIManager = systemGameManager.UIManager;
             messageFeedManager = uIManager.MessageFeedManager;
             currencyConverter = systemGameManager.CurrencyConverter;
-            vendorManager = systemGameManager.VendorManager;
+            vendorManager = systemGameManager.VendorManagerClient;
             systemEventManager = systemGameManager.SystemEventManager;
         }
 
@@ -223,7 +223,7 @@ namespace AnyRPG {
         }
 
         public bool SellItem(InstantiatedItem instantiatedItem) {
-            vendorManager.SellItemToVendor(playerManager.UnitController, instantiatedItem);
+            vendorManager.RequestSellItemToVendor(playerManager.UnitController, instantiatedItem);
 
             /*
             if (systemConfigurationManager.VendorAudioClip != null) {

@@ -8,7 +8,7 @@ namespace AnyRPG {
     public class SkillTrainerComponent : InteractableOptionComponent {
 
         // game manager references
-        private SkillTrainerManager skillTrainerManager = null;
+        private SkillTrainerManagerClient skillTrainerManager = null;
 
         public SkillTrainerProps Props { get => interactableOptionProps as SkillTrainerProps; }
 
@@ -24,7 +24,7 @@ namespace AnyRPG {
 
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
-            skillTrainerManager = systemGameManager.SkillTrainerManager;
+            skillTrainerManager = systemGameManager.SkillTrainerManagerClient;
         }
 
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
@@ -99,6 +99,30 @@ namespace AnyRPG {
         public override bool CanShowMiniMapIcon(UnitController sourceUnitController) {
             float relationValue = interactable.PerformFactionCheck(sourceUnitController);
             return CanInteract(sourceUnitController, false, false, true);
+        }
+
+        public Dictionary<int, Skill> GetAvailableSkillList(UnitController sourceUnitController) {
+            Dictionary<int, Skill> returnList = new Dictionary<int, Skill>();
+
+            int counter = 0;
+            foreach (Skill skill in Props.Skills) {
+                if (!sourceUnitController.CharacterSkillManager.HasSkill(skill)) {
+                    returnList.Add(counter, skill);
+                }
+                counter++;
+            }
+
+            return returnList;
+        }
+
+        public void LearnSkill(UnitController sourceUnitController, int skillId) {
+            Dictionary<int, Skill> skillList = GetAvailableSkillList(sourceUnitController);
+            if (!skillList.ContainsKey(skillId)) {
+                //Debug.Log($"{gameObject.name}.SkillTrainerComponent.LearnSkill(): player does not have skill {skillId}");
+                return;
+            }
+            sourceUnitController.CharacterSkillManager.LearnSkill(skillList[skillId]);
+            NotifyOnConfirmAction(sourceUnitController);
         }
 
         //public override bool PlayInteractionSound() {

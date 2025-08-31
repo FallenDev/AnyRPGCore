@@ -865,60 +865,199 @@ namespace AnyRPG {
         }
         */
 
-        [ServerRpc(RequireOwnership = false)]
-        public void SetPlayerCharacterClass(string className, NetworkConnection networkConnection = null) {
-            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.SetPlayerCharacterClass() could not find clientId {networkConnection.ClientId} in logged in accounts");
-                return;
+        public void RequestTurnInDialog(Interactable interactable, int componentIndex, Dialog dialog) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
-            networkManagerServer.SetPlayerCharacterClass(className, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+            RequestTurnInDialogServer(networkInteractable, componentIndex, dialog.ResourceName);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SetPlayerCharacterSpecialization(string specializationName, NetworkConnection networkConnection = null) {
+        public void RequestTurnInDialogServer(FishNetInteractable targetNetworkInteractable, int componentIndex, string dialogResourceName, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.SetPlayerCharacterSpecialization() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetClientConnector.RequestTurnInDialogServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.SetPlayerCharacterSpecialization(specializationName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+
+            Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogResourceName);
+            if (dialog == null) {
+                return;
+            }
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+
+            networkManagerServer.TurnInDialog(interactable, componentIndex, dialog, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void RequestTurnInQuestDialog(Dialog dialog) {
+            RequestTurnInQuestDialogServer(dialog.ResourceName);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SetPlayerFaction(string factionName, NetworkConnection networkConnection = null) {
+        public void RequestTurnInQuestDialogServer(string dialogResourceName, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.SetPlayerFaction() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetClientConnector.RequestTurnInDialogServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.SetPlayerFaction(factionName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+
+            Dialog dialog = systemDataFactory.GetResource<Dialog>(dialogResourceName);
+            if (dialog == null) {
+                return;
+            }
+
+            networkManagerServer.TurnInQuestDialog(dialog, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+
+
+        public void RequestSetPlayerCharacterClass(Interactable interactable, int componentIndex) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestSetPlayerCharacterClassServer(networkInteractable, componentIndex);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void LearnSkill(string skillName, NetworkConnection networkConnection = null) {
+        public void RequestSetPlayerCharacterClassServer(FishNetInteractable targetNetworkInteractable, int componentIndex, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.LearnSkill() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetClientConnector.RequestSetPlayerCharacterClassServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.LearnSkill(skillName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.SetPlayerCharacterClass(interactable, componentIndex, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void RequestSetPlayerCharacterSpecialization(Interactable interactable, int componentIndex) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestSetPlayerCharacterSpecializationServer(networkInteractable, componentIndex);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void AcceptQuest(string questName, NetworkConnection networkConnection = null) {
+        public void RequestSetPlayerCharacterSpecializationServer(FishNetInteractable targetNetworkInteractable, int componentIndex, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.AcceptQuest() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetClientConnector.Specialization() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.AcceptQuest(questName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.SetPlayerCharacterSpecialization(interactable, componentIndex, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void RequestSetPlayerFaction(Interactable interactable, int componentIndex) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestSetPlayerFactionServer(networkInteractable, componentIndex);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void CompleteQuest(string questName, QuestRewardChoices questRewardChoices, NetworkConnection networkConnection = null) {
+        public void RequestSetPlayerFactionServer(FishNetInteractable targetNetworkInteractable, int componentIndex, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                Debug.LogWarning($"FishNetClientConnector.CompleteQuest() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                Debug.LogWarning($"FishNetClientConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.CompleteQuest(questName, questRewardChoices, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.SetPlayerFaction(interactable, componentIndex, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
-        
+
+        public void RequestLearnSkill(Interactable interactable, int componentIndex, int skillId) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestLearnSkillServer(networkInteractable, componentIndex, skillId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestLearnSkillServer(FishNetInteractable targetNetworkInteractable, int componentIndex, int skillId, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.LearnSkill(interactable, componentIndex, skillId, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void RequestAcceptQuest(Interactable interactable, int componentIndex, Quest quest) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestAcceptQuestServer(networkInteractable, componentIndex, quest.ResourceName);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestAcceptQuestServer(FishNetInteractable targetNetworkInteractable, int componentIndex, string questResourceName, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+
+            Quest quest = systemDataFactory.GetResource<Quest>(questResourceName);
+            if (quest == null) {
+                return;
+            }
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+
+            networkManagerServer.AcceptQuest(interactable, componentIndex, quest, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
+        public void RequestCompleteQuest(Interactable interactable, int componentIndex, Quest quest, QuestRewardChoices questRewardChoices) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestCompleteQuestServer(networkInteractable, componentIndex, quest.ResourceName, questRewardChoices);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestCompleteQuestServer(FishNetInteractable targetNetworkInteractable, int componentIndex, string questResourceName, QuestRewardChoices questRewardChoices, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.BuyItemFromVendorServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+
+            Quest quest = systemDataFactory.GetResource<Quest>(questResourceName);
+            if (quest == null) {
+                return;
+            }
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+
+            networkManagerServer.CompleteQuest(interactable, componentIndex, quest, questRewardChoices, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
         public void SellVendorItemClient(Interactable interactable, int componentIndex, int itemInstanceId) {
             FishNetInteractable networkInteractable = null;
             if (interactable != null) {
@@ -1199,26 +1338,50 @@ namespace AnyRPG {
             networkManagerServer.RequestCancelCrafting(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void RequestUpdatePlayerAppearance(string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetClientConnector.RequestUpdatePlayerAppearance({unitProfileName}, {appearanceString})");
-
-            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
-                return;
+        public void RequestUpdatePlayerAppearance(Interactable interactable, int componentIndex, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
             }
-            networkManagerServer.RequestUpdatePlayerAppearance(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, unitProfileName, appearanceString, swappableMeshSaveData);
+            RequestUpdatePlayerAppearanceServer(networkInteractable, componentIndex, unitProfileName, appearanceString, swappableMeshSaveData);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RequestChangePlayerName(string newName, NetworkConnection networkConnection = null) {
-            Debug.Log($"FishNetClientConnector.RequestChangePlayerName({newName})");
-
+        public void RequestUpdatePlayerAppearanceServer(FishNetInteractable targetNetworkInteractable, int componentIndex, string unitProfileName, string appearanceString, List<SwappableMeshSaveData> swappableMeshSaveData, NetworkConnection networkConnection = null) {
             if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.RequestChangePlayerNameServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
                 return;
             }
-            networkManagerServer.RequestChangePlayerName(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, newName);
 
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.RequestUpdatePlayerAppearance(networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId, interactable, componentIndex, unitProfileName, appearanceString, swappableMeshSaveData);
         }
+
+        public void RequestChangePlayerName(Interactable interactable, int componentIndex, string newName) {
+            FishNetInteractable networkInteractable = null;
+            if (interactable != null) {
+                networkInteractable = interactable.GetComponent<FishNetInteractable>();
+            }
+            RequestChangePlayerNameServer(networkInteractable, componentIndex, newName);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestChangePlayerNameServer(FishNetInteractable targetNetworkInteractable, int componentIndex, string newName, NetworkConnection networkConnection = null) {
+            if (networkManagerServer.LoggedInAccountsByClient.ContainsKey(networkConnection.ClientId) == false) {
+                Debug.LogWarning($"FishNetClientConnector.RequestChangePlayerNameServer() could not find clientId {networkConnection.ClientId} in logged in accounts");
+                return;
+            }
+
+            Interactable interactable = null;
+            if (targetNetworkInteractable != null) {
+                interactable = targetNetworkInteractable.Interactable;
+            }
+            networkManagerServer.RequestChangePlayerName(interactable, componentIndex, newName, networkManagerServer.LoggedInAccountsByClient[networkConnection.ClientId].accountId);
+        }
+
 
         [ServerRpc(RequireOwnership = false)]
         public void RequestSpawnPet(string resourceName, NetworkConnection networkConnection = null) {

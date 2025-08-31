@@ -46,7 +46,7 @@ namespace AnyRPG {
         protected CharacterCreatorManager characterCreatorManager = null;
         protected SaveManager saveManager = null;
         protected LevelManager levelManager = null;
-        protected CharacterCreatorInteractableManager characterCreatorInteractableManager = null;
+        protected CharacterAppearanceManagerClient characterAppearanceManagerClient = null;
         protected ObjectPooler objectPooler = null;
         protected SystemDataFactory systemDataFactory = null;
         protected NetworkManagerClient networkManagerClient = null;
@@ -79,7 +79,7 @@ namespace AnyRPG {
             characterCreatorManager = systemGameManager.CharacterCreatorManager;
             saveManager = systemGameManager.SaveManager;
             levelManager = systemGameManager.LevelManager;
-            characterCreatorInteractableManager = systemGameManager.CharacterCreatorInteractableManager;
+            characterAppearanceManagerClient = systemGameManager.CharacterAppearanceManagerClient;
             objectPooler = systemGameManager.ObjectPooler;
             systemDataFactory = systemGameManager.SystemDataFactory;
             networkManagerClient = systemGameManager.NetworkManagerClient;
@@ -112,7 +112,7 @@ namespace AnyRPG {
             }
             defaultAppearancePanel.ReceiveClosedWindowNotification();
 
-            characterCreatorInteractableManager.EndInteraction();
+            characterAppearanceManagerClient.EndInteraction();
             
             // close interaction window too for smoother experience
             uIManager.interactionWindow.CloseWindow();
@@ -170,30 +170,30 @@ namespace AnyRPG {
         private void ApplyInitialUnitProfile() {
             Debug.Log("CharacterCreatorWindowPanel.ApplyInitialUnitProfile()");
 
-            if (characterCreatorInteractableManager.CharacterCreator == null) {
+            if (characterAppearanceManagerClient.CharacterCreator == null) {
                 // the window was not opened from an interaction with a character creator. nothing to do
                 return;
             }
 
             // set unit profile to default
-            if (characterCreatorInteractableManager.CharacterCreator.Props.UnitProfileList.Count == 0) {
-                if (characterCreatorInteractableManager.CharacterCreator.Props.AllowGenderChange == true) {
+            if (characterAppearanceManagerClient.CharacterCreator.Props.UnitProfileList.Count == 0) {
+                if (characterAppearanceManagerClient.CharacterCreator.Props.AllowGenderChange == true) {
                     characterRace = playerManager.UnitController.UnitProfile.CharacterRace;
                 }
                 UpdateUnitProfile(playerManager.UnitController.UnitProfile);
                 return;
             }
 
-            if (characterCreatorInteractableManager.CharacterCreator.Props.UnitProfileList.Contains(playerManager.UnitController.UnitProfile)) {
-                if (characterCreatorInteractableManager.CharacterCreator.Props.AllowGenderChange == true) {
+            if (characterAppearanceManagerClient.CharacterCreator.Props.UnitProfileList.Contains(playerManager.UnitController.UnitProfile)) {
+                if (characterAppearanceManagerClient.CharacterCreator.Props.AllowGenderChange == true) {
                     characterRace = playerManager.UnitController.UnitProfile.CharacterRace;
                 }
                 UpdateUnitProfile(playerManager.UnitController.UnitProfile);
             } else {
-                if (characterCreatorInteractableManager.CharacterCreator.Props.AllowGenderChange == true) {
-                    characterRace = characterCreatorInteractableManager.CharacterCreator.Props.UnitProfileList[0].CharacterRace;
+                if (characterAppearanceManagerClient.CharacterCreator.Props.AllowGenderChange == true) {
+                    characterRace = characterAppearanceManagerClient.CharacterCreator.Props.UnitProfileList[0].CharacterRace;
                 }
-                UpdateUnitProfile(characterCreatorInteractableManager.CharacterCreator.Props.UnitProfileList[0]);
+                UpdateUnitProfile(characterAppearanceManagerClient.CharacterCreator.Props.UnitProfileList[0]);
             }
 
         }
@@ -263,9 +263,7 @@ namespace AnyRPG {
             string appearanceString = String.Copy(playerManager.ActiveUnitController.CharacterSaveManager.SaveData.appearanceString);
             List<SwappableMeshSaveData> swappableMeshSaveData = new List<SwappableMeshSaveData>(playerManager.ActiveUnitController.CharacterSaveManager.SaveData.swappableMeshSaveData);
 
-            playerManager.RequestUpdatePlayerAppearance(unitProfile.ResourceName, appearanceString, swappableMeshSaveData);
-
-            characterCreatorInteractableManager.ConfirmAction(playerManager.UnitController);
+            characterAppearanceManagerClient.RequestUpdatePlayerAppearance(playerManager.UnitController, unitProfile.ResourceName, appearanceString, swappableMeshSaveData);
         }
 
         public void OpenAppearancePanel() {

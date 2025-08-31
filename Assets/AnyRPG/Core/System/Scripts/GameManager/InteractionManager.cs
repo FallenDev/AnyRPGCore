@@ -21,10 +21,10 @@ namespace AnyRPG {
         private SystemEventManager systemEventManager = null;
         private NetworkManagerServer networkManagerServer = null;
         private NetworkManagerClient networkManagerClient = null;
-        private ClassChangeManager classChangeManager = null;
+        private ClassChangeManagerClient classChangeManager = null;
         private UIManager uIManager = null;
-        private DialogManager dialogManager = null;
-        private SkillTrainerManager skillTrainerManager = null;
+        private DialogManagerClient dialogManager = null;
+        private SkillTrainerManagerClient skillTrainerManager = null;
 
         /*
         public Interactable CurrentInteractable {
@@ -48,8 +48,8 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
             networkManagerClient = systemGameManager.NetworkManagerClient;
             classChangeManager = systemGameManager.ClassChangeManager;
-            dialogManager = systemGameManager.DialogManager;
-            skillTrainerManager = systemGameManager.SkillTrainerManager;
+            dialogManager = systemGameManager.DialogManagerClient;
+            skillTrainerManager = systemGameManager.SkillTrainerManagerClient;
         }
 
         public bool Interact(UnitController sourceUnitController, Interactable target) {

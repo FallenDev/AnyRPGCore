@@ -13,7 +13,9 @@ namespace AnyRPG {
         private bool questGiverInitialized = false;
 
         // game manager references
-        private DialogManager dialogManager = null;
+        private DialogManagerClient dialogManager = null;
+        private LogManager logManager = null;
+        private CurrencyConverter currencyConverter = null;
 
         public QuestGiverProps QuestGiverProps { get => interactableOptionProps as QuestGiverProps; }
         public override int PriorityValue { get => 1; }
@@ -34,7 +36,9 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             
-            dialogManager = systemGameManager.DialogManager;
+            dialogManager = systemGameManager.DialogManagerClient;
+            logManager = systemGameManager.LogManager;
+            currencyConverter = systemGameManager.CurrencyConverter;
         }
 
         /*
@@ -309,6 +313,11 @@ namespace AnyRPG {
         //    return true;
         //}
 
+        public void AcceptQuest(UnitController sourceUnitController, Quest quest) {
+            sourceUnitController.CharacterQuestLog.AcceptQuest(quest);
+
+            NotifyOnConfirmAction(sourceUnitController);
+        }
 
         public override void CleanupScriptableObjects() {
             base.CleanupScriptableObjects();
@@ -316,6 +325,139 @@ namespace AnyRPG {
             foreach (QuestNode questNode in QuestGiverProps.Quests) {
                 questNode.Quest.OnQuestBaseStatusUpdated -= HandlePrerequisiteUpdates;
             }
+        }
+
+        public void CompleteQuest(UnitController sourceUnitController, Quest currentQuest, QuestRewardChoices questRewardChoices) {
+            //Debug.Log("QuestGiverUI.CompleteQuest()");
+            if (!currentQuest.IsComplete(sourceUnitController)) {
+                Debug.Log("QuestGiverManager.CompleteQuest(): currentQuest is not complete, exiting!");
+                return;
+            }
+
+            bool itemCountMatches = false;
+            bool abilityCountMatches = false;
+            bool factionCountMatches = false;
+            bool skillCountMatches = false;
+            if (currentQuest.ItemRewards.Count == 0 || currentQuest.MaxItemRewards == 0 || currentQuest.MaxItemRewards == questRewardChoices.itemRewardIndexes.Count) {
+                itemCountMatches = true;
+            }
+            if (currentQuest.FactionRewards.Count == 0 || currentQuest.MaxFactionRewards == 0 || currentQuest.MaxFactionRewards == questRewardChoices.factionRewardIndexes.Count) {
+                factionCountMatches = true;
+            }
+            if (currentQuest.AbilityRewards.Count == 0 || currentQuest.MaxAbilityRewards == 0 || currentQuest.MaxAbilityRewards == questRewardChoices.abilityRewardIndexes.Count) {
+                abilityCountMatches = true;
+            }
+            if (currentQuest.SkillRewards.Count == 0 || currentQuest.MaxSkillRewards == 0 || currentQuest.MaxSkillRewards == questRewardChoices.skillRewardIndexes.Count) {
+                skillCountMatches = true;
+            }
+
+            if (!itemCountMatches || !abilityCountMatches || !factionCountMatches || !skillCountMatches) {
+                sourceUnitController.WriteMessageFeedMessage("You must choose rewards before turning in this quest");
+                return;
+            }
+
+            // currency rewards
+            List<CurrencyNode> currencyNodes = currentQuest.GetCurrencyReward(sourceUnitController);
+            foreach (CurrencyNode currencyNode in currencyNodes) {
+                sourceUnitController.CharacterCurrencyManager.AddCurrency(currencyNode.currency, currencyNode.Amount);
+                List<CurrencyNode> tmpCurrencyNode = new List<CurrencyNode>();
+                tmpCurrencyNode.Add(currencyNode);
+                logManager.WriteSystemMessage(sourceUnitController, $"Gained {currencyConverter.RecalculateValues(tmpCurrencyNode, false).Value.Replace("\n", ", ")}");
+            }
+
+            // item rewards first in case not enough space in inventory
+            // TO FIX: THIS CODE DOES NOT DEAL WITH PARTIAL STACKS AND WILL REQUEST ONE FULL SLOT FOR EVERY REWARD
+            if (questRewardChoices.itemRewardIndexes.Count > 0) {
+                if (sourceUnitController.CharacterInventoryManager.EmptySlotCount() < questRewardChoices.itemRewardIndexes.Count) {
+                    sourceUnitController.WriteMessageFeedMessage("Not enough room in inventory!");
+                    return;
+                }
+                foreach (int rewardIndex in questRewardChoices.itemRewardIndexes) {
+                    currentQuest.ItemRewards[rewardIndex].GiveReward(sourceUnitController);
+                }
+                /*
+                foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedItemRewardIcons()) {
+                    if (rewardButton.Rewardable != null) {
+                        rewardButton.Rewardable.GiveReward(sourceUnitController);
+                    }
+                }
+                */
+            }
+
+            currentQuest.HandInItems(sourceUnitController);
+
+            // faction rewards
+            if (questRewardChoices.factionRewardIndexes.Count > 0) {
+                //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Faction Rewards");
+                foreach (int rewardIndex in questRewardChoices.factionRewardIndexes) {
+                    currentQuest.FactionRewards[rewardIndex].GiveReward(sourceUnitController);
+                }
+                /*
+                foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedFactionRewardIcons()) {
+                    //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Faction Rewards: got a reward button!");
+                    if (rewardButton.Rewardable != null) {
+                        rewardButton.Rewardable.GiveReward(sourceUnitController);
+                    }
+                }
+                */
+            }
+
+            // ability rewards
+            if (questRewardChoices.abilityRewardIndexes.Count > 0) {
+                //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Ability Rewards");
+                foreach (int rewardIndex in questRewardChoices.abilityRewardIndexes) {
+                    currentQuest.AbilityRewards[rewardIndex].AbilityProperties.GiveReward(sourceUnitController);
+                }
+                /*
+                foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedAbilityRewardIcons()) {
+                    if (rewardButton.Rewardable != null) {
+                        rewardButton.Rewardable.GiveReward(sourceUnitController);
+                    }
+                }
+                */
+            }
+
+            // skill rewards
+            if (questRewardChoices.skillRewardIndexes.Count > 0) {
+                //Debug.Log("QuestGiverUI.CompleteQuest(): Giving Skill Rewards");
+                foreach (int rewardIndex in questRewardChoices.skillRewardIndexes) {
+                    currentQuest.SkillRewards[rewardIndex].GiveReward(sourceUnitController);
+                }
+
+                /*
+                foreach (RewardButton rewardButton in questDetailsArea.GetHighlightedSkillRewardIcons()) {
+                    if (rewardButton.Rewardable != null) {
+                        rewardButton.Rewardable.GiveReward(sourceUnitController);
+                    }
+                }
+                */
+            }
+
+            // xp reward
+            sourceUnitController.CharacterStats.GainXP(LevelEquations.GetXPAmountForQuest(sourceUnitController, currentQuest, systemConfigurationManager));
+
+            //UpdateButtons(currentQuest);
+
+            // DO THIS HERE OR TURNING THE QUEST RESULTING IN THIS WINDOW RE-OPENING WOULD JUST INSTA-CLOSE IT INSTEAD
+            //uIManager.questGiverWindow.CloseWindow();
+
+            sourceUnitController.CharacterQuestLog.TurnInQuest(currentQuest);
+
+            /*
+            // this is client side stuff, and mostly should be handled by other subscriptions
+            // do this last
+            // DO THIS AT THE END OR THERE WILL BE NO SELECTED QUESTGIVERQUESTSCRIPT
+            if (questGiver != null) {
+                //Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is not null");
+                // MUST BE DONE IN CASE WINDOW WAS OPEN INBETWEEN SCENES BY ACCIDENT
+                //Debug.Log("QuestGiverUI.CompleteQuest() Updating questGiver queststatus");
+                questGiver.UpdateQuestStatus(sourceUnitController);
+                questGiver.HandleCompleteQuest();
+            } else {
+                Debug.Log("QuestGiverUI.CompleteQuest(): questGiver is null!");
+            }
+            */
+
         }
     }
 

@@ -12,6 +12,13 @@ namespace AnyRPG {
 
         public SkillTrainerComponent SkillTrainerComponent { get => skillTrainerComponent; set => skillTrainerComponent = value; }
 
+        public void SetSkillTrainer(SkillTrainerComponent skillTrainerComponent, int componentIndex, int choiceIndex) {
+            //Debug.Log("ClassChangeManager.SetDisplayClass(" + characterClass + ")");
+            this.skillTrainerComponent = skillTrainerComponent;
+
+            BeginInteraction(skillTrainerComponent, componentIndex, choiceIndex);
+        }
+
         public void RequestLearnSkill(UnitController sourceUnitController, int skillId) {
 
             if (systemGameManager.GameMode == GameMode.Local) {
@@ -33,13 +40,6 @@ namespace AnyRPG {
             base.EndInteraction();
 
             skillTrainerComponent = null;
-        }
-
-        public void SetSkillTrainer(SkillTrainerComponent skillTrainerComponent, int componentIndex, int choiceIndex) {
-            //Debug.Log("ClassChangeManager.SetDisplayClass(" + characterClass + ")");
-            this.skillTrainerComponent = skillTrainerComponent;
-            
-            BeginInteraction(skillTrainerComponent, componentIndex, choiceIndex);
         }
 
 

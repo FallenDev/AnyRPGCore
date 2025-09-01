@@ -13,9 +13,10 @@ namespace AnyRPG {
         private bool questGiverInitialized = false;
 
         // game manager references
-        private DialogManagerClient dialogManager = null;
+        private DialogManagerClient dialogManagerClient = null;
         private LogManager logManager = null;
         private CurrencyConverter currencyConverter = null;
+        private QuestGiverManagerClient questGiverManagerClient = null;
 
         public QuestGiverProps QuestGiverProps { get => interactableOptionProps as QuestGiverProps; }
         public override int PriorityValue { get => 1; }
@@ -36,9 +37,10 @@ namespace AnyRPG {
         public override void SetGameManagerReferences() {
             base.SetGameManagerReferences();
             
-            dialogManager = systemGameManager.DialogManagerClient;
+            dialogManagerClient = systemGameManager.DialogManagerClient;
             logManager = systemGameManager.LogManager;
             currencyConverter = systemGameManager.CurrencyConverter;
+            questGiverManagerClient = systemGameManager.QuestGiverManagerClient;
         }
 
         /*
@@ -118,20 +120,24 @@ namespace AnyRPG {
         public override bool ProcessInteract(UnitController sourceUnitController, int componentIndex, int choiceIndex = 0) {
             //Debug.Log(interactable.gameObject.name + ".QuestGiver.Interact()");
             base.ProcessInteract(sourceUnitController, componentIndex, choiceIndex);
-            //interactionManager.InteractWithQuestGiver(this, optionIndex, sourceUnitController);
             
             return true;
         }
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
+            Debug.Log($"{interactable.gameObject.name}.QuestGiverComponent.ClientInteraction({sourceUnitController.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
             // this is running locally
+            questGiverManagerClient.SetQuestGiver(this, componentIndex, choiceIndex, false);
             if (sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests, true).Count + sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count > 1) {
+                // there are multiple available or complete quests to choose from, so open the questgiver window to let the player choose
                 interactionManager.OpenInteractionWindow(Interactable);
                 return;
             } else if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests).Count == 1 && sourceUnitController.CharacterQuestLog.GetCompleteQuests(QuestGiverProps.Quests).Count == 0) {
+                // there is only one available quest and no complete quests
                 if (sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0].HasOpeningDialog == true && sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0].OpeningDialog.TurnedIn(sourceUnitController) == false) {
-                    dialogManager.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0], Interactable, this, componentIndex, choiceIndex);
+                    dialogManagerClient.SetQuestDialog(sourceUnitController.CharacterQuestLog.GetAvailableQuests(QuestGiverProps.Quests)[0], Interactable, this, componentIndex, choiceIndex);
                     uIManager.dialogWindow.OpenWindow();
                     return;
                 } else {

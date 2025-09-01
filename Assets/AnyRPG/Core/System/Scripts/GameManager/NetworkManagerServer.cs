@@ -158,6 +158,7 @@ namespace AnyRPG {
             nameChangeManagerServer = systemGameManager.NameChangeManagerServer;
             characterAppearanceManagerServer = systemGameManager.CharacterAppearanceManagerServer;
             dialogManagerServer = systemGameManager.DialogManagerServer;
+            questGiverManagerServer = systemGameManager.QuestGiverManagerServer;
         }
 
         public void AddLoggedInAccount(int clientId, int accountId, string token) {
@@ -906,7 +907,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
-            Debug.Log($"NetworkManagerServer.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            //Debug.Log($"NetworkManagerServer.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             networkController.AdvertiseSellItemToPlayer(sourceUnitController, interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 

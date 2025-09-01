@@ -23,15 +23,16 @@ namespace AnyRPG {
         }
 
 
-        public void SetQuestGiver(QuestGiverComponent questGiverComponent, int componentIndex, int choiceIndex) {
-            //Debug.Log($"QuestGiverManager.SetQuestGiver({optionIndex})");
+        public void SetQuestGiver(QuestGiverComponent questGiverComponent, int componentIndex, int choiceIndex, bool notify) {
+            Debug.Log($"QuestGiverManagerClient.SetQuestGiver({questGiverComponent.Interactable.gameObject.name}, {componentIndex}, {choiceIndex})");
+
             this.questGiverComponent = questGiverComponent;
             
-            BeginInteraction(questGiverComponent, componentIndex, choiceIndex);
+            BeginInteraction(questGiverComponent, componentIndex, choiceIndex, notify);
         }
 
         public void RequestAcceptQuest(UnitController sourceUnitController, Quest quest) {
-            //Debug.Log($"QuestGiverManager.AcceptQuestClient({sourceUnitController.gameObject.name}, {quest.ResourceName})");
+            Debug.Log($"QuestGiverManagerClient.AcceptQuestClient({sourceUnitController.gameObject.name}, {quest.ResourceName})");
 
             if (systemGameManager.GameMode == GameMode.Local) {
                 questGiverComponent.AcceptQuest(sourceUnitController, quest);

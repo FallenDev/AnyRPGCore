@@ -633,6 +633,8 @@ namespace AnyRPG {
         }
 
         public void NotifyOnQuestObjectiveStatusUpdated(Quest quest) {
+            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnQuestObjectiveStatusUpdated({quest.ResourceName})");
+
             OnQuestObjectiveStatusUpdated(unitController, quest);
         }
 
@@ -937,38 +939,38 @@ namespace AnyRPG {
         }
 
         public void NotifyOnSetMountedState(UnitController mountUnitController, UnitProfile mountUnitProfile) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetMountedState({mountUnitController.gameObject.name}, {mountUnitProfile.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetMountedState({mountUnitController.gameObject.name}, {mountUnitProfile.ResourceName})");
 
             OnSetMountedState(mountUnitController, mountUnitProfile);
         }
 
         public void NotifyOnSetParent(Transform mountPoint) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetParent({(mountPoint == null ? "null" : mountPoint.gameObject.name)})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnSetParent({(mountPoint == null ? "null" : mountPoint.gameObject.name)})");
 
             //public void NotifyOnSetParent(Transform mountPoint, Vector3 position, Vector3 localEulerAngles) {
             OnSetParent(mountPoint);
         }
 
         public void NotifyOnUnsetParent() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnUnSetParent()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnUnSetParent()");
 
             OnUnsetParent();
         }
 
         public void NotifyOnMountUnitSpawn() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnMountUnitSpawn()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnMountUnitSpawn()");
 
             OnMountUnitSpawn();
         }
 
         public void NotifyOnDespawnMountUnit() {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnMountUnit()");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnDespawnMountUnit()");
 
             OnDespawnMountUnit();
         }
 
         public void NotifyOnWriteMessageFeedMessage(string messageText) {
-            Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnWriteMessageFeedMessage({messageText})");
+            //Debug.Log($"{unitController.gameObject.name}.UnitEventController.NotifyOnWriteMessageFeedMessage({messageText})");
 
             OnWriteMessageFeedMessage(messageText);
         }

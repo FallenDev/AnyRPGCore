@@ -62,7 +62,6 @@ namespace AnyRPG {
             // disabled for now.  this should be an active objective, and not able to be completed if a zone was previously visited
             // this allows creating quests where you have to travel back to a zone you've already been to and perform a new task
             //UpdateCompletionCount(printMessages);
-            //objectiveSceneNode.OnVisitZone += AddCompletionAmount;
             UpdateCompletionCount(sourceUnitController, printMessages);
         }
 

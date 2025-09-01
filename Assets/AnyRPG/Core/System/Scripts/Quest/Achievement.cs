@@ -74,6 +74,12 @@ namespace AnyRPG {
 
             base.NotifyOnQuestBaseStatusUpdated(sourceUnitController);
         }
+
+        public override void SetCurrentStep(UnitController sourceUnitController, int value) {
+            base.SetCurrentStep(sourceUnitController, value);
+            sourceUnitController.UnitEventController.NotifyOnAchievementObjectiveStatusUpdated(this);
+        }
+
     }
 
 }

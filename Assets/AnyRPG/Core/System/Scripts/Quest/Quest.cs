@@ -266,6 +266,11 @@ namespace AnyRPG {
 
         }
 
+        public override void SetCurrentStep(UnitController sourceUnitController, int value) {
+            base.SetCurrentStep(sourceUnitController, value);
+            sourceUnitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(this);
+        }
+
         public override void SetupScriptableObjects(SystemGameManager systemGameManager) {
             //Debug.Log(DisplayName + ".Quest.SetupScriptableObjects(" + (systemGameManager == null ? "null" : systemGameManager.gameObject.name) + "): ID: " + GetInstanceID());
 

@@ -32,7 +32,7 @@ namespace AnyRPG {
 
         public override void ClientInteraction(UnitController sourceUnitController, int componentIndex, int choiceIndex) {
             base.ClientInteraction(sourceUnitController, componentIndex, choiceIndex);
-            nameChangeManager.BeginInteraction(this, componentIndex, choiceIndex);
+            nameChangeManager.SetProps(this, componentIndex, choiceIndex);
             uIManager.nameChangeWindow.OpenWindow();
         }
 

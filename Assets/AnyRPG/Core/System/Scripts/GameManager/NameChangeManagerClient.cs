@@ -12,6 +12,12 @@ namespace AnyRPG {
 
         public NameChangeComponent NameChangeComponent { get => nameChangeComponent; set => nameChangeComponent = value; }
 
+        public void SetProps(NameChangeComponent nameChangeComponent, int componentIndex, int choiceIndex) {
+            this.nameChangeComponent = nameChangeComponent;
+
+            BeginInteraction(nameChangeComponent, componentIndex, choiceIndex);
+        }
+
         public void RequestChangePlayerName(UnitController sourceUnitController, string newName) {
             //Debug.Log($"NameChangeManager.RequestChangePlayerName({newName})");
 
@@ -20,15 +26,12 @@ namespace AnyRPG {
             } else {
                 networkManagerClient.RequestChangePlayerName(nameChangeComponent.Interactable, componentIndex, newName);
             }
-
         }
 
-        public void SetProps(NameChangeComponent nameChangeComponent, int componentIndex, int choiceIndex) {
-            this.nameChangeComponent = nameChangeComponent;
-
-            BeginInteraction(nameChangeComponent, componentIndex, choiceIndex);
+        public override void EndInteraction() {
+            base.EndInteraction();
+            nameChangeComponent = null;
         }
-
 
     }
 

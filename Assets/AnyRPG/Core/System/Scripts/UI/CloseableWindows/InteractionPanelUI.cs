@@ -141,9 +141,7 @@ namespace AnyRPG {
                             if (displayText != string.Empty) {
                                 GameObject go = objectPooler.GetPooledObject(questPrefab, availableQuestArea.transform);
                                 InteractionPanelQuestScript qs = go.GetComponent<InteractionPanelQuestScript>();
-                                qs.Configure(systemGameManager);
-                                qs.Quest = quest;
-                                qs.QuestGiver = (_interactable.Value as QuestGiverComponent);
+                                qs.SetQuestGiverComponent(systemGameManager, (_interactable.Value as QuestGiverComponent), _interactable.Key, quest);
 
                                 displayText += quest.DisplayName;
 

@@ -1113,7 +1113,7 @@ namespace AnyRPG {
         }
 
         public void HandleAddItemToInventorySlot(InventorySlot slot, InstantiatedItem item) {
-            Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
+            //Debug.Log($"{unitController.gameObject.name}.FishNetUnitController.HandleAddItemToInventorySlot({item.Item.ResourceName}({item.InstanceId}))");
 
             int slotIndex = slot.GetCurrentInventorySlotIndex(unitController);
             AddItemToInventorySlotClient(slotIndex, item.InstanceId);
@@ -1453,11 +1453,14 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleQuestObjectiveStatusUpdatedClient(string questName) {
-            Quest questBase = systemDataFactory.GetResource<Quest>(questName);
-            if (questBase == null) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleQuestObjectiveStatusUpdatedClient({questName})");
+
+            Quest quest = systemDataFactory.GetResource<Quest>(questName);
+            if (quest == null) {
                 return;
             }
-            unitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(questBase);
+            unitController.UnitEventController.NotifyOnQuestObjectiveStatusUpdated(quest);
+            quest.StepsComplete(unitController, true);
         }
 
         public void HandleAchievementObjectiveStatusUpdatedServer(UnitController controller, Achievement achievement) {
@@ -1466,11 +1469,14 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void HandleAchievementObjectiveStatusUpdatedClient(string resourceName) {
+            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleAchievementObjectiveStatusUpdatedClient({resourceName})");
+
             Achievement achievement = systemDataFactory.GetResource<Achievement>(resourceName);
             if (achievement == null) {
                 return;
             }
             unitController.UnitEventController.NotifyOnAchievementObjectiveStatusUpdated(achievement);
+            achievement.StepsComplete(unitController, true);
         }
 
 

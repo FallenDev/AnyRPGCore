@@ -1185,7 +1185,7 @@ namespace AnyRPG {
         }
 
         public void AdvertiseSellItemToPlayer(UnitController sourceUnitController, Interactable interactable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
-            Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({sourceUnitController.gameObject.name}, {interactable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             
             FishNetInteractable networkInteractable = null;
             if (interactable != null) {
@@ -1200,7 +1200,7 @@ namespace AnyRPG {
 
         [ObserversRpc]
         public void AdvertiseSellItemToPlayerClient(FishNetUnitController networkCharacterUnit, FishNetInteractable networkInteractable, int componentIndex, int collectionIndex, int itemIndex, string resourceName, int remainingQuantity) {
-            Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({networkCharacterUnit.gameObject.name}, {networkInteractable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseSellItemToPlayer({networkCharacterUnit.gameObject.name}, {networkInteractable.gameObject.name}, {componentIndex}, {collectionIndex}, {itemIndex}, {resourceName}, {remainingQuantity})");
             networkManagerClient.AdvertiseSellItemToPlayerClient(networkCharacterUnit.UnitController, networkInteractable.Interactable, componentIndex, collectionIndex, itemIndex, resourceName, remainingQuantity);
         }
 

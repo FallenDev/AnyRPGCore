@@ -167,7 +167,8 @@ namespace AnyRPG {
         }
 
         public void OpenInteractionWindow(Interactable targetInteractable) {
-            //Debug.Log($"{gameObject.name}.Interactable.OpenInteractionWindow");
+            Debug.Log($"InteractionManager.OpenInteractionWindow");
+
             BeginInteraction(targetInteractable);
             uIManager.craftingWindow.CloseWindow();
             uIManager.interactionWindow.OpenWindow();

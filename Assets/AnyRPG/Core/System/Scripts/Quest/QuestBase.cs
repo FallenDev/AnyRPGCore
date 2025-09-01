@@ -263,7 +263,7 @@ namespace AnyRPG {
         }
 
         public virtual void AcceptQuest(UnitController sourceUnitController, bool printMessages = true, bool resetStep = true) {
-            Debug.Log($"{ResourceName}.QuestBase.AcceptQuest({sourceUnitController.gameObject.name}, {printMessages}, {resetStep})");
+            //Debug.Log($"{ResourceName}.QuestBase.AcceptQuest({sourceUnitController.gameObject.name}, {printMessages}, {resetStep})");
 
             QuestSaveData questSaveData = GetSaveData(sourceUnitController);
             if (resetStep == true) {
@@ -290,7 +290,7 @@ namespace AnyRPG {
         }
 
         public virtual void CheckCompletion(UnitController sourceUnitController, bool notifyOnUpdate = true, bool printMessages = true) {
-            Debug.Log($"{ResourceName}.QuestBase.CheckCompletion({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
+            //Debug.Log($"{ResourceName}.QuestBase.CheckCompletion({sourceUnitController.gameObject.name}, {notifyOnUpdate}, {printMessages})");
 
             if (MarkedComplete(sourceUnitController)) {
                 // no need to waste cycles checking, we are already done
@@ -307,7 +307,7 @@ namespace AnyRPG {
         }
 
         public bool StepsComplete(UnitController sourceUnitController, bool printMessages) {
-            Debug.Log($"{ResourceName}.QuestBase.StepsComplete({sourceUnitController.gameObject.name}, {printMessages})");
+            //Debug.Log($"{ResourceName}.QuestBase.StepsComplete({sourceUnitController.gameObject.name}, {printMessages})");
 
             if (steps.Count == 0) {
                 return true;

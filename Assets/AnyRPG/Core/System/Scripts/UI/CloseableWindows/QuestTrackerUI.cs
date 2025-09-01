@@ -93,7 +93,7 @@ namespace AnyRPG {
 
 
         public void ShowQuestsCommon() {
-            Debug.Log("QuestTrackerUI.ShowQuestsCommon()");
+            //Debug.Log("QuestTrackerUI.ShowQuestsCommon()");
 
             if (playerManager != null && playerManager.PlayerUnitSpawned == false) {
                 // shouldn't be doing anything without a player spawned.

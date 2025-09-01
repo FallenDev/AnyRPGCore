@@ -645,7 +645,7 @@ namespace AnyRPG {
         }
 
         public override void AdvertiseLoadScene(string sceneResourceName, int accountId) {
-            Debug.Log($"FishNetNetworkController.AdvertiseLoadScene({sceneResourceName}, {accountId})");
+            //Debug.Log($"FishNetNetworkController.AdvertiseLoadScene({sceneResourceName}, {accountId})");
 
             clientConnector.AdvertiseLoadSceneServer(sceneResourceName, accountId);
         }

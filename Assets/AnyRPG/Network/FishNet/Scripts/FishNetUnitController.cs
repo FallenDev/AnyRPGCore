@@ -1819,7 +1819,7 @@ namespace AnyRPG {
 
 
         public void HandleSpawnAbilityObjectsServer(AbilityProperties ability, int index) {
-            Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
+            //Debug.Log($"{gameObject.name}.FishNetUnitController.HandleSpawnAbilityObjectsServer({ability.ResourceName}, {index})");
 
             HandleSpawnAbilityObjectsClient(ability.ResourceName, index);
         }

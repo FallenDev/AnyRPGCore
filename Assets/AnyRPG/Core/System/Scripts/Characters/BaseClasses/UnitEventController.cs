@@ -627,13 +627,13 @@ namespace AnyRPG {
         }
 
         public void NotifyOnMarkAchievementComplete(Achievement achievement) {
-            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnMarkAchievementComplete({achievement.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnMarkAchievementComplete({achievement.ResourceName})");
 
             OnMarkAchievementComplete(unitController, achievement);
         }
 
         public void NotifyOnQuestObjectiveStatusUpdated(Quest quest) {
-            Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnQuestObjectiveStatusUpdated({quest.ResourceName})");
+            //Debug.Log($"{unitController.gameObject.name}.UniteventController.NotifyOnQuestObjectiveStatusUpdated({quest.ResourceName})");
 
             OnQuestObjectiveStatusUpdated(unitController, quest);
         }

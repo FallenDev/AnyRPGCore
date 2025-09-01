@@ -144,53 +144,53 @@ namespace AnyRPG {
         }
 
         private void HandleUnPauseAudio() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleUnPauseAudio()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleUnPauseAudio()");
 
             HandleUnPauseAudioClient();
         }
 
         [ObserversRpc]
         public void HandleUnPauseAudioClient() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleUnPauseAudioClient()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleUnPauseAudioClient()");
 
             objectAudioController.UnPauseAudio();
         }
 
         private void HandlePauseAudio() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePauseAudio()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePauseAudio()");
 
             HandlePauseAudioClient();
         }
 
         [ObserversRpc]
         public void HandlePauseAudioClient() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePauseAudioClient()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePauseAudioClient()");
 
             objectAudioController.PauseAudio();
         }
 
         private void HandleStopAudio() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleStopAudio()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleStopAudio()");
 
             HandleStopAudioClient();
         }
 
         [ObserversRpc]
         public void HandleStopAudioClient() {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleStopAudioClient()");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandleStopAudioClient()");
 
             objectAudioController.StopAudio();
         }
 
         private void HandlePlayOneShot(AudioClip clip) {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayOneShot({clip.name})");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayOneShot({clip.name})");
 
             HandlePlayOneShotClient(clip.name);
         }
 
         [ObserversRpc]
         public void HandlePlayOneShotClient(string clipName) {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayOneShotClient({clipName})");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayOneShotClient({clipName})");
 
             AudioClip clip = audioManager.GetAudioClip(clipName);
             if (clip != null) {
@@ -199,14 +199,14 @@ namespace AnyRPG {
         }
 
         private void HandlePlayAudioClip(AudioClip clip) {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayAudioClip({clip.name})");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayAudioClip({clip.name})");
 
             HandlePlayAudioClipClient(clip.name);
         }
 
         [ObserversRpc]
         public void HandlePlayAudioClipClient(string clipName) {
-            Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayAudioClipClient({clipName})");
+            //Debug.Log($"{gameObject.name}.FishNetObjectAudioController.HandlePlayAudioClipClient({clipName})");
 
             AudioClip clip = audioManager.GetAudioClip(clipName);
             if (clip != null) {

@@ -11,6 +11,7 @@ namespace AnyRPG {
         // game manager references
         private ObjectPooler objectPooler = null;
         private SystemEventManager systemEventManager = null;
+        private NetworkManagerServer networkManagerServer = null;
 
         public IAbilityManager AbilityManager { get => abilityManager; }
         public MonoBehaviour MonoBehaviour { get => this; }
@@ -26,6 +27,7 @@ namespace AnyRPG {
             base.SetGameManagerReferences();
             objectPooler = systemGameManager.ObjectPooler;
             systemEventManager = systemGameManager.SystemEventManager;
+            networkManagerServer = systemGameManager.NetworkManagerServer;
         }
 
         // ensure that no coroutine continues or other spell effects exist past the end of a level
@@ -111,13 +113,17 @@ namespace AnyRPG {
                     elapsedTime += Time.deltaTime;
                     if (elapsedTime > finalTickRate) {
                         //Debug.Log(fixedLengthEffect.DisplayName + ".FixedLengthEffect.Tick() TickTime!");
-                        fixedLengthEffect.CastTick(source, target, abilityEffectInput);
+                        if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                            fixedLengthEffect.CastTick(source, target, abilityEffectInput);
+                        }
                         elapsedTime -= finalTickRate;
                     }
                 }
             }
             //Debug.Log(fixedLengthEffect.DisplayName + ".FixedLengthEffect.Tick() Done ticking and about to perform ability affects.");
-            fixedLengthEffect.CastComplete(source, target, abilityEffectInput);
+            if (systemGameManager.GameMode == GameMode.Local || networkManagerServer.ServerModeActive == true) {
+                fixedLengthEffect.CastComplete(source, target, abilityEffectInput);
+            }
             foreach (List<GameObject> gameObjectList in abilityEffectObjects.Values) {
                 foreach (GameObject go in gameObjectList) {
                     if (abilityManager.AbilityEffectGameObjects.Contains(go)) {

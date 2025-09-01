@@ -147,7 +147,7 @@ namespace AnyRPG {
         public List<string> UnitProfileNames { get => unitProfileNames; set => unitProfileNames = value; }
 
         public override void Configure(SystemGameManager systemGameManager) {
-            Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
+            //Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure()");
 
             base.Configure(systemGameManager);
             bool isCutscene = false;
@@ -155,7 +155,7 @@ namespace AnyRPG {
                 isCutscene = levelManager.IsCutscene();
             }
             if (systemGameManager.GameMode == GameMode.Network && networkManagerServer.ServerModeActive == false && isCutscene == false) {
-                Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure() setting not active");
+                //Debug.Log($"{gameObject.name}.UnitSpawnNode.Configure() setting not active");
                 gameObject.SetActive(false);
                 return;
             }

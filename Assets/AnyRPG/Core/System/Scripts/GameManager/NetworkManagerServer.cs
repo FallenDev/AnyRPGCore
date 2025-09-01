@@ -695,13 +695,13 @@ namespace AnyRPG {
         }
 
         public void DespawnPlayerUnit(int accountId) {
-            Debug.Log($"NetworkManagerServer.DespawnPlayerUnit({accountId})");
+            //Debug.Log($"NetworkManagerServer.DespawnPlayerUnit({accountId})");
 
             playerManagerServer.DespawnPlayerUnit(accountId);
         }
 
         public void RequestDespawnPlayerUnit(int accountId) {
-            Debug.Log($"NetworkManagerServer.RequestDespawnPlayerUnit({accountId})");
+            //Debug.Log($"NetworkManagerServer.RequestDespawnPlayerUnit({accountId})");
 
             // this method is only called when loading a cutscene, so we need to create a spawn request so the player spawns
             // at the correct position and direction when the cutscene ends

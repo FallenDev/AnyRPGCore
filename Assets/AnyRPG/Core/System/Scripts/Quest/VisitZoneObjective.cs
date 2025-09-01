@@ -42,13 +42,13 @@ namespace AnyRPG {
         public override void UpdateCompletionCount(UnitController sourceUnitController, bool printMessages = true) {
             base.UpdateCompletionCount(sourceUnitController, printMessages);
             SceneNode sceneNode = systemDataFactory.GetResource<SceneNode>(zoneName);
-            if (sceneNode != null && sceneNode.SceneFile == levelManager.ActiveSceneName) {
+            if (sceneNode != null && sceneNode.SceneFile == sourceUnitController.gameObject.scene.name) {
                 AddCompletionAmount(sourceUnitController);
             }
         }
 
         public override void OnAcceptQuest(UnitController sourceUnitController, QuestBase quest, bool printMessages = true) {
-            //Debug.Log($"VisitZoneObjective.OnAcceptQuest({sourceUnitController.gameObject.name}, {quest.ResourceName}, {printMessages})");
+            Debug.Log($"VisitZoneObjective.OnAcceptQuest({sourceUnitController.gameObject.name}, {quest.ResourceName}, {printMessages})");
 
             base.OnAcceptQuest(sourceUnitController, quest, printMessages);
 

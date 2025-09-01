@@ -124,6 +124,7 @@ namespace AnyRPG {
         private NetworkManagerServer networkManagerServer = null;
         private SystemEventManager systemEventManager = null;
         private LevelManager levelManager = null;
+        private PlayerManagerServer playerManagerServer = null;
 
         // later on make this spawn mob as player walks into collider ;>
         //private BoxCollider boxCollider;
@@ -188,6 +189,7 @@ namespace AnyRPG {
             networkManagerServer = systemGameManager.NetworkManagerServer;
             systemEventManager = systemGameManager.SystemEventManager;
             levelManager = systemGameManager.LevelManager;
+            playerManagerServer = systemGameManager.PlayerManagerServer;
         }
 
         private void CreateEventSubscriptions() {
@@ -662,7 +664,7 @@ namespace AnyRPG {
             }
 
             // only players can activate trigger based unit spawn nodes.  we don't want npcs wandering around patrolling to activate these
-            if (playerManager.PlayerUnitSpawned == false || other.gameObject != playerManager.ActiveUnitController.gameObject) {
+            if (playerManagerServer.ActivePlayerGameObjects.ContainsKey(other.gameObject) == false) {
                 return;
             }
 

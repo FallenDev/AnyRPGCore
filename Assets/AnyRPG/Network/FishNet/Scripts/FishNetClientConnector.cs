@@ -807,13 +807,13 @@ namespace AnyRPG {
 
         [TargetRpc]
         public void AdvertiseLoadSceneClient(NetworkConnection networkConnection, string sceneName) {
-            Debug.Log($"FishNetClientConnector.AdvertiseLoadSceneClient({sceneName})");
+            //Debug.Log($"FishNetClientConnector.AdvertiseLoadSceneClient({sceneName})");
 
             networkManagerClient.AdvertiseLoadSceneClient(sceneName);
         }
 
         public void ReturnObjectToPool(GameObject returnedObject) {
-            Debug.Log($"FishNetClientConnector.ReturnObjectToPool({returnedObject.name})");
+            //Debug.Log($"FishNetClientConnector.ReturnObjectToPool({returnedObject.name})");
 
             fishNetNetworkManager.ServerManager.Despawn(returnedObject);
         }

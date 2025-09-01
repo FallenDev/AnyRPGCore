@@ -227,7 +227,7 @@ namespace AnyRPG {
         }
 
         public void PerformLevelLoadActivities(bool setActiveSceneNode) {
-            Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
+            //Debug.Log($"Levelmanager.PerformLevelLoadActivities() SceneManager.GetActiveScene().name: {SceneManager.GetActiveScene().name}");
 
             loadingLevel = false;
             if (setActiveSceneNode) {

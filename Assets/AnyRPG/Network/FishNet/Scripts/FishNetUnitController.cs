@@ -1621,7 +1621,7 @@ namespace AnyRPG {
 
 
         public void HandleSpecializationChangeServer(UnitController sourceUnitController, ClassSpecialization newSpecialization, ClassSpecialization oldSpecialization) {
-            HandleSpecializationChangeClient(newSpecialization.ResourceName);
+            HandleSpecializationChangeClient(newSpecialization == null ? string.Empty : newSpecialization.ResourceName);
         }
 
         [ObserversRpc]

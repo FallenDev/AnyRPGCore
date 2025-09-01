@@ -23,7 +23,11 @@ MonoBehaviour:
     can finish this quest by visiting the dungeon.'
   useRegionalDescription: 0
   resourceDescriptionProfile: 
-  isAchievement: 0
+  optionalOverride: 0
+  steps:
+  - questObjectives:
+    - rid: 0
+  prerequisiteConditions: []
   repeatableQuest: 0
   hasOpeningDialog: 0
   experienceLevel: 1
@@ -43,30 +47,14 @@ MonoBehaviour:
   abilityRewardNames: []
   maxSkillRewards: 0
   skillRewardNames: []
-  steps:
-  - questObjectives:
-    - id: 0
-  collectObjectives: []
-  killObjectives: []
-  tradeSkillObjectives: []
-  abilityObjectives: []
-  useInteractableObjectives: []
-  questQuestObjectives: []
-  dialogObjectives: []
-  visitZoneObjectives:
-  - amount: 1
-    type: Features Demo Dungeon
-    overrideDisplayName: 
-    zoneName: 
-  prerequisiteConditions: []
   turnInItems: 0
   allowRawComplete: 0
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: 0
       type: {class: VisitZoneObjective, ns: AnyRPG, asm: Assembly-CSharp}
       data:
         amount: 1
-        type: 
         overrideDisplayName: 
-        zoneName: Features Demo Dungeon
+        zoneName: AnyMMO Demo Dungeon

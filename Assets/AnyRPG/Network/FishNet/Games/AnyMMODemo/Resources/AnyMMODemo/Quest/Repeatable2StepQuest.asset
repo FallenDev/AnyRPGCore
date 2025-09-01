@@ -28,7 +28,12 @@ MonoBehaviour:
   useRegionalDescription: 0
   resourceDescriptionProfile: 
   optionalOverride: 0
-  isAchievement: 0
+  steps:
+  - questObjectives:
+    - rid: 0
+  - questObjectives:
+    - rid: 8385465461168668689
+  prerequisiteConditions: []
   repeatableQuest: 1
   hasOpeningDialog: 0
   experienceLevel: 1
@@ -48,12 +53,6 @@ MonoBehaviour:
   abilityRewardNames: []
   maxSkillRewards: 0
   skillRewardNames: []
-  steps:
-  - questObjectives:
-    - rid: 0
-  - questObjectives:
-    - rid: 8385465461168668689
-  prerequisiteConditions: []
   turnInItems: 0
   allowRawComplete: 1
   references:
@@ -64,7 +63,7 @@ MonoBehaviour:
       data:
         amount: 1
         overrideDisplayName: 
-        zoneName: Features Demo Dungeon
+        zoneName: AnyMMO Demo Dungeon
     - rid: 8385465461168668689
       type: {class: UseAbilityObjective, ns: AnyRPG, asm: Assembly-CSharp}
       data:
